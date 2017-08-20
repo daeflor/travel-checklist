@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <link rel='stylesheet'  type='text/css' href='Styles/style.css'>
+  <title>Travel Checklist</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -22,29 +23,31 @@
 
 <div class="container-fluid" id="grid">
   <div class="row">
-    <div class="col-sm-4" style="background-color:lavender;">Item</div>
-    <div class="col-sm" style="background-color:lavenderblush;">Total # Needed</div>
-    <div class="col-sm" style="background-color:lavenderblush;">Current # Packed</div>
-    <div class="col-sm" style="background-color:lavenderblush;"># Wearing</div>
+    <div class="col-4" style="background-color:lavender;">Item</div>
+    <div class="col" style="background-color:lavenderblush;">Needed</div>
+    <div class="col" style="background-color:lavenderblush;">Packed</div>
+    <div class="col" style="background-color:lavenderblush;">Wearing</div>
   </div>
+  <!--
   <div class="row" name="rowItem" style="background-color:bisque;">
-    <div class="col-sm-4">
-        <input type="text" size="40" maxlength="40">
+    <div class="col4">
+        <input type="text" size="20" maxlength="40">
     </div>
-    <div class="col-sm">
-        <input name="quantity" type="number" value=0 min=0>
+    <div class="col">
+        <input name="quantity" type="number" value=0 min=0 width="5">
         <!--
         <button class="btn" id='buttonAddQuantity' type='button'>+</button> 
         <button class="btn" id='buttonReduceQuantity' type='button'>-</button> 
-        -->
+        
     </div>
-    <div class="col-sm">
+    <div class="col">
             <input name="quantity" type="number" value=0 min=0>
     </div>
-    <div class="col-sm">
+    <div class="col">
             <input name="quantity" type="number" value=0 min=0>
     </div>
   </div>
+  -->
 
   <button class="btn" id='buttonAddRow' type='button'>+</button> 
 </div>
