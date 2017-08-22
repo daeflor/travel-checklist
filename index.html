@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src='Scripts/checklist.js'></script>
+  <script src='Scripts/GridManager.js'></script>
   
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" ></script>
@@ -23,10 +24,11 @@
 
 <div class="container-fluid" id="grid">
   <div class="row">
-    <div class="col-4" style="background-color:lavender;">Item</div>
-    <div class="col" style="background-color:lavenderblush;">Needed</div>
-    <div class="col" style="background-color:lavenderblush;">Packed</div>
-    <div class="col" style="background-color:lavenderblush;">Wearing</div>
+    <div class="col-3 header" style="background-color:lavender;">Item</div>
+    <div class="col header" style="background-color:lavenderblush;">Needed</div>
+    <div class="col header" style="background-color:lavenderblush;">Packed</div>
+    <div class="col header" style="background-color:lavenderblush;">Wearing</div>
+    <div class="col header" style="background-color:lavenderblush;">Backpack</div>
   </div>
   <!--
   <div class="row" name="rowItem" style="background-color:bisque;">
@@ -48,8 +50,11 @@
     </div>
   </div>
   -->
-
-  <button class="btn" id='buttonAddRow' type='button'>+</button> 
+  
+<!--TODO Move some of these out of the grid div -->
+  <button class="btn" id='buttonAddRow' type='button'>+</button>
+  <button class="btn-success" id='buttonSaveToStorage' type='button'>Save to Storage</button>  
+  <button class="btn-danger" id='buttonLoadFromStorage' type='button'>Load from Storage</button>  
 </div>
     
 </body>

@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', Start);
-var rowList = [];
+//var rowList = [];
 
 function Start()
 {
-    document.getElementById('buttonAddRow').onclick = AddRow;
+    //console.log('Start called');
+    document.getElementById('buttonAddRow').onclick = GridManager.AddNewRow;
+    document.getElementById('buttonSaveToStorage').onclick = StoreGrid;
+    document.getElementById('buttonLoadFromStorage').onclick = LoadGrid;
     //document.getElementById('buttonAddQuantity').onclick = AddQuantity;
     //document.getElementById('buttonReduceQuantity').onclick = ReduceQuantity;
 }
@@ -16,27 +19,29 @@ function ItemRow(row, item, needed, packed, wearing)
     var needed = row.children[1].children[0];
     var packed = row.children[2].children[0];
     var wearing = row.children[3].children[0];
+    var backpack = row.children[4].children[0];
 
     needed.oninput = SetItemColumnColor;
     packed.oninput = SetItemColumnColor;
     wearing.oninput = SetItemColumnColor;
+    backpack.oninput = SetItemColumnColor;
 
-    function SetRowColor()
-    {
-        //console.log("needed: " + needed.value + "; packed: " + packed.value + "; wearing: " + wearing.value + "; total prepared: " + totalPrepared);
-        if (needed.value == 0)
-        {
-            row.style.backgroundColor = "grey";
-        }
-        else if (needed.value == (parseInt(packed.value) + parseInt(wearing.value)))
-        {
-            row.style.backgroundColor = "green";
-        }
-        else
-        {
-            row.style.backgroundColor = "orange";
-        }
-    }
+    // function SetRowColor()
+    // {
+    //     //console.log("needed: " + needed.value + "; packed: " + packed.value + "; wearing: " + wearing.value + "; total prepared: " + totalPrepared);
+    //     if (needed.value == 0)
+    //     {
+    //         row.style.backgroundColor = "grey";
+    //     }
+    //     else if (needed.value == (parseInt(packed.value) + parseInt(wearing.value)))
+    //     {
+    //         row.style.backgroundColor = "green";
+    //     }
+    //     else
+    //     {
+    //         row.style.backgroundColor = "orange";
+    //     }
+    // }
 
     function SetItemColumnColor()
     {
@@ -44,7 +49,7 @@ function ItemRow(row, item, needed, packed, wearing)
         {
             itemColumn.style.backgroundColor = "grey";
         }
-        else if (needed.value == (parseInt(packed.value) + parseInt(wearing.value)))
+        else if (needed.value == (parseInt(packed.value) + parseInt(wearing.value) + parseInt(backpack.value)))
         {
             itemColumn.style.backgroundColor = "green";
         }
@@ -67,18 +72,16 @@ function AddInputElement(type, parent, value, cssClass, min)
 
 function AddRow()
 {
-    //TODO unnecessary to declare so many vars
     var divRow = document.createElement('div');
     divRow.className = "row"; 
-    //divRow.style.backgroundColor = "grey";
 
     var divCol = document.createElement('div');
-    divCol.className = "col-4"; 
+    divCol.className = "col-3"; 
     divCol.style.backgroundColor = "grey";
     divRow.appendChild(divCol);
     AddInputElement("text", divCol, "");
 
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < 4; i++)
     {
         divCol = document.createElement('div');
         divCol.className = "col"; 
@@ -104,14 +107,9 @@ function AddRow()
     // divRow.appendChild(divCol2);
     // divRow.appendChild(divCol3);
 
-    this.parentElement.insertBefore(divRow, this.parentElement.children[this.parentElement.childElementCount-1]);    
+    this.parentElement.insertBefore(divRow, this.parentElement.children[this.parentElement.childElementCount-3]);    
 
     // RowManager.Create(divRow, divCol0, divCol1, divCol2, divCol3);
-
-    // AddInputElement("text", divCol0, RowManager.SetRowColor, "");
-    // AddInputElement("number", divCol1, RowManager.SetRowColor, 0, 0);
-    // AddInputElement("number", divCol2, RowManager.SetRowColor, 0, 0);
-    // AddInputElement("number", divCol3, RowManager.SetRowColor, 0, 0);
 
     // AddInputElement("text", divCol0, "");
     // AddInputElement("number", divCol1, 0, "quantity", 0);
@@ -121,9 +119,76 @@ function AddRow()
     //var itemRow = new ItemRow(divRow, divCol0, divCol1, divCol2, divCol3);
     var itemRow = new ItemRow(divRow);
     //rowList.push(itemRow);
+
+    //console.log(this.parentElement);
+    //var encodedHtml = htmlEscape(this.parentElement.innerHTML);
+    //console.log(encodedHtml);
+    //var decodedHtml = htmlUnescape(encodedHtml);
+    //console.log(decodedHtml);
 }
 
-// function SetColor()
-// {
-//     alert("did you change something: " + this.name);
-// }
+function StoreGrid()
+{
+    SaveNameValuePairToLocalStorage('rowValues', JSON.stringify(GridManager.GetAllRowValues()));
+}
+
+function LoadGrid()
+{
+    // var rowsFromStorage = LoadValueFromLocalStorage('rowValues');
+    // console.log(rowsFromStorage);
+    // var parsedRows = JSON.parse(rowsFromStorage);
+    // console.log(parsedRows);
+    GridManager.RecreateRowsFromStorage(JSON.parse(LoadValueFromLocalStorage('rowValues')));
+}
+
+/*** helper Functions ***/
+
+function SaveNameValuePairToLocalStorage(name, value)
+{
+    if (typeof(Storage) !== "undefined") 
+    {
+        //sessionStorage.gridHTML = htmlEscape(document.getElementById('grid').innerHTML);
+        //sessionStorage.rowvalues = GridManager.GetAllRowValues();
+        sessionStorage.setItem(name, value);
+        console.log('Pair added to sesion storage, with name "' + name + '" and value "' + value + '".');
+    } 
+    else 
+    {
+        alert('No Local Storage Available');
+    }
+}
+
+function LoadValueFromLocalStorage(name)
+{
+    if (typeof(Storage) !== "undefined") 
+    {
+        //document.getElementById('grid').innerHTML = htmlUnescape(sessionStorage.gridHTML);
+        console.log('Request to load value for "' + name +'" from session storage.');        
+        return sessionStorage.getItem(name);
+        //GridManager.RecreateRowsFromStorage(sessionStorage.rowvalues);
+    } 
+    else 
+    {
+        alert('No Local Storage Available');
+    }
+}
+
+function htmlEscape(str) 
+{
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function htmlUnescape(str)
+{
+    return str
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
+}

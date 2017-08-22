@@ -1,4 +1,16 @@
 .quantity {
-    width: 50px;
+    width: 30px;
     background-color: burlywood;
 }
+
+.header {
+    font-size: 12px;
+}
+
+/* textarea
+{
+    width: 150px;
+    height: auto;
+    max-height: 50px;
+    background-color: burlywood;
+} */

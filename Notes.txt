@@ -1,0 +1,12 @@
+Upcoming To-Do List:
+- Clean up and move the row creation logic
+- Save to storage whenever the input elements trigger onchange or oninput (text and number inputs respectively)
+- Load from storage whenever the page loads
+
+Features:
+
+- Add clear buttons to each column to clear all entries at once. (Could be good while on trips). 
+- Buttons to increment and decrement quantity count
+- Quantity counters may not need to be 'input' elements. (Contingent on increment/decrement buttons & UX).
+- Could change text input element to a textarea with modified css
+- Rename 'packed' to luggage?
