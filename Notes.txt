@@ -3,10 +3,14 @@ Upcoming To-Do List:
 - Save to storage whenever the input elements trigger onchange or oninput (text and number inputs respectively)
 - Load from storage whenever the page loads
 
-Features:
+Thoughts:
 
 - Add clear buttons to each column to clear all entries at once. (Could be good while on trips). 
 - Buttons to increment and decrement quantity count
 - Quantity counters may not need to be 'input' elements. (Contingent on increment/decrement buttons & UX).
 - Could change text input element to a textarea with modified css
 - Rename 'packed' to luggage?
+- Maybe it's more user-friendly to not default quantities to zero
+- Is there a type of logging to console that only triggers in a specific mode?
+- Rename checklist.js
+- Currently loading from storage just appends to the grid, it doesn't remove anything currently in it. This seems fine. 
