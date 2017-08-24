@@ -2,18 +2,6 @@ window.GridManager = function()
 {
     var divGrid;
     var rows = [];
-    //document.addEventListener('DOMContentLoaded', function(){divGrid = document.getElementById('grid')});
-
-    //TODO could possibly set up button events and other elements here
-    // function SetupGridElements()
-    // {
-    // }
-
-    function DeleteElementFromGrid(element)
-    {
-        console.log('Class name of element to remove: ' + element.className)
-        divGrid.removeChild(element);
-    }
 
     function ItemRow(row)
     {
@@ -57,38 +45,70 @@ window.GridManager = function()
         };
     }
 
-    function AddInputElement(type, parent, value, cssClass, min)
+    function UpdateGrid()
     {
-        var input = document.createElement('input');
-        input.type = type;
-        input.value = value;
-        input.className = cssClass;
-        input.min = min;
-        parent.appendChild(input);
+        StoreGrid();
     }
 
-    //TODO change this to take a list of name-value-pairs and use setAttribute to assign them
-    function CreateNewElement(elementName, elementClass, elementType, elementValue)
+    function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
+    {
+        console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
+        divGrid.insertBefore(elementToAdd, elementToPrecede);  
+       
+        if (updateGrid == true)
+        {
+            UpdateGrid();        
+        }    
+    }
+
+    function RemoveElementFromGrid(elementToRemove)
+    {
+        divGrid.removeChild(elementToRemove);
+        UpdateGrid();
+    }
+
+    function ModifyElementGrid(elementToModify, value)
+    {
+        /* */
+        UpdateGrid();
+    }
+    
+
+    function RemoveRowFromGrid(rowToRemove)
+    {        
+        var index = $(rowToRemove).index() - 1; //TODO this sucks. Header row should probably be outside of grid
+        console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowToRemove.className);  
+        if(index > -1) 
+        {
+            rows.splice(index, 1);
+            RemoveElementFromGrid(rowToRemove);
+            console.log("Removed row at index " + index);
+        }
+        else
+        {
+            console.log("Failed to remove row from grid. Row index returned invalid value.");
+        }
+    }
+
+    function CreateNewElement(elementName, attributes, child)
     {
         var element;
         
         if (elementName != null)
         {
-           element = document.createElement(elementName);
+            element = document.createElement(elementName);
 
-            if (elementClass != null)
+            if (attributes != null)
             {
-                element.className = elementClass;
+                for (var i = 0; i < attributes.length; i++)
+                {
+                    element.setAttribute(attributes[i][0], attributes[i][1])
+                }
             }
 
-            if (elementType != null)
+            if (child != null)
             {
-                element.type = elementType;
-            }
-
-            if (elementValue != null)
-            {
-                element.className = elementValue;
+                element.appendChild(child);
             }
 
             return element;
@@ -103,14 +123,14 @@ window.GridManager = function()
     {
         /* Create Tooltip Elements */
         
+        //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
         // var iconTrash = document.createElement('i');
         // iconTrash.className = 'fa fa-trash';
-        // //$(iconTrash).attr('aria-hidden', 'true');
 
+        //var buttonTrash = CreateNewElement('button', [['class','btn'], ['type','button']]);
         // var buttonTrash = document.createElement('button');
         // buttonTrash.type = 'button';
         // buttonTrash.className = 'btn';
-        // //buttonTrash.onclick = function(){ console.log('BUTTON PRESSED'); };
         // buttonTrash.appendChild(iconTrash);
 
         // var divPopover = document.createElement('div');
@@ -118,12 +138,15 @@ window.GridManager = function()
 
         /* Create Edit Button Elements */
         
-        var iconEdit = document.createElement('i');
-        iconEdit.className = 'fa fa-pencil-square-o';
+        var iconEdit = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);
+        // var iconEdit = document.createElement('i');
+        // iconEdit.className = 'fa fa-pencil-square-o';
 
-        var buttonEdit = CreateNewElement('a', 'btn');
-        buttonEdit.href = '#';
-        buttonEdit.tabindex = '0';
+        var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#'], ['tabIndex','0'] ], iconEdit);
+        //buttonEdit.appendChild(iconEdit);
+
+        //buttonEdit.href = '#';
+        //buttonEdit.tabindex = '0';
 
         // var buttonEdit = document.createElement('button');
         // buttonEdit.type = 'button';
@@ -135,7 +158,6 @@ window.GridManager = function()
         // buttonEdit.dataset.animation = 'true';
         // buttonEdit.dataset.title = 'popoverTitle';
         // buttonEdit.dataset.content = divPopover.outerHTML;
-
         //$(buttonEdit).popover(); 
 
         $(buttonEdit).popover(
@@ -148,41 +170,48 @@ window.GridManager = function()
             trigger: 'focus',
             //tabindex: 0,
             //href: '#',
-            content: '<div><button class="btn buttonTrash" type="button"><i class="fa fa-trash"></i></button></div>' //onclick="alert()"
+            //delay: { "show": 0, "hide": 100 },
+            content: '<div><button class="btn buttonTrash" type="button"><i class="fa fa-trash"></i></button></div>'
         }); 
 
         $(buttonEdit).on (
             'shown.bs.popover',
              function () 
             {
-                console.log("Possibly... Popup has been opened, and onclick event will be set.");
-                //var $buttonTrash = $(this).find('#buttonTrash');
-                //console.log("Tried to find trash button by ID: " + $buttonTrash.className);
-                //$buttonTrash.click(function(){Test();});
-                //console.log($("#buttonTrash"));
-                
-                $(".buttonTrash").click(function(){DeleteElementFromGrid(buttonEdit.parentElement.parentElement);});
+                console.log("Popup has been opened; onclick event will be set.");
+                //var $buttonTrash = $(this).find('#buttonTrash');                
+                $(".buttonTrash").click(function(){RemoveRowFromGrid(buttonEdit.parentElement.parentElement);});
             }
         )
 
         //TODO may need to dispose of popover, especially if not using unique IDs
 
-        buttonEdit.appendChild(iconEdit);
-
         /* Create Div Wrapper */
-        var divCol = document.createElement('div');
-        divCol.className = "col-2 settings"; 
-        divCol.appendChild(buttonEdit);
-
-        return divCol;
+        
+        return CreateNewElement('div', [ ['class','col-1 columnEdit'] ], buttonEdit);
+        // var divCol = document.createElement('div');
+        // divCol.className = "col-1 settings"; 
+        // divCol.appendChild(buttonEdit);
+        // return divCol;
     }
 
-    function CreateItemColumn(name)
+    function CreateInputElement(type, value, cssClass, min)
     {
-        var divCol = document.createElement('div');
-        divCol.className = "col-3 itemColumn"; 
-        AddInputElement("text", divCol, name);
+        // var input = document.createElement('input');
+        // input.type = type;
+        // input.value = value;
+        // input.className = cssClass;
+        // input.min = min;
+        // parent.appendChild(input);
 
+        return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
+    }
+
+    function CreateItemColumn(itemName)
+    {
+        var textareaItemName = CreateNewElement('textarea');
+        textareaItemName.value = itemName;
+        var divCol = CreateNewElement('div', [ ['class','col-4 itemColumn'] ], textareaItemName);
         return divCol;
     }
 
@@ -191,15 +220,15 @@ window.GridManager = function()
         divCol = document.createElement('div');
         divCol.className = "col"; 
         divCol.style.backgroundColor = "bisque";
-        AddInputElement("number", divCol, quantity, "quantity", 0);
-
+        divCol.appendChild(CreateInputElement("number", quantity, "quantity", 0));
         return divCol;
     }
 
     function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
     {
-        var divRow = document.createElement('div');
-        divRow.className = "row"; 
+        var divRow = CreateNewElement('div', [ ['class','row'] ]);
+        // var divRow = document.createElement('div');
+        // divRow.className = "row"; 
 
         divRow.appendChild(CreatePopoverRowSettings());
         
@@ -209,9 +238,9 @@ window.GridManager = function()
         divRow.appendChild(CreateQuantityColumn(wearingQuantity));
         divRow.appendChild(CreateQuantityColumn(backpackQuantity));
     
-        divGrid.insertBefore(divRow, divGrid.children[divGrid.childElementCount-3]);    
-
         rows.push(new ItemRow(divRow));
+        return divRow;
+        //AddElementToGrid(divRow, document.getElementById('buttonAddRow'));
     }
 
     return { 
@@ -242,16 +271,17 @@ window.GridManager = function()
         },
         AddNewRow : function()
         {
-            CreateRow("", 0, 0, 0, 0);
+            //CreateRow("", 0, 0, 0, 0);
+            AddElementToGrid(CreateRow("", 0, 0, 0, 0), document.getElementById('buttonAddRow'));
         },
         RecreateRowsFromStorage : function(rowValues)
         {
             //console.log('Row Values from local storage : ' + rowValues);
-            //console.log('There are ' + rowValues.length + ' rows saved in local storage.');
+            console.log('There are ' + rowValues.length + ' rows saved in local storage.');
             for (var i = 0; i < rowValues.length; i++)
             {
-                //console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
-                CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]);
+                console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
+                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), document.getElementById('buttonAddRow'), false);
             }
         }
     };

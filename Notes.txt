@@ -1,5 +1,9 @@
 Upcoming To-Do List:
 - Save to storage whenever the input elements trigger onchange or oninput (text and number inputs respectively)
+    Grid state needs to be stored when:
+        Textareas get updated (focus lost is probably good enough)
+        Quantities get modified
+        Rows get moved up or down in the grid
 
 Thoughts:
 
