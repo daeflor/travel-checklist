@@ -4,7 +4,6 @@ function Start()
 {
     document.getElementById('buttonAddRow').onclick = GridManager.AddNewRow;
     document.getElementById('buttonSaveToStorage').onclick = StoreGrid;
-    document.getElementById('buttonLoadFromStorage').onclick = LoadGrid;
     //document.getElementById('buttonAddQuantity').onclick = AddQuantity;
     //document.getElementById('buttonReduceQuantity').onclick = ReduceQuantity;
 
@@ -29,6 +28,7 @@ function LoadGrid()
 
     if (rowValues != null)
     {
+        console.log("Loaded from Local Storage: " + rowValues);
         GridManager.RecreateRowsFromStorage(JSON.parse(rowValues));        
     }    
     else
