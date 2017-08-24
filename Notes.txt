@@ -1,7 +1,5 @@
 Upcoming To-Do List:
-- Clean up and move the row creation logic
 - Save to storage whenever the input elements trigger onchange or oninput (text and number inputs respectively)
-- Load from storage whenever the page loads
 
 Thoughts:
 
@@ -9,8 +7,16 @@ Thoughts:
 - Buttons to increment and decrement quantity count
 - Quantity counters may not need to be 'input' elements. (Contingent on increment/decrement buttons & UX).
 - Could change text input element to a textarea with modified css
-- Rename 'packed' to luggage?
-- Maybe it's more user-friendly to not default quantities to zero
+- Maybe it's more user-friendly to not default quantities to zero (Contingent on increment/decrement buttons & UX).
 - Is there a type of logging to console that only triggers in a specific mode?
-- Rename checklist.js
+- Rename checklist.js to something more meaningful
 - Currently loading from storage just appends to the grid, it doesn't remove anything currently in it. This seems fine. 
+- Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
+    (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
+- Add a button to delete a row. (And posibly to delete all rows, for testing purposes)
+- I may jut have to have one 'item row' across multiples lines (e.g. the name at the top with the delete button (and possibly 'move' buttons), and the quantity fields and buttons below).
+    Maybe mock up what this would look like before spending time trying to implement it. (It's important it's clear what the different quantities mean).
+    Would it be possible to use modal popups for buttons (which are otherwise hidden), instead of having two lines/rows per item?
+- Create 'move' buttons to move an item up or down the grid/list
+- Standardize between " and '
+- 

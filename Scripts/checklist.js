@@ -7,6 +7,15 @@ function Start()
     document.getElementById('buttonLoadFromStorage').onclick = LoadGrid;
     //document.getElementById('buttonAddQuantity').onclick = AddQuantity;
     //document.getElementById('buttonReduceQuantity').onclick = ReduceQuantity;
+
+    // $(document).ready(function(){
+    //     console.log("Enabling popovers");
+    //     $('[data-toggle="popover"]').popover()
+    // });
+
+    GridManager.SetGridDiv(document.getElementById('grid'));
+
+    LoadGrid();
 }
 
 function StoreGrid()
@@ -16,7 +25,16 @@ function StoreGrid()
 
 function LoadGrid()
 {
-    GridManager.RecreateRowsFromStorage(JSON.parse(LoadValueFromLocalStorage('rowValues')));
+    var rowValues = LoadValueFromLocalStorage('rowValues');
+
+    if (rowValues != null)
+    {
+        GridManager.RecreateRowsFromStorage(JSON.parse(rowValues));        
+    }    
+    else
+    {
+        console.log("Could not find row data saved in local storage.");
+    }
 }
 
 /*** helper Functions ***/
