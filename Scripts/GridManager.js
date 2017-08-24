@@ -25,15 +25,15 @@ window.GridManager = function()
         {
             if (needed.value == 0)
             {
-                itemColumn.style.backgroundColor = "grey";
+                itemColumn.style.backgroundColor = "darkgrey";
             }
             else if (needed.value == (parseInt(luggage.value) + parseInt(wearing.value) + parseInt(backpack.value)))
             {
-                itemColumn.style.backgroundColor = "green";
+                itemColumn.style.backgroundColor = "mediumseagreen";
             }
             else
             {
-                itemColumn.style.backgroundColor = "orange";
+                itemColumn.style.backgroundColor = "peru";
             }
         }
 
@@ -189,7 +189,7 @@ window.GridManager = function()
 
         /* Create Div Wrapper */
         
-        return CreateNewElement('div', [ ['class','col-1 columnEdit'] ], buttonEdit);
+        return CreateNewElement('div', [ ['class','col-1 divEdit'] ], buttonEdit);
         // var divCol = document.createElement('div');
         // divCol.className = "col-1 settings"; 
         // divCol.appendChild(buttonEdit);
@@ -205,19 +205,25 @@ window.GridManager = function()
         // input.min = min;
         // parent.appendChild(input);
 
-        return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
+        var inputElement = CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
+        //inputElement.onchange = UpdateGrid; 
+        inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
+        return inputElement;
+        //return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
     }
 
     function CreateItemColumn(itemName)
     {
         var textareaItemName = CreateNewElement('textarea');
         textareaItemName.value = itemName;
-        var divCol = CreateNewElement('div', [ ['class','col-4 itemColumn'] ], textareaItemName);
+        textareaItemName.onchange = UpdateGrid;
+        var divCol = CreateNewElement('div', [ ['class','col-4 divItemName'] ], textareaItemName);
         return divCol;
     }
 
     function CreateQuantityColumn(quantity)
     {
+        //var inputElement = 
         return CreateNewElement('div', [ ['class','col divQuantity'] ], CreateInputElement("number", quantity, "inputQuantity", 0)); 
         // divCol = document.createElement('div');
         // divCol.className = "col"; 
@@ -228,7 +234,7 @@ window.GridManager = function()
 
     function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
     {
-        var divRow = CreateNewElement('div', [ ['class','row'] ]); 
+        var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
 
         divRow.appendChild(CreatePopoverRowSettings());
         

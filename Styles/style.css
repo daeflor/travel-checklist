@@ -1,17 +1,3 @@
-.inputQuantity {
-    width: 25px;
-    background-color: burlywood;
-}
-
-.divQuantity {
-    background-color: bisque;
-    /*
-    padding: 0px;
-    align-items: stretch;
-    height: 100%;
-    */
-}
-
 div .header {
     font-size: 13px;
     background-color: lavenderblush;
@@ -26,11 +12,6 @@ div .smallicon{
     padding-bottom: 0px;
 }
 
-.itemColumn {
-    font-size: 13px;
-    padding: 10px;
-}
-
 #grid div {
     display: flex;
     align-items: center;
@@ -38,26 +19,52 @@ div .smallicon{
     text-align: center; 
 }
 
-
-.columnEdit {
-    background-color: bisque;
-    padding: 5px;  
+.divItemRow {
+    /* TODO I kind of liked the look of it when the rows weren't fully colored in */
+    background-color: aliceblue;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
 }
 
-textarea
-{
-    width: 110px;
-    height: auto;
-    max-height: 30px;
-    background-color: burlywood;
-} 
+.divEdit {
+    background-color: bisque;
+    padding: 7px;  
+    margin-left: 5px;
+}
 
 .buttonEdit {
     padding: 0px;
+    max-height: 25px;
 }
 
-/*
-.headerRow {
-    height: 30px !important;
+.divItemName {
+    font-size: 13px;
+    padding: 5px;
+    margin: 5px;
 }
-*/
+
+#grid textarea
+{
+    width: 110px;
+    height: auto;
+    max-height: 25px;
+    background-color: burlywood;
+} 
+
+.divQuantity {
+    background-color: bisque;
+    padding: 5px;
+    /*
+    margin-right: 5px;
+    /*
+    align-items: stretch;
+    height: 100%;
+    */
+}
+
+.inputQuantity {
+    width: 25px;
+    background-color: burlywood;
+    max-height: 25px;
+}

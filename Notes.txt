@@ -1,27 +1,31 @@
 Upcoming To-Do List:
-- Save to storage whenever the input elements trigger onchange or oninput (text and number inputs respectively)
-    Grid state needs to be stored when:
-        Textareas get updated (focus lost is probably good enough)
-        Quantities get modified
-        Rows get moved up or down in the grid
+- Add quantity buttons
 
 Thoughts:
 
 - Add clear buttons to each column to clear all entries at once. (Could be good while on trips). 
+    These could be in popovers
 - Buttons to increment and decrement quantity count
 - Quantity counters may not need to be 'input' elements. (Contingent on increment/decrement buttons & UX).
-- Could change text input element to a textarea with modified css
 - Maybe it's more user-friendly to not default quantities to zero (Contingent on increment/decrement buttons & UX).
-- Is there a type of logging to console that only triggers in a specific mode?
 - Rename checklist.js to something more meaningful
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - I may jut have to have one 'item row' across multiples lines (e.g. the name at the top with the delete button (and possibly 'move' buttons), and the quantity fields and buttons below).
     Maybe mock up what this would look like before spending time trying to implement it. (It's important it's clear what the different quantities mean).
     Would it be possible to use modal popups for buttons (which are otherwise hidden), instead of having two lines/rows per item?
-- Create 'move' buttons to move an item up or down the grid/list
 - Standardize between " and '
 - Button click area is too big. (e.g. when trying to add a row it can accidentally delete the last row instead).
     It's possible this is only happening on desktop...
 - Could alternate row background color for better readability
+- Grid state needs to be stored when:
+        Textareas get updated (focus lost is probably good enough)
+        Quantities get modified
+        Rows get moved up or down in the grid
+
+Future:
+
+- Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
 - Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
+- Create 'move' buttons to move an item up or down the grid/list
+- Is there a type of logging to console that only triggers in a specific mode?
