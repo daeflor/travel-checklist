@@ -52,7 +52,7 @@ window.GridManager = function()
 
     function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
     {
-        console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
+        //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
         divGrid.insertBefore(elementToAdd, elementToPrecede);  
        
         if (updateGrid == true)
@@ -76,7 +76,7 @@ window.GridManager = function()
 
     function RemoveRowFromGrid(rowToRemove)
     {        
-        var index = $(rowToRemove).index() - 1; //TODO this sucks. Header row should probably be outside of grid
+        var index = $(rowToRemove).index();
         console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowToRemove.className);  
         if(index > -1) 
         {
@@ -90,6 +90,7 @@ window.GridManager = function()
         }
     }
 
+    //TODO could change child parameter to a list of children instead
     function CreateNewElement(elementName, attributes, child)
     {
         var element;
@@ -217,18 +218,17 @@ window.GridManager = function()
 
     function CreateQuantityColumn(quantity)
     {
-        divCol = document.createElement('div');
-        divCol.className = "col"; 
-        divCol.style.backgroundColor = "bisque";
-        divCol.appendChild(CreateInputElement("number", quantity, "quantity", 0));
-        return divCol;
+        return CreateNewElement('div', [ ['class','col divQuantity'] ], CreateInputElement("number", quantity, "inputQuantity", 0)); 
+        // divCol = document.createElement('div');
+        // divCol.className = "col"; 
+        // divCol.style.backgroundColor = "bisque";
+        // divCol.appendChild(CreateInputElement("number", quantity, "quantity", 0));
+        // return divCol;
     }
 
     function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
     {
-        var divRow = CreateNewElement('div', [ ['class','row'] ]);
-        // var divRow = document.createElement('div');
-        // divRow.className = "row"; 
+        var divRow = CreateNewElement('div', [ ['class','row'] ]); 
 
         divRow.appendChild(CreatePopoverRowSettings());
         

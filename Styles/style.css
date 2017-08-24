@@ -1,6 +1,15 @@
-.quantity {
-    width: 30px;
+.inputQuantity {
+    width: 25px;
     background-color: burlywood;
+}
+
+.divQuantity {
+    background-color: bisque;
+    /*
+    padding: 0px;
+    align-items: stretch;
+    height: 100%;
+    */
 }
 
 div .header {
@@ -19,16 +28,36 @@ div .smallicon{
 
 .itemColumn {
     font-size: 13px;
+    padding: 10px;
 }
 
-.settings {
+#grid div {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    text-align: center; 
+}
+
+
+.columnEdit {
     background-color: bisque;
+    padding: 5px;  
 }
 
-/* textarea
+textarea
 {
-    width: 150px;
+    width: 110px;
     height: auto;
-    max-height: 50px;
+    max-height: 30px;
     background-color: burlywood;
-} */
+} 
+
+.buttonEdit {
+    padding: 0px;
+}
+
+/*
+.headerRow {
+    height: 30px !important;
+}
+*/

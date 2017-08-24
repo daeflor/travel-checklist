@@ -22,3 +22,6 @@ Thoughts:
 - Create 'move' buttons to move an item up or down the grid/list
 - Standardize between " and '
 - Button click area is too big. (e.g. when trying to add a row it can accidentally delete the last row instead).
+    It's possible this is only happening on desktop...
+- Could alternate row background color for better readability
+- Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
