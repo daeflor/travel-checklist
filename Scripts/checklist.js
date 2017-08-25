@@ -39,13 +39,12 @@ function LoadGrid()
 
 /*** helper Functions ***/
 
-// TODO change from SessionStorage to LocalStorage when ready
 function SaveNameValuePairToLocalStorage(name, value)
 {
     if (typeof(Storage) !== "undefined") 
     {
-        sessionStorage.setItem(name, value);
-        console.log('Pair added to sesion storage, with name "' + name + '" and value "' + value + '".');
+        localStorage.setItem(name, value);
+        console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
     } 
     else 
     {
@@ -53,13 +52,12 @@ function SaveNameValuePairToLocalStorage(name, value)
     }
 }
 
-// TODO change from SessionStorage to LocalStorage when ready
 function LoadValueFromLocalStorage(name)
 {
     if (typeof(Storage) !== "undefined") 
     {
-        console.log('Request to load value for "' + name +'" from session storage.');        
-        return sessionStorage.getItem(name);
+        console.log('Request to load value for "' + name +'" from localstorage.');        
+        return localStorage.getItem(name);
     } 
     else 
     {

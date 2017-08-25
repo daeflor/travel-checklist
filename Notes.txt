@@ -22,6 +22,8 @@ Thoughts:
         Textareas get updated (focus lost is probably good enough)
         Quantities get modified
         Rows get moved up or down in the grid
+- Because of margins, the columns in the header row are not aligned with columns of the item rows.
+
 
 Future:
 
@@ -29,3 +31,6 @@ Future:
 - Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
 - Create 'move' buttons to move an item up or down the grid/list
 - Is there a type of logging to console that only triggers in a specific mode?
+- Could group similar item types into categories, which show up in dropdown lists of the category
+    Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
+- Could there be icons for item names (or item categories) instead of text?
