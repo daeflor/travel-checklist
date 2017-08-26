@@ -193,13 +193,14 @@ window.GridManager = function()
         var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#'], ['tabIndex','0'] ]);
         buttonQuantity.text = quantity;
 
+        //TODO can probably to all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
         $(buttonQuantity).popover(
         {
             //toggle: 'popover',
             placement: 'bottom',
             animation: true,
             html: true,
-            trigger: 'focus',
+            trigger: 'click',
             content: divPopover.outerHTML
         }); 
 
@@ -207,26 +208,27 @@ window.GridManager = function()
             'shown.bs.popover',
              function () 
             {
-                $("#buttonMinus").click(function(){itemRow.ModifyQuantityValue(buttonQuantity, false);});         
-                $("#buttonPlus").click(function(){itemRow.ModifyQuantityValue(buttonQuantity, true);}); 
+                $("#buttonMinus").click(function()
+                {
+                    itemRow.ModifyQuantityValue(buttonQuantity, false);
+                });         
+                $("#buttonPlus").click(function()
+                {
+                    itemRow.ModifyQuantityValue(buttonQuantity, true);
+                }); 
+
+                // $('#buttonMinus').on('click', function(e) {
+                //     e.stopPropagation();
+                // });
             }
         )
 
+        // $(buttonQuantity).on('click', function(e) {
+        //     e.stopPropagation();
+        // });
+
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
     }
-
-    // function CreateInputElement(elementType, elementValue, elementClass, elementMin)
-    // {
-    //     var inputElement = CreateNewElement(
-    //         'input', 
-    //         [ ['class',elementClass], ['type',elementType], ['value',elementValue], ['min',elementMin] ]
-    //     );
-
-    //     //inputElement.onchange = UpdateGrid; 
-    //     inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
-    //     return inputElement;
-    //     //return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
-    // }
 
     function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
     {
