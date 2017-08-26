@@ -132,7 +132,7 @@ window.GridManager = function()
 
         $(buttonEdit).popover(
         {
-            toggle: 'popover',
+            //toggle: 'popover',
             placement: 'bottom',
             animation: true,
             html: true,
@@ -141,18 +141,17 @@ window.GridManager = function()
             //tabindex: 0,
             //href: '#',
             //delay: { "show": 0, "hide": 100 },
-            content: '<div><button class="btn buttonTrash" type="button"><i class="fa fa-trash"></i></button></div>'
-        }); 
+            content: '<div class="popoverElement"><button class="btn buttonTrash popoverElement" type="button"><i class="fa fa-trash"></i></button></div>'
+        }); //TODO For trash we do actually want the popover to go away when it's clicked... but for move up/down, we probably won't... Is popoverElement class necessary?
 
-        $(buttonEdit).on (
-            'shown.bs.popover',
-             function () 
+        $(buttonEdit).on ('shown.bs.popover', function() 
+        {
+            console.log("Popup has been opened; onclick event will be set.");
+            $(".buttonTrash").on('click', function()
             {
-                console.log("Popup has been opened; onclick event will be set.");
-                //var $buttonTrash = $(this).find('#buttonTrash');                
-                $(".buttonTrash").click(function(){RemoveRowFromGrid(buttonEdit.parentElement.parentElement);});
-            }
-        )
+                RemoveRowFromGrid(buttonEdit.parentElement.parentElement);
+            });
+        });
 
         //TODO may need to dispose of popover, especially if not using unique IDs
 
@@ -174,7 +173,7 @@ window.GridManager = function()
 
         return CreateNewElement(
             'button', 
-            [['id',buttonId], ['class','btn buttonEditQuantity'], ['type','button']], 
+            [['id',buttonId], ['class','btn buttonEditQuantity popoverElement'], ['type','button']], 
             CreateNewElement('i', [['class',iconClass]])
         );
     }
@@ -183,15 +182,90 @@ window.GridManager = function()
     function CreateQuantityPopover(itemRow, quantity)
     {
         /* Create Popup Elements */
-        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle');
-        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle');
-        var divPopover = CreateNewElement('div'); 
+        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle popoverElement');
+        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle popoverElement');
+        var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
         divPopover.appendChild(buttonMinus);
         divPopover.appendChild(buttonPlus);
 
         /* Create Quantity Button Elements */
         var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#'], ['tabIndex','0'] ]);
         buttonQuantity.text = quantity;
+
+        /** **/
+
+        // $(buttonQuantity).on ('inserted.bs.popover', function () {
+        //     $('#buttonMinus').on('click', function() {
+        //         itemRow.ModifyQuantityValue(buttonQuantity, false);
+        //     });         
+        //     $("#buttonPlus").on('click', function() {
+        //         itemRow.ModifyQuantityValue(buttonQuantity, true);
+        //     }); 
+
+        //     // $('#buttonMinus').on('click', function(e) {
+        //     //     e.stopPropagation();
+        //     //     itemRow.ModifyQuantityValue(buttonQuantity, false);
+        //     // });
+
+        //     $(document).on('click', function(e) {
+        //         //TODO If this check stays here, could just check against the actual element created above.
+        //             //Do we have to de-register the event though?
+        //         console.log("Clicked on element with class " + e.target.className);                
+        //         //console.log("Clicked on element " + e + " with target " + e.target + " with class " + e.target.className);        
+        //         //if (e.target != divPopover && e.target != divPopover.parentElement && !divPopover.children.includes(e.target))
+        //         if (!e.target.className.includes('popover'))
+        //         {
+        //             console.log("You clicked on something other than a popover");
+        //             //var $buttonTrash = $(this).find('#buttonTrash'); 
+        //             $('.').popover('hide');
+        //             $(document).off('click');
+        //         }
+        //         else
+        //         {
+        //             console.log("You clicked on a popover element"); 
+        //         }
+        //     });
+        // });
+
+        $(buttonQuantity).on('shown.bs.popover', function() 
+        {
+            $(document).on('click', function(e) 
+            {
+                console.log("!!Clicked element POS - Class - ID: " + e.target.getBoundingClientRect().left + " - " + e.target.className + " - " + e.target.id);
+                if (e.target == buttonQuantity)
+                {
+                    console.log("Clicked element is a quantity button - Class : " +  e.target.className);
+                    return;
+                }
+                else if (e.target.id == 'buttonMinus')
+                {
+                    console.log("Clicked element Class : " +  e.target.className);
+                    itemRow.ModifyQuantityValue(buttonQuantity, false);
+                }
+                else if (e.target.id == 'buttonPlus')
+                {
+                    console.log("Clicked element Class : " +  e.target.className);
+                    itemRow.ModifyQuantityValue(buttonQuantity, true);
+                }
+                else if (!e.target.className.includes('popover'))
+                {
+                    console.log("You clicked on something other than a popover. Clicked element Class : " +  e.target.className);
+                    $(document).off('click');
+                    $(buttonQuantity).popover('hide');
+                    //$(document).off('click');
+                }
+                else
+                {
+                    console.log("Another popover must have been clicked");
+                }
+            });
+        });
+
+        // $(buttonQuantity).on('hidden.bs.popover', function() 
+        // {   
+        //     console.log('onclick listener removed from document');
+        //     $(document).off('click');
+        // });
 
         //TODO can probably to all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
         $(buttonQuantity).popover(
@@ -200,32 +274,15 @@ window.GridManager = function()
             placement: 'bottom',
             animation: true,
             html: true,
-            trigger: 'click',
+            trigger: 'manual',
             content: divPopover.outerHTML
         }); 
 
-        $(buttonQuantity).on (
-            'shown.bs.popover',
-             function () 
-            {
-                $("#buttonMinus").click(function()
-                {
-                    itemRow.ModifyQuantityValue(buttonQuantity, false);
-                });         
-                $("#buttonPlus").click(function()
-                {
-                    itemRow.ModifyQuantityValue(buttonQuantity, true);
-                }); 
-
-                // $('#buttonMinus').on('click', function(e) {
-                //     e.stopPropagation();
-                // });
-            }
-        )
-
-        // $(buttonQuantity).on('click', function(e) {
-        //     e.stopPropagation();
-        // });
+        $(buttonQuantity).on('focus', function() 
+        {
+            console.log("A popover toggle was just focused");
+            $(buttonQuantity).popover('show');
+        });
 
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
     }

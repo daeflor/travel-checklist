@@ -24,11 +24,14 @@ Thoughts:
         Rows get moved up or down in the grid
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
 - Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
+- Would be nice if buttons changed color or something when pressed
+- When you select a quantity low down on the list, the page jumps up weirdly (tested on Android).
 
 
 Future:
 
 - Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
+    Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
 - Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
 - Create 'move' buttons to move an item up or down the grid/list
 - Is there a type of logging to console that only triggers in a specific mode?
@@ -36,3 +39,4 @@ Future:
     Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
 - Could there be icons for item names (or item categories) instead of text?
 - Somehow enable offline functionality. (Currently, the page does not work properly if there is no network connection).
+- Could have a separate/hidden section for feedback after a trip. For example, quantity of an item not actually used, and length of the trip. 
