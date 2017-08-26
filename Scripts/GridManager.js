@@ -45,34 +45,22 @@ window.GridManager = function()
         };
     }
 
-    function UpdateGrid()
+    function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
     {
-        StoreGrid();
-    }
+        var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
 
-    function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
-    {
-        //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-        divGrid.insertBefore(elementToAdd, elementToPrecede);  
-       
-        if (updateGrid == true)
-        {
-            UpdateGrid();        
-        }    
-    }
-
-    function RemoveElementFromGrid(elementToRemove)
-    {
-        divGrid.removeChild(elementToRemove);
-        UpdateGrid();
-    }
-
-    function ModifyElementGrid(elementToModify, value)
-    {
-        /* */
-        UpdateGrid();
-    }
+        divRow.appendChild(CreateEditColumn());
+        
+        divRow.appendChild(CreateItemColumn(itemName));
+        divRow.appendChild(CreateQuantityColumn(neededQuantity));
+        divRow.appendChild(CreateQuantityColumn(luggageQuantity));
+        divRow.appendChild(CreateQuantityColumn(wearingQuantity));
+        divRow.appendChild(CreateQuantityColumn(backpackQuantity));
     
+        rows.push(new ItemRow(divRow));
+        return divRow;
+        //AddElementToGrid(divRow, document.getElementById('buttonAddRow'));
+    }
 
     function RemoveRowFromGrid(rowToRemove)
     {        
@@ -88,39 +76,9 @@ window.GridManager = function()
         {
             console.log("Failed to remove row from grid. Row index returned invalid value.");
         }
-    }
+    } 
 
-    //TODO could change child parameter to a list of children instead
-    function CreateNewElement(elementName, attributes, child)
-    {
-        var element;
-        
-        if (elementName != null)
-        {
-            element = document.createElement(elementName);
-
-            if (attributes != null)
-            {
-                for (var i = 0; i < attributes.length; i++)
-                {
-                    element.setAttribute(attributes[i][0], attributes[i][1])
-                }
-            }
-
-            if (child != null)
-            {
-                element.appendChild(child);
-            }
-
-            return element;
-        }
-        else
-        {
-            console.log("Failed to create new element. No name provided.");
-        }
-    }
-
-    function CreatePopoverRowSettings()
+    function CreateEditColumn()
     {
         /* Create Tooltip Elements */
         
@@ -194,23 +152,7 @@ window.GridManager = function()
         // divCol.className = "col-1 settings"; 
         // divCol.appendChild(buttonEdit);
         // return divCol;
-    }
-
-    function CreateInputElement(type, value, cssClass, min)
-    {
-        // var input = document.createElement('input');
-        // input.type = type;
-        // input.value = value;
-        // input.className = cssClass;
-        // input.min = min;
-        // parent.appendChild(input);
-
-        var inputElement = CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
-        //inputElement.onchange = UpdateGrid; 
-        inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
-        return inputElement;
-        //return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
-    }
+    }  
 
     function CreateItemColumn(itemName)
     {
@@ -223,31 +165,89 @@ window.GridManager = function()
 
     function CreateQuantityColumn(quantity)
     {
-        //var inputElement = 
-        return CreateNewElement('div', [ ['class','col divQuantity'] ], CreateInputElement("number", quantity, "inputQuantity", 0)); 
-        // divCol = document.createElement('div');
-        // divCol.className = "col"; 
-        // divCol.style.backgroundColor = "bisque";
-        // divCol.appendChild(CreateInputElement("number", quantity, "quantity", 0));
-        // return divCol;
-    }
-
-    function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
-    {
-        var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
-
-        divRow.appendChild(CreatePopoverRowSettings());
+        var inputElement = CreateNewElement(
+            'input', 
+            [ ['class','inputQuanityt'], ['type','number'], ['value',quantity], ['min',0] ]
+        );
+        inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
         
-        divRow.appendChild(CreateItemColumn(itemName));
-        divRow.appendChild(CreateQuantityColumn(neededQuantity));
-        divRow.appendChild(CreateQuantityColumn(luggageQuantity));
-        divRow.appendChild(CreateQuantityColumn(wearingQuantity));
-        divRow.appendChild(CreateQuantityColumn(backpackQuantity));
-    
-        rows.push(new ItemRow(divRow));
-        return divRow;
-        //AddElementToGrid(divRow, document.getElementById('buttonAddRow'));
+        return CreateNewElement('div', [ ['class','col divQuantity'] ], inputElement); 
     }
+
+    // function CreateInputElement(elementType, elementValue, elementClass, elementMin)
+    // {
+    //     var inputElement = CreateNewElement(
+    //         'input', 
+    //         [ ['class',elementClass], ['type',elementType], ['value',elementValue], ['min',elementMin] ]
+    //     );
+
+    //     //inputElement.onchange = UpdateGrid; 
+    //     inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
+    //     return inputElement;
+    //     //return CreateNewElement('input', [ ['class',cssClass], ['type',type], ['value',value], ['min',min] ]);
+    // }
+
+    function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
+    {
+        //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
+        divGrid.insertBefore(elementToAdd, elementToPrecede);  
+       
+        if (updateGrid == true)
+        {
+            UpdateGrid();        
+        }    
+    }
+
+    function RemoveElementFromGrid(elementToRemove)
+    {
+        divGrid.removeChild(elementToRemove);
+        UpdateGrid();
+    }
+
+    // function ModifyElementGrid(elementToModify, value)
+    // {
+    //     /* */
+    //     UpdateGrid();
+    // }
+
+    function UpdateGrid()
+    {
+        StoreGrid();
+    }
+
+    /** Helpers **/
+
+    //TODO could change child parameter to a list of children instead
+    function CreateNewElement(elementName, attributes, child)
+    {
+        var element;
+        
+        if (elementName != null)
+        {
+            element = document.createElement(elementName);
+
+            if (attributes != null)
+            {
+                for (var i = 0; i < attributes.length; i++)
+                {
+                    element.setAttribute(attributes[i][0], attributes[i][1])
+                }
+            }
+
+            if (child != null)
+            {
+                element.appendChild(child);
+            }
+
+            return element;
+        }
+        else
+        {
+            console.log("Failed to create new element. No name provided.");
+        }
+    }
+
+    /** **/
 
     return { 
         SetGridDiv : function(div)
