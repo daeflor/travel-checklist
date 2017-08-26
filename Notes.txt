@@ -23,6 +23,7 @@ Thoughts:
         Quantities get modified
         Rows get moved up or down in the grid
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
+- Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
 
 
 Future:
@@ -34,3 +35,4 @@ Future:
 - Could group similar item types into categories, which show up in dropdown lists of the category
     Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
 - Could there be icons for item names (or item categories) instead of text?
+- Somehow enable offline functionality. (Currently, the page does not work properly if there is no network connection).

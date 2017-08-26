@@ -3,23 +3,15 @@ window.GridManager = function()
     var divGrid;
     var rows = [];
 
-    function ItemRow(row)
+    function ItemRow()
     {
-        var itemColumn = row.children[1];
-        var item = itemColumn.children[0];
-        var needed = row.children[2].children[0];
-        var luggage = row.children[3].children[0];
-        var wearing = row.children[4].children[0];
-        var backpack = row.children[5].children[0];
-    
-        needed.oninput = SetItemColumnColor;
-        luggage.oninput = SetItemColumnColor;
-        wearing.oninput = SetItemColumnColor;
-        backpack.oninput = SetItemColumnColor;
+        var itemColumn;
+        var item;
+        var needed;
+        var luggage;
+        var wearing;
+        var backpack;
 
-        SetItemColumnColor();
-
-        //console.log('New Row Added');
         function SetItemColumnColor()
         {
             if (needed.text == 0)
@@ -37,26 +29,64 @@ window.GridManager = function()
         }
 
         return { 
+            //TODO should probably just pass the different elements directly as params
+            SetupRowElements : function(row)
+            {
+                itemColumn = row.children[1];
+                item = itemColumn.children[0];
+                needed = row.children[2].children[0];
+                luggage = row.children[3].children[0];
+                wearing = row.children[4].children[0];
+                backpack = row.children[5].children[0];
+
+                SetItemColumnColor();
+            },
             GetRowValues : function()
             {
                 return [item.value, needed.text, luggage.text, wearing.text, backpack.text];
+            },
+            //TODO could an enum be used for the different quantities and then pass a number which corresponds to one of the quantities
+            //TODO does it really make sense for this to be part of itemRow? 
+            ModifyQuantityValue : function(quantityElement, increase)
+            {
+                console.log("Request called to modify a quantity value.");
+
+                if (increase == true)
+                {
+                    quantityElement.text = parseInt(quantityElement.text) + 1;
+                    SetItemColumnColor();
+                    UpdateGrid();
+                }
+                else if (parseInt(quantityElement.text) > 0)
+                {
+                    quantityElement.text = parseInt(quantityElement.text) - 1;
+                    SetItemColumnColor();
+                    UpdateGrid();
+                }
             }
         };
     }
 
+    //TODO creating an element and object (for the row list) should maybe be handled separately from one another
     function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
     {
+        var itemRow = new ItemRow();
+
         var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
 
         divRow.appendChild(CreateEditColumn());
         
         divRow.appendChild(CreateItemColumn(itemName));
-        divRow.appendChild(CreateQuantityPopover(neededQuantity));
-        divRow.appendChild(CreateQuantityPopover(luggageQuantity));
-        divRow.appendChild(CreateQuantityPopover(wearingQuantity));
-        divRow.appendChild(CreateQuantityPopover(backpackQuantity));
+        //TODO should popovers really know about their row object? Probably not
+            //Maybe these sub-elements should be part of the ItemRow
+        divRow.appendChild(CreateQuantityPopover(itemRow, neededQuantity));
+        divRow.appendChild(CreateQuantityPopover(itemRow, luggageQuantity));
+        divRow.appendChild(CreateQuantityPopover(itemRow, wearingQuantity));
+        divRow.appendChild(CreateQuantityPopover(itemRow, backpackQuantity));
     
-        rows.push(new ItemRow(divRow));
+        //rows.push(new ItemRow(divRow));
+        itemRow.SetupRowElements(divRow);
+        rows.push(itemRow);
         return divRow;
         //AddElementToGrid(divRow, document.getElementById('buttonAddRow'));
     }
@@ -97,26 +127,8 @@ window.GridManager = function()
         /* Create Edit Button Elements */
         
         var iconEdit = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);
-        // var iconEdit = document.createElement('i');
-        // iconEdit.className = 'fa fa-pencil-square-o';
 
         var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#'], ['tabIndex','0'] ], iconEdit);
-        //buttonEdit.appendChild(iconEdit);
-
-        //buttonEdit.href = '#';
-        //buttonEdit.tabindex = '0';
-
-        // var buttonEdit = document.createElement('button');
-        // buttonEdit.type = 'button';
-        // buttonEdit.className = 'btn';
-
-        // buttonEdit.dataset.toggle = 'popover';
-        // buttonEdit.dataset.placement = 'bottom';
-        // buttonEdit.dataset.html = 'true';
-        // buttonEdit.dataset.animation = 'true';
-        // buttonEdit.dataset.title = 'popoverTitle';
-        // buttonEdit.dataset.content = divPopover.outerHTML;
-        //$(buttonEdit).popover(); 
 
         $(buttonEdit).popover(
         {
@@ -144,13 +156,7 @@ window.GridManager = function()
 
         //TODO may need to dispose of popover, especially if not using unique IDs
 
-        /* Create Div Wrapper */
-        
         return CreateNewElement('div', [ ['class','col-1 divEdit'] ], buttonEdit);
-        // var divCol = document.createElement('div');
-        // divCol.className = "col-1 settings"; 
-        // divCol.appendChild(buttonEdit);
-        // return divCol;
     }  
 
     function CreateItemColumn(itemName)
@@ -161,17 +167,6 @@ window.GridManager = function()
         var divCol = CreateNewElement('div', [ ['class','col-4 divItemName'] ], textareaItemName);
         return divCol;
     }
-
-    // function CreateQuantityColumn(quantity)
-    // {
-    //     var inputElement = CreateNewElement(
-    //         'input', 
-    //         [ ['class','inputQuantity'], ['type','number'], ['value',quantity], ['min',0] ]
-    //     );
-    //     inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
-        
-    //     return CreateNewElement('div', [ ['class','col divQuantity'] ], inputElement); 
-    // }
 
     function CreateQuanitytButton(buttonId, iconClass)
     {
@@ -184,7 +179,8 @@ window.GridManager = function()
         );
     }
 
-    function CreateQuantityPopover(quantity)
+    //TODO is it possible to pass itemRow's function instead of the object itself?
+    function CreateQuantityPopover(itemRow, quantity)
     {
         /* Create Popup Elements */
         var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle');
@@ -210,28 +206,13 @@ window.GridManager = function()
         $(buttonQuantity).on (
             'shown.bs.popover',
              function () 
-            {     
-                $("#buttonMinus").click(function(){ModifyQuantityValue(buttonQuantity, false)});         
-                $("#buttonPlus").click(function(){ModifyQuantityValue(buttonQuantity, true)}); 
+            {
+                $("#buttonMinus").click(function(){itemRow.ModifyQuantityValue(buttonQuantity, false);});         
+                $("#buttonPlus").click(function(){itemRow.ModifyQuantityValue(buttonQuantity, true);}); 
             }
         )
 
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
-    }
-
-    //TODO maybe this can go inside ItemRow
-    function ModifyQuantityValue(quantityElement, increase)
-    {
-        if (increase == true)
-        {
-            quantityElement.text = parseInt(quantityElement.text) + 1;
-            UpdateGrid();
-        }
-        else if (parseInt(quantityElement.text) > 0)
-        {
-            quantityElement.text = parseInt(quantityElement.text) - 1;
-            UpdateGrid();
-        }
     }
 
     // function CreateInputElement(elementType, elementValue, elementClass, elementMin)
