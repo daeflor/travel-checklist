@@ -3,9 +3,7 @@ document.addEventListener('DOMContentLoaded', Start);
 function Start()
 {
     document.getElementById('buttonAddRow').onclick = GridManager.AddNewRow;
-    document.getElementById('buttonSaveToStorage').onclick = StoreGrid;
-    //document.getElementById('buttonAddQuantity').onclick = AddQuantity;
-    //document.getElementById('buttonReduceQuantity').onclick = ReduceQuantity;
+    //document.getElementById('buttonSaveToStorage').onclick = StoreGrid;
 
     // $(document).ready(function(){
     //     console.log("Enabling popovers");

@@ -1,3 +1,8 @@
+
+ a, a:visited{
+    color: black;
+}
+
 div .header {
     font-size: 13px;
     background-color: lavenderblush;
@@ -5,6 +10,9 @@ div .header {
     padding-bottom: 5px;
     text-align: center;
     font-weight: bold;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
 }
 
 div .smallicon{
@@ -28,20 +36,21 @@ div .smallicon{
 }
 
 .divEdit {
-    background-color: bisque;
-    padding: 7px;  
-    margin-left: 5px;
+    padding: 4px;  
+    /*background-color: bisque;
+    margin-left: 2px;*/
 }
 
 .buttonEdit {
-    padding: 0px;
-    max-height: 25px;
+    background-color: bisque;
+    padding: 4px;
+    /*max-height: 25px;*/
 }
 
 .divItemName {
     font-size: 13px;
     padding: 5px;
-    margin: 5px;
+    margin: 2px;
 }
 
 #grid textarea
@@ -51,20 +60,57 @@ div .smallicon{
     max-height: 25px;
     background-color: burlywood;
 } 
-
+/*
 .divQuantity {
-    background-color: bisque;
-    padding: 5px;
+    /*background-color: bisque;
+    /*padding: 5px;
     /*
     margin-right: 5px;
     /*
     align-items: stretch;
     height: 100%;
     */
+/*}*/
+
+
+.buttonQuantity {
+    text-align: center;
+    background-color: burlywood;
+    color: black;
+    font-weight: bold;
+    /*font-size: 14px;
+    /*
+    padding: 5px;
+    max-height: 25px;
+    align-items: center;
+    justify-content: center; 
+    text-align: center; 
+    */
 }
+
+.buttonEditQuantity {
+    margin: 3px;
+}
+
+#newRow div {
+    justify-content: left;
+    background-color: aliceblue;
+    padding: 4px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#newRow button {
+    padding: 4px;
+    background-color: bisque;
+}
+
+/*
 
 .inputQuantity {
     width: 25px;
     background-color: burlywood;
     max-height: 25px;
 }
+*/

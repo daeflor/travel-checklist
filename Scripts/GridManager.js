@@ -19,15 +19,14 @@ window.GridManager = function()
 
         SetItemColumnColor();
 
-        console.log('New Row Added');
-    
+        //console.log('New Row Added');
         function SetItemColumnColor()
         {
-            if (needed.value == 0)
+            if (needed.text == 0)
             {
                 itemColumn.style.backgroundColor = "darkgrey";
             }
-            else if (needed.value == (parseInt(luggage.value) + parseInt(wearing.value) + parseInt(backpack.value)))
+            else if (needed.text == (parseInt(luggage.text) + parseInt(wearing.text) + parseInt(backpack.text)))
             {
                 itemColumn.style.backgroundColor = "mediumseagreen";
             }
@@ -40,7 +39,7 @@ window.GridManager = function()
         return { 
             GetRowValues : function()
             {
-                return [item.value, needed.value, luggage.value, wearing.value, backpack.value];
+                return [item.value, needed.text, luggage.text, wearing.text, backpack.text];
             }
         };
     }
@@ -52,10 +51,10 @@ window.GridManager = function()
         divRow.appendChild(CreateEditColumn());
         
         divRow.appendChild(CreateItemColumn(itemName));
-        divRow.appendChild(CreateQuantityColumn(neededQuantity));
-        divRow.appendChild(CreateQuantityColumn(luggageQuantity));
-        divRow.appendChild(CreateQuantityColumn(wearingQuantity));
-        divRow.appendChild(CreateQuantityColumn(backpackQuantity));
+        divRow.appendChild(CreateQuantityPopover(neededQuantity));
+        divRow.appendChild(CreateQuantityPopover(luggageQuantity));
+        divRow.appendChild(CreateQuantityPopover(wearingQuantity));
+        divRow.appendChild(CreateQuantityPopover(backpackQuantity));
     
         rows.push(new ItemRow(divRow));
         return divRow;
@@ -163,15 +162,76 @@ window.GridManager = function()
         return divCol;
     }
 
-    function CreateQuantityColumn(quantity)
-    {
-        var inputElement = CreateNewElement(
-            'input', 
-            [ ['class','inputQuanityt'], ['type','number'], ['value',quantity], ['min',0] ]
-        );
-        inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
+    // function CreateQuantityColumn(quantity)
+    // {
+    //     var inputElement = CreateNewElement(
+    //         'input', 
+    //         [ ['class','inputQuantity'], ['type','number'], ['value',quantity], ['min',0] ]
+    //     );
+    //     inputElement.addEventListener("input", UpdateGrid); //Not sure why oninput is only working if set by adding a listener
         
-        return CreateNewElement('div', [ ['class','col divQuantity'] ], inputElement); 
+    //     return CreateNewElement('div', [ ['class','col divQuantity'] ], inputElement); 
+    // }
+
+    function CreateQuanitytButton(buttonId, iconClass)
+    {
+        //var icon = CreateNewElement('i', [['class',iconClass]]);
+
+        return CreateNewElement(
+            'button', 
+            [['id',buttonId], ['class','btn buttonEditQuantity'], ['type','button']], 
+            CreateNewElement('i', [['class',iconClass]])
+        );
+    }
+
+    function CreateQuantityPopover(quantity)
+    {
+        /* Create Popup Elements */
+        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle');
+        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle');
+        var divPopover = CreateNewElement('div'); 
+        divPopover.appendChild(buttonMinus);
+        divPopover.appendChild(buttonPlus);
+
+        /* Create Quantity Button Elements */
+        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#'], ['tabIndex','0'] ]);
+        buttonQuantity.text = quantity;
+
+        $(buttonQuantity).popover(
+        {
+            //toggle: 'popover',
+            placement: 'bottom',
+            animation: true,
+            html: true,
+            trigger: 'focus',
+            content: divPopover.outerHTML
+        }); 
+
+        $(buttonQuantity).on (
+            'shown.bs.popover',
+             function () 
+            {     
+                $("#buttonMinus").click(function(){ModifyQuantityValue(buttonQuantity, false)});         
+                $("#buttonPlus").click(function(){ModifyQuantityValue(buttonQuantity, true)}); 
+            }
+        )
+
+        return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
+    }
+
+    //TODO maybe this can go inside ItemRow
+    function ModifyQuantityValue(quantityElement, increase)
+    {
+        if (increase == true)
+        {
+            quantityElement.text = parseInt(quantityElement.text) + 1;
+            UpdateGrid();
+        }
+        else if (parseInt(quantityElement.text) > 0)
+        {
+            quantityElement.text = parseInt(quantityElement.text) - 1;
+            UpdateGrid();
+        }
     }
 
     // function CreateInputElement(elementType, elementValue, elementClass, elementMin)
@@ -204,9 +264,9 @@ window.GridManager = function()
         UpdateGrid();
     }
 
-    // function ModifyElementGrid(elementToModify, value)
+    // function ModifyElementInGrid(element, attribute, value)
     // {
-    //     /* */
+    //     element.setAttribute(attribute, value);
     //     UpdateGrid();
     // }
 
@@ -230,7 +290,7 @@ window.GridManager = function()
             {
                 for (var i = 0; i < attributes.length; i++)
                 {
-                    element.setAttribute(attributes[i][0], attributes[i][1])
+                    element.setAttribute(attributes[i][0], attributes[i][1]);
                 }
             }
 
@@ -278,7 +338,7 @@ window.GridManager = function()
         AddNewRow : function()
         {
             //CreateRow("", 0, 0, 0, 0);
-            AddElementToGrid(CreateRow("", 0, 0, 0, 0), document.getElementById('buttonAddRow'));
+            AddElementToGrid(CreateRow("", 0, 0, 0, 0), document.getElementById('newRow'));
         },
         RecreateRowsFromStorage : function(rowValues)
         {
@@ -287,7 +347,7 @@ window.GridManager = function()
             for (var i = 0; i < rowValues.length; i++)
             {
                 console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
-                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), document.getElementById('buttonAddRow'), false);
+                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), document.getElementById('newRow'), false);
             }
         }
     };
