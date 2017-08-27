@@ -23,8 +23,9 @@ Thoughts:
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
 - Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
 - Would be nice if buttons changed color or something when pressed
-- When you select a quantity low down on the list, the page jumps up weirdly (tested on Android).
-
+- Would be good if, when you select anywhere outside a popover, the click isn't registered by other elements - it just closes the popover
+    Some bad ideas: check rectangle of click area; have a bool for whether or not a popover is currently active; store registered document click events so they can be properly turned off
+- Consider replacing jquery with pure javascript where possible
 
 Future:
 

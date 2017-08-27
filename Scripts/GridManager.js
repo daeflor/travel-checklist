@@ -2,6 +2,7 @@ window.GridManager = function()
 {
     var divGrid;
     var rows = [];
+    var activePopover = null;
 
     function ItemRow()
     {
@@ -178,8 +179,87 @@ window.GridManager = function()
         );
     }
 
-    //TODO is it possible to pass itemRow's function instead of the object itself?
+    /** **/
+
+    function HidePopover(e)
+    {     
+        //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
+            //Does a quantity group function (object) make sense? To have this more controlled
+        if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
+        {
+            $(document).off('click', HidePopover);
+            $(activePopover).popover('hide');
+        }
+    }
+
     function CreateQuantityPopover(itemRow, quantity)
+    {
+        /* Create Popup Elements */
+        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement buttonMinus'); //TODO is the ID necessary?
+        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement buttonPlus');
+        var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
+        divPopover.appendChild(buttonMinus);
+        divPopover.appendChild(buttonPlus);
+
+        /* Create Quantity Button Elements */
+        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]);
+        buttonQuantity.text = quantity;
+
+        /** **/
+
+        //TODO can probably to all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
+        $(buttonQuantity).popover(
+        {
+            placement: 'bottom',
+            animation: true,
+            html: true,
+            trigger: 'manual',
+            content: divPopover.outerHTML
+        }); 
+
+        $(buttonQuantity).on('click', function() 
+        {
+            //If there is already a popover active, remove focus from the selected quantity button. Otherwise, show the button's popover. 
+            if(activePopover == null)
+            {
+                $(buttonQuantity).popover('show');
+            }
+            else
+            {
+                buttonQuantity.blur();
+            }
+        });
+
+        $(buttonQuantity).on('shown.bs.popover', function() 
+        {
+            activePopover = buttonQuantity;
+
+            //TODO this may no longer be necessary
+            //TODO The previous buttons are still present when the new ones are 'shown', so need to set onclick for all of them. This isn't great. 
+            $('.buttonMinus').on('click', function() 
+            {
+                itemRow.ModifyQuantityValue(buttonQuantity, false);
+            });         
+            $(".buttonPlus").on('click', function() 
+            {
+                itemRow.ModifyQuantityValue(buttonQuantity, true);
+            }); 
+
+            $(document).on('click', HidePopover);
+        });
+
+        $(buttonQuantity).on('hidden.bs.popover', function()
+        {
+            activePopover = null;
+        });
+
+        return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
+    }
+
+    /** **/
+
+    //TODO is it possible to pass itemRow's function instead of the object itself?
+    function xxCreateQuantityPopover(itemRow, quantity)
     {
         /* Create Popup Elements */
         var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement buttonMinus'); //TODO is the ID necessary?
