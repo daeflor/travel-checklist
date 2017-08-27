@@ -1,12 +1,10 @@
 Upcoming To-Do List:
-- Add quantity buttons
+- 
 
 Thoughts:
 
 - Add clear buttons to each column to clear all entries at once. (Could be good while on trips). 
     These could be in popovers
-- Buttons to increment and decrement quantity count
-- Quantity counters may not need to be 'input' elements. (Contingent on increment/decrement buttons & UX).
 - Maybe it's more user-friendly to not default quantities to zero (Contingent on increment/decrement buttons & UX).
 - Rename checklist.js to something more meaningful
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 

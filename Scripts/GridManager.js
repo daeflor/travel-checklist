@@ -128,7 +128,7 @@ window.GridManager = function()
         
         var iconEdit = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);
 
-        var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#'], ['tabIndex','0'] ], iconEdit);
+        var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#!'], ['tabIndex','0'] ], iconEdit);
 
         $(buttonEdit).popover(
         {
@@ -173,7 +173,7 @@ window.GridManager = function()
 
         return CreateNewElement(
             'button', 
-            [['id',buttonId], ['class','btn buttonEditQuantity popoverElement'], ['type','button']], 
+            [['id',buttonId], ['class','btn btn-lg buttonEditQuantity popoverElement'], ['type','button']], 
             CreateNewElement('i', [['class',iconClass]])
         );
     }
@@ -182,14 +182,14 @@ window.GridManager = function()
     function CreateQuantityPopover(itemRow, quantity)
     {
         /* Create Popup Elements */
-        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle popoverElement buttonMinus'); //TODO is the ID necessary?
-        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle popoverElement buttonPlus');
+        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement buttonMinus'); //TODO is the ID necessary?
+        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement buttonPlus');
         var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
         divPopover.appendChild(buttonMinus);
         divPopover.appendChild(buttonPlus);
 
         /* Create Quantity Button Elements */
-        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#'], ['tabIndex','0'] ]);
+        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]);
         buttonQuantity.text = quantity;
 
         /** **/
@@ -240,7 +240,7 @@ window.GridManager = function()
             }); 
             //console.log("Added onclick event to minus button at pos: " + document.getElementById('buttonMinus').getBoundingClientRect().left);
 
-            $(document).on('click', function(e) 
+            $(document).on('click', function(e) //TODO maybe could add these events to an object/list, so that we only turn those particular ones off when we mean to
             {
                 console.log("Clicked element POS - Class - ID: " + e.target.getBoundingClientRect().left + " - " + e.target.className + " - " + e.target.id);
                 
@@ -296,7 +296,7 @@ window.GridManager = function()
 
         $(buttonQuantity).on('focus', function() 
         {
-            console.log("A popover toggle was just focused");
+            //console.log("A popover toggle was just focused");
             $(buttonQuantity).popover('show');
         });
 
