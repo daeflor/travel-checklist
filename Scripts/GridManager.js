@@ -133,28 +133,22 @@ window.GridManager = function()
 
         $(buttonEdit).popover(
         {
-            //toggle: 'popover',
             placement: 'bottom',
             animation: true,
             html: true,
-            //title: "MyPop",
             trigger: 'focus',
-            //tabindex: 0,
-            //href: '#',
-            //delay: { "show": 0, "hide": 100 },
-            content: '<div class="popoverElement"><button class="btn buttonTrash popoverElement" type="button"><i class="fa fa-trash"></i></button></div>'
+            content: '<div class="popoverElement"><button id="buttonTrash" class="btn" type="button"><i class="fa fa-trash"></i></button></div>'
         }); //TODO For trash we do actually want the popover to go away when it's clicked... but for move up/down, we probably won't... Is popoverElement class necessary?
 
         $(buttonEdit).on ('shown.bs.popover', function() 
         {
-            console.log("Popup has been opened; onclick event will be set.");
-            $(".buttonTrash").on('click', function()
+            //console.log("Popup has been opened; onclick event will be set.");
+            
+            document.getElementById('buttonTrash').addEventListener('click', function()
             {
                 RemoveRowFromGrid(buttonEdit.parentElement.parentElement);
             });
         });
-
-        //TODO may need to dispose of popover, especially if not using unique IDs
 
         return CreateNewElement('div', [ ['class','col-1 divEdit'] ], buttonEdit);
     }  
@@ -181,13 +175,13 @@ window.GridManager = function()
 
     /** **/
 
-    function HidePopover(e)
+    function HideActiveQuantityPopover(e)
     {     
         //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
             //Does a quantity group function (object) make sense? To have this more controlled
         if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
         {
-            document.removeEventListener('click', HidePopover);
+            document.removeEventListener('click', HideActiveQuantityPopover);
             $(activePopover).popover('hide');
         }
     }
@@ -233,16 +227,16 @@ window.GridManager = function()
         {
             activePopover = buttonQuantity;
 
-            $('#buttonMinus').on('click', function() 
+            document.getElementById('buttonMinus').addEventListener('click', function() 
             {
                 itemRow.ModifyQuantityValue(buttonQuantity, false);
             });         
-            $("#buttonPlus").on('click', function() 
+            document.getElementById('buttonPlus').addEventListener('click', function() 
             {
                 itemRow.ModifyQuantityValue(buttonQuantity, true);
             }); 
 
-            document.addEventListener('click', HidePopover);
+            document.addEventListener('click', HideActiveQuantityPopover);
         });
 
         $(buttonQuantity).on('hidden.bs.popover', function()
