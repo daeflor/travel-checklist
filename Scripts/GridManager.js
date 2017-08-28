@@ -187,27 +187,26 @@ window.GridManager = function()
             //Does a quantity group function (object) make sense? To have this more controlled
         if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
         {
-            $(document).off('click', HidePopover);
+            document.removeEventListener('click', HidePopover);
             $(activePopover).popover('hide');
         }
     }
 
+    //TODO is it possible to pass itemRow's function instead of the object itself?
     function CreateQuantityPopover(itemRow, quantity)
     {
         /* Create Popup Elements */
-        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement buttonMinus'); //TODO is the ID necessary?
-        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement buttonPlus');
+        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement');
+        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement');
         var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
         divPopover.appendChild(buttonMinus);
         divPopover.appendChild(buttonPlus);
 
         /* Create Quantity Button Elements */
-        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]);
+        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
         buttonQuantity.text = quantity;
 
-        /** **/
-
-        //TODO can probably to all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
+        //TODO can probably do all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
         $(buttonQuantity).popover(
         {
             placement: 'bottom',
@@ -217,7 +216,7 @@ window.GridManager = function()
             content: divPopover.outerHTML
         }); 
 
-        $(buttonQuantity).on('click', function() 
+        buttonQuantity.addEventListener('click', function() 
         {
             //If there is already a popover active, remove focus from the selected quantity button. Otherwise, show the button's popover. 
             if(activePopover == null)
@@ -234,150 +233,21 @@ window.GridManager = function()
         {
             activePopover = buttonQuantity;
 
-            //TODO this may no longer be necessary
-            //TODO The previous buttons are still present when the new ones are 'shown', so need to set onclick for all of them. This isn't great. 
-            $('.buttonMinus').on('click', function() 
+            $('#buttonMinus').on('click', function() 
             {
                 itemRow.ModifyQuantityValue(buttonQuantity, false);
             });         
-            $(".buttonPlus").on('click', function() 
+            $("#buttonPlus").on('click', function() 
             {
                 itemRow.ModifyQuantityValue(buttonQuantity, true);
             }); 
 
-            $(document).on('click', HidePopover);
+            document.addEventListener('click', HidePopover);
         });
 
         $(buttonQuantity).on('hidden.bs.popover', function()
         {
             activePopover = null;
-        });
-
-        return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
-    }
-
-    /** **/
-
-    //TODO is it possible to pass itemRow's function instead of the object itself?
-    function xxCreateQuantityPopover(itemRow, quantity)
-    {
-        /* Create Popup Elements */
-        var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement buttonMinus'); //TODO is the ID necessary?
-        var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement buttonPlus');
-        var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
-        divPopover.appendChild(buttonMinus);
-        divPopover.appendChild(buttonPlus);
-
-        /* Create Quantity Button Elements */
-        var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]);
-        buttonQuantity.text = quantity;
-
-        /** **/
-
-        // $(buttonQuantity).on ('inserted.bs.popover', function () {
-        //     $('#buttonMinus').on('click', function() {
-        //         itemRow.ModifyQuantityValue(buttonQuantity, false);
-        //     });         
-        //     $("#buttonPlus").on('click', function() {
-        //         itemRow.ModifyQuantityValue(buttonQuantity, true);
-        //     }); 
-
-        //     // $('#buttonMinus').on('click', function(e) {
-        //     //     e.stopPropagation();
-        //     //     itemRow.ModifyQuantityValue(buttonQuantity, false);
-        //     // });
-
-        //     $(document).on('click', function(e) {
-        //         //TODO If this check stays here, could just check against the actual element created above.
-        //             //Do we have to de-register the event though?
-        //         console.log("Clicked on element with class " + e.target.className);                
-        //         //console.log("Clicked on element " + e + " with target " + e.target + " with class " + e.target.className);        
-        //         //if (e.target != divPopover && e.target != divPopover.parentElement && !divPopover.children.includes(e.target))
-        //         if (!e.target.className.includes('popover'))
-        //         {
-        //             console.log("You clicked on something other than a popover");
-        //             //var $buttonTrash = $(this).find('#buttonTrash'); 
-        //             $('.').popover('hide');
-        //             $(document).off('click');
-        //         }
-        //         else
-        //         {
-        //             console.log("You clicked on a popover element"); 
-        //         }
-        //     });
-        // });
-
-        $(buttonQuantity).on('shown.bs.popover', function() 
-        {
-            //TODO The previous buttons are still present when the new ones are 'shown', so need to set onclick for all of them. This isn't great. 
-            $('.buttonMinus').on('click', function() 
-            {
-                itemRow.ModifyQuantityValue(buttonQuantity, false);
-            });         
-            $(".buttonPlus").on('click', function() 
-            {
-                itemRow.ModifyQuantityValue(buttonQuantity, true);
-            }); 
-            //console.log("Added onclick event to minus button at pos: " + document.getElementById('buttonMinus').getBoundingClientRect().left);
-
-            $(document).on('click', function(e) //TODO maybe could add these events to an object/list, so that we only turn those particular ones off when we mean to
-            {
-                console.log("Clicked element POS - Class - ID: " + e.target.getBoundingClientRect().left + " - " + e.target.className + " - " + e.target.id);
-                
-                //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
-                    //Does a quantity group function (object) make sense? To have this more controlled
-                if (!e.target.className.includes('popover') && e.target != buttonQuantity) //ignore any clicks within a popover or the current quantity button
-                {
-                    console.log("Removed onclick event from entire document");
-                    $(document).off('click');
-                    $(buttonQuantity).popover('hide');
-                }
-
-
-                // if (e.target == buttonQuantity)
-                // {
-                //     console.log("Clicked element is a quantity button - Class : " +  e.target.className);
-                //     return;
-                // }
-                // else if (e.target.id == 'buttonMinus')
-                // {
-                //     console.log("Clicked element Class : " +  e.target.className);
-                //     itemRow.ModifyQuantityValue(buttonQuantity, false);
-                // }
-                // else if (e.target.id == 'buttonPlus')
-                // {
-                //     console.log("Clicked element Class : " +  e.target.className);
-                //     itemRow.ModifyQuantityValue(buttonQuantity, true);
-                // }
-                // else if (!e.target.className.includes('popover'))
-                // {
-                //     console.log("You clicked on something other than a popover. Clicked element Class : " +  e.target.className);
-                //     $(document).off('click');
-                //     $(buttonQuantity).popover('hide');
-                //     //$(document).off('click');
-                // }
-                // else
-                // {
-                //     console.log("Another popover must have been clicked");
-                // }
-            });
-        });
-
-        //TODO can probably to all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
-        $(buttonQuantity).popover(
-        {
-            //toggle: 'popover',
-            placement: 'bottom',
-            animation: true,
-            html: true,
-            trigger: 'manual',
-            content: divPopover.outerHTML
-        }); 
-
-        $(buttonQuantity).on('focus', function() 
-        {
-            //console.log("A popover toggle was just focused");
-            $(buttonQuantity).popover('show');
         });
 
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
