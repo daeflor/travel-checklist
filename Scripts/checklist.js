@@ -2,14 +2,13 @@ document.addEventListener('DOMContentLoaded', Start);
 
 function Start()
 {
+    GridManager.SetGridDiv(document.getElementById('grid'));
     document.getElementById('buttonAddRow').onclick = GridManager.AddNewRow;
 
     // $(document).ready(function(){
     //     console.log("Enabling popovers");
     //     $('[data-toggle="popover"]').popover()
     // });
-
-    GridManager.SetGridDiv(document.getElementById('grid'));
 
     LoadGrid();
 }

@@ -3,6 +3,8 @@ window.GridManager = function()
     var divGrid;
     var rows = [];
     var activePopover = null;
+    var grids = [];
+    var activeGrid;
 
     function ItemRow()
     {
@@ -247,16 +249,27 @@ window.GridManager = function()
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
     }
 
-    function AddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
+    function AddElementToGrid(elementToAdd, updateGrid=true)
     {
         //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-        divGrid.insertBefore(elementToAdd, elementToPrecede);  
+        divGrid.appendChild(elementToAdd);  
        
         if (updateGrid == true)
         {
             UpdateGrid();        
         }    
     }
+
+    // function xxAddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
+    // {
+    //     //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
+    //     divGrid.insertBefore(elementToAdd, elementToPrecede);  
+       
+    //     if (updateGrid == true)
+    //     {
+    //         UpdateGrid();        
+    //     }    
+    // }
 
     function RemoveElementFromGrid(elementToRemove)
     {
@@ -273,6 +286,31 @@ window.GridManager = function()
     function UpdateGrid()
     {
         StoreGrid();
+    }
+
+    function ToggleGridVisibility()
+    {
+        if (divGrid.hidden == true)
+        {
+            divGrid.hidden = false;
+        }
+        else
+        {
+            divGrid.hidden = true;
+        }
+    }
+
+    function SetActiveGrid()
+    {
+        var grids = document.getElementsByClassName('grid');
+
+        for (var i = 0; i < grids.length; i++)
+        {
+            if (grids[i].hidden == false)
+            {
+                activeGrid = grids[i];
+            }
+        }
     }
 
     /** Helpers **/
@@ -313,6 +351,8 @@ window.GridManager = function()
         SetGridDiv : function(div)
         {
             divGrid = div;
+            //TODO finish this
+            document.getElementById('buttonToggleGrid').onclick = ToggleGridVisibility;
         },
         GetNumRows : function()
         {
@@ -337,8 +377,7 @@ window.GridManager = function()
         },
         AddNewRow : function()
         {
-            //CreateRow("", 0, 0, 0, 0);
-            AddElementToGrid(CreateRow("", 0, 0, 0, 0), document.getElementById('newRow'));
+            AddElementToGrid(CreateRow("", 0, 0, 0, 0));
         },
         RecreateRowsFromStorage : function(rowValues)
         {
@@ -347,7 +386,7 @@ window.GridManager = function()
             for (var i = 0; i < rowValues.length; i++)
             {
                 console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
-                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), document.getElementById('newRow'), false);
+                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
             }
         }
     };

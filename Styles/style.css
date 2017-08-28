@@ -1,4 +1,4 @@
-div .header {
+.header {
     font-size: 13px;
     background-color: lavenderblush;
     padding-top: 5px;
@@ -9,6 +9,38 @@ div .header {
     border-width: 1px;
     border-style: solid;
 }
+
+.itemCategory {
+    background-color: aliceblue;
+}
+
+.itemCategory button {
+    background-color: aliceblue;
+    padding: 0px;
+    /* text-transform: uppercase; */
+    font-family: Futura,"Trebuchet MS",Arial,sans-serif
+    /* width: 40px; */
+}
+
+.dropdown-menu {
+    background-color: aliceblue;
+    padding: 0px;
+    /* width: 50px !important; */
+    /* transform: translate3d(30px, 15px, 0px) !important; */
+}
+
+.dropdown-menu button {
+    /* background-color: aliceblue; */
+    border-color: black;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-style: solid;
+    padding: 8px;
+    /* text-transform: uppercase; */
+    font-family: Futura,"Trebuchet MS",Arial,sans-serif
+}
+
 
 div .smallicon{
     padding-top: 8px;
@@ -93,13 +125,23 @@ div .smallicon{
     margin: 3px;
 }
 
-#newRow div {
-    justify-content: left;
+#newRow {
+
     background-color: aliceblue;
     padding: 4px;
     border-color: black;
     border-width: 1px;
     border-style: solid;
+    width: 100%;
+
+    /*text-align: left; 
+    /*display: flex;
+/*
+    justify-content: left;
+    display: flex;
+    align-items: center;
+    text-align: center; 
+    */
 }
 
 #newRow button {

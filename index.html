@@ -20,19 +20,38 @@
 </head>
 <body>       
   <div class="row">
-    <div class="col-5 header" style="background-color:lavender;">Item</div>
+    <div class="col-5 dropdown header itemCategory">
+
+      <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Clothes
+      </button>
+      <div class="dropdown-menu">
+          <button class="dropdown-item" id="buttonToggleGrid" type="button">Clothes</button>
+        <button class="dropdown-item" id="buttonHideGrid" type="button">Sundries</button>
+        <button class="dropdown-item" type="button">Test</button>
+      </div>
+
+    </div>
     <div class="col header"><i class="fa fa-pie-chart fa-lg"></i></div>
     <div class="col header"><i class="fa fa-suitcase fa-lg"></i></div>
     <div class="col header"><i class="fa fa-male fa-lg"></i></div>
     <div class="col header smallicon"><i class="fa fa-briefcase"></i></div>
   </div>     
-  <div class="container-fluid" id="grid">  
-    <!--TODO Maybe move this out of the grid div -->
-    <div class="row" id='newRow'>
+  <div class="container-fluid" class="grid" id="grid">  
+  </div>
+ <!-- <div class="row"> -->
+    <div id="newRow">
+      <button class="btn" id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
+    </div>
+  <!--</div>-->
+<!--
+  <div class="container-fluid" id="gridTwo" hidden=true>  
+    <div class="row newRow">
       <div class="col">
         <button class="btn" id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
       </div>
-    </div>    
+    </div> 
   </div>
+-->
 </body>
 </html>
