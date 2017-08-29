@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', Start);
 
 function Start()
 {
-    GridManager.SetGridDiv(document.getElementById('grid'));
+    // GridManager.SetGridDiv(document.getElementById('grid'));
+    GridManager.SetupGrids();
     document.getElementById('buttonAddRow').onclick = GridManager.AddNewRow;
 
     // $(document).ready(function(){

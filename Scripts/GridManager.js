@@ -1,6 +1,6 @@
 window.GridManager = function()
 {
-    var divGrid;
+    //var divGrid;
     var rows = [];
     var activePopover = null;
     var grids = [];
@@ -252,7 +252,7 @@ window.GridManager = function()
     function AddElementToGrid(elementToAdd, updateGrid=true)
     {
         //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-        divGrid.appendChild(elementToAdd);  
+        activeGrid.appendChild(elementToAdd);  
        
         if (updateGrid == true)
         {
@@ -273,7 +273,7 @@ window.GridManager = function()
 
     function RemoveElementFromGrid(elementToRemove)
     {
-        divGrid.removeChild(elementToRemove);
+        activeGrid.removeChild(elementToRemove);
         UpdateGrid();
     }
 
@@ -288,27 +288,51 @@ window.GridManager = function()
         StoreGrid();
     }
 
-    function ToggleGridVisibility()
+    // function ToggleGridVisibility()
+    // {
+    //     if (divGrid.hidden == true)
+    //     {
+    //         divGrid.hidden = false;
+    //     }
+    //     else
+    //     {
+    //         divGrid.hidden = true;
+    //     }
+    // }
+
+    // function GetAllRowValues()
+    // {
+    //     var rowValues = [];
+    //     //console.log('There are currently ' + rows.length + ' item rows.');
+
+    //     for (var i = 0; i < rows.length; i++)
+    //     {
+    //         rowValues.push(rows[i].GetRowValues());
+    //         //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
+    //     }
+
+    //     //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
+    //     return rowValues;
+    // }
+
+    function SwitchGrids()
     {
-        if (divGrid.hidden == true)
-        {
-            divGrid.hidden = false;
-        }
-        else
-        {
-            divGrid.hidden = true;
-        }
+        activeGrid.hidden = true;
+
+        grids[this.dataset.gridindex].hidden = false;
+
+        document.getElementById('buttonCurrentCategory').textContent = this.textContent;
     }
 
-    function SetActiveGrid()
+    function GetVisibleGrid()
     {
-        var grids = document.getElementsByClassName('grid');
+        //var grids = document.getElementsByClassName('grid');
 
         for (var i = 0; i < grids.length; i++)
         {
             if (grids[i].hidden == false)
             {
-                activeGrid = grids[i];
+                return grids[i];
             }
         }
     }
@@ -347,16 +371,23 @@ window.GridManager = function()
 
     /** **/
 
-    return { 
-        SetGridDiv : function(div)
+    return { //TODO only calls should be made here (e.g. getters/setters), not actual changes
+        SetupGrids : function()
         {
-            divGrid = div;
             //TODO finish this
-            document.getElementById('buttonToggleGrid').onclick = ToggleGridVisibility;
-        },
-        GetNumRows : function()
-        {
-            return rows.length; 
+            //divGrid = div;
+
+            grids = document.getElementsByClassName('grid');
+            console.log("Number of grids: " + grids.length);
+
+            var categoryButtons = document.getElementsByClassName('buttonCategory');
+            for (var i = 0; i < categoryButtons.length; i++)
+            {
+                categoryButtons[i] .addEventListener('click', SwitchGrids); 
+                console.log("Added event listener")
+            }
+
+            activeGrid = GetVisibleGrid();
         },
         GetAllRowValues : function()
         {
