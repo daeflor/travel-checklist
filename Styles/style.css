@@ -47,18 +47,18 @@ div .smallicon{
     padding-bottom: 0px;
 }
 
-#grid div {
+.grid div {
     display: flex;
     align-items: center;
     justify-content: center; 
     text-align: center; 
 }
 
-#grid a, #grid a:visited{
+.grid a, .grid a:visited{
     color: black;
 }
 
-#grid textarea
+.grid textarea
 {
     width: 110px;
     height: auto;

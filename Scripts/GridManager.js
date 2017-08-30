@@ -1,10 +1,97 @@
 window.GridManager = function()
 {
     //var divGrid;
-    var rows = [];
-    var activePopover = null;
+    var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
     var grids = [];
     var activeGrid;
+
+    function Grid(gridElement)
+    {
+        var element = gridElement;
+        var rows = [];
+
+        //TODO does it make sense to track active state here?
+
+        return { 
+            // SetRowList : function(rowList)
+            // {
+            //     rows = rowList;
+            // },
+            GetRowList : function()
+            {
+                return rows;
+            },
+            GetElement : function()
+            {
+                return element;
+            },
+            ToggleElementVisibility : function()
+            {
+                if (element.hidden == true)
+                {
+                    element.hidden = false;
+                }
+                else
+                {
+                    element.hidden = true;
+                }
+            },
+            GetStorageData : function()
+            {
+                var rowData = [];
+                //console.log('There are currently ' + rows.length + ' item rows.');
+        
+                for (var i = 0; i < rows.length; i++)
+                {
+                    rowData.push(rows[i].GetStorageData());
+                    //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
+                }
+        
+                //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
+                return rowData;
+            },
+            AddChildElement : function(elementToAdd, updateGrid=true)
+            {
+                element.appendChild(elementToAdd);  
+               
+                //TODO should this be done elsewhere?
+                if (updateGrid == true)
+                {
+                    UpdateGrid();        
+                }    
+            },
+            RemoveChildElement : function(elementToRemove)
+            {
+                element.removeChild(elementToRemove);
+            },
+            //TODO creating an element and object (for the row list) should maybe be handled separately from one another
+            AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity, updateGrid=true)
+            {
+                var itemRow = new ItemRow();
+
+                var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
+
+                divRow.appendChild(CreateEditColumn());
+                
+                divRow.appendChild(CreateItemColumn(itemName));
+
+                //TODO should popovers really know about their row object? Probably not
+                    //Maybe these sub-elements should be part of the ItemRow
+                divRow.appendChild(CreateQuantityPopover(itemRow, neededQuantity));
+                divRow.appendChild(CreateQuantityPopover(itemRow, luggageQuantity));
+                divRow.appendChild(CreateQuantityPopover(itemRow, wearingQuantity));
+                divRow.appendChild(CreateQuantityPopover(itemRow, backpackQuantity));
+            
+                itemRow.SetupRowElements(divRow);
+                rows.push(itemRow);
+
+                console.log("Adding a new row. 'This' element is: " + this);
+                //TODO this is all quite messy. Take some time to clean up row creation. Really this should be happening in the Row 'class'.
+                this.AddChildElement(divRow, updateGrid); 
+                //return divRow;
+            }
+        };
+    }
 
     function ItemRow()
     {
@@ -44,7 +131,7 @@ window.GridManager = function()
 
                 SetItemColumnColor();
             },
-            GetRowValues : function()
+            GetStorageData : function()
             {
                 return [item.value, needed.text, luggage.text, wearing.text, backpack.text];
             },
@@ -70,37 +157,13 @@ window.GridManager = function()
         };
     }
 
-    //TODO creating an element and object (for the row list) should maybe be handled separately from one another
-    function CreateRow(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
-    {
-        var itemRow = new ItemRow();
-
-        var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
-
-        divRow.appendChild(CreateEditColumn());
-        
-        divRow.appendChild(CreateItemColumn(itemName));
-        //TODO should popovers really know about their row object? Probably not
-            //Maybe these sub-elements should be part of the ItemRow
-        divRow.appendChild(CreateQuantityPopover(itemRow, neededQuantity));
-        divRow.appendChild(CreateQuantityPopover(itemRow, luggageQuantity));
-        divRow.appendChild(CreateQuantityPopover(itemRow, wearingQuantity));
-        divRow.appendChild(CreateQuantityPopover(itemRow, backpackQuantity));
-    
-        //rows.push(new ItemRow(divRow));
-        itemRow.SetupRowElements(divRow);
-        rows.push(itemRow);
-        return divRow;
-        //AddElementToGrid(divRow, document.getElementById('buttonAddRow'));
-    }
-
     function RemoveRowFromGrid(rowToRemove)
     {        
-        var index = $(rowToRemove).index();
+        var index = $(rowToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
         console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowToRemove.className);  
         if(index > -1) 
         {
-            rows.splice(index, 1);
+            activeGrid.GetRowList().splice(index, 1);
             RemoveElementFromGrid(rowToRemove);
             console.log("Removed row at index " + index);
         }
@@ -175,8 +238,6 @@ window.GridManager = function()
         );
     }
 
-    /** **/
-
     function HideActiveQuantityPopover(e)
     {     
         //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
@@ -249,21 +310,12 @@ window.GridManager = function()
         return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
     }
 
-    function AddElementToGrid(elementToAdd, updateGrid=true)
-    {
-        //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-        activeGrid.appendChild(elementToAdd);  
-       
-        if (updateGrid == true)
-        {
-            UpdateGrid();        
-        }    
-    }
+    //TODO could/should (?) still have an Add method here in GridManager, that just calls Grid's add methid and also the Update
 
-    // function xxAddElementToGrid(elementToAdd, elementToPrecede, updateGrid=true)
+    // function AddElementToGrid(elementToAdd, updateGrid=true)
     // {
     //     //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-    //     divGrid.insertBefore(elementToAdd, elementToPrecede);  
+    //     activeGrid.appendChild(elementToAdd);  
        
     //     if (updateGrid == true)
     //     {
@@ -273,7 +325,8 @@ window.GridManager = function()
 
     function RemoveElementFromGrid(elementToRemove)
     {
-        activeGrid.removeChild(elementToRemove);
+        //activeGrid.removeChild(elementToRemove);
+        activeGrid.RemoveChildElement(elementToRemove);
         UpdateGrid();
     }
 
@@ -288,49 +341,33 @@ window.GridManager = function()
         StoreGrid();
     }
 
-    // function ToggleGridVisibility()
-    // {
-    //     if (divGrid.hidden == true)
-    //     {
-    //         divGrid.hidden = false;
-    //     }
-    //     else
-    //     {
-    //         divGrid.hidden = true;
-    //     }
-    // }
-
-    // function GetAllRowValues()
-    // {
-    //     var rowValues = [];
-    //     //console.log('There are currently ' + rows.length + ' item rows.');
-
-    //     for (var i = 0; i < rows.length; i++)
-    //     {
-    //         rowValues.push(rows[i].GetRowValues());
-    //         //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
-    //     }
-
-    //     //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
-    //     return rowValues;
-    // }
-
-    function SwitchGrids()
+    function CategorySelected()
     {
-        activeGrid.hidden = true;
+        //If the category selected is different from the one currently active, switch grids to the selected category
+        if (this.dataset.gridindex != grids.indexOf(activeGrid))
+        {
+            SwitchGrids(this.dataset.gridindex, this.textContent);
+        }
+    }
 
-        grids[this.dataset.gridindex].hidden = false;
+    function SwitchGrids(indexToDisplay, categoryTextToDisplay)
+    {
+        console.log("Request received to switch grids to grid index: " + indexToDisplay);
 
-        document.getElementById('buttonCurrentCategory').textContent = this.textContent;
+        //activeGrid.GetElement().hidden = true;
+        activeGrid.ToggleElementVisibility();
+        activeGrid = grids[indexToDisplay];
+        activeGrid.ToggleElementVisibility();
+        //grids[this.dataset.gridindex].GetElement().hidden = false;
+
+        document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
     }
 
     function GetVisibleGrid()
     {
-        //var grids = document.getElementsByClassName('grid');
-
         for (var i = 0; i < grids.length; i++)
         {
-            if (grids[i].hidden == false)
+            if (grids[i].GetElement().hidden == false)
             {
                 return grids[i];
             }
@@ -374,41 +411,44 @@ window.GridManager = function()
     return { //TODO only calls should be made here (e.g. getters/setters), not actual changes
         SetupGrids : function()
         {
-            //TODO finish this
-            //divGrid = div;
+            var gridElements = document.getElementsByClassName('grid');
+            console.log("Number of grids: " + gridElements.length);
 
-            grids = document.getElementsByClassName('grid');
-            console.log("Number of grids: " + grids.length);
+            for (var i = 0; i < gridElements.length; i++)
+            {
+                console.log('Adding grid ' + gridElements[i] + ' to grid list');
+                grids.push(new Grid(gridElements[i]));
+            }
 
             var categoryButtons = document.getElementsByClassName('buttonCategory');
+
             for (var i = 0; i < categoryButtons.length; i++)
             {
-                categoryButtons[i] .addEventListener('click', SwitchGrids); 
-                console.log("Added event listener")
+                categoryButtons[i] .addEventListener('click', CategorySelected); 
             }
 
             activeGrid = GetVisibleGrid();
+            console.log("Active Grid set to: " + activeGrid);
         },
-        GetAllRowValues : function()
+        GetStorageData : function()
         {
-            var rowValues = [];
+            var gridData = [];
+            //console.log('There are currently ' + gridData.length + ' grids.');
 
-            //console.log('There are currently ' + rows.length + ' item rows.');
-
-            for (var i = 0; i < rows.length; i++)
+            for (var i = 0; i < grids.length; i++)
             {
-                //console.log('Row ' + i + ' : ' + rows[i]);
-                rowValues.push(rows[i].GetRowValues());
-                //console.log('Saved the values for row ' + i);
-                //console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
+                gridData.push(grids[i].GetStorageData());
             }
 
-            //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
-            return rowValues;
-        },
+            return gridData;
+        },//TODO some of these could probably be moved into new Grid class, and Grid and Row 'classes' could be moved to a separate file, potentially
         AddNewRow : function()
         {
-            AddElementToGrid(CreateRow("", 0, 0, 0, 0));
+            //AddElementToGrid(CreateRow("", 0, 0, 0, 0));
+            //activeGrid.AddChildElement(CreateRow("", 0, 0, 0, 0));
+
+            //console.log("Adding a new row at grid: " + activeGrid.GetElement().outerHTML);
+            activeGrid.AddRow("", 0, 0, 0, 0);
         },
         RecreateRowsFromStorage : function(rowValues)
         {
@@ -417,7 +457,11 @@ window.GridManager = function()
             for (var i = 0; i < rowValues.length; i++)
             {
                 console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
-                AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
+                //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
+                
+                //TODO will have to do this for all grids
+                //activeGrid.AddChildElement(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false); 
+                activeGrid.AddRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4], false);
             }
         }
     };

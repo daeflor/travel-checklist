@@ -1,21 +1,28 @@
+TO-DOs:
+
+	- index.html      : 0
+	- checklist.js    : 1
+	- GridManager.js  : 21
+	- Style.css       : 1
+
 Upcoming To-Do List:
-- 
+- We're currently storing data correctly; now need to transition to loading the correct grid data (all rows from all grids)
+- Then clean up grid manager
 
 Thoughts:
 
-- Add clear buttons to each column to clear all entries at once. (Could be good while on trips). 
-    These could be in popovers
+- Add 'clear' buttons to each column to clear all entries at once. (Could be good while on trips). 
+    These could be in popovers. Should standardize popover creation logic
 - Rename checklist.js to something more meaningful
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '
 - Could alternate row background color for better readability
-- Grid state needs to be stored when:
-        Rows get moved up or down in the grid
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
 - Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
 - Would be nice if buttons changed color or something when pressed
-- Consider replacing jquery with pure javascript where possible
+- Grid and Row 'classes' could be moved to a separate file, potentially
+    And some functions should probably be moved into the Grid 'class'
 
 Future:
 
@@ -23,9 +30,16 @@ Future:
     Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
 - Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
 - Create 'move' buttons to move an item up or down the grid/list
+    Grid state would need to be stored when Rows get moved up or down in the grid
 - Is there a type of logging to console that only triggers in a specific mode?
 - Could group similar item types into categories, which show up in dropdown lists of the category
     Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
 - Could there be icons for item names (or item categories) instead of text?
 - Somehow enable offline functionality. (Currently, the page does not work properly if there is no network connection).
 - Could have a separate/hidden section for feedback after a trip. For example, quantity of an item not actually used, and length of the trip. 
+- Replace any jquery with pure javascript where possible (currently there is nothing that can be easily replaced).
+- Categories Improvements:
+    - Have ability for user to add/edit/remove categories
+    - One of the categories could be travel preparation, which would require different columns and interactions
+    - The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
+        May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state

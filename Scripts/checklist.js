@@ -16,8 +16,23 @@ function Start()
 
 function StoreGrid()
 {
-    SaveNameValuePairToLocalStorage('rowValues', JSON.stringify(GridManager.GetAllRowValues()));
+    SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GridManager.GetStorageData()));
 }
+
+// function LoadGrid()
+// {
+//     var gridData = LoadValueFromLocalStorage('gridData');
+
+//     if (gridData != null)
+//     {
+//         console.log("Loaded from Local Storage: " + gridData);
+//         GridManager.ReloadGridDataFromStorage(JSON.parse(gridData));        
+//     }    
+//     else
+//     {
+//         console.log("Could not find row data saved in local storage.");
+//     }
+// }
 
 function LoadGrid()
 {
@@ -62,6 +77,7 @@ function LoadValueFromLocalStorage(name)
     }
 }
 
+//TODO move these elsewhere
 function htmlEscape(str) 
 {
     return str
