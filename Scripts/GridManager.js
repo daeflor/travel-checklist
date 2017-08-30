@@ -50,22 +50,16 @@ window.GridManager = function()
                 //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
                 return rowData;
             },
-            AddChildElement : function(elementToAdd, updateGrid=true)
-            {
-                element.appendChild(elementToAdd);  
-               
-                //TODO should this be done elsewhere?
-                if (updateGrid == true)
-                {
-                    UpdateGrid();        
-                }    
-            },
+            // AddChildElement : function(elementToAdd)
+            // {
+            //     element.appendChild(elementToAdd);  
+            // },
             RemoveChildElement : function(elementToRemove)
             {
                 element.removeChild(elementToRemove);
             },
             //TODO creating an element and object (for the row list) should maybe be handled separately from one another
-            AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity, updateGrid=true)
+            AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
             {
                 var itemRow = new ItemRow();
 
@@ -85,10 +79,8 @@ window.GridManager = function()
                 itemRow.SetupRowElements(divRow);
                 rows.push(itemRow);
 
-                console.log("Adding a new row. 'This' element is: " + this);
                 //TODO this is all quite messy. Take some time to clean up row creation. Really this should be happening in the Row 'class'.
-                this.AddChildElement(divRow, updateGrid); 
-                //return divRow;
+                element.appendChild(divRow); 
             }
         };
     }
@@ -229,8 +221,6 @@ window.GridManager = function()
 
     function CreateQuanitytButton(buttonId, iconClass)
     {
-        //var icon = CreateNewElement('i', [['class',iconClass]]);
-
         return CreateNewElement(
             'button', 
             [['id',buttonId], ['class','btn btn-lg buttonEditQuantity popoverElement'], ['type','button']], 
@@ -342,7 +332,7 @@ window.GridManager = function()
     }
 
     function CategorySelected()
-    {
+    {   
         //If the category selected is different from the one currently active, switch grids to the selected category
         if (this.dataset.gridindex != grids.indexOf(activeGrid))
         {
@@ -352,13 +342,10 @@ window.GridManager = function()
 
     function SwitchGrids(indexToDisplay, categoryTextToDisplay)
     {
-        console.log("Request received to switch grids to grid index: " + indexToDisplay);
-
-        //activeGrid.GetElement().hidden = true;
+        //console.log("Request received to switch grids to grid index: " + indexToDisplay);
         activeGrid.ToggleElementVisibility();
         activeGrid = grids[indexToDisplay];
         activeGrid.ToggleElementVisibility();
-        //grids[this.dataset.gridindex].GetElement().hidden = false;
 
         document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
     }
@@ -406,9 +393,9 @@ window.GridManager = function()
         }
     }
 
-    /** **/
+    /** Public Functions **/
 
-    return { //TODO only calls should be made here (e.g. getters/setters), not actual changes
+    return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
         SetupGrids : function()
         {
             var gridElements = document.getElementsByClassName('grid');
@@ -416,7 +403,7 @@ window.GridManager = function()
 
             for (var i = 0; i < gridElements.length; i++)
             {
-                console.log('Adding grid ' + gridElements[i] + ' to grid list');
+                //console.log('Adding grid ' + gridElements[i] + ' to grid list');
                 grids.push(new Grid(gridElements[i]));
             }
 
@@ -428,7 +415,8 @@ window.GridManager = function()
             }
 
             activeGrid = GetVisibleGrid();
-            console.log("Active Grid set to: " + activeGrid);
+            
+            SwitchGrids(2, "Test"); //This is just for test purposes
         },
         GetStorageData : function()
         {
@@ -444,11 +432,8 @@ window.GridManager = function()
         },//TODO some of these could probably be moved into new Grid class, and Grid and Row 'classes' could be moved to a separate file, potentially
         AddNewRow : function()
         {
-            //AddElementToGrid(CreateRow("", 0, 0, 0, 0));
-            //activeGrid.AddChildElement(CreateRow("", 0, 0, 0, 0));
-
-            //console.log("Adding a new row at grid: " + activeGrid.GetElement().outerHTML);
             activeGrid.AddRow("", 0, 0, 0, 0);
+            UpdateGrid();
         },
         ReloadGridDataFromStorage : function(gridData)
         {
@@ -465,7 +450,7 @@ window.GridManager = function()
 
                     //AddRowToGrid();
 
-                    grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4], false);
+                    grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
 
                     //activeGrid.AddRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4], false);
                 }
