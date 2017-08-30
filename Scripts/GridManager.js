@@ -450,18 +450,25 @@ window.GridManager = function()
             //console.log("Adding a new row at grid: " + activeGrid.GetElement().outerHTML);
             activeGrid.AddRow("", 0, 0, 0, 0);
         },
-        RecreateRowsFromStorage : function(rowValues)
+        ReloadGridDataFromStorage : function(gridData)
         {
-            //console.log('Row Values from local storage : ' + rowValues);
-            console.log('There are ' + rowValues.length + ' rows saved in local storage.');
-            for (var i = 0; i < rowValues.length; i++)
+            console.log('There are ' + gridData.length + ' grids saved in local storage.');
+
+            for (var i = 0; i < gridData.length; i++)
             {
-                console.log('Row ' + i + ' : name = ' + rowValues[i][0]);
-                //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
-                
-                //TODO will have to do this for all grids
-                //activeGrid.AddChildElement(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false); 
-                activeGrid.AddRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4], false);
+                for (var j = 0; j < gridData[i].length; j++)
+                {
+                    console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                    
+                    //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
+                    //activeGrid.AddChildElement(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false); 
+
+                    //AddRowToGrid();
+
+                    grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4], false);
+
+                    //activeGrid.AddRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4], false);
+                }
             }
         }
     };

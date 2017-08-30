@@ -19,29 +19,14 @@ function StoreGrid()
     SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GridManager.GetStorageData()));
 }
 
-// function LoadGrid()
-// {
-//     var gridData = LoadValueFromLocalStorage('gridData');
-
-//     if (gridData != null)
-//     {
-//         console.log("Loaded from Local Storage: " + gridData);
-//         GridManager.ReloadGridDataFromStorage(JSON.parse(gridData));        
-//     }    
-//     else
-//     {
-//         console.log("Could not find row data saved in local storage.");
-//     }
-// }
-
 function LoadGrid()
 {
-    var rowValues = LoadValueFromLocalStorage('rowValues');
+    var gridData = LoadValueFromLocalStorage('gridData');
 
-    if (rowValues != null)
+    if (gridData != null)
     {
-        console.log("Loaded from Local Storage: " + rowValues);
-        GridManager.RecreateRowsFromStorage(JSON.parse(rowValues));        
+        console.log("Loaded from Local Storage: " + gridData);
+        GridManager.ReloadGridDataFromStorage(JSON.parse(gridData));        
     }    
     else
     {
