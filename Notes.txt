@@ -6,11 +6,13 @@ TO-DOs:
 	- Style.css       : 1
 
 Upcoming To-Do List:
-- We're currently storing data correctly; now need to transition to loading the correct grid data (all rows from all grids)
-- Then clean up grid manager
+- Clean up grid manager
 
 Thoughts:
 
+- Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
+    - Grid and Row 'classes' could be moved to a separate file, potentially
+    - And some functions should probably be moved into the Grid 'class'
 - Add 'clear' buttons to each column to clear all entries at once. (Could be good while on trips). 
     These could be in popovers. Should standardize popover creation logic
 - Rename checklist.js to something more meaningful
@@ -19,10 +21,6 @@ Thoughts:
 - Standardize between " and '
 - Could alternate row background color for better readability
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
-- Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
-- Would be nice if buttons changed color or something when pressed
-- Grid and Row 'classes' could be moved to a separate file, potentially
-    And some functions should probably be moved into the Grid 'class'
 
 Future:
 
@@ -43,3 +41,6 @@ Future:
     - One of the categories could be travel preparation, which would require different columns and interactions
     - The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
         May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
+- Would be nice if buttons changed color or something when pressed
+    This might not be necessary for mobile
+-
