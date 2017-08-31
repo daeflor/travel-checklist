@@ -198,3 +198,37 @@ function CreateNewElement(elementName, attributes, child)
         console.log("Failed to create new element. No name provided.");
     }
 }
+
+//TODO is it possible to do TypeOf (or similar) for toggleText/toggleChild so we only need to pass one param?
+function CreatePopoverToggle(toggleClass, toggleText, toggleChild, popoverChildren, popoverTrigger)
+{
+    /* Setup Popover Elements */
+    var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
+    for (var i = 0; i < popoverChildren.length; i++)
+    {
+        divPopover.appendChild(popoverChildren[i]);
+    } 
+
+    /* Create Popover Toggle */
+    var popoverToggle = CreateNewElement('a', [ ['class',toggleClass], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
+    
+    if (toggleText != null)
+    {
+        popoverToggle.text = toggleText;        
+    }
+
+    if (toggleChild != null)
+    {
+        popoverToggle.appendChild(toggleChild);        
+    }
+
+    $(popoverToggle).popover({
+        placement: 'bottom',
+        animation: true,
+        html: true,
+        trigger: popoverTrigger,
+        content: divPopover.outerHTML
+    }); 
+
+    return popoverToggle;
+}

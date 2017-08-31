@@ -121,6 +121,7 @@ div .smallicon{
     */
 }
 
+/* Is this really necessary? could padding on the parent div be used instead?*/
 .buttonEditQuantity {
     margin: 3px;
 }

@@ -62,51 +62,112 @@ function Row()
     };
 }
 
-function CreateEditColumn()
-{
-    /* Create Tooltip Elements */
+// function CreateEditColumn()
+// {
+//     /* Create Tooltip Elements */
     
-    //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
-    // var iconTrash = document.createElement('i');
-    // iconTrash.className = 'fa fa-trash';
+//     //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
+//     // var iconTrash = document.createElement('i');
+//     // iconTrash.className = 'fa fa-trash';
 
-    //var buttonTrash = CreateNewElement('button', [['class','btn'], ['type','button']]);
-    // var buttonTrash = document.createElement('button');
-    // buttonTrash.type = 'button';
-    // buttonTrash.className = 'btn';
-    // buttonTrash.appendChild(iconTrash);
+//     //var buttonTrash = CreateNewElement('button', [['class','btn'], ['type','button']]);
+//     // var buttonTrash = document.createElement('button');
+//     // buttonTrash.type = 'button';
+//     // buttonTrash.className = 'btn';
+//     // buttonTrash.appendChild(iconTrash);
 
-    // var divPopover = document.createElement('div');
-    // divPopover.appendChild(buttonTrash);
+//     // var divPopover = document.createElement('div');
+//     // divPopover.appendChild(buttonTrash);
 
-    /* Create Edit Button Elements */
+//     /* Create Edit Button Elements */
     
-    var iconEdit = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);
+//     var iconEdit = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);
 
-    var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#!'], ['tabIndex','0'] ], iconEdit);
+//     var buttonEdit = CreateNewElement('a', [ ['class','btn buttonEdit'], ['href','#!'], ['tabIndex','0'] ], iconEdit);
 
-    $(buttonEdit).popover(
-    {
-        placement: 'bottom',
-        animation: true,
-        html: true,
-        trigger: 'focus',
-        content: '<div class="popoverElement"><button id="buttonTrash" class="btn" type="button"><i class="fa fa-trash"></i></button></div>'
-    }); //TODO For trash we do actually want the popover to go away when it's clicked... but for move up/down, we probably won't... Is popoverElement class necessary?
+//     $(buttonEdit).popover(
+//     {
+//         placement: 'bottom',
+//         animation: true,
+//         html: true,
+//         trigger: 'focus',
+//         content: '<div class="popoverElement"><button id="buttonTrash" class="btn" type="button"><i class="fa fa-trash"></i></button></div>'
+//     }); //TODO For trash we do actually want the popover to go away when it's clicked... but for move up/down, we probably won't... Is popoverElement class necessary?
 
-    $(buttonEdit).on ('shown.bs.popover', function() 
-    {
-        //console.log("Popup has been opened; onclick event will be set.");
+//     $(buttonEdit).on('shown.bs.popover', function() 
+//     {
+//         //console.log("Popup has been opened; onclick event will be set.");
         
-        document.getElementById('buttonTrash').addEventListener('click', function()
-        {
-            //TODO shouldn't need to use parent elements anymore
-            GridManager.RemoveRow(buttonEdit.parentElement.parentElement);
-        });
-    });
+//         document.getElementById('buttonTrash').addEventListener('click', function()
+//         {
+//             GridManager.RemoveRow(buttonEdit.parentElement.parentElement);
+//         });
+//     });
 
-    return CreateNewElement('div', [ ['class','col-1 divEdit'] ], buttonEdit);
-}  
+//     return CreateNewElement('div', [ ['class','col-1 divEdit'] ], buttonEdit);
+// }  
+
+// function xCreateQuantityPopover(itemRow, quantity)
+// {
+//     /* Create Popup Elements */
+//     var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement');
+//     var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement');
+//     var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
+//     divPopover.appendChild(buttonMinus);
+//     divPopover.appendChild(buttonPlus);
+
+//     /* Create Quantity Button Elements */
+//     var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
+//     buttonQuantity.text = quantity;
+
+//     //TODO can probably do all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
+//     $(buttonQuantity).popover(
+//     {
+//         placement: 'bottom',
+//         animation: true,
+//         html: true,
+//         trigger: 'manual',
+//         content: divPopover.outerHTML
+//     }); 
+
+//     buttonQuantity.addEventListener('click', function() 
+//     {
+//         //If there is already a popover active, remove focus from the selected quantity button. Otherwise, show the button's popover. 
+//         if(GridManager.GetActivePopover() == null)
+//         {
+//             $(buttonQuantity).popover('show');
+//         }
+//         else
+//         {
+//             buttonQuantity.blur();
+//         }
+//     });
+
+//     $(buttonQuantity).on('shown.bs.popover', function() 
+//     {
+//         GridManager.SetActivePopover(buttonQuantity);
+
+//         document.getElementById('buttonMinus').addEventListener('click', function() 
+//         {
+//             itemRow.ModifyQuantityValue(buttonQuantity, false);
+//         });         
+//         document.getElementById('buttonPlus').addEventListener('click', function() 
+//         {
+//             itemRow.ModifyQuantityValue(buttonQuantity, true);
+//         }); 
+
+//         document.addEventListener('click', GridManager.HideActiveQuantityPopover);
+//     });
+
+//     $(buttonQuantity).on('hidden.bs.popover', function()
+//     {
+//         GridManager.SetActivePopover(null);
+//     });
+
+//     return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
+// }
+
+/** **/
 
 function CreateItemColumn(itemName)
 {
@@ -117,72 +178,92 @@ function CreateItemColumn(itemName)
     return divCol;
 }
 
-function CreateQuanitytButton(buttonId, iconClass)
+//TODO these two functions could probably be merged into one
+function CreateButtonEdit(buttonId, iconClass)
 {
     return CreateNewElement(
         'button', 
-        [['id',buttonId], ['class','btn btn-lg buttonEditQuantity popoverElement'], ['type','button']], 
+        [['id',buttonId], ['class','btn'], ['type','button']], 
         CreateNewElement('i', [['class',iconClass]])
     );
 }
 
+function CreateButtonQuantity(buttonId, iconClass)
+{
+    return CreateNewElement(
+        'button', 
+        [['id',buttonId], ['class','btn'], ['type','button']], 
+        CreateNewElement('i', [['class',iconClass]])
+    );
+}
+
+function CreatePopoverEdit()
+{
+    /* Create Popover Elements */
+    //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
+    //var buttonTrash = CreateNewElement('button', [ ['class','btn'], ['type','button'] ], iconTrash);
+    var buttonTrash = CreateButtonEdit('buttonTrash', 'fa fa-trash');
+
+    var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
+    var popoverToggle = CreatePopoverToggle('btn buttonEdit', null, iconToggle, [buttonTrash], 'focus');
+    
+    /* Create Edit Button Elements */
+
+    $(popoverToggle).on('shown.bs.popover', function() 
+    {
+        //console.log("Popup has been opened; onclick event will be set.");
+        document.getElementById('buttonTrash').addEventListener('click', function()
+        {
+            //TODO shouldn't need to use parent elements anymore
+            GridManager.RemoveRow(popoverToggle.parentElement.parentElement);
+        });
+    });
+
+    return CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle);
+}  
+
 //TODO is it possible to pass itemRow's function instead of the object itself?
 function CreateQuantityPopover(itemRow, quantity)
 {
-    /* Create Popup Elements */
-    var buttonMinus = CreateQuanitytButton('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement');
-    var buttonPlus = CreateQuanitytButton('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement');
-    var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
-    divPopover.appendChild(buttonMinus);
-    divPopover.appendChild(buttonPlus);
+    /* Create Popover Elements */
+    var buttonMinus = CreateButtonQuantity('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement');
+    var buttonPlus = CreateButtonQuantity('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement');
 
-    /* Create Quantity Button Elements */
-    var buttonQuantity = CreateNewElement('a', [ ['class','btn btn-sm buttonQuantity'], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
-    buttonQuantity.text = quantity;
+    var popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', quantity, null, [buttonMinus, buttonPlus], 'manual');
 
-    //TODO can probably do all this on a class basis, affecting all quantity buttons at once. But does it make any difference? Not really...
-    $(buttonQuantity).popover(
-    {
-        placement: 'bottom',
-        animation: true,
-        html: true,
-        trigger: 'manual',
-        content: divPopover.outerHTML
-    }); 
-
-    buttonQuantity.addEventListener('click', function() 
+    popoverToggle.addEventListener('click', function() 
     {
         //If there is already a popover active, remove focus from the selected quantity button. Otherwise, show the button's popover. 
         if(GridManager.GetActivePopover() == null)
         {
-            $(buttonQuantity).popover('show');
+            $(popoverToggle).popover('show');
         }
         else
         {
-            buttonQuantity.blur();
+            popoverToggle.blur();
         }
     });
 
-    $(buttonQuantity).on('shown.bs.popover', function() 
+    $(popoverToggle).on('shown.bs.popover', function() 
     {
-        GridManager.SetActivePopover(buttonQuantity);
+        GridManager.SetActivePopover(popoverToggle);
 
         document.getElementById('buttonMinus').addEventListener('click', function() 
         {
-            itemRow.ModifyQuantityValue(buttonQuantity, false);
+            itemRow.ModifyQuantityValue(popoverToggle, false);
         });         
         document.getElementById('buttonPlus').addEventListener('click', function() 
         {
-            itemRow.ModifyQuantityValue(buttonQuantity, true);
+            itemRow.ModifyQuantityValue(popoverToggle, true);
         }); 
 
         document.addEventListener('click', GridManager.HideActiveQuantityPopover);
     });
 
-    $(buttonQuantity).on('hidden.bs.popover', function()
+    $(popoverToggle).on('hidden.bs.popover', function()
     {
         GridManager.SetActivePopover(null);
     });
 
-    return CreateNewElement('div', [ ['class','col divQuantity'] ], buttonQuantity);        
+    return CreateNewElement('div', [ ['class','col divQuantity'] ], popoverToggle);        
 }

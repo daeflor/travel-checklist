@@ -55,7 +55,7 @@ function Grid(gridElement)
 
             var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
 
-            divRow.appendChild(CreateEditColumn());
+            divRow.appendChild(CreatePopoverEdit());
             
             divRow.appendChild(CreateItemColumn(itemName));
 
