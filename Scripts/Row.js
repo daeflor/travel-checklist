@@ -17,8 +17,6 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     function CreateDivForEditPopover()
     {
         /* Create Popover Elements */
-        //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
-        //var buttonTrash = CreateNewElement('button', [ ['class','btn'], ['type','button'] ], iconTrash);
         var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
     
         var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
@@ -35,7 +33,6 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
         });
 
         divRow.appendChild(CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle));
-        //return CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle);
     }  
 
     function CreateDivForItemName(itemName)
@@ -46,7 +43,6 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     
         divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], textareaItemName);
         divRow.appendChild(divItemName);
-        //return divItemName;
     }
     
     function CreateDivForQuantityPopover(quantity)
@@ -94,7 +90,6 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
         listQuantityPopovers.push(popoverToggle);
     
         divRow.appendChild(CreateNewElement('div', [ ['class','col divQuantity'] ], popoverToggle));
-        //return CreateNewElement('div', [ ['class','col divQuantity'] ], popoverToggle);        
     }
 
     //TODO could an enum be used for the different quantities and then pass a number which corresponds to one of the quantities

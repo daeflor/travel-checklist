@@ -65,12 +65,7 @@ window.GridManager = function()
         {
             for (var j = 0; j < gridData[i].length; j++)
             {
-                console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                
-                //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
-                
-                //AddRowToGrid();
-
+                //console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
                 grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
             }
         }
@@ -87,8 +82,7 @@ window.GridManager = function()
     function AddNewRow()
     {
         activeGrid.AddRow("", 0, 0, 0, 0);
-        //GridManager.GridModified();
-        SaveDataToStorage(); //TODO maybe these 'grid modified' calls should be done in the grid class.. Is it better though?...
+        SaveDataToStorage(); 
     }
 
     function GetStorageData()
@@ -103,34 +97,11 @@ window.GridManager = function()
         return gridData;
     }
 
-
-
-    //TODO could/should (?) still have an Add method here in GridManager, that just calls Grid's add method and also the Update
-
-    // function AddElementToGrid(elementToAdd, updateGrid=true)
-    // {
-    //     //console.log("Adding element to grid: " + elementToAdd + ". Before element: " + elementToPrecede + ". UpdateGrid value: " + updateGrid)
-    //     activeGrid.appendChild(elementToAdd);  
-       
-    //     if (updateGrid == true)
-    //     {
-    //         UpdateGrid();        
-    //     }    
-    // }
-
     function RemoveElementFromGrid(elementToRemove)
     {
-        //activeGrid.removeChild(elementToRemove);
         activeGrid.RemoveChildElement(elementToRemove);
-        //GridManager.GridModified();
         SaveDataToStorage();
     }
-
-    // function ModifyElementInGrid(element, attribute, value)
-    // {
-    //     element.setAttribute(attribute, value);
-    //     UpdateGrid();
-    // }
 
     function CategorySelected()
     {   
@@ -173,14 +144,16 @@ window.GridManager = function()
             if(index > -1) 
             {
                 activeGrid.GetRowList().splice(index, 1);
-                RemoveElementFromGrid(rowToRemove);
+                activeGrid.RemoveChildElement(rowToRemove);
+                SaveDataToStorage();
+
                 console.log("Removed row at index " + index);
             }
             else
             {
                 console.log("Failed to remove row from grid. Row index returned invalid value.");
             }
-        },
+        },//TODO Maybe should have an Interaction Manager (or popover manager) for these
         GetActivePopover : function()
         {
             return activePopover;
