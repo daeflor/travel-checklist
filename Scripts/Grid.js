@@ -3,13 +3,7 @@ function Grid(gridElement)
     var element = gridElement;
     var rows = [];
 
-    //TODO does it make sense to track active state here?
-
     return { 
-        GetRowList : function()
-        {
-            return rows;
-        },
         GetElement : function()
         {
             return element;
@@ -35,17 +29,25 @@ function Grid(gridElement)
                 rowData.push(rows[i].GetStorageData());
                 //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
             }
-    
+
             //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
             return rowData;
         },
-        // AddChildElement : function(elementToAdd)
-        // {
-        //     element.appendChild(elementToAdd);  
-        // },
-        RemoveChildElement : function(elementToRemove)
+        RemoveRow : function(rowElementToRemove)
         {
-            element.removeChild(elementToRemove);
+            var index = $(rowElementToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
+            console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
+            
+            if(index > -1) 
+            {
+                rows.splice(index, 1);
+                element.removeChild(rowElementToRemove);
+                console.log("Removed row at index " + index);
+            }
+            else
+            {
+                console.log("Failed to remove row from grid. Row index returned invalid value.");
+            }
         },
         AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
         {

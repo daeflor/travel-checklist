@@ -1,23 +1,21 @@
 TO-DOs:
 
 	- index.html      : 0
-	- GridManager.js  : 8
+	- GridManager.js  : 4
     - Grid.js         : 1
     - Row.js          : 1
     - Helpers.js      : 2
 	- Style.css       : 2
 
 Upcoming To-Do List:
-- Clean up grid manager
+- Visual improvements (including element alignment)
+- Clear Column buttons
+- Consider Interaction Manager
 
 Thoughts:
 
-- Seems like it may be best to restructure how things are contained within GridManager and ItemRow 
-    - Grid and Row 'classes' could be moved to a separate file, potentially
-    - And some functions should probably be moved into the Grid 'class'
 - Add 'clear' buttons to each column to clear all entries at once. (Could be good while on trips). 
     These could be in popovers. Should standardize popover creation logic
-- Rename checklist.js to something more meaningful
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '

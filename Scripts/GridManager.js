@@ -8,18 +8,17 @@ window.GridManager = function()
 
     function Start()
     {
-        SetupGrids();
-        document.getElementById('buttonAddRow').onclick = AddNewRow;
-    
         // $(document).ready(function(){
         //     console.log("Enabling popovers");
         //     $('[data-toggle="popover"]').popover()
         // });
     
+        SetupGrids();
+        SetupButtons();
         LoadDataFromStorage();
     }
 
-    /** Grid Setup & Storage Management **/
+    /** Grid & Button Setup **/
 
     function SetupGrids()
     {
@@ -30,6 +29,13 @@ window.GridManager = function()
             grids.push(new Grid(gridElements[i]));
         }
 
+        activeGrid = GetVisibleGrid();
+        
+        SwitchGrids(2, "Test"); //This is just for test purposes
+    }
+
+    function SetupButtons()
+    {
         var categoryButtons = document.getElementsByClassName('buttonCategory');
 
         for (var i = 0; i < categoryButtons.length; i++)
@@ -37,10 +43,21 @@ window.GridManager = function()
             categoryButtons[i] .addEventListener('click', CategorySelected); 
         }
 
-        activeGrid = GetVisibleGrid();
-        
-        SwitchGrids(2, "Test"); //This is just for test purposes
+        document.getElementById('buttonAddRow').onclick = AddNewRow;
     }
+
+    function GetVisibleGrid()
+    {
+        for (var i = 0; i < grids.length; i++)
+        {
+            if (grids[i].GetElement().hidden == false)
+            {
+                return grids[i];
+            }
+        }
+    }
+
+    /** Storage Management **/
 
     function LoadDataFromStorage()
     {
@@ -76,15 +93,6 @@ window.GridManager = function()
         SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GetStorageData()));
     }
 
-
-//TODO finish organizing (just moving around and labeling) functions below this
-    
-    function AddNewRow()
-    {
-        activeGrid.AddRow("", 0, 0, 0, 0);
-        SaveDataToStorage(); 
-    }
-
     function GetStorageData()
     {
         var gridData = [];
@@ -97,11 +105,7 @@ window.GridManager = function()
         return gridData;
     }
 
-    function RemoveElementFromGrid(elementToRemove)
-    {
-        activeGrid.RemoveChildElement(elementToRemove);
-        SaveDataToStorage();
-    }
+    /** Button Interactions **/
 
     function CategorySelected()
     {   
@@ -122,37 +126,19 @@ window.GridManager = function()
         document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
     }
 
-    function GetVisibleGrid()
+    function AddNewRow()
     {
-        for (var i = 0; i < grids.length; i++)
-        {
-            if (grids[i].GetElement().hidden == false)
-            {
-                return grids[i];
-            }
-        }
+        activeGrid.AddRow("", 0, 0, 0, 0);
+        SaveDataToStorage(); 
     }
 
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        //TODO some of these could probably be moved into new Grid class, and Grid and Row 'classes' could be moved to a separate file, potentially
-        RemoveRow : function(rowToRemove)
+        RemoveRow : function(rowElementToRemove)
         {        
-            var index = $(rowToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
-            console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowToRemove.className);  
-            if(index > -1) 
-            {
-                activeGrid.GetRowList().splice(index, 1);
-                activeGrid.RemoveChildElement(rowToRemove);
-                SaveDataToStorage();
-
-                console.log("Removed row at index " + index);
-            }
-            else
-            {
-                console.log("Failed to remove row from grid. Row index returned invalid value.");
-            }
+            activeGrid.RemoveRow(rowElementToRemove);
+            SaveDataToStorage();
         },//TODO Maybe should have an Interaction Manager (or popover manager) for these
         GetActivePopover : function()
         {
@@ -165,7 +151,7 @@ window.GridManager = function()
         HideActiveQuantityPopover : function(e)
         {     
             //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
-                //Does a quantity group function (object) make sense? To have this more controlled
+                //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
             if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
             {
                 document.removeEventListener('click', GridManager.HideActiveQuantityPopover);
