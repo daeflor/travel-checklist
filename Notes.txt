@@ -10,7 +10,7 @@ TO-DOs:
 Upcoming To-Do List:
 - Visual improvements (including element alignment)
 - Clear Column buttons
-- Consider Interaction Manager
+- Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
 
@@ -48,4 +48,6 @@ Future:
 - Would be nice if buttons changed color or something when pressed
     This might not be necessary for mobile
 - Could use objects/properties (e.g. { ... }) for certain function parameters (e.g. NewRow) instead of many different individual parameters
-- 
+- Need a manager for the whole page, not just grids. Could split up GridManager or rename it. 
+    (Could depend on whether or not Interactions get pulled out into a separate manager/file)
+- Color palette of popovers (incl. background) could be better

@@ -1,12 +1,12 @@
 window.GridManager = function()
 {
-    document.addEventListener('DOMContentLoaded', Start);    
+    document.addEventListener('DOMContentLoaded', Setup);    
 
     var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
     var grids = [];
     var activeGrid;
 
-    function Start()
+    function Setup()
     {
         // $(document).ready(function(){
         //     console.log("Enabling popovers");
@@ -14,7 +14,7 @@ window.GridManager = function()
         // });
     
         SetupGrids();
-        SetupButtons();
+        SetupInteractibles();
         LoadDataFromStorage();
     }
 
@@ -34,7 +34,7 @@ window.GridManager = function()
         SwitchGrids(2, "Test"); //This is just for test purposes
     }
 
-    function SetupButtons()
+    function SetupInteractibles()
     {
         var categoryButtons = document.getElementsByClassName('buttonCategory');
 
@@ -44,6 +44,11 @@ window.GridManager = function()
         }
 
         document.getElementById('buttonAddRow').onclick = AddNewRow;
+
+        CreateDivForCategoryPopover('col header', 'fa fa-pie-chart fa-lg');
+        CreateDivForCategoryPopover('col header', 'fa fa-suitcase fa-lg');
+        CreateDivForCategoryPopover('col header', 'fa fa-male fa-lg');
+        CreateDivForCategoryPopover('col header smallicon', 'fa fa-briefcase');
     }
 
     function GetVisibleGrid()
@@ -130,6 +135,27 @@ window.GridManager = function()
     {
         activeGrid.AddRow("", 0, 0, 0, 0);
         SaveDataToStorage(); 
+    }
+
+    /** Experimental & In Progress **/
+
+    //TODO It doesn't really make sense for this to be in a 'GridManager'
+    function CreateDivForCategoryPopover(divClass, iconClass)
+    {
+        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn', 'fa fa-trash');
+    
+        var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
+        
+        $(popoverToggle).on('shown.bs.popover', function() 
+        {
+            document.getElementById('buttonClear').addEventListener('click', function()
+            {
+                console.log("CLEARING CATEGROY COLUMN");
+            });
+        });
+
+        document.getElementById('categoryRow').appendChild(CreateNewElement('div', [ ['class',divClass] ], popoverToggle));
     }
 
     /** Public Functions **/

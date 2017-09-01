@@ -41,7 +41,6 @@
     font-family: Futura,"Trebuchet MS",Arial,sans-serif
 }
 
-
 div .smallicon{
     padding-top: 8px;
     padding-bottom: 0px;
@@ -54,7 +53,7 @@ div .smallicon{
     text-align: center; 
 }
 
-.grid a, .grid a:visited{
+a, a:visited {
     color: black;
 }
 

@@ -19,13 +19,12 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
         /* Create Popover Elements */
         var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
     
+        /* Create Edit Button Elements */
         var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
         var popoverToggle = CreatePopoverToggle('btn buttonEdit', iconToggle, [buttonTrash], 'focus');
         
-        /* Create Edit Button Elements */
         $(popoverToggle).on('shown.bs.popover', function() 
         {
-            //console.log("Popup has been opened; onclick event will be set.");
             document.getElementById('buttonTrash').addEventListener('click', function()
             {
                 GridManager.RemoveRow(divRow);
