@@ -31,7 +31,7 @@
 -->
 </head>
 <body>       
-  <div class="row">
+  <div class="row" id="headerRow">
     <div class="col-5 dropdown header itemCategory">
       <button class="btn dropdown-toggle" id="buttonCurrentCategory" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Clothes
@@ -42,10 +42,20 @@
         <button class="dropdown-item buttonCategory" data-gridindex="2" type="button">Test</button>
       </div>
     </div>
+    <!--
+    <div class="col header popover">
+      <button class="btn" type="button" data-toggle="popover">
+        <i class="fa fa-pie-chart fa-lg"></i>
+      </button>
+    </div>
+    -->
+    
     <div class="col header"><i class="fa fa-pie-chart fa-lg"></i></div>
+    <!--
     <div class="col header"><i class="fa fa-suitcase fa-lg"></i></div>
     <div class="col header"><i class="fa fa-male fa-lg"></i></div>
     <div class="col header smallicon"><i class="fa fa-briefcase"></i></div>
+    -->
   </div>     
   <div class="container-fluid grid"></div>
   <div class="container-fluid grid" hidden="hidden"></div>

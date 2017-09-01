@@ -139,14 +139,12 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
                 listQuantityPopovers[QuantityType.Wearing].text, 
                 listQuantityPopovers[QuantityType.Backpack].text
             ];
+        },
+        ClearQuantityValue : function(quantityIndex)
+        {
+            listQuantityPopovers[quantityIndex].text = 0; 
+            SetItemColumnColor();
         }
     };
 }
-
-var QuantityType = {
-    Needed: 0,
-    Luggage: 1,
-    Wearing: 2,
-    Backpack: 3,
-};
 

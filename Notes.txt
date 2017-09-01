@@ -8,8 +8,8 @@ TO-DOs:
 	- Style.css       : 2
 
 Upcoming To-Do List:
+- Choose icon for Clear button
 - Visual improvements (including element alignment)
-- Clear Column buttons
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:

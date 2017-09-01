@@ -56,6 +56,13 @@ function Grid(gridElement)
             rows.push(itemRow);
 
             element.appendChild(itemRow.GetDiv()); 
+        },
+        ClearQuantityColumnValues : function(columnIndex)
+        {
+            for (var i = 0; i < rows.length; i++)
+            {
+                rows[i].ClearQuantityValue(columnIndex);
+            } 
         }
     };
 }

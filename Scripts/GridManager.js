@@ -45,10 +45,11 @@ window.GridManager = function()
 
         document.getElementById('buttonAddRow').onclick = AddNewRow;
 
-        CreateDivForCategoryPopover('col header', 'fa fa-pie-chart fa-lg');
-        CreateDivForCategoryPopover('col header', 'fa fa-suitcase fa-lg');
-        CreateDivForCategoryPopover('col header', 'fa fa-male fa-lg');
-        CreateDivForCategoryPopover('col header smallicon', 'fa fa-briefcase');
+        //TODO class data could be contained in the QuantityType object
+        //CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+        CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
+        CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);
+        CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
     }
 
     function GetVisibleGrid()
@@ -140,9 +141,9 @@ window.GridManager = function()
     /** Experimental & In Progress **/
 
     //TODO It doesn't really make sense for this to be in a 'GridManager'
-    function CreateDivForCategoryPopover(divClass, iconClass)
+    function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
     {
-        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn', 'fa fa-trash');
+        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn', 'fa fa-remove');
     
         var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
         var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
@@ -151,11 +152,12 @@ window.GridManager = function()
         {
             document.getElementById('buttonClear').addEventListener('click', function()
             {
-                console.log("CLEARING CATEGROY COLUMN");
+                activeGrid.ClearQuantityColumnValues(quantityHeaderIndex);
+                SaveDataToStorage();
             });
         });
 
-        document.getElementById('categoryRow').appendChild(CreateNewElement('div', [ ['class',divClass] ], popoverToggle));
+        document.getElementById('headerRow').appendChild(CreateNewElement('div', [ ['class',divClass] ], popoverToggle));
     }
 
     /** Public Functions **/
@@ -190,3 +192,11 @@ window.GridManager = function()
         }
     };
 }();
+
+//TODO expand this to also contain class data for the headers
+var QuantityType = {
+    Needed: 0,
+    Luggage: 1,
+    Wearing: 2,
+    Backpack: 3,
+};
