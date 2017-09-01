@@ -167,9 +167,9 @@ window.GridManager = function()
 }();
 
 /** Helpers **/
+//TODO move these out of GridManager properly (i.e. somewhere that makes sense)
 
 //TODO could change child parameter to a list of children instead
-//TODO move this out of GridManager properly (i.e. somewhere that makes sense)
 function CreateNewElement(elementName, attributes, child)
 {
     var element;
@@ -199,9 +199,9 @@ function CreateNewElement(elementName, attributes, child)
     }
 }
 
-//TODO is it possible to do TypeOf (or similar) for toggleText/toggleChild so we only need to pass one param?
-function CreatePopoverToggle(toggleClass, toggleText, toggleChild, popoverChildren, popoverTrigger)
+function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
 {
+    console.log("Request to create a popover with display of type: " + typeof(toggleDisplay));
     /* Setup Popover Elements */
     var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
     for (var i = 0; i < popoverChildren.length; i++)
@@ -212,14 +212,13 @@ function CreatePopoverToggle(toggleClass, toggleText, toggleChild, popoverChildr
     /* Create Popover Toggle */
     var popoverToggle = CreateNewElement('a', [ ['class',toggleClass], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
     
-    if (toggleText != null)
+    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string') || typeof(toggleDisplay) == 'number')
     {
-        popoverToggle.text = toggleText;        
+        popoverToggle.text = toggleDisplay;        
     }
-
-    if (toggleChild != null)
+    else if (toggleDisplay != null && typeof(toggleDisplay) == 'object')
     {
-        popoverToggle.appendChild(toggleChild);        
+        popoverToggle.appendChild(toggleDisplay);        
     }
 
     $(popoverToggle).popover({

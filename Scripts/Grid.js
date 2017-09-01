@@ -47,30 +47,13 @@ function Grid(gridElement)
         {
             element.removeChild(elementToRemove);
         },
-        //TODO creating an element and object (for the row list) should maybe be handled separately from one another
-        //TODO some of these might make more sense in the Row class
         AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
         {
-            var itemRow = new Row();
+            var itemRow = new Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
 
-            var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]); 
-
-            divRow.appendChild(CreatePopoverEdit());
-            
-            divRow.appendChild(CreateItemColumn(itemName));
-
-            //TODO should popovers really know about their row object? Probably not
-                //Maybe these sub-elements should be part of the ItemRow
-            divRow.appendChild(CreateQuantityPopover(itemRow, neededQuantity));
-            divRow.appendChild(CreateQuantityPopover(itemRow, luggageQuantity));
-            divRow.appendChild(CreateQuantityPopover(itemRow, wearingQuantity));
-            divRow.appendChild(CreateQuantityPopover(itemRow, backpackQuantity));
-        
-            itemRow.SetupRowElements(divRow);
             rows.push(itemRow);
 
-            //TODO this is all quite messy. Take some time to clean up row creation. Really this should be happening in the Row 'class'.
-            element.appendChild(divRow); 
+            element.appendChild(itemRow.GetDiv()); 
         }
     };
 }
