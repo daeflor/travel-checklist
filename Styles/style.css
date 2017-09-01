@@ -121,9 +121,6 @@ div .smallicon{
     */
 }
 
-/* TODO Is this really necessary? could padding on the parent div be used instead?
-    - No, because there is no parent div for each individual button, just for the group of them.
-*/
 .buttonEditQuantity {
     margin: 3px;
 }

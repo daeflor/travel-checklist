@@ -92,7 +92,6 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
         divRow.appendChild(CreateNewElement('div', [ ['class','col divQuantity'] ], popoverToggle));
     }
 
-    //TODO could an enum be used for the different quantities and then pass a number which corresponds to one of the quantities
     function ModifyQuantityValue(quantityElement, increase)
     {
         console.log("Request called to modify a quantity value.");
