@@ -1,9 +1,107 @@
 window.GridManager = function()
 {
-    //var divGrid;
+    document.addEventListener('DOMContentLoaded', Start);    
+
     var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
     var grids = [];
     var activeGrid;
+
+    function Start()
+    {
+        SetupGrids();
+        document.getElementById('buttonAddRow').onclick = AddNewRow;
+    
+        // $(document).ready(function(){
+        //     console.log("Enabling popovers");
+        //     $('[data-toggle="popover"]').popover()
+        // });
+    
+        LoadDataFromStorage();
+    }
+
+    /** Grid Setup & Storage Management **/
+
+    function SetupGrids()
+    {
+        var gridElements = document.getElementsByClassName('grid');
+
+        for (var i = 0; i < gridElements.length; i++)
+        {
+            grids.push(new Grid(gridElements[i]));
+        }
+
+        var categoryButtons = document.getElementsByClassName('buttonCategory');
+
+        for (var i = 0; i < categoryButtons.length; i++)
+        {
+            categoryButtons[i] .addEventListener('click', CategorySelected); 
+        }
+
+        activeGrid = GetVisibleGrid();
+        
+        SwitchGrids(2, "Test"); //This is just for test purposes
+    }
+
+    function LoadDataFromStorage()
+    {
+        var gridData = LoadValueFromLocalStorage('gridData');
+    
+        if (gridData != null)
+        {
+            console.log("Loaded from Local Storage: " + gridData);
+            ReloadGridDataFromStorage(JSON.parse(gridData));        
+        }    
+        else
+        {
+            console.log("Could not find row data saved in local storage.");
+        }
+    }
+
+    function ReloadGridDataFromStorage(gridData)
+    {
+        console.log('There are ' + gridData.length + ' grids saved in local storage.');
+
+        for (var i = 0; i < gridData.length; i++)
+        {
+            for (var j = 0; j < gridData[i].length; j++)
+            {
+                console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                
+                //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
+                
+                //AddRowToGrid();
+
+                grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+            }
+        }
+    }
+
+    function SaveDataToStorage()
+    {
+        SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GetStorageData()));
+    }
+
+
+//TODO finish organizing (just moving around and labeling) functions below this
+    
+    function AddNewRow()
+    {
+        activeGrid.AddRow("", 0, 0, 0, 0);
+        //GridManager.GridModified();
+        SaveDataToStorage(); //TODO maybe these 'grid modified' calls should be done in the grid class.. Is it better though?...
+    }
+
+    function GetStorageData()
+    {
+        var gridData = [];
+
+        for (var i = 0; i < grids.length; i++)
+        {
+            gridData.push(grids[i].GetStorageData());
+        }
+
+        return gridData;
+    }
 
 
 
@@ -24,7 +122,8 @@ window.GridManager = function()
     {
         //activeGrid.removeChild(elementToRemove);
         activeGrid.RemoveChildElement(elementToRemove);
-        GridManager.GridModified(); //TODO it's silly having to reference GridManager within GridManager
+        //GridManager.GridModified();
+        SaveDataToStorage();
     }
 
     // function ModifyElementInGrid(element, attribute, value)
@@ -66,66 +165,7 @@ window.GridManager = function()
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        SetupGrids : function()
-        {
-            var gridElements = document.getElementsByClassName('grid');
-            //console.log("Number of grids: " + gridElements.length);
-
-            for (var i = 0; i < gridElements.length; i++)
-            {
-                //console.log('Adding grid ' + gridElements[i] + ' to grid list');
-                grids.push(new Grid(gridElements[i]));
-            }
-
-            var categoryButtons = document.getElementsByClassName('buttonCategory');
-
-            for (var i = 0; i < categoryButtons.length; i++)
-            {
-                categoryButtons[i] .addEventListener('click', CategorySelected); 
-            }
-
-            activeGrid = GetVisibleGrid();
-            
-            SwitchGrids(2, "Test"); //This is just for test purposes
-        },
-        GetStorageData : function()
-        {
-            var gridData = [];
-            //console.log('There are currently ' + gridData.length + ' grids.');
-
-            for (var i = 0; i < grids.length; i++)
-            {
-                gridData.push(grids[i].GetStorageData());
-            }
-
-            return gridData;
-        },//TODO some of these could probably be moved into new Grid class, and Grid and Row 'classes' could be moved to a separate file, potentially
-        AddNewRow : function()
-        {
-            activeGrid.AddRow("", 0, 0, 0, 0);
-            GridManager.GridModified();
-        },
-        ReloadGridDataFromStorage : function(gridData)
-        {
-            console.log('There are ' + gridData.length + ' grids saved in local storage.');
-
-            for (var i = 0; i < gridData.length; i++)
-            {
-                for (var j = 0; j < gridData[i].length; j++)
-                {
-                    console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                    
-                    //AddElementToGrid(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false);
-                    //activeGrid.AddChildElement(CreateRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4]), false); 
-
-                    //AddRowToGrid();
-
-                    grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-
-                    //activeGrid.AddRow(rowValues[i][0], rowValues[i][1], rowValues[i][2], rowValues[i][3], rowValues[i][4], false);
-                }
-            }
-        },
+        //TODO some of these could probably be moved into new Grid class, and Grid and Row 'classes' could be moved to a separate file, potentially
         RemoveRow : function(rowToRemove)
         {        
             var index = $(rowToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
@@ -161,73 +201,7 @@ window.GridManager = function()
         },
         GridModified : function()
         {
-            StoreGrid();
+            SaveDataToStorage();
         }
     };
 }();
-
-/** Helpers **/
-//TODO move these out of GridManager properly (i.e. somewhere that makes sense)
-
-//TODO could change child parameter to a list of children instead
-function CreateNewElement(elementName, attributes, child)
-{
-    var element;
-    
-    if (elementName != null)
-    {
-        element = document.createElement(elementName);
-
-        if (attributes != null)
-        {
-            for (var i = 0; i < attributes.length; i++)
-            {
-                element.setAttribute(attributes[i][0], attributes[i][1]);
-            }
-        }
-
-        if (child != null)
-        {
-            element.appendChild(child);
-        }
-
-        return element;
-    }
-    else
-    {
-        console.log("Failed to create new element. No name provided.");
-    }
-}
-
-function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
-{
-    console.log("Request to create a popover with display of type: " + typeof(toggleDisplay));
-    /* Setup Popover Elements */
-    var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
-    for (var i = 0; i < popoverChildren.length; i++)
-    {
-        divPopover.appendChild(popoverChildren[i]);
-    } 
-
-    /* Create Popover Toggle */
-    var popoverToggle = CreateNewElement('a', [ ['class',toggleClass], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
-    
-    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string') || typeof(toggleDisplay) == 'number')
-    {
-        popoverToggle.text = toggleDisplay;        
-    }
-    else if (toggleDisplay != null && typeof(toggleDisplay) == 'object')
-    {
-        popoverToggle.appendChild(toggleDisplay);        
-    }
-
-    $(popoverToggle).popover({
-        placement: 'bottom',
-        animation: true,
-        html: true,
-        trigger: popoverTrigger,
-        content: divPopover.outerHTML
-    }); 
-
-    return popoverToggle;
-}

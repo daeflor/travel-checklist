@@ -1,10 +1,3 @@
-var QuantityType = {
-    Needed: 0,
-    Luggage: 1,
-    Wearing: 2,
-    Backpack: 3,
-};
-
 function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
     var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]);
@@ -26,7 +19,7 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
         /* Create Popover Elements */
         //var iconTrash = CreateNewElement('i', [['class','fa fa-trash']]);
         //var buttonTrash = CreateNewElement('button', [ ['class','btn'], ['type','button'] ], iconTrash);
-        var buttonTrash = CreateButtonEdit('buttonTrash', 'fa fa-trash');
+        var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
     
         var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
         var popoverToggle = CreatePopoverToggle('btn buttonEdit', iconToggle, [buttonTrash], 'focus');
@@ -59,8 +52,8 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     function CreateDivForQuantityPopover(quantity)
     {
         /* Create Popover Elements */
-        var buttonMinus = CreateButtonQuantity('buttonMinus', 'fa fa-minus-circle fa-lg popoverElement');
-        var buttonPlus = CreateButtonQuantity('buttonPlus', 'fa fa-plus-circle fa-lg popoverElement');
+        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn btn-lg buttonEditQuantity popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
+        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn btn-lg buttonEditQuantity popoverElement', 'fa fa-plus-circle fa-lg popoverElement');
     
         var popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', quantity, [buttonMinus, buttonPlus], 'manual');
     
@@ -157,23 +150,10 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     };
 }
 
-//TODO these two functions could probably be merged into one (e.g. CreateButtonWithIcon?)
-    //Also they should probably be moved into Row or standardized and moved elsewhere
-function CreateButtonEdit(buttonId, iconClass)
-{
-    return CreateNewElement(
-        'button', 
-        [['id',buttonId], ['class','btn'], ['type','button']], 
-        CreateNewElement('i', [['class',iconClass]])
-    );
-}
-
-function CreateButtonQuantity(buttonId, iconClass)
-{
-    return CreateNewElement(
-        'button', 
-        [['id',buttonId], ['class','btn'], ['type','button']], 
-        CreateNewElement('i', [['class',iconClass]])
-    );
-}
+var QuantityType = {
+    Needed: 0,
+    Luggage: 1,
+    Wearing: 2,
+    Backpack: 3,
+};
 
