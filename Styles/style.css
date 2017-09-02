@@ -47,7 +47,7 @@ div .smallicon{
 }
 
 .grid div {
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     justify-content: center; 
     text-align: center; 
@@ -121,7 +121,8 @@ a, a:visited {
 }
 
 .buttonEditQuantity {
-    margin: 3px;
+    margin: 8px;
+    background-color: #EFDEB4;
 }
 
 #newRow {
@@ -156,3 +157,16 @@ a, a:visited {
     max-height: 25px;
 }
 */
+
+/* Popovers */
+/*TODO would be nice to be able to affect different popover bodies separately*/
+.popover-body {
+    background-color: #E7F3FF;
+    padding: 2px;
+}
+
+.buttonClear {
+    margin: 2px;
+    background-color: #EFDEB4;
+    padding: 8px;
+}

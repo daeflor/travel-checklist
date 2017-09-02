@@ -32,7 +32,7 @@
 </head>
 <body>       
   <div class="row" id="headerRow">
-    <div class="col-5 dropdown header itemCategory">
+    <div class="col-5 dropdown header itemCategory"> <!--TODO what does the dropdown class do exactly? -->
       <button class="btn dropdown-toggle" id="buttonCurrentCategory" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Clothes
       </button>
@@ -50,18 +50,33 @@
     </div>
     -->
     
-    <div class="col header"><i class="fa fa-pie-chart fa-lg"></i></div>
-    <!--
-    <div class="col header"><i class="fa fa-suitcase fa-lg"></i></div>
-    <div class="col header"><i class="fa fa-male fa-lg"></i></div>
-    <div class="col header smallicon"><i class="fa fa-briefcase"></i></div>
+    <div class="col header">
+      <!--
+      <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Button with data-target
+      </button>
+      <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+        </div>
+      </div>
     -->
+      <i class="fa fa-pie-chart fa-lg"></i>
+    </div>
   </div>     
-  <div class="container-fluid grid"></div>
-  <div class="container-fluid grid" hidden="hidden"></div>
-  <div class="container-fluid grid" hidden="hidden"></div>
+
+  <div class="container-fluid grid">
+  </div>
+
+  <div class="container-fluid grid" hidden="hidden">
+  </div>
+
+  <div class="container-fluid grid" hidden="hidden">
+  </div>
+
   <div id="newRow">
     <button class="btn" id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
   </div>
+  
 </body>
 </html>

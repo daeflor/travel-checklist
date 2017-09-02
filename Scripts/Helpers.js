@@ -34,7 +34,7 @@ function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 {
     return CreateNewElement(
         'button', 
-        [['id',buttonId], ['class',buttonClass], ['type','button']], 
+        [ ['id',buttonId], ['class',buttonClass], ['type','button'] ], 
         CreateNewElement('i', [['class',iconClass]])
     );
 }
@@ -100,6 +100,42 @@ function LoadValueFromLocalStorage(name)
         alert('No Local Storage Available');
     }
 }
+
+/** Experimental & In Progress **/
+
+// function CreateDropdownWrapper(toggleClass, toggleDisplay, dropdownChildren)
+// {
+//     //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
+    
+//     /* Create Dropdown Toggle */
+//     var dropdownToggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-haspopup','true'], ['aria-expanded','false'] ]);//, ['toggle','dropdown']
+
+//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+//     {
+//         dropdownToggle.textContent = toggleDisplay;        
+//     }
+
+//     //dropdownToggle.setAttribute('toggle', 'dropdown');
+
+//     dropdownToggle.dataset.toggle = 'dropdown';
+
+//     $(dropdownToggle).dropdown(); 
+
+//     var buttontest = CreateButtonWithIcon('buttontest', 'btn buttonEditQuantity', 'fa fa-minus-circle fa-lg');
+    
+//     /* Setup Dropdown Elements */
+//     var divDropdownMenu = CreateNewElement('div', [ ['class','dropdown-menu'] ]); 
+//     for (var i = 0; i < dropdownChildren.length; i++)
+//     {
+//         divDropdownMenu.appendChild(dropdownChildren[i]);
+//         console.log("Added a child of type " + typeof(dropdownChildren[i]) + " to dropdown for item: " + toggleDisplay);
+//     } 
+
+//     var divDropdownWrapper = CreateNewElement('div', [ ['class','dropdown'] ], dropdownToggle);
+//     divDropdownWrapper.appendChild(divDropdownMenu); 
+
+//     return divDropdownWrapper;
+// }
 
 /** Unused **/
 //TODO move these elsewhere

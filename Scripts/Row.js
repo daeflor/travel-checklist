@@ -6,7 +6,9 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     var listQuantityPopovers = [];
 
     CreateDivForEditPopover();
+
     CreateDivForItemName(itemName);
+    
     CreateDivForQuantityPopover(neededQuantity);
     CreateDivForQuantityPopover(luggageQuantity);
     CreateDivForQuantityPopover(wearingQuantity);
@@ -47,8 +49,8 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
     function CreateDivForQuantityPopover(quantity)
     {
         /* Create Popover Elements */
-        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn btn-lg buttonEditQuantity popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
-        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn btn-lg buttonEditQuantity popoverElement', 'fa fa-plus-circle fa-lg popoverElement');
+        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn buttonEditQuantity popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
+        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn buttonEditQuantity popoverElement', 'fa fa-plus-circle fa-lg popoverElement');
     
         var popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', quantity, [buttonMinus, buttonPlus], 'manual');
     
@@ -124,6 +126,77 @@ function Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpac
             divItemName.style.backgroundColor = "peru";
         }
     }
+
+    /** Experimental & In Progress **/
+
+    // function TestCollapse()
+    // {
+    //     var html = '<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExampleJS" aria-expanded="false" aria-controls="collapseExample">Button with data-target</button><div class="collapse" id="collapseExampleJS"><div class="card card-body">Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.</div></div>';
+    //     var newDiv = CreateNewElement('div');
+    //     newDiv.innerHTML = html;
+    //     divRow.appendChild(newDiv);
+
+    //     //$('.collapse').collapse();
+    // }
+
+    // function TestTwo()
+    // {
+    //     var newDiv = CreateNewElement('div', [ ['class',''] ]);
+    //     newDiv. innerHTML = document.getElementById('dropdownHeader').outerHTML;
+    //     divRow.appendChild(newDiv);
+    // }
+
+    // function Test()
+    // {
+    //     var dropdownHtml = '<button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clothes</button><div class="dropdown-menu"><button class="dropdown-item buttonCategory" data-gridindex="0" type="button">Clothes</button><button class="dropdown-item buttonCategory" data-gridindex="1" type="button">Sundries</button><button class="dropdown-item buttonCategory" data-gridindex="2" type="button">Test</button></div>';
+    //     var newDiv = CreateNewElement('div', [ ['class','col-4 dropdown header itemCategory'] ]);
+    //     newDiv.innerHTML = dropdownHtml;
+    //     divRow.appendChild(newDiv);
+
+    //     //$('.dropdown-toggle').dropdown('toggle');
+    //     $('[data-toggle="dropdown"]').parent().removeClass('open');
+    // }
+
+    // function CreateDropDownForItemName(itemName)
+    // {
+    //     var buttonTrash = CreateButtonWithIcon('buttonTrashDropdown', 'btn dropdown-item', 'fa fa-trash');
+    //     var textareaName = CreateNewElement('textarea', [ ['class','dropdown-item'], ['id','textareaName'] ]);
+        
+    //     var dropdownWrapper = CreateDropdownWrapper('btn dropdown-toggle', itemName, [buttonTrash, textareaName]);
+    //     var dropdownToggle = dropdownWrapper.children[0];
+
+    //     console.log("Dropdown class: " + dropdownToggle.className);
+
+    //     textareaItemName = dropdownToggle;
+
+    //     divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], dropdownWrapper);
+
+    //     dropdownToggle.addEventListener('click', function() 
+    //     {
+    //         $(dropdownToggle).dropdown('toggle');
+    //     });
+
+    //     $(dropdownToggle).on('shown.bs.dropdown', function() 
+    //     {
+    //         document.getElementById('buttonTrashDropdown').addEventListener('click', function()
+    //         {
+    //             console.log("DROPDOWNTRASH CLICKED");
+    //             GridManager.RemoveRow(divRow);
+    //         });
+
+    //         textareaName.text = popoverToggle.textContent;
+    //     });
+
+    //     // $(dropdownToggle).on('hide.bs.dropdown', function()
+    //     // {
+    //     //     dropdownToggle.text = document.getElementById('textareaName').text;
+    //     // });
+
+    //     //divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], dropdownWrapper);
+    //     divRow.appendChild(divItemName);
+    // }
+    
+    /** Public Functions **/
 
     return { 
         GetDiv : function()

@@ -10,6 +10,7 @@ TO-DOs:
 Upcoming To-Do List:
 - Choose icon for Clear button
 - Visual improvements (including element alignment)
+    Could look into gradient colors
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
@@ -21,6 +22,7 @@ Thoughts:
 - Standardize between " and '
 - Could alternate row background color for better readability
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
+- Could be useful to have a helper function which turns elements into html tags
 
 Future:
 
