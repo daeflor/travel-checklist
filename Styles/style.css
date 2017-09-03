@@ -1,6 +1,8 @@
 .header {
     font-size: 13px;
     background-color: lavenderblush;
+    padding-left: 0px;
+    padding-right: 0px;
     padding-top: 5px;
     padding-bottom: 5px;
     text-align: center;
@@ -62,58 +64,42 @@ a, a:visited {
 
 .grid textarea
 {
-    width: 110px;
-    height: auto;
-    min-height: 25px;
-    max-height: 25px;
-    background-color: burlywood;
-    font-weight: bold;
+    /* width: auto;
+    height: auto; */
+    min-height: 30px;
+    max-height: 30px;
+    background-color: bisque;
+    /* font-weight: bold; */
 } 
 
 .divItemRow {
-    /* TODO I kind of liked the look of it when the rows weren't fully colored in */
     background-color: aliceblue;
     border-color: black;
     border-width: 1px;
     border-style: solid;
 }
-
+/* 
 .divEdit {
     padding: 4px;  
-    /*background-color: bisque;
-    margin-left: 2px;*/
 }
 
 .buttonEdit {
     background-color: bisque;
     padding: 4px;
-    /*max-height: 25px;*/
-}
+}  */
 
 .divItemName {
     font-size: 13px;
-    padding: 5px;
-    margin: 2px;
+    padding: 6px;
 }
-
-/*
-.divQuantity {
-    /*background-color: bisque;
-    /*padding: 5px;
-    /*
-    margin-right: 5px;
-    /*
-    align-items: stretch;
-    height: 100%;
-    */
-/*}*/
-
 
 .buttonQuantity {
     text-align: center;
     background-color: burlywood;
     color: black;
     font-weight: bold;
+    border: 1px ridge;
+    width: 100%;
     /*font-size: 14px;
     /*
     padding: 5px;
@@ -125,8 +111,9 @@ a, a:visited {
 }
 
 .buttonEditQuantity {
-    margin: 8px;
+    /* margin: 8px; */
     background-color: #EFDEB4;
+    border: 3px outset;
 }
 
 #newRow {
@@ -153,15 +140,6 @@ a, a:visited {
     background-color: bisque;
 }
 
-/*
-
-.inputQuantity {
-    width: 25px;
-    background-color: burlywood;
-    max-height: 25px;
-}
-*/
-
 /* Popovers */
 /*TODO would be nice to be able to affect different popover bodies separately*/
 .popover-body {
@@ -173,17 +151,36 @@ a, a:visited {
     margin: 2px;
     background-color: #EFDEB4;
     padding: 8px;
+    border: 3px outset;
+    /* border-width: 5px;  
+    border-style: outset; */
 }
 
 .buttonItemName {
     width: 100%;
     text-align: left;
+    max-height: 35px;
+    padding: 3px;
+    padding-left: 10px;
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+    /* background-color: rgba(red, green, blue, 0.2); */
+    /*background: aliceblue;*/ /* For browsers that do not support gradients */
+    /*background: linear-gradient(to bottom right,#FFFFFF, #F5F6E5); *//* Standard syntax */
 }
+/*
+.buttonItemName:hover {
+    background: aliceblue; 
+    background: linear-gradient(to bottom right,#FFFFFF, #F5F6E5); 
+}
+*/
 
 .divSettingsWrapper {
     border-color: black;
     border-width: 1px;
     border-style: solid;
+    padding: 5px;
 }
 
 .divSettingsWrapper textarea
@@ -191,7 +188,17 @@ a, a:visited {
     width: 100%;
 } 
 
-/*
-.divSettingsCard {
-    display: inline;
-} */
+.divEditName {
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+} 
+
+.settings-button {
+    background-color: lavenderblush;
+    border: 3px outset;
+    /* border-color: black;
+    border-width: 2px;
+    border-style: outset; */
+    /* border-radius: 5px; */
+}

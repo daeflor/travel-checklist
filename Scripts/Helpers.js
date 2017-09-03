@@ -103,6 +103,7 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
+//TODO this should probably be two separate functions
 function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
 {
     //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);

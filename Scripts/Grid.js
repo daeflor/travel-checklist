@@ -57,6 +57,8 @@ function Grid(gridElement)
             rows.push(itemRow);
             
             element.appendChild(itemRow.GetDiv()); 
+            //itemRow.ExpandSettings();
+            //TODO would be nice if new rows auto-expanded when created, but this needs a bit more work
         },
         ClearQuantityColumnValues : function(columnIndex)
         {
@@ -64,6 +66,13 @@ function Grid(gridElement)
             {
                 rows[i].ClearQuantityValue(columnIndex);
             } 
+        },
+        CollapseSettings : function()
+        {
+            for (var i = 0; i < rows.length; i++)
+            {    
+                rows[i].CollapseSettings();
+            }
         }
     };
 }

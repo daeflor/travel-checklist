@@ -136,7 +136,7 @@ window.GridManager = function()
 
     function AddNewRow()
     {
-        activeGrid.AddRow("", 0, 0, 0, 0);
+        activeGrid.AddRow("__________", 0, 0, 0, 0);
         SaveDataToStorage(); 
     }
 
@@ -210,6 +210,13 @@ window.GridManager = function()
             rowCounter++;
             return rowCounter;
         },
+        CollapseSettings : function()
+        {
+            for (var i = 0; i < grids.length; i++)
+            {    
+                grids[i].CollapseSettings();
+            }
+        }
     };
 }();
 

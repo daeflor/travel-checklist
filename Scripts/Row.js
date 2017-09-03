@@ -1,12 +1,5 @@
 function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
-    //var index = rowIndex; //TODO this doesn't work because it's not getting updated when rows are deleted
-    
-    //var divRow = CreateNewElement('div', [ ['class','row divItemRow'] ]);
-    //var divItemName;
-    //var textareaItemName;
-    var listQuantityPopovers = [];
-
     var Elements = {
         wrapper: CreateNewElement('div', [ ['class','row divItemRow'] ]),
         nameWrapper: null,
@@ -14,9 +7,11 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         settingsWrapper: null,
     };
 
+    var listQuantityPopovers = [];
+
     //console.log("This: " + this);
 
-    CreateDivForEditPopover();
+    //CreateDivForEditPopover();
 
     //CreateDivForItemName(itemName);
     CreateCollapsibleDivForItemName(rowId, itemName);
@@ -30,25 +25,25 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     SetItemColumnColor();
 
-    function CreateDivForEditPopover()
-    {
-        /* Create Popover Elements */
-        var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
+    // function CreateDivForEditPopover()
+    // {
+    //     /* Create Popover Elements */
+    //     var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
     
-        /* Create Edit Button Elements */
-        var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
-        var popoverToggle = CreatePopoverToggle('btn buttonEdit', iconToggle, [buttonTrash], 'focus');
+    //     /* Create Edit Button Elements */
+    //     var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
+    //     var popoverToggle = CreatePopoverToggle('btn buttonEdit', iconToggle, [buttonTrash], 'focus');
         
-        $(popoverToggle).on('shown.bs.popover', function() 
-        {
-            document.getElementById('buttonTrash').addEventListener('click', function()
-            {
-                GridManager.RemoveRow(Elements.wrapper);
-            });
-        });
+    //     $(popoverToggle).on('shown.bs.popover', function() 
+    //     {
+    //         document.getElementById('buttonTrash').addEventListener('click', function()
+    //         {
+    //             GridManager.RemoveRow(Elements.wrapper);
+    //         });
+    //     });
 
-        Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle));
-    }  
+    //     Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle));
+    // }  
 
     // function CreateDivForItemName(itemName)
     // {
@@ -104,7 +99,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
         listQuantityPopovers.push(popoverToggle);
     
-        Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col divQuantity'] ], popoverToggle));
+        Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
     }
 
     function ModifyQuantityValue(quantityElement, increase)
@@ -125,64 +120,55 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         }
     }
 
+    //TODO maybe the border could be color coded instead of the background
     function SetItemColumnColor()
     {
         if (listQuantityPopovers[QuantityType.Needed].text == 0)
         {
-            Elements.nameWrapper.style.backgroundColor = "darkgrey";
+            Elements.nameToggle.style.backgroundColor = "darkgrey";
+            //Elements.nameToggle.style.backgroundColor = 'rgba(169, 169, 169, 0.6)';
         }
         else if (listQuantityPopovers[QuantityType.Needed].text == (parseInt(listQuantityPopovers[QuantityType.Luggage].text) + parseInt(listQuantityPopovers[QuantityType.Wearing].text) + parseInt(listQuantityPopovers[QuantityType.Backpack].text)))
         {
-            Elements.nameWrapper.style.backgroundColor = "mediumseagreen";
+            Elements.nameToggle.style.backgroundColor = "mediumseagreen";
+            //Elements.nameToggle.style.backgroundColor = 'rgba(60, 179, 113, 0.6)';
         }
         else
         {
-            Elements.nameWrapper.style.backgroundColor = "peru";
+            Elements.nameToggle.style.backgroundColor = "peru"; //lightsalmon is also good
+            //Elements.nameToggle.style.backgroundColor = 'rgba(255,160,122, 0.6)';
+            
         }
     }
 
     /** Experimental & In Progress **/
 
-    function TestCollapse()
-    {
-        var html = '<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExampleJS" aria-expanded="false" aria-controls="collapseExample">Button with data-target</button><div class="collapse" id="collapseExampleJS"><div class="card card-body">Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.</div></div>';
-        var newDiv = CreateNewElement('div');
-        newDiv.innerHTML = html;
-        divRow.appendChild(newDiv);
-
-        //$('.collapse').collapse();
-    }
-
     function CreateCollapsibleDivForItemName(rowId, itemName)
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
-            //But for this scenario may just need an easier, different approach for unique IDs
         
         var textareaName = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
-        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn', 'fa fa-trash');
+        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash');
 
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5'] ], textareaName);
+        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], textareaName);
         var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
 
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
         var collapsibleElements = CreateCollapsibleElements('editRow-'.concat(rowId), 'btn buttonItemName', itemName, 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
-        Elements.nameToggle= collapsibleElements[0];
+        Elements.nameToggle = collapsibleElements[0];
         Elements.settingsWrapper = collapsibleElements[1];
 
         textareaName.textContent = Elements.nameToggle.textContent;
         textareaName.onchange = GridManager.GridModified;
 
-        $(Elements.settingsWrapper).on('shown.bs.collapse', function() 
+        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
         {
-            //console.log("Collapsible element expanded");
-            //document.getElementById('deleteRow-'.concat(rowId)).addEventListener('click', function()
             buttonDeleteRow.addEventListener('click', function()
             {
-                //console.log("DROPDOWNTRASH CLICKED");
                 GridManager.RemoveRow(Elements.wrapper);
             });
 
-            // textareaName.textContent = Elements.nameToggle.textContent;
+            GridManager.CollapseSettings();
         });
 
         $(Elements.settingsWrapper).on('hide.bs.collapse', function()
@@ -191,7 +177,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             Elements.nameToggle.textContent = textareaName.value;
         });
 
-        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-4 divItemName'] ], Elements.nameToggle);
+        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
 
         Elements.wrapper.appendChild(Elements.nameWrapper);
         //Elements.wrapper.appendChild(Elements.settingsWrapper);
@@ -280,6 +266,10 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             listQuantityPopovers[quantityIndex].text = 0; 
             SetItemColumnColor();
+        },
+        CollapseSettings : function()
+        {
+            $(Elements.settingsWrapper).collapse('hide');
         }
     };
 }

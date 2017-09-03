@@ -1,27 +1,23 @@
 TO-DOs:
 
-	- index.html      : 0
-	- GridManager.js  : 4
-    - Grid.js         : 1
-    - Row.js          : 1
-    - Helpers.js      : 2
+	- index.html      : 1
+	- GridManager.js  : 7
+    - Grid.js         : 2
+    - Row.js          : 3
+    - Helpers.js      : 3
 	- Style.css       : 2
 
 Upcoming To-Do List:
-- Choose icon for Clear button
 - Visual improvements (including element alignment)
     Could look into gradient colors
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
 
-- Add 'clear' buttons to each column to clear all entries at once. (Could be good while on trips). 
-    These could be in popovers. Should standardize popover creation logic
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '
 - Could alternate row background color for better readability
-- Because of margins, the columns in the header row are not aligned with columns of the item rows.
 - Could be useful to have a helper function which turns elements into html tags
 - Should have a good way to test backwards compatibility
 
