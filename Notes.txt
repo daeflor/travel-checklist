@@ -23,6 +23,7 @@ Thoughts:
 - Could alternate row background color for better readability
 - Because of margins, the columns in the header row are not aligned with columns of the item rows.
 - Could be useful to have a helper function which turns elements into html tags
+- Should have a good way to test backwards compatibility
 
 Future:
 

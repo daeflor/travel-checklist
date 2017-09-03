@@ -5,6 +5,7 @@ window.GridManager = function()
     var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
     var grids = [];
     var activeGrid;
+    var rowCounter = 0;
 
     function Setup()
     {
@@ -82,10 +83,11 @@ window.GridManager = function()
 
     function ReloadGridDataFromStorage(gridData)
     {
-        console.log('There are ' + gridData.length + ' grids saved in local storage.');
-
+        //console.log('There are ' + gridData.length + ' grids saved in local storage.');
         for (var i = 0; i < gridData.length; i++)
         {
+            console.log("Regenerating Grid " + i + " ----------");
+
             for (var j = 0; j < gridData[i].length; j++)
             {
                 //console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
@@ -202,7 +204,12 @@ window.GridManager = function()
         GridModified : function()
         {
             SaveDataToStorage();
-        }
+        },
+        GetNextRowId : function()
+        {
+            rowCounter++;
+            return rowCounter;
+        },
     };
 }();
 

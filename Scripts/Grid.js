@@ -36,13 +36,14 @@ function Grid(gridElement)
         RemoveRow : function(rowElementToRemove)
         {
             var index = $(rowElementToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
+            //rowElementToRemove.GetIndex();
             console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
             
             if(index > -1) 
             {
                 rows.splice(index, 1);
                 element.removeChild(rowElementToRemove);
-                console.log("Removed row at index " + index);
+                console.log("Removed row at index " + index + ". Number of Row Items in Grid's list is now: " + rows.length);
             }
             else
             {
@@ -51,10 +52,10 @@ function Grid(gridElement)
         },
         AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
         {
-            var itemRow = new Row(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
+            var itemRow = new Row(GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
 
             rows.push(itemRow);
-
+            
             element.appendChild(itemRow.GetDiv()); 
         },
         ClearQuantityColumnValues : function(columnIndex)
