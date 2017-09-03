@@ -46,11 +46,14 @@ div .smallicon{
     padding-bottom: 0px;
 }
 
+/* TODO Now that a lot has changed, probably don't want such general settings */
 .grid div {
     /*display: flex;*/
+    /*
     align-items: center;
     justify-content: center; 
-    text-align: center; 
+    */
+    align-items: center;
 }
 
 a, a:visited {
@@ -61,6 +64,7 @@ a, a:visited {
 {
     width: 110px;
     height: auto;
+    min-height: 25px;
     max-height: 25px;
     background-color: burlywood;
     font-weight: bold;
@@ -170,3 +174,24 @@ a, a:visited {
     background-color: #EFDEB4;
     padding: 8px;
 }
+
+.buttonItemName {
+    width: 100%;
+    text-align: left;
+}
+
+.divSettingsWrapper {
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.divSettingsWrapper textarea
+{
+    width: 100%;
+} 
+
+/*
+.divSettingsCard {
+    display: inline;
+} */

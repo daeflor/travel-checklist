@@ -103,6 +103,43 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
+function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
+{
+    //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
+    
+    /* Setup Collapsible Elements */
+    var divCard = CreateNewElement('div', [ ['class','row'] ]);//card card-body
+    for (var i = 0; i < collapsedChildren.length; i++)
+    {
+        //divCard.appendChild(CreateNewElement('div', [ ['class','col'] ], collapsedChildren[i])); 
+        divCard.appendChild(collapsedChildren[i]);
+        //console.log("Added a child of type " + typeof(collapsedChildren[i]) + " to dropdown for item: " + toggleDisplay);
+    } 
+
+    var divCollapsible = CreateNewElement('div', [ ['class',collapsedClass], ['id',toggleId] ], divCard); 
+
+    /* Create Toggle */
+    var idReference = '#'.concat(toggleId);
+    //console.log("ID Reference is: " + idReference);
+    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', toggleId], ['data-toggle','collapse'], ['data-target',idReference] ]);//, ['toggle','collapse']
+    
+    // toggle.dataset.toggle = 'collapse';
+    // toggle.dataset.target = idReference;
+    
+    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+    {
+        toggle.textContent = toggleDisplay;        
+    }    
+
+    return [toggle, divCollapsible];
+
+    // var divWrapper = CreateNewElement('div', [ ['class',wrapperClass] ]);
+    // divWrapper.appendChild(toggle);
+    // divWrapper.appendChild(divCollapsible);
+
+    // return divWrapper;
+}
+
 // function CreateDropdownWrapper(toggleClass, toggleDisplay, dropdownChildren)
 // {
 //     //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
