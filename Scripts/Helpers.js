@@ -64,7 +64,8 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
 
     $(popoverToggle).popover({
         placement: 'bottom',
-        animation: true,
+        animation: false,
+        delay: { "hide": 50 },
         html: true,
         trigger: popoverTrigger,
         content: divPopover.outerHTML

@@ -18,9 +18,9 @@ Thoughts:
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '
 - Could alternate row background color for better readability
-- Could be useful to have a helper function which turns elements into html tags
 - Should have a good way to test backwards compatibility
 - Figure out what's causing poor performance with collapsible settings view
+- Is it possible in a clean way to make the quantity popover behavior different on pc (for development) than on mobile 
 
 Future:
 
@@ -51,3 +51,5 @@ Future:
 - Need a manager for the whole page, not just grids. Could split up GridManager or rename it. 
     (Could depend on whether or not Interactions get pulled out into a separate manager/file)
 - Color palette of popovers (incl. background) could be better
+- Might be useful to have a helper function which turns elements into html tags
+-

@@ -147,33 +147,24 @@ window.GridManager = function()
     function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
     {
         var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
-    
+
         var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
         var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
         
         $(popoverToggle).on('shown.bs.popover', function() 
         {
+            console.log("A Header Popover was shown");
             document.getElementById('buttonClear').addEventListener('click', function()
             {
+                //console.log("A Clear button was pressed");
                 activeGrid.ClearQuantityColumnValues(quantityHeaderIndex);
                 SaveDataToStorage();
             });
+            //console.log("Added an onclick event listener to a Clear button");
         });
 
         var divWrapper = CreateNewElement('div', [ ['class',divClass] ], popoverToggle);
         document.getElementById('headerRow').appendChild(divWrapper);
-    }
-
-    function TestCollapse()
-    {
-        var html = '<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExampleJS" aria-expanded="false" aria-controls="collapseExample">Button with data-target</button><div class="collapse" id="collapseExampleJS"><div class="card card-body">Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.</div></div>';
-        var newDiv = CreateNewElement('div');
-        newDiv.innerHTML = html;
-        return newDiv;
-        //document.getElementById('headerRow').appendChild(newDiv);
-        //document.body.appendChild(newDiv);
-
-        //$('.collapse').collapse();
     }
 
     /** Public Functions **/
@@ -191,6 +182,7 @@ window.GridManager = function()
         SetActivePopover : function(popover)
         {
             activePopover = popover;
+            console.log("The Active Popover changed");
         },
         HideActiveQuantityPopover : function(e)
         {     
@@ -200,6 +192,7 @@ window.GridManager = function()
             {
                 document.removeEventListener('click', GridManager.HideActiveQuantityPopover);
                 $(activePopover).popover('hide');
+                console.log("The active popover was told to hide");
             }
         },
         // SetActiveSettingsView : function(settingsView)

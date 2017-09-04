@@ -10,13 +10,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     var listQuantityPopovers = [];
 
-    //console.log("This: " + this);
-
-    //CreateDivForEditPopover();
-
-    //CreateDivForItemName(itemName);
     CreateCollapsibleDivForItemName(rowId, itemName);
-    
     CreateDivForQuantityPopover(neededQuantity);
     CreateDivForQuantityPopover(luggageQuantity);
     CreateDivForQuantityPopover(wearingQuantity);
@@ -26,35 +20,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     SetItemColumnColor();
 
-    // function CreateDivForEditPopover()
-    // {
-    //     /* Create Popover Elements */
-    //     var buttonTrash = CreateButtonWithIcon('buttonTrash', 'btn', 'fa fa-trash');
-    
-    //     /* Create Edit Button Elements */
-    //     var iconToggle = CreateNewElement('i', [ ['class','fa fa-pencil-square-o'] ]);    
-    //     var popoverToggle = CreatePopoverToggle('btn buttonEdit', iconToggle, [buttonTrash], 'focus');
-        
-    //     $(popoverToggle).on('shown.bs.popover', function() 
-    //     {
-    //         document.getElementById('buttonTrash').addEventListener('click', function()
-    //         {
-    //             GridManager.RemoveRow(Elements.wrapper);
-    //         });
-    //     });
-
-    //     Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col-1 divEdit'] ], popoverToggle));
-    // }  
-
-    // function CreateDivForItemName(itemName)
-    // {
-    //     textareaItemName = CreateNewElement('textarea');
-    //     textareaItemName.value = itemName;
-    //     textareaItemName.onchange = GridManager.GridModified;
-    
-    //     divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], textareaItemName);
-    //     Elements.wrapper.appendChild(divItemName);
-    // }
+    /** Private Functions **/
     
     function CreateDivForQuantityPopover(quantity)
     {
@@ -64,21 +30,31 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     
         var popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', quantity, [buttonMinus, buttonPlus], 'manual');
     
-        popoverToggle.addEventListener('click', function() 
+        popoverToggle.addEventListener('click', function(e) 
         {
-            //If there is already a popover active, remove focus from the selected quantity button. Otherwise, show the button's popover. 
+            console.log("A Popover toggle was pressed");
+            //If there is no popover currently active, show the popover for the selected toggle
             if(GridManager.GetActivePopover() == null)
             {
+                //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
+                if(e.target == popoverToggle)
+                {
+                    console.log("Prevented click event from bubbling up");
+                    e.stopPropagation();
+                }
+
                 $(popoverToggle).popover('show');
             }
-            else
-            {
-                popoverToggle.blur();
-            }
+            // else
+            // {
+            //     popoverToggle.blur();
+            //     console.log("A Popover toggle was blurred");
+            // }
         });
     
         $(popoverToggle).on('shown.bs.popover', function() 
         {
+            console.log("A Popover was shown");
             GridManager.SetActivePopover(popoverToggle);
     
             document.getElementById('buttonMinus').addEventListener('click', function() 
@@ -91,10 +67,12 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             }); 
     
             document.addEventListener('click', GridManager.HideActiveQuantityPopover);
+            console.log("An onclick listener was added to the whole document");
         });
     
         $(popoverToggle).on('hidden.bs.popover', function()
         {
+            console.log("A Popover was hidden");
             GridManager.SetActivePopover(null);
         });
 
@@ -121,7 +99,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         }
     }
 
-    //TODO maybe the border could be color coded instead of the background
     function SetItemColumnColor()
     {
         if (listQuantityPopovers[QuantityType.Needed].text == 0)
