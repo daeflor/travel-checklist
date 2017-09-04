@@ -143,6 +143,7 @@ window.GridManager = function()
 
     /** Experimental & In Progress **/
 
+    //TODO would like a separate 'class' for toggles
     //TODO It doesn't really make sense for this to be in a 'GridManager'
     function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
     {

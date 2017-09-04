@@ -30,6 +30,7 @@ function CreateNewElement(elementName, attributes, child)
     }
 }
 
+//TODO should standardize this more so that it doesn't need to take an id, if possible?
 function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 {
     return CreateNewElement(
@@ -104,105 +105,65 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
-// function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
-// {
-//     /* Create Toggle */
-//     var idReference = '#'.concat(collapsibleId);
-//     var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
-    
-//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
-//     {
-//         toggle.textContent = toggleDisplay;        
-//     }    
-
-//     return toggle;
-// }
-
-// function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
-// {    
-//     /* Setup Collapsible Elements */
-//     var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
-//     for (var i = 0; i < collapsedChildren.length; i++)
-//     {
-//         divCard.appendChild(collapsedChildren[i]);
-//     } 
-
-//     return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
-// }
-
-
-
-
-//TODO this should probably be two separate functions
-function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
+function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
 {
-    //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
-    
-    /* Setup Collapsible Elements */
-    var divCard = CreateNewElement('div', [ ['class','row'] ]);//card card-body
-    for (var i = 0; i < collapsedChildren.length; i++)
-    {
-        //divCard.appendChild(CreateNewElement('div', [ ['class','col'] ], collapsedChildren[i])); 
-        divCard.appendChild(collapsedChildren[i]);
-        //console.log("Added a child of type " + typeof(collapsedChildren[i]) + " to dropdown for item: " + toggleDisplay);
-    } 
-
-    var divCollapsible = CreateNewElement('div', [ ['class',collapsedClass], ['id',toggleId] ], divCard); 
-
-    /* Create Toggle */
-    var idReference = '#'.concat(toggleId);
-    //console.log("ID Reference is: " + idReference);
-    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', toggleId], ['data-toggle','collapse'], ['data-target',idReference] ]);//, ['toggle','collapse']
-    
-    // toggle.dataset.toggle = 'collapse';
-    // toggle.dataset.target = idReference;
+    var idReference = '#'.concat(collapsibleId);
+    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
     
     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
     {
         toggle.textContent = toggleDisplay;        
     }    
 
-    return [toggle, divCollapsible];
-
-    // var divWrapper = CreateNewElement('div', [ ['class',wrapperClass] ]);
-    // divWrapper.appendChild(toggle);
-    // divWrapper.appendChild(divCollapsible);
-
-    // return divWrapper;
+    return toggle;
 }
 
-// function CreateDropdownWrapper(toggleClass, toggleDisplay, dropdownChildren)
+function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
+{    
+    var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
+    for (var i = 0; i < collapsedChildren.length; i++)
+    {
+        divCard.appendChild(collapsedChildren[i]);
+    } 
+
+    return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
+}
+
+// function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
 // {
 //     //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
     
-//     /* Create Dropdown Toggle */
-//     var dropdownToggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-haspopup','true'], ['aria-expanded','false'] ]);//, ['toggle','dropdown']
-
-//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+//     /* Setup Collapsible Elements */
+//     var divCard = CreateNewElement('div', [ ['class','row'] ]);//card card-body
+//     for (var i = 0; i < collapsedChildren.length; i++)
 //     {
-//         dropdownToggle.textContent = toggleDisplay;        
-//     }
-
-//     //dropdownToggle.setAttribute('toggle', 'dropdown');
-
-//     dropdownToggle.dataset.toggle = 'dropdown';
-
-//     $(dropdownToggle).dropdown(); 
-
-//     var buttontest = CreateButtonWithIcon('buttontest', 'btn buttonEditQuantity', 'fa fa-minus-circle fa-lg');
-    
-//     /* Setup Dropdown Elements */
-//     var divDropdownMenu = CreateNewElement('div', [ ['class','dropdown-menu'] ]); 
-//     for (var i = 0; i < dropdownChildren.length; i++)
-//     {
-//         divDropdownMenu.appendChild(dropdownChildren[i]);
-//         console.log("Added a child of type " + typeof(dropdownChildren[i]) + " to dropdown for item: " + toggleDisplay);
+//         //divCard.appendChild(CreateNewElement('div', [ ['class','col'] ], collapsedChildren[i])); 
+//         divCard.appendChild(collapsedChildren[i]);
+//         //console.log("Added a child of type " + typeof(collapsedChildren[i]) + " to dropdown for item: " + toggleDisplay);
 //     } 
 
-//     var divDropdownWrapper = CreateNewElement('div', [ ['class','dropdown'] ], dropdownToggle);
-//     divDropdownWrapper.appendChild(divDropdownMenu); 
+//     var divCollapsible = CreateNewElement('div', [ ['class',collapsedClass], ['id',toggleId] ], divCard); 
 
-//     return divDropdownWrapper;
+//     /* Create Toggle */
+//     var idReference = '#'.concat(toggleId);
+//     //console.log("ID Reference is: " + idReference);
+//     var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', toggleId], ['data-toggle','collapse'], ['data-target',idReference] ]);//, ['toggle','collapse']
+    
+//     // toggle.dataset.toggle = 'collapse';
+//     // toggle.dataset.target = idReference;
+    
+//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+//     {
+//         toggle.textContent = toggleDisplay;        
+//     }    
+
+//     return [toggle, divCollapsible];
+
+//     // var divWrapper = CreateNewElement('div', [ ['class',wrapperClass] ]);
+//     // divWrapper.appendChild(toggle);
+//     // divWrapper.appendChild(divCollapsible);
+
+//     // return divWrapper;
 // }
 
 /** Unused **/

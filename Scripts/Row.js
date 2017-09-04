@@ -9,24 +9,22 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         editNameTextarea: null,
     };
 
-    //var listQuantityPopovers = [];
-
-    CreateCollapsibleDivForItemName(rowId, itemName);
-    CreateDivForQuantityPopover(neededQuantity);
-    CreateDivForQuantityPopover(luggageQuantity);
-    CreateDivForQuantityPopover(wearingQuantity);
-    CreateDivForQuantityPopover(backpackQuantity);
-
-    // Elements.wrapper.appendChild(Elements.nameWrapper);
-    // for (var i = 0; i < Elements.listQuantityPopovers.length; i++)
-    // {
-    //     Elements.wrapper.appendChild(Elements.listQuantityPopovers[i]);
-    // }
-    Elements.wrapper.appendChild(Elements.settingsWrapper);
-
+    SetupElements();
     SetItemColumnColor();
 
     /** Private Functions **/
+
+    function SetupElements()
+    {
+        //CreateCollapsibleDivForItemName(rowId, itemName);
+        CreateNameToggle(rowId, itemName);
+        CreateDivForQuantityPopover(neededQuantity);
+        CreateDivForQuantityPopover(luggageQuantity);
+        CreateDivForQuantityPopover(wearingQuantity);
+        CreateDivForQuantityPopover(backpackQuantity);
+        CreateSettingsView(rowId, itemName);
+        //Elements.wrapper.appendChild(Elements.settingsWrapper);
+    }
     
     function CreateDivForQuantityPopover(quantity)
     {
@@ -122,32 +120,43 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     }
 
     /** Experimental & In Progress **/
+    
+    function CreateNameToggle(rowId, itemName)
+    {
+        Elements.nameToggle = CreateToggleForCollapsibleView('editRow-'.concat(rowId), 'btn buttonItemName', itemName);
 
-    function CreateCollapsibleDivForItemName(rowId, itemName)
+        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
+
+        Elements.wrapper.appendChild(Elements.nameWrapper);
+    }
+
+    function CreateSettingsView(rowId, itemName)
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
         
-        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
-        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash');
+        /* Create Text Area */
+        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
+        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent; 
+
+        /* Create Delete Row Button */
+        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash'); //TODO id isn't really necessary
         buttonDeleteRow.addEventListener('click', function()
         {
             GridManager.RemoveRow(Elements.wrapper);
         });
 
+        /* Create Element Wrappers */
         var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
         var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
-
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        var collapsibleElements = CreateCollapsibleElements('editRow-'.concat(rowId), 'btn buttonItemName', itemName, 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
-        Elements.nameToggle = collapsibleElements[0];
-        Elements.settingsWrapper = collapsibleElements[1];
+        Elements.settingsWrapper  = CreateCollapsibleView('editRow-'.concat(rowId), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
 
-        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent;
-        Elements.editNameTextarea.addEventListener("change", function() 
+        /* Setup Listeners */
+        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
         {
-            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
-            GridManager.GridModified();
+            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
         });
+        
         Elements.editNameTextarea.addEventListener("keypress", function(e) 
         {
             if(e.keyCode==13)
@@ -156,53 +165,56 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             }
         });
 
-        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
+        Elements.editNameTextarea.addEventListener("change", function() 
         {
-            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
+            GridManager.GridModified();
         });
 
-        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
-
-        Elements.wrapper.appendChild(Elements.nameWrapper);
+        Elements.wrapper.appendChild(Elements.settingsWrapper);
     }
 
-    // function CreateDropDownForItemName(itemName)
+    // function CreateCollapsibleDivForItemName(rowId, itemName)
     // {
-    //     var buttonTrash = CreateButtonWithIcon('buttonTrashDropdown', 'btn dropdown-item', 'fa fa-trash');
-    //     var textareaName = CreateNewElement('textarea', [ ['class','dropdown-item'], ['id','textareaName'] ]);
+    //     //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
         
-    //     var dropdownWrapper = CreateDropdownWrapper('btn dropdown-toggle', itemName, [buttonTrash, textareaName]);
-    //     var dropdownToggle = dropdownWrapper.children[0];
-
-    //     console.log("Dropdown class: " + dropdownToggle.className);
-
-    //     textareaItemName = dropdownToggle;
-
-    //     divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], dropdownWrapper);
-
-    //     dropdownToggle.addEventListener('click', function() 
+    //     Elements.editNameTextarea = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
+    //     var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash');
+    //     buttonDeleteRow.addEventListener('click', function()
     //     {
-    //         $(dropdownToggle).dropdown('toggle');
+    //         GridManager.RemoveRow(Elements.wrapper);
     //     });
 
-    //     $(dropdownToggle).on('shown.bs.dropdown', function() 
+    //     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
+    //     var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
+
+    //     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
+    //     var collapsibleElements = CreateCollapsibleElements('editRow-'.concat(rowId), 'btn buttonItemName', itemName, 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
+    //     Elements.nameToggle = collapsibleElements[0];
+    //     Elements.settingsWrapper = collapsibleElements[1];
+
+    //     Elements.editNameTextarea.textContent = Elements.nameToggle.textContent;
+    //     Elements.editNameTextarea.addEventListener("change", function() 
     //     {
-    //         document.getElementById('buttonTrashDropdown').addEventListener('click', function()
+    //         Elements.nameToggle.textContent = Elements.editNameTextarea.value;
+    //         GridManager.GridModified();
+    //     });
+    //     Elements.editNameTextarea.addEventListener("keypress", function(e) 
+    //     {
+    //         if(e.keyCode==13)
     //         {
-    //             console.log("DROPDOWNTRASH CLICKED");
-    //             GridManager.RemoveRow(divRow);
-    //         });
-
-    //         textareaName.text = popoverToggle.textContent;
+    //             Elements.editNameTextarea.blur();
+    //         }
     //     });
 
-    //     // $(dropdownToggle).on('hide.bs.dropdown', function()
-    //     // {
-    //     //     dropdownToggle.text = document.getElementById('textareaName').text;
-    //     // });
+    //     $(Elements.settingsWrapper).on('show.bs.collapse', function() 
+    //     {
+    //         GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+    //     });
 
-    //     //divItemName = CreateNewElement('div', [ ['class','col-4 divItemName'] ], dropdownWrapper);
-    //     divRow.appendChild(divItemName);
+    //     Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
+
+    //     Elements.wrapper.appendChild(Elements.nameWrapper);
     // }
     
     /** Public Functions **/
@@ -212,10 +224,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             return Elements.wrapper;
         },
-        // GetIndex : function()
-        // {
-        //     return $(Elements.wrapper).index();
-        // },
         GetStorageData : function()
         {
             return [
