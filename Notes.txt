@@ -1,15 +1,13 @@
 TO-DOs:
 
 	- index.html      : 1
-	- GridManager.js  : 7
+	- GridManager.js  : 8
     - Grid.js         : 2
-    - Row.js          : 3
+    - Row.js          : 5
     - Helpers.js      : 3
 	- Style.css       : 2
 
 Upcoming To-Do List:
-- Visual improvements (including element alignment)
-    Could look into gradient colors
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
@@ -17,10 +15,10 @@ Thoughts:
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '
-- Could alternate row background color for better readability
 - Should have a good way to test backwards compatibility
 - Figure out what's causing poor performance with collapsible settings view
 - Is it possible in a clean way to make the quantity popover behavior different on pc (for development) than on mobile 
+- A row could have a notion of 'balance' (instead) of state. Balance is determined by quantity amounts, and dictates the color-coding of the row. 
 
 Future:
 
@@ -52,4 +50,4 @@ Future:
     (Could depend on whether or not Interactions get pulled out into a separate manager/file)
 - Color palette of popovers (incl. background) could be better
 - Might be useful to have a helper function which turns elements into html tags
--
+- Could alternate row background color for better readability

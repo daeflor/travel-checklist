@@ -26,6 +26,15 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         //Elements.wrapper.appendChild(Elements.settingsWrapper);
     }
     
+    function CreateNameToggle(rowId, itemName)
+    {
+        Elements.nameToggle = CreateToggleForCollapsibleView('editRow-'.concat(rowId), 'btn buttonItemName', itemName);
+
+        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
+
+        Elements.wrapper.appendChild(Elements.nameWrapper);
+    }
+
     function CreateDivForQuantityPopover(quantity)
     {
         /* Create Popover Elements */
@@ -81,6 +90,50 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
     }
 
+    function CreateSettingsView(rowId, itemName)
+    {
+        //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
+        
+        /* Create Text Area */
+        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
+        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent; 
+
+        /* Create Delete Row Button */
+        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash'); //TODO id isn't really necessary
+        buttonDeleteRow.addEventListener('click', function()
+        {
+            GridManager.RemoveRow(Elements.wrapper);
+        });
+
+        /* Create Element Wrappers */
+        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
+        var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
+        //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
+        Elements.settingsWrapper  = CreateCollapsibleView('editRow-'.concat(rowId), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
+
+        /* Setup Listeners */
+        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
+        {
+            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+        });
+  
+        Elements.editNameTextarea.addEventListener("keypress", function(e) 
+        {
+            if(e.keyCode==13)
+            {
+                Elements.editNameTextarea.blur();
+            }
+        });
+
+        Elements.editNameTextarea.addEventListener("change", function() 
+        {
+            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
+            GridManager.GridModified();
+        });
+
+        Elements.wrapper.appendChild(Elements.settingsWrapper);
+    }
+
     function ModifyQuantityValue(quantityElement, increase)
     {
         console.log("Request called to modify a quantity value.");
@@ -115,64 +168,10 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             Elements.nameToggle.style.borderColor = "peru"; //lightsalmon is also good
             //Elements.nameToggle.style.backgroundColor = 'rgba(255,160,122, 0.6)';
-            
         }
     }
 
     /** Experimental & In Progress **/
-    
-    function CreateNameToggle(rowId, itemName)
-    {
-        Elements.nameToggle = CreateToggleForCollapsibleView('editRow-'.concat(rowId), 'btn buttonItemName', itemName);
-
-        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
-
-        Elements.wrapper.appendChild(Elements.nameWrapper);
-    }
-
-    function CreateSettingsView(rowId, itemName)
-    {
-        //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
-        
-        /* Create Text Area */
-        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
-        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent; 
-
-        /* Create Delete Row Button */
-        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash'); //TODO id isn't really necessary
-        buttonDeleteRow.addEventListener('click', function()
-        {
-            GridManager.RemoveRow(Elements.wrapper);
-        });
-
-        /* Create Element Wrappers */
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
-        var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
-        //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        Elements.settingsWrapper  = CreateCollapsibleView('editRow-'.concat(rowId), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
-
-        /* Setup Listeners */
-        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
-        {
-            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
-        });
-        
-        Elements.editNameTextarea.addEventListener("keypress", function(e) 
-        {
-            if(e.keyCode==13)
-            {
-                Elements.editNameTextarea.blur();
-            }
-        });
-
-        Elements.editNameTextarea.addEventListener("change", function() 
-        {
-            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
-            GridManager.GridModified();
-        });
-
-        Elements.wrapper.appendChild(Elements.settingsWrapper);
-    }
 
     // function CreateCollapsibleDivForItemName(rowId, itemName)
     // {

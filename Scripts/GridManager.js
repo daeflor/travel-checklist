@@ -128,6 +128,9 @@ window.GridManager = function()
     function SwitchGrids(indexToDisplay, categoryTextToDisplay)
     {
         //console.log("Request received to switch grids to grid index: " + indexToDisplay);
+
+        GridManager.ToggleActiveSettingsView(null);
+
         activeGrid.ToggleElementVisibility();
         activeGrid = grids[indexToDisplay];
         activeGrid.ToggleElementVisibility();
@@ -196,17 +199,24 @@ window.GridManager = function()
                 console.log("The active popover was told to hide");
             }
         },
-        // SetActiveSettingsView : function(settingsView)
-        // {
-        //     activeSettingsView = settingsView;
-        // },
         ToggleActiveSettingsView : function(newSettingsView)
         {     
+            //If there is a Settings View currently active, hide it
             if (activeSettingsView != null)
             {
                 $(activeSettingsView).collapse('hide');
             }
-            activeSettingsView = newSettingsView;
+
+            //If a new Settings View has been selected, set it as Active
+                //Else, if no new view is selected, just clear the Active view
+            if (newSettingsView != null)
+            {
+                activeSettingsView = newSettingsView;
+            }
+            else
+            {
+                activeSettingsView = null;
+            }
         },
         GridModified : function()
         {
