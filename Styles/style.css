@@ -135,10 +135,11 @@ a, a:visited {
     */
 }
 
-#newRow button {
-    padding: 4px;
-    background-color: bisque;
-}
+/* #newRow button {
+    padding: 4px; 
+    background-color: #EFDEB4;
+    border: 3px outset;
+} */
 
 /* Popovers */
 /*TODO would be nice to be able to affect different popover bodies separately*/
@@ -159,12 +160,13 @@ a, a:visited {
 .buttonItemName {
     width: 100%;
     text-align: left;
-    max-height: 35px;
-    padding: 3px;
+    height: 30px;
+    padding: 1px;
     padding-left: 10px;
     border-color: black;
-    border-width: 2px;
+    border-width: 3px;
     border-style: solid;
+    background-color: #edf7f7;
     /* background-color: rgba(red, green, blue, 0.2); */
     /*background: aliceblue;*/ /* For browsers that do not support gradients */
     /*background: linear-gradient(to bottom right,#FFFFFF, #F5F6E5); *//* Standard syntax */
@@ -194,11 +196,15 @@ a, a:visited {
     padding-left: 25px;
 } 
 
-.settings-button {
-    background-color: lavenderblush;
+.settings-button, #newRow button {
+    background-color: #EFDEB4;
     border: 3px outset;
     /* border-color: black;
     border-width: 2px;
     border-style: outset; */
     /* border-radius: 5px; */
+}
+
+.collapsing {
+    transition: height .1s;
 }

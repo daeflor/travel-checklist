@@ -56,7 +56,9 @@ function Grid(gridElement)
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetDiv()); 
+            element.appendChild(itemRow.GetDiv());
+            
+            return itemRow;
             //itemRow.ExpandSettings();
             //TODO would be nice if new rows auto-expanded when created, but this needs a bit more work
         },
@@ -66,13 +68,13 @@ function Grid(gridElement)
             {
                 rows[i].ClearQuantityValue(columnIndex);
             } 
-        },
-        CollapseSettings : function()
-        {
-            for (var i = 0; i < rows.length; i++)
-            {    
-                rows[i].CollapseSettings();
-            }
         }
+        // CollapseSettings : function()
+        // {
+        //     for (var i = 0; i < rows.length; i++)
+        //     {    
+        //         rows[i].CollapseSettings();
+        //     }
+        // }
     };
 }

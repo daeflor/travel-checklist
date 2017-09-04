@@ -5,6 +5,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         nameWrapper: null,
         nameToggle: null,
         settingsWrapper: null,
+        editNameTextarea: null,
     };
 
     var listQuantityPopovers = [];
@@ -125,17 +126,17 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     {
         if (listQuantityPopovers[QuantityType.Needed].text == 0)
         {
-            Elements.nameToggle.style.backgroundColor = "darkgrey";
+            Elements.nameToggle.style.borderColor = 'rgb(77, 77, 77)';//"darkgrey";
             //Elements.nameToggle.style.backgroundColor = 'rgba(169, 169, 169, 0.6)';
         }
         else if (listQuantityPopovers[QuantityType.Needed].text == (parseInt(listQuantityPopovers[QuantityType.Luggage].text) + parseInt(listQuantityPopovers[QuantityType.Wearing].text) + parseInt(listQuantityPopovers[QuantityType.Backpack].text)))
         {
-            Elements.nameToggle.style.backgroundColor = "mediumseagreen";
+            Elements.nameToggle.style.borderColor = "mediumseagreen";
             //Elements.nameToggle.style.backgroundColor = 'rgba(60, 179, 113, 0.6)';
         }
         else
         {
-            Elements.nameToggle.style.backgroundColor = "peru"; //lightsalmon is also good
+            Elements.nameToggle.style.borderColor = "peru"; //lightsalmon is also good
             //Elements.nameToggle.style.backgroundColor = 'rgba(255,160,122, 0.6)';
             
         }
@@ -147,10 +148,14 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
         
-        var textareaName = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
+        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
         var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash');
+        buttonDeleteRow.addEventListener('click', function()
+        {
+            GridManager.RemoveRow(Elements.wrapper);
+        });
 
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], textareaName);
+        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
         var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
 
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
@@ -158,48 +163,29 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         Elements.nameToggle = collapsibleElements[0];
         Elements.settingsWrapper = collapsibleElements[1];
 
-        textareaName.textContent = Elements.nameToggle.textContent;
-        textareaName.onchange = GridManager.GridModified;
+        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent;
+        Elements.editNameTextarea.addEventListener("change", function() 
+        {
+            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
+            GridManager.GridModified();
+        });
+        Elements.editNameTextarea.addEventListener("keypress", function(e) 
+        {
+            if(e.keyCode==13)
+            {
+                Elements.editNameTextarea.blur();
+            }
+        });
 
         $(Elements.settingsWrapper).on('show.bs.collapse', function() 
         {
-            buttonDeleteRow.addEventListener('click', function()
-            {
-                GridManager.RemoveRow(Elements.wrapper);
-            });
-
-            GridManager.CollapseSettings();
-        });
-
-        $(Elements.settingsWrapper).on('hide.bs.collapse', function()
-        {
-            //console.log("Collapsible element collapsed");
-            Elements.nameToggle.textContent = textareaName.value;
+            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
         });
 
         Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
 
         Elements.wrapper.appendChild(Elements.nameWrapper);
-        //Elements.wrapper.appendChild(Elements.settingsWrapper);
     }
-
-    // function TestTwo()
-    // {
-    //     var newDiv = CreateNewElement('div', [ ['class',''] ]);
-    //     newDiv. innerHTML = document.getElementById('dropdownHeader').outerHTML;
-    //     divRow.appendChild(newDiv);
-    // }
-
-    // function Test()
-    // {
-    //     var dropdownHtml = '<button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clothes</button><div class="dropdown-menu"><button class="dropdown-item buttonCategory" data-gridindex="0" type="button">Clothes</button><button class="dropdown-item buttonCategory" data-gridindex="1" type="button">Sundries</button><button class="dropdown-item buttonCategory" data-gridindex="2" type="button">Test</button></div>';
-    //     var newDiv = CreateNewElement('div', [ ['class','col-4 dropdown header itemCategory'] ]);
-    //     newDiv.innerHTML = dropdownHtml;
-    //     divRow.appendChild(newDiv);
-
-    //     //$('.dropdown-toggle').dropdown('toggle');
-    //     $('[data-toggle="dropdown"]').parent().removeClass('open');
-    // }
 
     // function CreateDropDownForItemName(itemName)
     // {
@@ -246,7 +232,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         GetDiv : function()
         {
             return Elements.wrapper;
-            //return divRow;
         },
         // GetIndex : function()
         // {
@@ -267,9 +252,10 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             listQuantityPopovers[quantityIndex].text = 0; 
             SetItemColumnColor();
         },
-        CollapseSettings : function()
+        ExpandSettings : function()
         {
-            $(Elements.settingsWrapper).collapse('hide');
+            $(Elements.settingsWrapper).collapse('show');
+            Elements.editNameTextarea.focus();
         }
     };
 }

@@ -3,6 +3,7 @@ window.GridManager = function()
     document.addEventListener('DOMContentLoaded', Setup);    
 
     var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
+    var activeSettingsView = null;
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
@@ -136,7 +137,7 @@ window.GridManager = function()
 
     function AddNewRow()
     {
-        activeGrid.AddRow("__________", 0, 0, 0, 0);
+        activeGrid.AddRow("", 0, 0, 0, 0).ExpandSettings();
         SaveDataToStorage(); 
     }
 
@@ -201,6 +202,18 @@ window.GridManager = function()
                 $(activePopover).popover('hide');
             }
         },
+        // SetActiveSettingsView : function(settingsView)
+        // {
+        //     activeSettingsView = settingsView;
+        // },
+        ToggleActiveSettingsView : function(newSettingsView)
+        {     
+            if (activeSettingsView != null)
+            {
+                $(activeSettingsView).collapse('hide');
+            }
+            activeSettingsView = newSettingsView;
+        },
         GridModified : function()
         {
             SaveDataToStorage();
@@ -209,14 +222,14 @@ window.GridManager = function()
         {
             rowCounter++;
             return rowCounter;
-        },
-        CollapseSettings : function()
-        {
-            for (var i = 0; i < grids.length; i++)
-            {    
-                grids[i].CollapseSettings();
-            }
         }
+        // CollapseSettings : function()
+        // {
+        //     for (var i = 0; i < grids.length; i++)
+        //     {    
+        //         grids[i].CollapseSettings();
+        //     }
+        // }
     };
 }();
 

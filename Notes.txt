@@ -20,6 +20,7 @@ Thoughts:
 - Could alternate row background color for better readability
 - Could be useful to have a helper function which turns elements into html tags
 - Should have a good way to test backwards compatibility
+- Figure out what's causing poor performance with collapsible settings view
 
 Future:
 
