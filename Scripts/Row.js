@@ -4,31 +4,43 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         wrapper: CreateNewElement('div', [ ['class','row divItemRow'] ]),
         nameWrapper: null,
         nameToggle: null,
-        listQuantityPopovers: [],
+        //listQuantityPopovers: [],
         settingsWrapper: null,
         editNameTextarea: null,
+        toggleQuantityNeeded: null,
+        toggleQuantityLuggage: null,
+        toggleQuantityWearing: null,
+        toggleQuantityBackpack: null,
     };
 
-    //var listQuantityPopovers = [];
-
-    CreateCollapsibleDivForItemName(rowId, itemName);
-    CreateDivForQuantityPopover(neededQuantity);
-    CreateDivForQuantityPopover(luggageQuantity);
-    CreateDivForQuantityPopover(wearingQuantity);
-    CreateDivForQuantityPopover(backpackQuantity);
-
-    // Elements.wrapper.appendChild(Elements.nameWrapper);
-    // for (var i = 0; i < Elements.listQuantityPopovers.length; i++)
-    // {
-    //     Elements.wrapper.appendChild(Elements.listQuantityPopovers[i]);
-    // }
-    Elements.wrapper.appendChild(Elements.settingsWrapper);
-
+    SetupElements();
     SetItemColumnColor();
 
     /** Private Functions **/
+
+    function SetupElements()
+    {
+        CreateCollapsibleDivForItemName(rowId, itemName);
     
-    function CreateDivForQuantityPopover(quantity)
+        Elements.toggleQuantityNeeded = CreateQuantityPopover(neededQuantity);
+        Elements.toggleQuantityLuggage = CreateQuantityPopover(luggageQuantity);
+        Elements.toggleQuantityWearing = CreateQuantityPopover(wearingQuantity);
+        Elements.toggleQuantityBackpack = CreateQuantityPopover(backpackQuantity);
+    
+        // Elements.wrapper.appendChild(Elements.toggleQuantityNeeded);
+        // Elements.wrapper.appendChild(Elements.toggleQuantityLuggage);
+        // Elements.wrapper.appendChild(Elements.toggleQuantityWearing);
+        // Elements.wrapper.appendChild(Elements.toggleQuantityBackpack);
+
+        Elements.wrapper.appendChild(Elements.settingsWrapper);
+    }
+
+    // function AddElementsToWrapper()
+    // {
+    //     Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
+    // }
+    
+    function CreateQuantityPopover(quantity)
     {
         /* Create Popover Elements */
         var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn buttonEditQuantity popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
@@ -78,9 +90,10 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             GridManager.SetActivePopover(null);
         });
 
-        Elements.listQuantityPopovers.push(popoverToggle);
-    
         Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
+        return popoverToggle;
+
+        //Elements.listQuantityPopovers.push(popoverToggle);
     }
 
     function ModifyQuantityValue(quantityElement, increase)
@@ -103,12 +116,12 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     function SetItemColumnColor()
     {
-        if (Elements.listQuantityPopovers[QuantityType.Needed].text == 0)
+        if (Elements.toggleQuantityNeeded.text == 0)
         {
             Elements.nameToggle.style.borderColor = 'rgb(77, 77, 77)';//"darkgrey";
             //Elements.nameToggle.style.backgroundColor = 'rgba(169, 169, 169, 0.6)';
         }
-        else if (Elements.listQuantityPopovers[QuantityType.Needed].text == (parseInt(Elements.listQuantityPopovers[QuantityType.Luggage].text) + parseInt(Elements.listQuantityPopovers[QuantityType.Wearing].text) + parseInt(Elements.listQuantityPopovers[QuantityType.Backpack].text)))
+        else if (Elements.toggleQuantityNeeded.text == (parseInt(Elements.toggleQuantityLuggage.text) + parseInt(Elements.toggleQuantityWearing.text) + parseInt(Elements.toggleQuantityBackpack.text)))
         {
             Elements.nameToggle.style.borderColor = "mediumseagreen";
             //Elements.nameToggle.style.backgroundColor = 'rgba(60, 179, 113, 0.6)';
@@ -220,15 +233,15 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             return [
                 Elements.nameToggle.textContent, 
-                Elements.listQuantityPopovers[QuantityType.Needed].text, 
-                Elements.listQuantityPopovers[QuantityType.Luggage].text, 
-                Elements.listQuantityPopovers[QuantityType.Wearing].text, 
-                Elements.listQuantityPopovers[QuantityType.Backpack].text
+                Elements.toggleQuantityNeeded.text, 
+                Elements.toggleQuantityLuggage.text, 
+                Elements.toggleQuantityWearing.text, 
+                Elements.toggleQuantityBackpack.text
             ];
         },
         ClearQuantityValue : function(quantityIndex)
         {
-            Elements.listQuantityPopovers[quantityIndex].text = 0; 
+            Elements.listQuantityPopovers[quantityIndex].text = 0; //TODO this won't work with the changes I've made
             SetItemColumnColor();
         },
         ExpandSettings : function()
