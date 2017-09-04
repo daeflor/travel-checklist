@@ -104,6 +104,35 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
+// function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
+// {
+//     /* Create Toggle */
+//     var idReference = '#'.concat(collapsibleId);
+//     var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
+    
+//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+//     {
+//         toggle.textContent = toggleDisplay;        
+//     }    
+
+//     return toggle;
+// }
+
+// function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
+// {    
+//     /* Setup Collapsible Elements */
+//     var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
+//     for (var i = 0; i < collapsedChildren.length; i++)
+//     {
+//         divCard.appendChild(collapsedChildren[i]);
+//     } 
+
+//     return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
+// }
+
+
+
+
 //TODO this should probably be two separate functions
 function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
 {

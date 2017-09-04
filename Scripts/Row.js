@@ -4,11 +4,12 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         wrapper: CreateNewElement('div', [ ['class','row divItemRow'] ]),
         nameWrapper: null,
         nameToggle: null,
+        listQuantityPopovers: [],
         settingsWrapper: null,
         editNameTextarea: null,
     };
 
-    var listQuantityPopovers = [];
+    //var listQuantityPopovers = [];
 
     CreateCollapsibleDivForItemName(rowId, itemName);
     CreateDivForQuantityPopover(neededQuantity);
@@ -16,6 +17,11 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     CreateDivForQuantityPopover(wearingQuantity);
     CreateDivForQuantityPopover(backpackQuantity);
 
+    // Elements.wrapper.appendChild(Elements.nameWrapper);
+    // for (var i = 0; i < Elements.listQuantityPopovers.length; i++)
+    // {
+    //     Elements.wrapper.appendChild(Elements.listQuantityPopovers[i]);
+    // }
     Elements.wrapper.appendChild(Elements.settingsWrapper);
 
     SetItemColumnColor();
@@ -33,6 +39,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         popoverToggle.addEventListener('click', function(e) 
         {
             console.log("A Popover toggle was pressed");
+
             //If there is no popover currently active, show the popover for the selected toggle
             if(GridManager.GetActivePopover() == null)
             {
@@ -45,11 +52,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
                 $(popoverToggle).popover('show');
             }
-            // else
-            // {
-            //     popoverToggle.blur();
-            //     console.log("A Popover toggle was blurred");
-            // }
         });
     
         $(popoverToggle).on('shown.bs.popover', function() 
@@ -76,7 +78,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
             GridManager.SetActivePopover(null);
         });
 
-        listQuantityPopovers.push(popoverToggle);
+        Elements.listQuantityPopovers.push(popoverToggle);
     
         Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
     }
@@ -101,12 +103,12 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     function SetItemColumnColor()
     {
-        if (listQuantityPopovers[QuantityType.Needed].text == 0)
+        if (Elements.listQuantityPopovers[QuantityType.Needed].text == 0)
         {
             Elements.nameToggle.style.borderColor = 'rgb(77, 77, 77)';//"darkgrey";
             //Elements.nameToggle.style.backgroundColor = 'rgba(169, 169, 169, 0.6)';
         }
-        else if (listQuantityPopovers[QuantityType.Needed].text == (parseInt(listQuantityPopovers[QuantityType.Luggage].text) + parseInt(listQuantityPopovers[QuantityType.Wearing].text) + parseInt(listQuantityPopovers[QuantityType.Backpack].text)))
+        else if (Elements.listQuantityPopovers[QuantityType.Needed].text == (parseInt(Elements.listQuantityPopovers[QuantityType.Luggage].text) + parseInt(Elements.listQuantityPopovers[QuantityType.Wearing].text) + parseInt(Elements.listQuantityPopovers[QuantityType.Backpack].text)))
         {
             Elements.nameToggle.style.borderColor = "mediumseagreen";
             //Elements.nameToggle.style.backgroundColor = 'rgba(60, 179, 113, 0.6)';
@@ -218,15 +220,15 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             return [
                 Elements.nameToggle.textContent, 
-                listQuantityPopovers[QuantityType.Needed].text, 
-                listQuantityPopovers[QuantityType.Luggage].text, 
-                listQuantityPopovers[QuantityType.Wearing].text, 
-                listQuantityPopovers[QuantityType.Backpack].text
+                Elements.listQuantityPopovers[QuantityType.Needed].text, 
+                Elements.listQuantityPopovers[QuantityType.Luggage].text, 
+                Elements.listQuantityPopovers[QuantityType.Wearing].text, 
+                Elements.listQuantityPopovers[QuantityType.Backpack].text
             ];
         },
         ClearQuantityValue : function(quantityIndex)
         {
-            listQuantityPopovers[quantityIndex].text = 0; 
+            Elements.listQuantityPopovers[quantityIndex].text = 0; 
             SetItemColumnColor();
         },
         ExpandSettings : function()
