@@ -30,7 +30,7 @@ function CreateNewElement(elementName, attributes, child)
     }
 }
 
-//TODO should standardize this more so that it doesn't need to take an id, if possible?
+//TODO could standardize this more so that it doesn't need to take an id, if possible?
 function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 {
     return CreateNewElement(
@@ -41,9 +41,7 @@ function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 }
 
 function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
-{
-    //console.log("Request to create a popover with display of type: " + typeof(toggleDisplay));
-    
+{    
     /* Setup Popover Elements */
     var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
     for (var i = 0; i < popoverChildren.length; i++)

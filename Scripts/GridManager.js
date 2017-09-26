@@ -9,12 +9,7 @@ window.GridManager = function()
     var rowCounter = 0;
 
     function Setup()
-    {
-        // $(document).ready(function(){
-        //     console.log("Enabling popovers");
-        //     $('[data-toggle="popover"]').popover()
-        // });
-    
+    {    
         SetupGrids();
         SetupInteractibles();
         LoadDataFromStorage();
@@ -73,7 +68,7 @@ window.GridManager = function()
     
         if (gridData != null)
         {
-            console.log("Loaded from Local Storage: " + gridData);
+            //console.log("Loaded from Local Storage: " + gridData);
             ReloadGridDataFromStorage(JSON.parse(gridData));        
         }    
         else
@@ -87,8 +82,7 @@ window.GridManager = function()
         //console.log('There are ' + gridData.length + ' grids saved in local storage.');
         for (var i = 0; i < gridData.length; i++)
         {
-            console.log("Regenerating Grid " + i + " ----------");
-
+            //console.log("Regenerating Grid " + i + " ----------");
             for (var j = 0; j < gridData[i].length; j++)
             {
                 //console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
@@ -227,13 +221,6 @@ window.GridManager = function()
             rowCounter++;
             return rowCounter;
         }
-        // CollapseSettings : function()
-        // {
-        //     for (var i = 0; i < grids.length; i++)
-        //     {    
-        //         grids[i].CollapseSettings();
-        //     }
-        // }
     };
 }();
 

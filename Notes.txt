@@ -8,7 +8,10 @@ TO-DOs:
 	- Style.css       : 2
 
 Upcoming To-Do List:
+- Create 'move' buttons to move an item up or down the grid/list
+    Grid state would need to be stored when Rows get moved up or down in the grid
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
+- Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
 
 Thoughts:
 
@@ -24,9 +27,6 @@ Future:
 
 - Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
     Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
-- Item Name could be a dropdown, and when you click on it you can change the name and it also reveals other options, like deleting the row or moving it up or down in the grid.
-- Create 'move' buttons to move an item up or down the grid/list
-    Grid state would need to be stored when Rows get moved up or down in the grid
 - Is there a type of logging to console that only triggers in a specific mode?
 - Could group similar item types into categories, which show up in dropdown lists of the category
     Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
@@ -51,3 +51,4 @@ Future:
 - Color palette of popovers (incl. background) could be better
 - Might be useful to have a helper function which turns elements into html tags
 - Could alternate row background color for better readability
+- Ability to collapse all 'completed' item rows so you can focus just on the incomplete ones?

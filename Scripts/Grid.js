@@ -30,12 +30,11 @@ function Grid(gridElement)
                 //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
             }
 
-            //console.log('There are ' + rowValues.length + ' rows getting saved to local storage.');
             return rowData;
         },
         RemoveRow : function(rowElementToRemove)
         {
-            var index = $(rowElementToRemove).index(); //TODO could use a custom data-index to avoid jquery, but doesn't seem necessary
+            var index = $(rowElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
             //rowElementToRemove.GetIndex();
             console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
             
@@ -59,8 +58,6 @@ function Grid(gridElement)
             element.appendChild(itemRow.GetDiv());
             
             return itemRow;
-            //itemRow.ExpandSettings();
-            //TODO would be nice if new rows auto-expanded when created, but this needs a bit more work
         },
         ClearQuantityColumnValues : function(columnIndex)
         {
@@ -69,12 +66,5 @@ function Grid(gridElement)
                 rows[i].ClearQuantityValue(columnIndex);
             } 
         }
-        // CollapseSettings : function()
-        // {
-        //     for (var i = 0; i < rows.length; i++)
-        //     {    
-        //         rows[i].CollapseSettings();
-        //     }
-        // }
     };
 }
