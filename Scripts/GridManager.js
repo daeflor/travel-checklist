@@ -37,7 +37,7 @@ window.GridManager = function()
 
         for (var i = 0; i < categoryButtons.length; i++)
         {
-            categoryButtons[i] .addEventListener('click', CategorySelected); 
+            categoryButtons[i].addEventListener('click', CategorySelected); 
         }
 
         document.getElementById('buttonAddRow').onclick = AddNewRow;

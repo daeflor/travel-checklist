@@ -40,7 +40,9 @@
     border-style: solid;
     padding: 8px;
     /* text-transform: uppercase; */
-    font-family: Futura,"Trebuchet MS",Arial,sans-serif
+    font-family: Futura,"Trebuchet MS",Arial,sans-serif;
+
+    border-top-width: 1px;
 }
 
 div .smallicon{
@@ -207,4 +209,13 @@ a, a:visited {
 
 .collapsing {
     transition: height .1s;
+}
+
+
+
+.gridCategoryButton {
+    background-color: aliceblue;
+    padding: 0px;
+    font-family: Futura,"Trebuchet MS",Arial,sans-serif
+    /* width: 40px; */
 }
