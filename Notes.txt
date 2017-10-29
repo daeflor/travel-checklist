@@ -22,6 +22,9 @@ Thoughts:
 - Figure out what's causing poor performance with collapsible settings view
 - Is it possible in a clean way to make the quantity popover behavior different on pc (for development) than on mobile 
 - A row could have a notion of 'balance' (instead) of state. Balance is determined by quantity amounts, and dictates the color-coding of the row. 
+- Make this work for a shopping list
+- Perhaps split up header and/or headermanager into its own thing
+- Should long item names be truncated?
 
 Future:
 
