@@ -223,7 +223,7 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         {
             return Elements.wrapper;
         },
-        GetStorageData : function()
+        GetDataForStorage : function()
         {
             return [
                 Elements.nameToggle.textContent, 

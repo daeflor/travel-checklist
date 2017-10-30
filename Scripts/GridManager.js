@@ -2,34 +2,22 @@ window.GridManager = function()
 {
     document.addEventListener('DOMContentLoaded', Setup);    
 
-    var activePopover = null; //TODO should there be a separate popover manager? Maybe if Grid and ItemRow classes split out from this, it will not be necessary
+    var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
 
     function Setup()
-    {    
-        SetupGrids();
-        SetupInteractibles();
+    {            
         LoadDataFromStorage();
+
+        SwitchGrids(2, "Test"); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default
+
+        SetupInteractibles();
     }
 
     /** Grid & Button Setup **/
-
-    function SetupGrids()
-    {
-        var gridElements = document.getElementsByClassName('grid');
-
-        for (var i = 0; i < gridElements.length; i++)
-        {
-            grids.push(new Grid(gridElements[i]));
-        }
-
-        activeGrid = GetVisibleGrid();
-        
-        SwitchGrids(2, "Test"); //This is just for test purposes
-    }
 
     function SetupInteractibles()
     {
@@ -49,16 +37,16 @@ window.GridManager = function()
         CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
     }
 
-    function GetVisibleGrid()
-    {
-        for (var i = 0; i < grids.length; i++)
-        {
-            if (grids[i].GetElement().hidden == false)
-            {
-                return grids[i];
-            }
-        }
-    }
+    // function GetVisibleGrid()
+    // {
+    //     for (var i = 0; i < grids.length; i++)
+    //     {
+    //         if (grids[i].GetElement().hidden == false)
+    //         {
+    //             return grids[i];
+    //         }
+    //     }
+    // }
 
     /** Storage Management **/
 
@@ -68,7 +56,7 @@ window.GridManager = function()
     
         if (gridData != null)
         {
-            //console.log("Loaded from Local Storage: " + gridData);
+            console.log("Loaded from Local Storage: " + gridData);
             ReloadGridDataFromStorage(JSON.parse(gridData));        
         }    
         else
@@ -79,30 +67,39 @@ window.GridManager = function()
 
     function ReloadGridDataFromStorage(gridData)
     {
-        //console.log('There are ' + gridData.length + ' grids saved in local storage.');
-        for (var i = 0; i < gridData.length; i++)
+        console.log('There are ' + gridData.length + ' grids saved in local storage.');
+        for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
         {
-            //console.log("Regenerating Grid " + i + " ----------");
-            for (var j = 0; j < gridData[i].length; j++)
+            console.log("Creating Grid Element and Object")
+            var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
+            document.body.insertBefore(gridElement, document.getElementById('newRow'));
+            var grid = new Grid(gridElement);
+
+            console.log("Regenerating Grid " + i + " ----------");
+            for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
             {
-                //console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                grids[i].AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
             }
+
+            grids.push(grid);
         }
+
+        //console.log("Number of grids created: " + grids.length);
     }
 
     function SaveDataToStorage()
     {
-        SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GetStorageData()));
+        SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GetDataForStorage()));
     }
 
-    function GetStorageData()
+    function GetDataForStorage()
     {
         var gridData = [];
 
         for (var i = 0; i < grids.length; i++)
         {
-            gridData.push(grids[i].GetStorageData());
+            gridData.push(grids[i].GetDataForStorage());
         }
 
         return gridData;
@@ -125,7 +122,11 @@ window.GridManager = function()
 
         GridManager.ToggleActiveSettingsView(null);
 
-        activeGrid.ToggleElementVisibility();
+        if (activeGrid != null)
+        {
+            activeGrid.ToggleElementVisibility();            
+        }
+
         activeGrid = grids[indexToDisplay];
         activeGrid.ToggleElementVisibility();
 

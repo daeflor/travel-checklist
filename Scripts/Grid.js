@@ -19,14 +19,14 @@ function Grid(gridElement)
                 element.hidden = true;
             }
         },
-        GetStorageData : function()
+        GetDataForStorage : function()
         {
             var rowData = [];
             //console.log('There are currently ' + rows.length + ' item rows.');
     
             for (var i = 0; i < rows.length; i++)
             {
-                rowData.push(rows[i].GetStorageData());
+                rowData.push(rows[i].GetDataForStorage());
                 //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
             }
 
