@@ -4,12 +4,15 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
+    var headers = [];
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
 
     function Setup()
     {            
+        SetupHeaders();
+
         LoadDataFromStorage();
 
         SwitchGrids(2, "Test"); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default
@@ -31,10 +34,10 @@ window.GridManager = function()
         document.getElementById('buttonAddRow').onclick = AddNewRow;
 
         //TODO class data could be contained in the QuantityType object
-        //CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-        CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
-        CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);
-        CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
+        // //CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+        // CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
+        // CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);
+        // CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
     }
 
     // function GetVisibleGrid()
@@ -47,6 +50,24 @@ window.GridManager = function()
     //         }
     //     }
     // }
+
+    function SetupHeaders()
+    {
+        var header = new Header(ListType.Travel);
+        headers.push(header);
+        document.getElementById('headerRow').appendChild(header.GetElement());
+
+        //TODO somehow need to have the concept of grid knowing its header:
+        //ListManager (All Lists)
+        //  List/Grid
+        //      Header
+        //      Rows
+        // ?
+
+        header = new Header(ListType.Checklist);
+        headers.push(header);
+        document.getElementById('headerRow').appendChild(header.GetElement());
+    }
 
     /** Storage Management **/
 
@@ -73,13 +94,20 @@ window.GridManager = function()
             console.log("Creating Grid Element and Object")
             var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
             document.body.insertBefore(gridElement, document.getElementById('newRow'));
-            var grid = new Grid(gridElement);
+            var grid = new Grid(gridElement, ListType.Travel);
 
             console.log("Regenerating Grid " + i + " ----------");
             for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
             {
-                console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                for (var k = 0; k < gridData[i][j].length; k++) //Traverse all the rows belonging to the current grid, in local storage
+                {
+                    console.log("Grid: " + i + ". Row: " + j + ". Column: " + k + ". Item: " + gridData[i][j][k]);
+                    //grid.AddRow(gridData[i][j][k], gridData[i][j][k], gridData[i][j][k], gridData[i][j][k], gridData[i][j][k]);
+                }
+
+                // console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                 grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                //TODO need to split Row file into Columns
             }
 
             grids.push(grid);
@@ -124,11 +152,20 @@ window.GridManager = function()
 
         if (activeGrid != null)
         {
-            activeGrid.ToggleElementVisibility();            
+            activeGrid.ToggleElementVisibility();   
+            headers[activeGrid.GetType()].ToggleElementVisibility(); //TODO this could be more efficient
         }
 
-        activeGrid = grids[indexToDisplay];
-        activeGrid.ToggleElementVisibility();
+        if (indexToDisplay < grids.length)
+        {
+            activeGrid = grids[indexToDisplay];
+            activeGrid.ToggleElementVisibility();  
+            headers[activeGrid.GetType()].ToggleElementVisibility();
+        }
+        else
+        {
+            console.log("ERROR: Tried to switch to a grid which doesn't exist");
+        }
 
         document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
     }
@@ -142,29 +179,28 @@ window.GridManager = function()
     /** Experimental & In Progress **/
 
     //TODO would like a separate 'class' for toggles
-    //TODO It doesn't really make sense for this to be in a 'GridManager'
-    function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
-    {
-        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
+    // function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
+    // {
+    //     var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
 
-        var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
+    //     var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
+    //     var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
         
-        $(popoverToggle).on('shown.bs.popover', function() 
-        {
-            console.log("A Header Popover was shown");
-            document.getElementById('buttonClear').addEventListener('click', function()
-            {
-                //console.log("A Clear button was pressed");
-                activeGrid.ClearQuantityColumnValues(quantityHeaderIndex);
-                SaveDataToStorage();
-            });
-            //console.log("Added an onclick event listener to a Clear button");
-        });
+    //     $(popoverToggle).on('shown.bs.popover', function() 
+    //     {
+    //         console.log("A Header Popover was shown");
+    //         document.getElementById('buttonClear').addEventListener('click', function()
+    //         {
+    //             //console.log("A Clear button was pressed");
+    //             activeGrid.ClearQuantityColumnValues(quantityHeaderIndex);
+    //             SaveDataToStorage();
+    //         });
+    //         //console.log("Added an onclick event listener to a Clear button");
+    //     });
 
-        var divWrapper = CreateNewElement('div', [ ['class',divClass] ], popoverToggle);
-        document.getElementById('headerRow').appendChild(divWrapper);
-    }
+    //     var divWrapper = CreateNewElement('div', [ ['class',divClass] ], popoverToggle);
+    //     document.getElementById('headerRow').appendChild(divWrapper);
+    // }
 
     /** Public Functions **/
 
@@ -221,6 +257,12 @@ window.GridManager = function()
         {
             rowCounter++;
             return rowCounter;
+        },
+        ClearButtonPressed : function(columnIndex)
+        {
+            console.log("Button pressed to clear column " + columnIndex + " for grid " + activeGrid);
+            activeGrid.ClearQuantityColumnValues(columnIndex);
+            SaveDataToStorage();
         }
     };
 }();
@@ -231,4 +273,9 @@ var QuantityType = {
     Luggage: 1,
     Wearing: 2,
     Backpack: 3,
+};
+
+var ListType = {
+    Travel: 0,
+    Checklist: 1,
 };

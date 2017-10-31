@@ -1,12 +1,17 @@
-function Grid(gridElement)
+function Grid(gridElement, listType)
 {
     var element = gridElement;
     var rows = [];
+    var type = listType;
 
     return { 
-        GetElement : function()
+        // GetElement : function()
+        // {
+        //     return element;
+        // },
+        GetType : function()
         {
-            return element;
+            return type;
         },
         ToggleElementVisibility : function()
         {
