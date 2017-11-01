@@ -16,14 +16,12 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     function SetupElements()
     {
-        //CreateCollapsibleDivForItemName(rowId, itemName);
         CreateNameToggle(rowId, itemName);
         CreateDivForQuantityPopover(neededQuantity);
         CreateDivForQuantityPopover(luggageQuantity);
         CreateDivForQuantityPopover(wearingQuantity);
         CreateDivForQuantityPopover(backpackQuantity);
         CreateSettingsView(rowId, itemName);
-        //Elements.wrapper.appendChild(Elements.settingsWrapper);
     }
     
     function CreateNameToggle(rowId, itemName)
@@ -173,48 +171,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     /** Experimental & In Progress **/
 
-    // function CreateCollapsibleDivForItemName(rowId, itemName)
-    // {
-    //     //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
-        
-    //     Elements.editNameTextarea = CreateNewElement('textarea', [ ['class','rowName'] ]); //, [ ['class',''], ['id','nameRow-'.concat(rowId)] ]            
-    //     var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash');
-    //     buttonDeleteRow.addEventListener('click', function()
-    //     {
-    //         GridManager.RemoveRow(Elements.wrapper);
-    //     });
-
-    //     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
-    //     var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
-
-    //     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-    //     var collapsibleElements = CreateCollapsibleElements('editRow-'.concat(rowId), 'btn buttonItemName', itemName, 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
-    //     Elements.nameToggle = collapsibleElements[0];
-    //     Elements.settingsWrapper = collapsibleElements[1];
-
-    //     Elements.editNameTextarea.textContent = Elements.nameToggle.textContent;
-    //     Elements.editNameTextarea.addEventListener("change", function() 
-    //     {
-    //         Elements.nameToggle.textContent = Elements.editNameTextarea.value;
-    //         GridManager.GridModified();
-    //     });
-    //     Elements.editNameTextarea.addEventListener("keypress", function(e) 
-    //     {
-    //         if(e.keyCode==13)
-    //         {
-    //             Elements.editNameTextarea.blur();
-    //         }
-    //     });
-
-    //     $(Elements.settingsWrapper).on('show.bs.collapse', function() 
-    //     {
-    //         GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
-    //     });
-
-    //     Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
-
-    //     Elements.wrapper.appendChild(Elements.nameWrapper);
-    // }
     
     /** Public Functions **/
 

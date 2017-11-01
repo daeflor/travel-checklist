@@ -26,16 +26,16 @@ function Grid(gridElement, listType)
         },
         GetDataForStorage : function()
         {
-            var rowData = [];
-            //console.log('There are currently ' + rows.length + ' item rows.');
-    
+            var data = [];
+            
+            data.push(type);
+
             for (var i = 0; i < rows.length; i++)
             {
-                rowData.push(rows[i].GetDataForStorage());
-                //console.log('Saved the values for Row ' + i + '. Name = ' + rowValues[i][0]);
+                data.push(rows[i].GetDataForStorage());
             }
 
-            return rowData;
+            return data;
         },
         RemoveRow : function(rowElementToRemove)
         {
@@ -62,7 +62,17 @@ function Grid(gridElement, listType)
             
             element.appendChild(itemRow.GetDiv());
             
-            return itemRow;
+            //return itemRow;
+        },
+        AddNewRow : function()
+        {
+            var itemRow = new Row(GridManager.GetNextRowId(), "", 0, 0, 0, 0);
+
+            rows.push(itemRow);
+            
+            element.appendChild(itemRow.GetDiv());
+            
+            itemRow.ExpandSettings();
         },
         ClearQuantityColumnValues : function(columnIndex)
         {

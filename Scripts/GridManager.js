@@ -59,10 +59,13 @@ window.GridManager = function()
 
         //TODO somehow need to have the concept of grid knowing its header:
         //ListManager (All Lists)
-        //  List/Grid
-        //      Header
-        //      Rows
+        //  Headers
+        //  List
+        //    -> Header
+        //    Items
+        //      "Columns"/QuantityTrackers/Checkbox  
         // ?
+        // Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
 
         header = new Header(ListType.Checklist);
         headers.push(header);
@@ -91,23 +94,26 @@ window.GridManager = function()
         console.log('There are ' + gridData.length + ' grids saved in local storage.');
         for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
         {
-            console.log("Creating Grid Element and Object")
+            //console.log("Creating Grid Element and Object")
             var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
             document.body.insertBefore(gridElement, document.getElementById('newRow'));
             var grid = new Grid(gridElement, ListType.Travel);
+            //var grid = new Grid(gridElement, gridData[i][0]); //TODO replace above line with this one. 
 
-            console.log("Regenerating Grid " + i + " ----------");
+            console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
+            //TODO change start index to 1
             for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
             {
-                for (var k = 0; k < gridData[i][j].length; k++) //Traverse all the rows belonging to the current grid, in local storage
+                if (grid.GetType() == ListType.Travel)
                 {
-                    console.log("Grid: " + i + ". Row: " + j + ". Column: " + k + ". Item: " + gridData[i][j][k]);
-                    //grid.AddRow(gridData[i][j][k], gridData[i][j][k], gridData[i][j][k], gridData[i][j][k], gridData[i][j][k]);
+                    console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                    grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                    //TODO creating rows could be handled in Grid itself. Could just pass GridData to it in constructor. 
                 }
-
-                // console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                 grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                //TODO need to split Row file into Columns
+                else if (grid.GetType() == ListType.Checklist)
+                {
+                    //TODO
+                } 
             }
 
             grids.push(grid);
@@ -172,7 +178,7 @@ window.GridManager = function()
 
     function AddNewRow()
     {
-        activeGrid.AddRow("", 0, 0, 0, 0).ExpandSettings();
+        activeGrid.AddNewRow();
         SaveDataToStorage(); 
     }
 
