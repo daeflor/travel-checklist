@@ -8,6 +8,7 @@ window.GridManager = function()
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
+    var currentFormatVersion = 0;
 
     function Setup()
     {            
@@ -32,12 +33,6 @@ window.GridManager = function()
         }
 
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-
-        //TODO class data could be contained in the QuantityType object
-        // //CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-        // CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
-        // CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);
-        // CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
     }
 
     // function GetVisibleGrid()
@@ -91,35 +86,63 @@ window.GridManager = function()
 
     function ReloadGridDataFromStorage(gridData)
     {
-        console.log('There are ' + gridData.length + ' grids saved in local storage.');
-        for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
+        var formatVersion = gridData[0];
+        console.log("The parsed Format Version is: " + formatVersion);
+
+        if (formatVersion != currentFormatVersion)
         {
-            //console.log("Creating Grid Element and Object")
-            var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
-            document.body.insertBefore(gridElement, document.getElementById('newRow'));
-            var grid = new Grid(gridElement, ListType.Travel);
-            //var grid = new Grid(gridElement, gridData[i][0]); //TODO replace above line with this one. 
-
-            console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
-            //TODO change start index to 1
-            for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
+            console.log("The data in storage is in an old format. Parsing it using legacy code.")
+            console.log('There are ' + gridData.length + ' grids saved in local storage.');
+            for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
             {
-                if (grid.GetType() == ListType.Travel)
+                var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
+                document.body.insertBefore(gridElement, document.getElementById('newRow'));
+                var grid = new Grid(gridElement, ListType.Travel);
+    
+                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
+                for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
                 {
-                    console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                    grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                    //TODO creating rows could be handled in Grid itself. Could just pass GridData to it in constructor. 
+                    if (grid.GetType() == ListType.Travel)
+                    {
+                        console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                        grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                    }
+                    else if (grid.GetType() == ListType.Checklist)
+                    {
+                        //TODO
+                    } 
                 }
-                else if (grid.GetType() == ListType.Checklist)
-                {
-                    //TODO
-                } 
+    
+                grids.push(grid);
             }
-
-            grids.push(grid);
         }
-
-        //console.log("Number of grids created: " + grids.length);
+        else if (formatVersion == currentFormatVersion)
+        {
+            console.log("The data in storage is in the current format.");
+            console.log("There are " + ((gridData.length) - 1) + " grids saved in local storage.");
+            for (var i = 1; i < gridData.length; i++) //Traverse all the grid data saved in local storage
+            {
+                var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
+                document.body.insertBefore(gridElement, document.getElementById('newRow'));
+                var grid = new Grid(gridElement, gridData[i][0]);
+    
+                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
+                for (var j = 1; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
+                {
+                    if (grid.GetType() == ListType.Travel)
+                    {
+                        console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
+                        grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
+                    }
+                    else if (grid.GetType() == ListType.Checklist)
+                    {
+                        //TODO
+                    } 
+                }
+    
+                grids.push(grid);
+            }
+        }
     }
 
     function SaveDataToStorage()
@@ -129,14 +152,16 @@ window.GridManager = function()
 
     function GetDataForStorage()
     {
-        var gridData = [];
+        var data = [];
+
+        data.push(currentFormatVersion);
 
         for (var i = 0; i < grids.length; i++)
         {
-            gridData.push(grids[i].GetDataForStorage());
+            data.push(grids[i].GetDataForStorage());
         }
 
-        return gridData;
+        return data;
     }
 
     /** Button Interactions **/

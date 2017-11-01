@@ -8,6 +8,7 @@ function Header(listType)
 
     if (listType == ListType.Travel)
     {
+        //TODO class data could be contained in the QuantityType object
         CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
         CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
         CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);

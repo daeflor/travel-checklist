@@ -5,10 +5,6 @@ function Grid(gridElement, listType)
     var type = listType;
 
     return { 
-        // GetElement : function()
-        // {
-        //     return element;
-        // },
         GetType : function()
         {
             return type;

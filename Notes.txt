@@ -26,7 +26,6 @@ Thoughts:
 - Perhaps split up header and/or headermanager into its own thing
 - Should long item names be truncated?
 - There should be no hardcoded lists in index.html
-- Could add a format version to the LocalStorage Object
 
 Future:
 
