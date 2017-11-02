@@ -12,6 +12,7 @@ Upcoming To-Do List:
     Grid state would need to be stored when Rows get moved up or down in the grid
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
+- Need functionality to add a new list
 
 Thoughts:
 
