@@ -8,7 +8,7 @@ window.GridManager = function()
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
-    var currentFormatVersion = 0;
+    var currentFormatVersion = 'fv0';
 
     function Setup()
     {            
@@ -177,61 +177,84 @@ window.GridManager = function()
 
     function SwitchGrids(indexToDisplay, categoryTextToDisplay)
     {
-        //console.log("Request received to switch grids to grid index: " + indexToDisplay);
+        console.log("Request received to switch grids to grid index: " + indexToDisplay);
 
         GridManager.ToggleActiveSettingsView(null);
 
+        //TODO Maybe the two checks below could be merged into one. 
+            //I think perhaps the we should not de-activate the current grid if there is no valid one to switch to. We should just error out right away.
+
         if (activeGrid != null)
         {
-            activeGrid.ToggleElementVisibility();   
-            headers[activeGrid.GetType()].ToggleElementVisibility(); //TODO this could be more efficient
+            var listType = activeGrid.GetType();
+
+            if (listType != null)
+            {   
+                if (headers[listType] != null)
+                {
+                    activeGrid.ToggleElementVisibility();   
+                    activeGrid = null;
+                    headers[listType].ToggleElementVisibility(); //TODO this could be more efficient
+                    document.getElementById('buttonCurrentCategory').textContent = '';
+                }
+                else
+                {
+                    console.log("ERROR: Tried to hide a header which doesn't exist");
+                }
+            }
+            else
+            {
+                console.log("ERROR: Tried to hide a list which has a ListType of null");
+            }
         }
 
         if (indexToDisplay < grids.length)
         {
-            activeGrid = grids[indexToDisplay];
-            activeGrid.ToggleElementVisibility();  
-            headers[activeGrid.GetType()].ToggleElementVisibility();
+            var listToDisplay = grids[indexToDisplay];
+            var listType = listToDisplay.GetType()
+
+            if (listType != null)
+            {
+                var headerToDisplay = headers[listType];
+                
+                if (headerToDisplay != null)
+                {
+                    activeGrid = listToDisplay;
+                    activeGrid.ToggleElementVisibility();  
+                    headerToDisplay.ToggleElementVisibility();
+                    document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
+                }
+                else
+                {
+                    console.log("ERROR: Tried to display a header which doesn't exist");
+                }
+            }
+            else
+            {
+                console.log("ERROR: Tried to switch to a list which has a ListType of null");
+            }
         }
         else
         {
             console.log("ERROR: Tried to switch to a grid which doesn't exist");
         }
-
-        document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
     }
 
     function AddNewRow()
     {
-        activeGrid.AddNewRow();
-        SaveDataToStorage(); 
+        if (activeGrid != null)
+        {
+            activeGrid.AddNewRow();
+            SaveDataToStorage(); 
+        }
+        else
+        {
+            console.log("ERROR: Tried to add a row to the Active List, which doesn't exist");
+        }
     }
 
     /** Experimental & In Progress **/
 
-    //TODO would like a separate 'class' for toggles
-    // function CreatePopoverForQuantityHeader(divClass, iconClass, quantityHeaderIndex)
-    // {
-    //     var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
-
-    //     var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
-    //     var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
-        
-    //     $(popoverToggle).on('shown.bs.popover', function() 
-    //     {
-    //         console.log("A Header Popover was shown");
-    //         document.getElementById('buttonClear').addEventListener('click', function()
-    //         {
-    //             //console.log("A Clear button was pressed");
-    //             activeGrid.ClearQuantityColumnValues(quantityHeaderIndex);
-    //             SaveDataToStorage();
-    //         });
-    //         //console.log("Added an onclick event listener to a Clear button");
-    //     });
-
-    //     var divWrapper = CreateNewElement('div', [ ['class',divClass] ], popoverToggle);
-    //     document.getElementById('headerRow').appendChild(divWrapper);
-    // }
 
     /** Public Functions **/
 
