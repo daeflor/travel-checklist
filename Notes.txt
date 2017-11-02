@@ -25,6 +25,7 @@ Thoughts:
 - Make this work for a shopping list
 - Perhaps split up header and/or headermanager into its own thing
 - Should long item names be truncated?
+- There should be no hardcoded lists in index.html
 
 Future:
 
