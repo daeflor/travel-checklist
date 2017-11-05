@@ -44,7 +44,7 @@ function Header(listType)
     return { 
         GetElement : function()
         {
-            console.log("Header element: " + element);
+            //console.log("Header element: " + element);
             return element;
         },
         ToggleElementVisibility : function()

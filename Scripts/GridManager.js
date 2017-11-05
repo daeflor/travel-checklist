@@ -8,7 +8,7 @@ window.GridManager = function()
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
-    var currentFormatVersion = 'fv0';
+    var currentFormatVersion = 'fv1';
 
     function Setup()
     {            
@@ -87,20 +87,27 @@ window.GridManager = function()
     function ReloadGridDataFromStorage(gridData)
     {
         var formatVersion = gridData[0];
-        console.log("The parsed Format Version is: " + formatVersion);
+        console.log("The parsed Format Version is: " + formatVersion + ". The current Format Version is: " + currentFormatVersion);
 
         if (formatVersion != currentFormatVersion)
         {
             console.log("The data in storage is in an old format. Parsing it using legacy code.")
-            console.log('There are ' + gridData.length + ' grids saved in local storage.');
-            for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
+
+            console.log("There are " + ((gridData.length) - 1) + " grids saved in local storage.");
+            for (var i = 1; i < gridData.length; i++) //Traverse all the grid data saved in local storage
             {
                 var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
                 document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid(gridElement, ListType.Travel);
-    
-                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
-                for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
+                var grid = new Grid(gridElement, 'NewList', gridData[i][0]);
+
+                var nameElement = CreateNewElement('button', [ ['class','dropdown-item buttonCategory'], ['data-gridindex',(i-1)] ]); 
+                nameElement.textContent = grid.GetName();
+                $(nameElement).insertAfter('#listDropdown-Travel');
+                //document.getElementById('listDropdown-Travel').appendChild(nameElement);
+                //TODO need to find a way to get the names of any existing hard-coded lists
+
+                console.log("Regenerating Grid. Index: " + (i-1) + " Name: " + grid.GetName() + " Type: " + grid.GetType() + " ----------");
+                for (var j = 1; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
                 {
                     if (grid.GetType() == ListType.Travel)
                     {
@@ -119,15 +126,22 @@ window.GridManager = function()
         else if (formatVersion == currentFormatVersion)
         {
             console.log("The data in storage is in the current format.");
+
             console.log("There are " + ((gridData.length) - 1) + " grids saved in local storage.");
             for (var i = 1; i < gridData.length; i++) //Traverse all the grid data saved in local storage
             {
                 var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
                 document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid(gridElement, gridData[i][0]);
-    
-                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
-                for (var j = 1; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
+                var grid = new Grid(gridElement, gridData[i][0], gridData[i][1]);
+
+                //var listDropdownElement = document.getElementById('listDropdown-Travel');
+                var nameElement = CreateNewElement('button', [ ['class','dropdown-item buttonCategory'], ['data-gridindex',(i-1)] ]); 
+                nameElement.textContent = grid.GetName();
+                $(nameElement).insertAfter('#listDropdown-Travel');
+                //document.getElementById('listDropdown-Travel').appendChild(nameElement);
+                
+                console.log("Regenerating Grid. Index: " + (i-1) + " Name: " + grid.GetName() + " Type: " + grid.GetType() + " ----------");
+                for (var j = 2; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
                 {
                     if (grid.GetType() == ListType.Travel)
                     {
@@ -154,6 +168,7 @@ window.GridManager = function()
     {
         var data = [];
 
+        console.log("Current Format Version is: " + currentFormatVersion);
         data.push(currentFormatVersion);
 
         for (var i = 0; i < grids.length; i++)

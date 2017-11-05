@@ -1,10 +1,15 @@
-function Grid(gridElement, listType)
+function Grid(gridElement, listName, listType)
 {
     var element = gridElement;
     var rows = [];
+    var name = listName;
     var type = listType;
 
     return { 
+        GetName : function()
+        {
+            return name;
+        },
         GetType : function()
         {
             return type;
@@ -24,6 +29,7 @@ function Grid(gridElement, listType)
         {
             var data = [];
             
+            data.push(name);
             data.push(type);
 
             for (var i = 0; i < rows.length; i++)
