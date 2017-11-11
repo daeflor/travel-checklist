@@ -1,18 +1,28 @@
-function Grid(gridElement, listName, listType)
+function Grid(listName, listType, listId)
 {
-    var element = gridElement;
+    var element = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
     var rows = [];
-    var name = listName;
+    //var name = listName; //TODO is it necessary to store these
     var type = listType;
+    var toggle = new ListToggle(listName, listId);
 
     return { 
+        GetElement : function()
+        {
+            return element;
+        },
         GetName : function()
         {
-            return name;
+            return toggle.GetName(); //TODO this is pretty janky
+            //return name;
         },
         GetType : function()
         {
             return type;
+        },
+        GetToggle : function()
+        {
+            return toggle;
         },
         ToggleElementVisibility : function()
         {
@@ -29,7 +39,7 @@ function Grid(gridElement, listName, listType)
         {
             var data = [];
             
-            data.push(name);
+            data.push(toggle.GetName());
             data.push(type);
 
             for (var i = 0; i < rows.length; i++)

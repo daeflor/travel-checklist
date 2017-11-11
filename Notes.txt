@@ -1,10 +1,12 @@
 TO-DOs:
 
-	- index.html      : 1
-	- GridManager.js  : 8
-    - Grid.js         : 2
-    - Row.js          : 5
-    - Helpers.js      : 3
+	- index.html      : 0
+	- GridManager.js  : 17
+    - Grid.js         : 3
+    - Header.js       : 3
+    - ListToggle.js   : 5
+    - Row.js          : 1
+    - Helpers.js      : 6
 	- Style.css       : 2
 
 Upcoming To-Do List:
@@ -12,7 +14,12 @@ Upcoming To-Do List:
     Grid state would need to be stored when Rows get moved up or down in the grid
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
-- Need functionality to add a new list
+- At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
+- Current List Button isn't set when renaming the active list
+- The Toggle for the List of Lists could be the old dropdown header, or a SWITCH icon next to it. 
+- Make regenerating lists concise
+- Make it pretty and user friendly
+- Add support for deleting lists
 
 Thoughts:
 

@@ -15,6 +15,7 @@
   <script src='Scripts/GridManager.js'></script>
   <script src='Scripts/Header.js'></script>
   <script src='Scripts/Grid.js'></script>
+  <script src='Scripts/ListToggle.js'></script>
   <script src='Scripts/Row.js'></script>
   <script src='Scripts/Helpers.js'></script>
 <!--
@@ -33,32 +34,15 @@
 </head>
 <body>      
   <div class="container-fluid"> 
+    <button class="btn" id='buttonCurrentList' type="button" data-toggle='collapse' data-target='#listOfLists'>Add A New List</button>
+    <div class="container-fluid grid collapse" id='listOfLists'>
+        <button class="btn" id='buttonAddList' type="button"><i class="fa fa-plus-square-o fa-lg"></i></button>        
+    </div>
 
     <div class="row" id="headerRow">
       
-      <div class="col-5 dropdown header itemCategory"> <!--TODO what does the dropdown class do exactly? -->
-        <button class="btn dropdown-toggle" id="buttonCurrentCategory" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Clothes
-        </button>
-        <div class="dropdown-menu">
-          <h6 class="dropdown-header" id="listDropdown-Travel">Travel</h6>
-          <!-- <button class="dropdown-item buttonCategory" data-gridindex="0" type="button">Clothes</button>
-          <button class="dropdown-item buttonCategory" data-gridindex="1" type="button">Sundries</button>
-          <button class="dropdown-item buttonCategory" data-gridindex="2" type="button">Test</button> -->
-
-          <div class="dropdown-divider"></div>
-          <h6 class="dropdown-header">Shopping</h6>
-          <button class="dropdown-item buttonCategory" data-gridindex="3" type="button">Groceries</button>
-          <button class="dropdown-item buttonCategory" data-gridindex="4" type="button">Sundries</button>
-          <button class="dropdown-item buttonCategory" data-gridindex="5" type="button">Personal Care</button>
-
-              <!--
-              <button class="dropdown-item buttonCategory" data-gridindex="0" type="button">Clothes</button>
-              <button class="dropdown-item buttonCategory" data-gridindex="1" type="button">Sundries</button>
-              <button class="dropdown-item buttonCategory" data-gridindex="2" type="button">Test</button>
-              -->
-
-        </div>
+      <div class="col-5 header itemCategory"> 
+        <h6>Item</h6>
       </div>
 
       <!-- <div class="col header">

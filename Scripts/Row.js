@@ -2,11 +2,13 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 {
     var Elements = {
         wrapper: CreateNewElement('div', [ ['class','row divItemRow'] ]),
-        nameWrapper: null,
         nameToggle: null,
         listQuantityPopovers: [],
-        settingsWrapper: null,
-        editNameTextarea: null,
+        Settings : {
+            wrapper: null, 
+            editNameTextarea: null,
+            buttonDelete: null,
+        },
     };
 
     SetupElements();
@@ -16,21 +18,29 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
 
     function SetupElements()
     {
-        CreateNameToggle(rowId, itemName);
+        CreateNameToggle(rowId, itemName); //TODO is it necessary to pass rowId as a parameter?
         CreateDivForQuantityPopover(neededQuantity);
         CreateDivForQuantityPopover(luggageQuantity);
         CreateDivForQuantityPopover(wearingQuantity);
         CreateDivForQuantityPopover(backpackQuantity);
-        CreateSettingsView(rowId, itemName);
+    
+        CreateRowSettingsView(rowId, Elements.Settings, Elements.nameToggle);
+
+        Elements.Settings.buttonDelete.addEventListener('click', function()
+        {   
+            GridManager.RemoveRow(Elements.wrapper);
+        });
+
+        Elements.wrapper.appendChild(Elements.Settings.wrapper);
     }
     
     function CreateNameToggle(rowId, itemName)
     {
-        Elements.nameToggle = CreateToggleForCollapsibleView('editRow-'.concat(rowId), 'btn buttonItemName', itemName);
+        Elements.nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(rowId), 'btn buttonItemName', itemName);
 
-        Elements.nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
+        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], Elements.nameToggle);
 
-        Elements.wrapper.appendChild(Elements.nameWrapper);
+        Elements.wrapper.appendChild(nameWrapper);
     }
 
     function CreateDivForQuantityPopover(quantity)
@@ -86,50 +96,6 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         Elements.listQuantityPopovers.push(popoverToggle);
     
         Elements.wrapper.appendChild(CreateNewElement('div', [ ['class','col'] ], popoverToggle));
-    }
-
-    function CreateSettingsView(rowId, itemName)
-    {
-        //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
-        
-        /* Create Text Area */
-        Elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
-        Elements.editNameTextarea.textContent = Elements.nameToggle.textContent; 
-
-        /* Create Delete Row Button */
-        var buttonDeleteRow = CreateButtonWithIcon('deleteRow-'.concat(rowId), 'btn settings-button', 'fa fa-trash'); //TODO id isn't really necessary
-        buttonDeleteRow.addEventListener('click', function()
-        {
-            GridManager.RemoveRow(Elements.wrapper);
-        });
-
-        /* Create Element Wrappers */
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], Elements.editNameTextarea);
-        var divButtonDeleteRow = CreateNewElement('div', [ ['class','col-2'] ], buttonDeleteRow);
-        //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        Elements.settingsWrapper  = CreateCollapsibleView('editRow-'.concat(rowId), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDeleteRow]);
-
-        /* Setup Listeners */
-        $(Elements.settingsWrapper).on('show.bs.collapse', function() 
-        {
-            GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
-        });
-  
-        Elements.editNameTextarea.addEventListener("keypress", function(e) 
-        {
-            if(e.keyCode==13)
-            {
-                Elements.editNameTextarea.blur();
-            }
-        });
-
-        Elements.editNameTextarea.addEventListener("change", function() 
-        {
-            Elements.nameToggle.textContent = Elements.editNameTextarea.value;
-            GridManager.GridModified();
-        });
-
-        Elements.wrapper.appendChild(Elements.settingsWrapper);
     }
 
     function ModifyQuantityValue(quantityElement, increase)
@@ -196,8 +162,8 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
         },
         ExpandSettings : function()
         {
-            $(Elements.settingsWrapper).collapse('show');
-            Elements.editNameTextarea.focus();
+            $(Elements.Settings.wrapper).collapse('show');
+            Elements.Settings.editNameTextarea.focus();
         }
     };
 }

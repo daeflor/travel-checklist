@@ -2,7 +2,6 @@ function Header(listType)
 {
     var element = CreateNewElement('div', [ ['class', 'col container-flud'], ['hidden', 'true'] ]);
     var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb 
-    //var type = listType;
 
     element.appendChild(row);
 
