@@ -17,6 +17,7 @@ Upcoming To-Do List:
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
 - Current List Button isn't set when renaming the active list
 - The Toggle for the List of Lists could be the old dropdown header, or a SWITCH icon next to it. 
+- Test if old format version still works correctly
 - Make regenerating lists concise
 - Make it pretty and user friendly
 - Add support for deleting lists

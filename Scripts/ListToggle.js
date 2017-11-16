@@ -16,9 +16,7 @@ function ListToggle(listName, listId)
         CreateNameWrapper();
         CreateSettingsToggle();
         CreateListSettingsView(listId, Settings, nameButton);
-    
-        nameButton.addEventListener('click', GridManager.ListSelected); //TODO change this so we pass more interesting parameters
-        
+            
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
             console.log("Received request to delete a list, but this isn't supported yet");
@@ -33,6 +31,8 @@ function ListToggle(listName, listId)
         //TODO I don't think ID will work here. Has to be index or need a new way of switching grids. Will become a problem once we start deleting lists
         nameButton = CreateNewElement('button', [ ['class','buttonCategory btn buttonItemName'], ['data-gridindex',listId] ]); 
         nameButton.textContent = listName;
+        nameButton.addEventListener('click', GridManager.ListSelected); //TODO change this so we pass more interesting parameters
+        
 
         var nameWrapper = CreateNewElement('div', [ ['class','col-8 divItemName'] ], nameButton);
         

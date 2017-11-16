@@ -92,7 +92,7 @@ window.GridManager = function()
             for (var i = PreviousStorageDataFormat.FirstListIndex; i < gridData.length; i++) //Traverse all the grid data saved in local storage
             {
                 //document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid('NewList', gridData[i][PreviousStorageDataFormat.ListTypeIndex]);
+                var grid = new Grid('NewList', gridData[i][PreviousStorageDataFormat.ListTypeIndex], GetNextListId());
                 AddListElementsToDOM(grid.GetElement(), grid.GetToggle().GetElement());
                 //var nameElement = CreateNewElement('button', [ ['class','dropdown-item buttonCategory'], ['data-gridindex',(i-PreviousStorageDataFormat.FirstListIndex)] ]); 
                 //nameElement.textContent = grid.GetName();
