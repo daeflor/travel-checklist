@@ -1,6 +1,6 @@
 function ListToggle(listName, listId) 
 {
-    var wrapper = CreateNewElement('div', [ ['class','row'] ]);
+    var wrapper = CreateNewElement('div', [ ['class','row divItemRow'] ]);
     var nameButton;
 
     var Settings = {

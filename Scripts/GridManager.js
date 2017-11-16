@@ -41,16 +41,6 @@ window.GridManager = function()
         headers.push(header);
         document.getElementById('headerRow').appendChild(header.GetElement());
 
-        //TODO somehow need to have the concept of grid knowing its header:
-        //ListManager (All Lists)
-        //  Headers
-        //  List
-        //    -> Header
-        //    Items
-        //      "Columns"/QuantityTrackers/Checkbox  
-        // ?
-        // Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
-
         header = new Header(ListType.Checklist);
         headers.push(header);
         document.getElementById('headerRow').appendChild(header.GetElement());
@@ -62,89 +52,63 @@ window.GridManager = function()
 
     function LoadDataFromStorage()
     {
-        var gridData = LoadValueFromLocalStorage('gridData');
+        var storageData = LoadValueFromLocalStorage('gridData');
     
-        if (gridData != null)
+        if (storageData != null)
         {
-            console.log("Loaded from Local Storage: " + gridData);
-            ReloadGridDataFromStorage(JSON.parse(gridData));        
+            console.log("Loaded from Local Storage: " + storageData);
+            ReloadListDataFromStorage(JSON.parse(storageData));        
         }    
         else
         {
-            console.log("Could not find row data saved in local storage.");
+            console.log("Could not find any list data saved in local storage.");
         }
     }
 
-    function ReloadGridDataFromStorage(gridData)
+    function ReloadListDataFromStorage(storageData)
     {
-        //TODO might be possible for this to be way more concise
-            //First, determine what format version to use, then set temp format version to either previous or current
-            //Then go through grid regeeneration using temp format
+        var storedFormatVersion = storageData[0];
+        var storedFormat;
 
-        var formatVersion = gridData[0];
-        console.log("The parsed Format Version is: " + formatVersion + ". The current Format Version is: " + CurrentStorageDataFormat.Version);
+        console.log("The parsed Format Version from storage data is: " + storedFormatVersion + ". The current Format Version is: " + CurrentStorageDataFormat.Version);        
 
-        if (formatVersion != CurrentStorageDataFormat.Version)
+        if (storedFormatVersion == CurrentStorageDataFormat.Version)
         {
-            console.log("The data in storage is in an old format. Parsing it using legacy code.")
-
-            console.log("There are " + ((gridData.length) - PreviousStorageDataFormat.FirstListIndex) + " grids saved in local storage.");
-            for (var i = PreviousStorageDataFormat.FirstListIndex; i < gridData.length; i++) //Traverse all the grid data saved in local storage
-            {
-                //document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid('NewList', gridData[i][PreviousStorageDataFormat.ListTypeIndex], GetNextListId());
-                AddListElementsToDOM(grid.GetElement(), grid.GetToggle().GetElement());
-                //var nameElement = CreateNewElement('button', [ ['class','dropdown-item buttonCategory'], ['data-gridindex',(i-PreviousStorageDataFormat.FirstListIndex)] ]); 
-                //nameElement.textContent = grid.GetName();
-
-                //nameElement.addEventListener('mousedown', CategorySelected); 
-                
-                //document.getElementById('listDropdown').insertBefore(nameElement, document.getElementById('buttonAddList'));
-
-                console.log("Regenerating Grid. Index: " + (i-PreviousStorageDataFormat.FirstListIndex) + " Name: " + grid.GetName() + " Type: " + grid.GetType() + " ----------");
-                for (var j = PreviousStorageDataFormat.FirstRowIndex; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
-                {
-                    if (grid.GetType() == ListType.Travel)
-                    {
-                        console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                        grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                    }
-                    else if (grid.GetType() == ListType.Checklist)
-                    {
-                        //TODO
-                    } 
-                }
-    
-                grids.push(grid);
-            }
+            storedFormat = CurrentStorageDataFormat;
+            console.log("The data in storage is in the current format.");            
         }
-        else if (formatVersion == CurrentStorageDataFormat.Version)
+        else
         {
-            console.log("The data in storage is in the current format.");
+            storedFormat = PreviousStorageDataFormat;
+            console.log("The data in storage is in an old format. Parsing it using legacy code.")            
+        }
 
-            console.log("There are " + ((gridData.length) - CurrentStorageDataFormat.FirstListIndex) + " grids saved in local storage.");
-            for (var i = CurrentStorageDataFormat.FirstListIndex; i < gridData.length; i++) //Traverse all the grid data saved in local storage
+        console.log("There are " + ((storageData.length) - storedFormat.FirstListIndex) + " lists saved in local storage.");
+        
+        //Traverse the data for all of the lists saved in local storage
+        for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
+        {
+            var list = new Grid(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
+            AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+
+            //TODO the console logs have the wrong indeces
+            console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
+            
+            //Traverse all the rows belonging to the current list, in local storage
+            for (var j = storedFormat.FirstRowIndex; j < storageData[i].length; j++) 
             {
-                var list = new Grid(gridData[i][CurrentStorageDataFormat.ListNameIndex], gridData[i][CurrentStorageDataFormat.ListTypeIndex], GetNextListId());
-                AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-
-                //TODO the console logs have the wrong indeces
-                console.log("Regenerating List. Index: " + (i-CurrentStorageDataFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
-                for (var j = CurrentStorageDataFormat.FirstRowIndex; j < gridData[i].length; j++) //Traverse all the rows belonging to the current list, in local storage
+                if (list.GetType() == ListType.Travel)
                 {
-                    if (list.GetType() == ListType.Travel)
-                    {
-                        console.log("List: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                        list.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                    }
-                    else if (list.GetType() == ListType.Checklist)
-                    {
-                        //TODO
-                    } 
+                    console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
+                    list.AddRow(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
                 }
-    
-                grids.push(list);
+                else if (list.GetType() == ListType.Checklist)
+                {
+                    //TODO
+                } 
             }
+
+            grids.push(list);
         }
     }
 
@@ -438,7 +402,7 @@ var ListType = {
 
 var PreviousStorageDataFormat = {
     FirstListIndex: 1,
-    ListNameIndex: 'n/a',
+    ListNameIndex: 0,
     ListTypeIndex: 0,
     FirstRowIndex: 1,
 };
