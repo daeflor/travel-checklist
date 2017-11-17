@@ -28,7 +28,7 @@ window.GridManager = function()
     {
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-        document.getElementById('buttonCurrentList').onclick = function () 
+        document.getElementById('buttonSwitchLists').onclick = function () 
         {
             GridManager.ToggleActiveSettingsView(null); //TODO Make these functions private 
             GridManager.ToggleActiveListSettingsView(null);
@@ -214,7 +214,7 @@ window.GridManager = function()
                                 activeGrid.ToggleElementVisibility();
                                 activeGrid = null;
                                 activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
-                                document.getElementById('buttonCurrentList').textContent = '';
+                                document.getElementById('headerCurrentListName').textContent = '';
                             }
                             else
                             {
@@ -230,7 +230,7 @@ window.GridManager = function()
                     activeGrid = listToDisplay;
                     activeGrid.ToggleElementVisibility();  
                     headerToDisplay.ToggleElementVisibility();
-                    document.getElementById('buttonCurrentList').textContent = activeGrid.GetName();
+                    document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();
                 }
                 else
                 {
