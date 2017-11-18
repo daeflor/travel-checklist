@@ -20,6 +20,7 @@ Upcoming To-Do List:
     And the list of lists could show up in the area where the normal rows are. (e.g. active grid gets hidden, list of list gets displayed)
 - Make it pretty and user friendly
 - Add support for deleting lists
+- Completely scrub styles
 - Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
   //ListManager (All Lists)
         //  Headers
