@@ -233,9 +233,8 @@ window.GridManager = function()
             document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();                    
         }
         
-        //TODO Make these functions private 
-        GridManager.ToggleActiveSettingsView(null); 
-        GridManager.ToggleActiveListSettingsView(null);
+        GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
+        GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
     }
 
     /** Experimental & In Progress **/
@@ -336,7 +335,7 @@ window.GridManager = function()
                 activeSettingsView = null;
             }
         },
-        ToggleActiveListSettingsView : function(newSettingsView) //TODO these two methods should be merged as one, and pass which view to toggle as param. Can track these in their own object
+        ToggleActiveListSettingsView : function(newSettingsView) //TODO these two methods could be private and also merged as one, and pass which view to toggle as param. Can track these in their own object
         {     
             //If there is a Settings View currently active, hide it
             if (activeListSettingsView != null)
@@ -374,9 +373,6 @@ window.GridManager = function()
         {
             console.log("Element selected: " + this + ". gridindex: " + this.dataset.gridindex);
 
-            GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
-            GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
-
             if (typeof(this.dataset.gridindex) == "undefined")
             {
                 console.log("ERROR: the grid index property of the selected element is undefined");
@@ -391,26 +387,6 @@ window.GridManager = function()
                 $('#listOfLists').collapse('hide');
                 CloseListOfLists();
             }
-
-
-            // else if (this.dataset.gridindex == grids.indexOf(activeGrid)) //If the list toggle selected is the same as the one currently active, just hide the list of lists          
-            // {
-            //     console.log("Selected the toggle for the active list. Closing list of lists.");
-                
-            //     if (activeGrid != null)
-            //     {
-            //         document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();                    
-            //     }
-
-            //     $('#listOfLists').collapse('hide');
-            // }
-            // else //If the list toggle selected is different from the one currently active, switch lists to the selected one 
-            // {
-            //     SwitchLists(this.dataset.gridindex);
-            //     $('#listOfLists').collapse('hide');
-            // }
-
-            // CloseListOfLists();
         }
     };
 }();
