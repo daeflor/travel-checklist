@@ -7,7 +7,7 @@
 
   <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
-  <link rel='stylesheet' type='text/css' href='Styles/style.css'>
+  <link rel='stylesheet' type='text/css' href='Styles/style_new.css'>
 
   <script src='Libraries/jquery-3.2.1.slim.js'></script>
   <script src='Libraries/popper.min.js'></script>
@@ -35,8 +35,10 @@
 <body>      
   <div class="container-fluid"> 
     <!-- <button class="btn" id='buttonCurrentList' type="button" data-toggle='collapse' data-target='#listOfLists'>Add A New List</button> -->
-    <div class="container-fluid grid collapse" id='listOfLists'>
-        <button class="btn buttonAdd" id='buttonAddList' type="button"><i class="fa fa-plus-square-o fa-lg"></i></button>        
+    <div class='container-fluid collapse' id='listOfLists'>
+      <div class='newRow' id='newListRow'>
+          <button class='btn' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
+      </div>
     </div>
 
     <div class="row" id="headerRow">
@@ -44,10 +46,10 @@
         <button class='btn' id='buttonCurrentList' type="button" data-toggle='collapse' data-target='#listOfLists'><i class="fa fa-exchange fa-lg">Add A New List</i></button>  
       </div> -->
 
-      <button class='col-5 header itemCategory container-fluid btn' id='buttonSwitchLists' type='button' data-toggle='collapse' data-target='#listOfLists'> 
-        <div class="row">
+      <button class='col-5 container-fluid' id='buttonSwitchLists' type='button' data-toggle='collapse' data-target='#listOfLists'> 
+        <div class='row'>
           <div class='col' id='headerCurrentListName'>Add A New List</div>
-          <i class="col-5 btn fa fa-exchange fa-lg"></i>
+          <i class='col btn fa fa-exchange fa-lg' id='iconExchange'></i>
         </div>
       </button>  
       
@@ -65,8 +67,8 @@
     </div>     
   </div>
 
-  <div id="newRow">
-    <button class="btn buttonAdd" id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
+  <div class='newRow' id='newItemRow'>
+    <button class='btn' id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
   </div>
   
 </body>

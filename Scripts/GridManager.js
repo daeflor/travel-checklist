@@ -158,10 +158,10 @@ window.GridManager = function()
     function AddListElementsToDOM(elementList, elementListToggle)
     {
         //Add the list 
-        document.body.insertBefore(elementList, document.getElementById('newRow'));
+        document.body.insertBefore(elementList, document.getElementById('newItemRow'));
         
         //Add the list toggle
-        document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('buttonAddList'));
+        document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
     }
 
     function AddNewList()

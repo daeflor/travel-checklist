@@ -46,8 +46,8 @@ function Row(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, 
     function CreateDivForQuantityPopover(quantity)
     {
         /* Create Popover Elements */
-        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn buttonEditQuantity popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
-        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn buttonEditQuantity popoverElement', 'fa fa-plus-circle fa-lg popoverElement');
+        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn', 'fa fa-minus-circle fa-lg');
+        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn', 'fa fa-plus-circle fa-lg');
     
         var popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', quantity, [buttonMinus, buttonPlus], 'manual');
     

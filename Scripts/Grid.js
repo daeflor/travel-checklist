@@ -1,6 +1,6 @@
 function Grid(listName, listType, listId)
 {
-    var element = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
+    var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
     //var name = listName; //TODO is it necessary to store these
     var type = listType;

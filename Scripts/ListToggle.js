@@ -29,7 +29,7 @@ function ListToggle(listName, listId)
     function CreateNameWrapper()
     {
         //TODO I don't think ID will work here. Has to be index or need a new way of switching grids. Will become a problem once we start deleting lists
-        nameButton = CreateNewElement('button', [ ['class','buttonCategory btn buttonItemName'], ['data-gridindex',listId] ]); 
+        nameButton = CreateNewElement('button', [ ['class','btn buttonItemName'], ['data-gridindex',listId] ]); 
         nameButton.textContent = listName;
         nameButton.addEventListener('click', GridManager.ListSelected); //TODO change this so we pass more interesting parameters
         
@@ -41,7 +41,7 @@ function ListToggle(listName, listId)
 
     function CreateSettingsToggle()
     {
-        var settingsToggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'btn settings-button', CreateNewElement('i', [['class','fa fa-cog']]));
+        var settingsToggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'btn', CreateNewElement('i', [['class','fa fa-cog']]));
 
         var toggleWrapper = CreateNewElement('div', [ ['class','col-2'] ], settingsToggle);
 

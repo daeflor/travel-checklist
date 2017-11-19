@@ -1,13 +1,13 @@
 TO-DOs:
 
 	- index.html      : 0
-	- GridManager.js  : 17
+	- GridManager.js  : 14
     - Grid.js         : 3
-    - Header.js       : 3
+    - Header.js       : 4
     - ListToggle.js   : 5
     - Row.js          : 1
     - Helpers.js      : 6
-	- Style.css       : 2
+	- style_new.css   : 2
 
 Upcoming To-Do List:
 - Create 'move' buttons to move an item up or down the grid/list
@@ -20,7 +20,6 @@ Upcoming To-Do List:
     And the list of lists could show up in the area where the normal rows are. (e.g. active grid gets hidden, list of list gets displayed)
 - Make it pretty and user friendly
 - Add support for deleting lists
-- Completely scrub styles
 - Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
   //ListManager (All Lists)
         //  Headers

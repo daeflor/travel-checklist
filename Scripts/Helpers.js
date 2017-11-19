@@ -44,7 +44,7 @@ function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
 {    
     /* Setup Popover Elements */
-    var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
+    var divPopover = document.createElement('div');
     for (var i = 0; i < popoverChildren.length; i++)
     {
         divPopover.appendChild(popoverChildren[i]);
@@ -155,7 +155,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     /* Create Delete Button */
     elements.buttonDelete = CreateNewElement(
         'button', 
-        [ ['class','btn settings-button'], ['type','button'] ], 
+        [ ['class','btn'], ['type','button'] ], 
         CreateNewElement('i', [['class','fa fa-trash']])
     );
 
