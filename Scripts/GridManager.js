@@ -11,6 +11,8 @@ window.GridManager = function()
     var rowCounter = 0;
     var listCounter = -1; //TODO this is super hacky and TEMP
 
+    /** Grid & Button Setup **/
+
     function Setup()
     {            
         SetupHeaders();
@@ -22,17 +24,11 @@ window.GridManager = function()
         SetupInteractibles();
     }
 
-    /** Grid & Button Setup **/
-
     function SetupInteractibles()
     {
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-        document.getElementById('buttonSwitchLists').onclick = function () 
-        {
-            GridManager.ToggleActiveSettingsView(null); //TODO Make these functions private 
-            GridManager.ToggleActiveListSettingsView(null);
-        };
+        document.getElementById('buttonSwitchLists').onclick = CloseListOfLists;
     }
 
     function SetupHeaders()
@@ -132,7 +128,13 @@ window.GridManager = function()
         return data;
     }
 
-    /** Button Interactions **/
+    /** List Management **/
+
+    function GetNextListId()
+    {
+        listCounter++;
+        return listCounter;
+    }
 
     function AddNewRow()
     {
@@ -147,12 +149,13 @@ window.GridManager = function()
         }
     }
 
-    /** Experimental & In Progress **/
-
-    function GetNextListId()
+    function AddNewList()
     {
-        listCounter++;
-        return listCounter;
+        var list = new Grid("New List", ListType.Travel, GetNextListId());
+        grids.push(list);
+        AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+        SwitchLists((grids.length-1), list.GetName());            
+        SaveDataToStorage(); 
     }
 
     function AddListElementsToDOM(elementList, elementListToggle)
@@ -163,31 +166,6 @@ window.GridManager = function()
         //Add the list toggle
         document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
     }
-
-    function AddNewList()
-    {
-        var list = new Grid("New List", ListType.Travel, GetNextListId());
-        grids.push(list);
-        AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-        SwitchLists((grids.length-1), list.GetName());            
-        SaveDataToStorage(); 
-    }
-
-    // function AddNewList()
-    // {
-    //     AddList("New List", ListType.Travel, GetNextListId());
-    // }
-
-    // function AddList(name, type, id)
-    // {
-    //     var list = new Grid(name, type, id);
-    //     AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-    //     grids.push(list);
-
-    //     SwitchLists((grids.length-1), list.GetName());            
-
-    //     SaveDataToStorage(); 
-    // }
 
     function SwitchLists(indexToDisplay)
     {   
@@ -247,6 +225,36 @@ window.GridManager = function()
             console.log("ERROR: Tried to switch to a grid which doesn't exist");
         }
     }
+
+    function CloseListOfLists()
+    {
+        if (activeGrid != null)
+        {
+            document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();                    
+        }
+        
+        //TODO Make these functions private 
+        GridManager.ToggleActiveSettingsView(null); 
+        GridManager.ToggleActiveListSettingsView(null);
+    }
+
+    /** Experimental & In Progress **/
+
+    // function AddNewList()
+    // {
+    //     AddList("New List", ListType.Travel, GetNextListId());
+    // }
+
+    // function AddList(name, type, id)
+    // {
+    //     var list = new Grid(name, type, id);
+    //     AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+    //     grids.push(list);
+
+    //     SwitchLists((grids.length-1), list.GetName());            
+
+    //     SaveDataToStorage(); 
+    // }
 
             // var pressTimer;
         // list.GetDropdownToggleButton().addEventListener
@@ -328,7 +336,7 @@ window.GridManager = function()
                 activeSettingsView = null;
             }
         },
-        ToggleActiveListSettingsView : function(newSettingsView)
+        ToggleActiveListSettingsView : function(newSettingsView) //TODO these two methods should be merged as one, and pass which view to toggle as param. Can track these in their own object
         {     
             //If there is a Settings View currently active, hide it
             if (activeListSettingsView != null)
@@ -364,7 +372,7 @@ window.GridManager = function()
         },
         ListSelected : function()
         {
-            console.log("element selected: " + this + ". gridindex: " + this.dataset.gridindex);
+            console.log("Element selected: " + this + ". gridindex: " + this.dataset.gridindex);
 
             GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
             GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
@@ -373,16 +381,36 @@ window.GridManager = function()
             {
                 console.log("ERROR: the grid index property of the selected element is undefined");
             }
-            else if (this.dataset.gridindex == grids.indexOf(activeGrid)) //If the list toggle selected is the same as the one currently active, just hide the list of lists          
+            else
             {
-                console.log("Selected the toggle for the active list. Closing list of lists.")
+                if (this.dataset.gridindex != grids.indexOf(activeGrid)) //If the list toggle selected is different from the one currently active, switch lists to the selected one
+                {
+                    SwitchLists(this.dataset.gridindex);
+                }
+
                 $('#listOfLists').collapse('hide');
+                CloseListOfLists();
             }
-            else //If the list toggle selected is different from the one currently active, switch lists to the selected one 
-            {
-                SwitchLists(this.dataset.gridindex);
-                $('#listOfLists').collapse('hide');
-            }
+
+
+            // else if (this.dataset.gridindex == grids.indexOf(activeGrid)) //If the list toggle selected is the same as the one currently active, just hide the list of lists          
+            // {
+            //     console.log("Selected the toggle for the active list. Closing list of lists.");
+                
+            //     if (activeGrid != null)
+            //     {
+            //         document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();                    
+            //     }
+
+            //     $('#listOfLists').collapse('hide');
+            // }
+            // else //If the list toggle selected is different from the one currently active, switch lists to the selected one 
+            // {
+            //     SwitchLists(this.dataset.gridindex);
+            //     $('#listOfLists').collapse('hide');
+            // }
+
+            // CloseListOfLists();
         }
     };
 }();

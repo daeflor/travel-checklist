@@ -34,37 +34,28 @@
 </head>
 <body>      
   <div class="container-fluid"> 
-    <!-- <button class="btn" id='buttonCurrentList' type="button" data-toggle='collapse' data-target='#listOfLists'>Add A New List</button> -->
+    
     <div class='container-fluid collapse' id='listOfLists'>
+
       <div class='newRow' id='newListRow'>
           <button class='btn' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
       </div>
+
     </div>
 
     <div class="row" id="headerRow">
-      <!-- <div class='col-5 header itemCategory'> 
-        <button class='btn' id='buttonCurrentList' type="button" data-toggle='collapse' data-target='#listOfLists'><i class="fa fa-exchange fa-lg">Add A New List</i></button>  
-      </div> -->
 
-      <button class='col-5 container-fluid' id='buttonSwitchLists' type='button' data-toggle='collapse' data-target='#listOfLists'> 
+      <button class='col-5 container' id='buttonSwitchLists' type='button' data-toggle='collapse' data-target='#listOfLists'> 
         <div class='row'>
           <div class='col' id='headerCurrentListName'>Add A New List</div>
-          <i class='col btn fa fa-exchange fa-lg' id='iconExchange'></i>
+          <div class='col-4'>
+            <i class='btn fa fa-exchange fa-lg' id='iconExchange'></i>
+          </div>
         </div>
       </button>  
       
-      <!-- <div class='col-5 header itemCategory container'> 
-        <div class="row">
-          <div class='col' id='headerCurrentListName'>Add A New List</div>
-          <button class='col-5 btn' id='buttonSwitchLists' type="button" data-toggle='collapse' data-target='#listOfLists'><i class="fa fa-exchange fa-lg"></i></button>  
-        </div>
-      </div> -->
+    </div>
 
-      <!-- <div class="col header">
-        <i class="fa fa-pie-chart fa-lg"></i>
-      </div> -->
-      
-    </div>     
   </div>
 
   <div class='newRow' id='newItemRow'>

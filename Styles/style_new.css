@@ -1,12 +1,9 @@
 /** General **/
 
 body {
-    /* font-size: 13px; */
     font-family: system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
 
     background-color: aliceblue;
-
-    /* align-items: center; */
 }
 
 a, a:visited {
@@ -24,9 +21,6 @@ textarea
 /** Bootstrap **/
 
 .btn { /* TODO Do we really need to use the bootstrap btn class? */
-    /* border-color: black;
-    border-width: 3px;
-    border-style: outset; */
     border: 3px outset;
 
     background-color: #EFDEB4;
@@ -60,7 +54,6 @@ textarea
 
     background-color: lavenderblush;
 
-    /* font-size: 13px; */
     text-align: center;
 }
 
@@ -86,15 +79,14 @@ textarea
     padding-top: 0px;
     padding-bottom: 0px;  
 
-    /* font-size: 13px; */
     text-align: center;
 }
 
 #iconExchange {
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;  
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;  
 }
 
 /** Item & List Rows **/
@@ -121,8 +113,6 @@ textarea
     padding-top: 1px;
     padding-bottom: 1px;  
     
-    /* border-color: black;
-    border-width: 3px; */
     border-style: solid;
 
     background-color: #edf7f7;
@@ -197,9 +187,3 @@ textarea
 
 /** Experimental & In Progress **/
 
-/* .popover-body button {
-    border-width: 3px;
-    border-style: outset;
-
-    background-color: #EFDEB4;
-} */
