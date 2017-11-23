@@ -71,15 +71,17 @@ textarea
     border-color: black;
     border-width: 1px;
     border-style: solid;
+
+    margin-left: 0;
 } 
 
 #headerCurrentListName {
     padding-left: 0px;
     padding-right: 0px;
-    padding-top: 0px;
+    padding-top: 3px;
     padding-bottom: 0px;  
 
-    text-align: center;
+    /* text-align: center; */
 }
 
 #iconExchange {
@@ -96,7 +98,8 @@ textarea
     border-width: 1px;
     border-style: solid;
 
-    background-color: aliceblue;
+    background-color: inherit;
+    /* background-color: aliceblue; */
     align-items: center;
 }
 
@@ -133,7 +136,7 @@ textarea
     border-width: 1px;
     border-style: solid;
     
-    width: 100%;
+    /* width: 100%; */
 }
 
 /** Quantity Toggles **/
@@ -187,3 +190,6 @@ textarea
 
 /** Experimental & In Progress **/
 
+#listOfLists {
+    background-color: burlywood;
+}

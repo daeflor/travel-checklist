@@ -20,7 +20,7 @@ function ListToggle(listName, listId)
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
             console.log("Received request to delete a list, but this isn't supported yet");
-            //TODO Do Something
+            GridManager.RemoveList(wrapper);
         });
     
         wrapper.appendChild(Settings.wrapper);
@@ -29,10 +29,12 @@ function ListToggle(listName, listId)
     function CreateNameWrapper()
     {
         //TODO I don't think ID will work here. Has to be index or need a new way of switching grids. Will become a problem once we start deleting lists
+        //TODO can we get rid of data-gridindex now?
         nameButton = CreateNewElement('button', [ ['class','btn buttonItemName'], ['data-gridindex',listId] ]); 
         nameButton.textContent = listName;
-        nameButton.addEventListener('click', GridManager.ListSelected); //TODO change this so we pass more interesting parameters
-        
+        nameButton.addEventListener('click', function() {
+            GridManager.ListSelected(wrapper);
+        });        
 
         var nameWrapper = CreateNewElement('div', [ ['class','col-8 divItemName'] ], nameButton);
         

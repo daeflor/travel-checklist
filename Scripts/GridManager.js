@@ -28,7 +28,7 @@ window.GridManager = function()
     {
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-        document.getElementById('buttonSwitchLists').onclick = CloseListOfLists;
+        document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
     }
 
     function SetupHeaders()
@@ -154,14 +154,14 @@ window.GridManager = function()
         var list = new Grid("New List", ListType.Travel, GetNextListId());
         grids.push(list);
         AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-        SwitchLists((grids.length-1), list.GetName());            
+        //SwitchLists((grids.length-1), list.GetName());            
         SaveDataToStorage(); 
     }
 
     function AddListElementsToDOM(elementList, elementListToggle)
     {
         //Add the list 
-        document.body.insertBefore(elementList, document.getElementById('newItemRow'));
+        document.getElementById('lists').appendChild(elementList);
         
         //Add the list toggle
         document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
@@ -181,29 +181,7 @@ window.GridManager = function()
                 
                 if (headerToDisplay != null)
                 {
-                    if (activeGrid != null)
-                    {
-                        if (activeGrid.GetType() != null)
-                        {   
-                            var activeHeader = headers[activeGrid.GetType()];
-
-                            if (activeHeader != null)
-                            {
-                                activeGrid.ToggleElementVisibility();
-                                activeGrid = null;
-                                activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
-                                document.getElementById('headerCurrentListName').textContent = '';
-                            }
-                            else
-                            {
-                                console.log("ERROR: Tried to hide a header which doesn't exist");
-                            }
-                        }
-                        else
-                        {
-                            console.log("ERROR: Tried to hide a list which has a ListType of null");
-                        }
-                    }
+                    HideActiveGrid();
 
                     activeGrid = listToDisplay;
                     activeGrid.ToggleElementVisibility();  
@@ -226,18 +204,73 @@ window.GridManager = function()
         }
     }
 
-    function CloseListOfLists()
+    /** Experimental & In Progress **/
+
+    function HideActiveGrid()
     {
         if (activeGrid != null)
         {
-            document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();                    
+            if (activeGrid.GetType() != null)
+            {   
+                var activeHeader = headers[activeGrid.GetType()];
+
+                if (activeHeader != null)
+                {
+                    activeGrid.ToggleElementVisibility();
+                    activeGrid = null;
+                    activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
+                    GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
+                    document.getElementById('headerCurrentListName').textContent = '';
+                }
+                else
+                {
+                    console.log("ERROR: Tried to hide a header which doesn't exist");
+                }
+            }
+            else
+            {
+                console.log("ERROR: Tried to hide a list which has a ListType of null");
+            }
         }
-        
-        GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
-        GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
     }
 
-    /** Experimental & In Progress **/
+    function ToggleListOfLists()
+    {
+        if (this.classList.contains('collapsed')) //If the List of Lists is currently closed, open it
+        {
+            console.log("Opening the List of Lists");
+            OpenListOfLists();
+        }
+    }
+
+    function OpenListOfLists()
+    {
+        //CloseActiveSettingsViews();
+        HideActiveGrid();
+
+        document.getElementById('headerCurrentListName').textContent = 'All Lists';
+
+        document.getElementById('newItemRow').hidden = true; //TODO this is super hacky. Make this better
+    }
+
+    function CloseListOfLists()
+    {
+        GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
+        $('#listOfLists').collapse('hide');
+
+        if (activeGrid != null)
+        {
+            document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();   
+            
+            document.getElementById('newItemRow').hidden = false; //TODO this is super hacky. Make this better
+        }
+    }
+
+    // function CloseActiveSettingsViews()
+    // {
+    //     GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
+    //     //GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
+    // }
 
     // function AddNewList()
     // {
@@ -295,8 +328,29 @@ window.GridManager = function()
         {        
             activeGrid.RemoveRow(rowElementToRemove);
             SaveDataToStorage();
-        },//TODO Maybe should have an Interaction Manager (or popover manager) for these
-        GetActivePopover : function()
+        },
+        RemoveList : function(listElementToRemove)
+        {        
+            var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
+
+            console.log("Index of list to be removed: " + index + ". Class name of list to be removed: " + listElementToRemove.className);  
+            
+            if(index > -1) 
+            {
+                document.getElementById('lists').removeChild(grids[index].GetElement());
+                document.getElementById('listOfLists').removeChild(listElementToRemove);
+                grids.splice(index, 1);
+                
+                console.log("Removed list at index " + index + ". Number of Lists is now: " + grids.length);
+            }
+            else
+            {
+                console.log("Failed to remove list. List index returned invalid value.");
+            }
+
+            SaveDataToStorage();
+        },
+        GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
         {
             return activePopover;
         },
@@ -369,23 +423,31 @@ window.GridManager = function()
             activeGrid.ClearQuantityColumnValues(columnIndex);
             SaveDataToStorage();
         },
-        ListSelected : function()
-        {
-            console.log("Element selected: " + this + ". gridindex: " + this.dataset.gridindex);
-
-            if (typeof(this.dataset.gridindex) == "undefined")
+        ListSelected : function(elementListToggle)
+        {   
+            if (this == "undefined")
             {
-                console.log("ERROR: the grid index property of the selected element is undefined");
+                console.log("ERROR: no element selected");
             }
             else
             {
-                if (this.dataset.gridindex != grids.indexOf(activeGrid)) //If the list toggle selected is different from the one currently active, switch lists to the selected one
+                var index = $(elementListToggle).index();
+                
+                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index);
+                
+                if (typeof(index) == "undefined")
                 {
-                    SwitchLists(this.dataset.gridindex);
+                    console.log("ERROR: the index of the selected element is undefined");
                 }
-
-                $('#listOfLists').collapse('hide');
-                CloseListOfLists();
+                else
+                {
+                    if (index != grids.indexOf(activeGrid)) //If the list toggle selected is different from the one currently active, switch lists to the selected one
+                    {
+                        SwitchLists(index);
+                    }
+    
+                    CloseListOfLists();
+                }
             }
         }
     };

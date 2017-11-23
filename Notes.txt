@@ -1,36 +1,28 @@
 TO-DOs:
 
 	- index.html      : 0
-	- GridManager.js  : 14
+	- GridManager.js  : 17
     - Grid.js         : 3
     - Header.js       : 4
-    - ListToggle.js   : 5
+    - ListToggle.js   : 4
     - Row.js          : 1
     - Helpers.js      : 6
 	- style_new.css   : 2
 
 Upcoming To-Do List:
-- Create 'move' buttons to move an item up or down the grid/list
-    Grid state would need to be stored when Rows get moved up or down in the grid
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
-- Current List Button isn't set when renaming the active list
 - The Toggle for the List of Lists could be the old dropdown header, or a SWITCH icon next to it. 
     And the list of lists could show up in the area where the normal rows are. (e.g. active grid gets hidden, list of list gets displayed)
 - Make it pretty and user friendly
 - Add support for deleting lists
-- Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
-  //ListManager (All Lists)
-        //  Headers
-        //  List
-        //    -> Header
-        //    Items
-        //      "Columns"/QuantityTrackers/Checkbox  
-        // ?
+
 
 Thoughts:
 
+- Create 'move' buttons to move an item up or down the grid/list
+    Grid state would need to be stored when Rows get moved up or down in the grid
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
 - Standardize between " and '
@@ -42,6 +34,14 @@ Thoughts:
 - Perhaps split up header and/or headermanager into its own thing
 - Should long item names be truncated?
 - There should be no hardcoded lists in index.html
+- Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
+  //ListManager (All Lists)
+        //  Headers
+        //  List
+        //    -> Header
+        //    Items
+        //      "Columns"/QuantityTrackers/Checkbox  
+        // ?
 
 Future:
 
