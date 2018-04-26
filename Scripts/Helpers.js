@@ -144,6 +144,14 @@ function CreateListSettingsView(index, elements, nameButton)
     CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveListSettingsView);
 }
 
+/**
+ * Creates a Settings View
+ * @param {number} index The Index
+ * @param {array} elements The elements that are part of the view
+ * @param {*} nameButton The button with the name string that also toggles the settings view
+ * @param {string} parentType The type of parent ('row' or 'list')
+ * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
+ */
 function CreateSettingsView(index, elements, nameButton, parentType, toggleViewFunction)
 {
     //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
