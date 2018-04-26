@@ -29,6 +29,8 @@ window.GridManager = function()
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
         document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
+
+        document.getElementById('buttonAddChecklistItem').onclick = AddNewChecklistItem;
     }
 
     function SetupHeaders()
@@ -142,6 +144,19 @@ window.GridManager = function()
         {
             activeGrid.AddNewRow();
             SaveDataToStorage(); 
+        }
+        else
+        {
+            console.log("ERROR: Tried to add a row to the Active List, which doesn't exist");
+        }
+    }
+
+    function AddNewChecklistItem()
+    {
+        if (activeGrid != null)
+        {
+            activeGrid.AddNewChecklistItem();
+            //SaveDataToStorage(); 
         }
         else
         {
@@ -459,6 +474,11 @@ var QuantityType = {
     Luggage: 1,
     Wearing: 2,
     Backpack: 3,
+};
+
+var ChecklistColumns = {
+    Needed: 0,
+    Cart: 1,
 };
 
 var ListType = {

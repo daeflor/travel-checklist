@@ -92,6 +92,16 @@ function Grid(listName, listType, listId)
             {
                 rows[i].ClearQuantityValue(columnIndex);
             } 
-        }
+        },
+        AddNewChecklistItem : function()
+        {
+            var itemRow = new ChecklistItem(GridManager.GetNextRowId(), "", 0, 1);
+
+            rows.push(itemRow);
+            
+            element.appendChild(itemRow.GetElement());
+            
+            itemRow.ExpandSettings();
+        },
     };
 }
