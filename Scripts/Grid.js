@@ -72,7 +72,7 @@ function Grid(listName, listType, listId)
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetDiv());
+            element.appendChild(itemRow.GetWrapper());
             
             //return itemRow;
         },
@@ -82,7 +82,7 @@ function Grid(listName, listType, listId)
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetDiv());
+            element.appendChild(itemRow.GetWrapper());
             
             itemRow.ExpandSettings();
         },

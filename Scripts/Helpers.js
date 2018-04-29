@@ -134,6 +134,8 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
+//TODO I think these should move back to the ListItem (possibly part of the 'vewcontroller')
+
 function CreateRowSettingsView(index, elements, nameButton)
 {
     CreateSettingsView(index, elements, nameButton, 'row', GridManager.ToggleActiveSettingsView);
