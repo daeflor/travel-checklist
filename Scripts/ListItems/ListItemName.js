@@ -1,7 +1,9 @@
 function ListItemName(rowId, itemName)
 {
-    
+    //Create the name toggle that can be selected to open or close the settings view for the List Item
     var toggle = CreateToggleForCollapsibleView('edit-row-'.concat(rowId), 'btn buttonItemName', itemName);
+    
+    //Create the div wrapper for the List Item Name 
     var wrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], toggle);
 
     /** Public Functions **/
@@ -15,7 +17,7 @@ function ListItemName(rowId, itemName)
         {
             return toggle;
         },
-        GetString : function()
+        GetValue : function()
         {
             return toggle.textContent;
         },

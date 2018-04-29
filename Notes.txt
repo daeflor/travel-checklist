@@ -10,6 +10,7 @@ TO-DOs:
 	- style_new.css   : 2
 
 Upcoming To-Do List:
+- BUG: Changing a modifier closes the popup
 - Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
@@ -22,6 +23,7 @@ Upcoming To-Do List:
 
 Thoughts:
 
+- !Add state sorting
 - Is there a reason for not using shared storage?
 - Is it good that the quantity popups close after you add or subtract one time?
 - Freeze top/header row of the different lists
