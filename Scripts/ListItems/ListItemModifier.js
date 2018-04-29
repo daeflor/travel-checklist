@@ -1,9 +1,9 @@
 /**
  * Creates a new Modifier that can be applied to a List Item
- * @param {function} modiferChangedCallback A reference to the function to call when the modifer value has been changed
+ * @param {function} modifierChangedCallback A reference to the function to call when the modifer value has been changed
  * @param {array} modifierValue The initial value of the Modifier to display when it is created
  */
-function ListItemModifier(modiferChangedCallback, modifierValue)
+function ListItemModifier(modifierChangedCallback, modifierValue)
 {
     //var modified = ModifierModified; //TODO TEMP until we re-assess
     var popoverToggle; //TODO rename to 'toggle'
@@ -79,7 +79,7 @@ function ListItemModifier(modiferChangedCallback, modifierValue)
         {
             quantityElement.text = parseInt(quantityElement.text) + 1;
             
-            modiferChangedCallback();
+            modifierChangedCallback(); 
             //console.log("my parent is: " + parent);
             //parent.Modify();
             //parent.ModifierValueModified(); //TODO figure out a cleaner way to do this
@@ -90,7 +90,7 @@ function ListItemModifier(modiferChangedCallback, modifierValue)
         {
             quantityElement.text = parseInt(quantityElement.text) - 1;
             
-            modiferChangedCallback();
+            modifierChangedCallback();
             //parent.ModifierValueModified();
             // SetItemColumnColor();
             // GridManager.GridModified();
