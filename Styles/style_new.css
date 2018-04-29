@@ -36,6 +36,9 @@ textarea
     background-color: #E7F3FF;
 }
 
+/* Due to some weird Bootstrap behavior, need to use a class that contains 'popover' but isn't exactly 'popover' for buttons within the popover. Otherwise the popover disappears when the buttons are selected.*/ 
+.popoverElement {}
+
 .collapsing {
     transition: height .1s;
 }

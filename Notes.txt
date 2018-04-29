@@ -10,7 +10,6 @@ TO-DOs:
 	- style_new.css   : 2
 
 Upcoming To-Do List:
-- BUG: Changing a modifier closes the popup
 - Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
@@ -24,8 +23,8 @@ Upcoming To-Do List:
 Thoughts:
 
 - !Add state sorting
+- BUG: Setting a quantity to double digits causes overflow issue
 - Is there a reason for not using shared storage?
-- Is it good that the quantity popups close after you add or subtract one time?
 - Freeze top/header row of the different lists
 - To be consistent, maybe have a 'go' button in the list of lists which opens the list, since selecting the list to open it isn't consistent with the rest of the app
 - Create 'move' buttons to move an item up or down the grid/list

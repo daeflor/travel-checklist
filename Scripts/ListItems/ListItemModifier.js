@@ -14,8 +14,8 @@ function ListItemModifier(modiferChangedCallback, modifierValue)
     function SetupElements()
     {
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
-        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn', 'fa fa-minus-circle fa-lg');
-        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn', 'fa fa-plus-circle fa-lg');
+        var buttonMinus = CreateButtonWithIcon('buttonMinus', 'btn popoverElement', 'fa fa-minus-circle fa-lg popoverElement');
+        var buttonPlus = CreateButtonWithIcon('buttonPlus', 'btn popoverElement', 'fa fa-plus-circle fa-lg popoverElement');
 
         //Create the element that toggles the visibility of the modifier's popover
         popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', modifierValue, [buttonMinus, buttonPlus], 'manual');
