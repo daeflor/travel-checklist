@@ -19,7 +19,8 @@ window.GridManager = function()
 
         LoadDataFromStorage();
 
-        SwitchLists(2); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default
+        //SwitchLists(2); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default. By default could just show the List of Lists
+        $('#listOfLists').collapse('show'); //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
 
         SetupInteractibles();
     }
@@ -258,7 +259,7 @@ window.GridManager = function()
     {
         GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
         
-        $('#listOfLists').collapse('hide'); 
+        $('#listOfLists').collapse('hide'); //Manually force the List of Lists to be collapsed (hidden) when an individual list is selected
 
         SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
     }
@@ -403,6 +404,7 @@ window.GridManager = function()
     };
 }();
 
+//TODO Consider moving this to a separate file?
 //TODO expand this to also contain class data for the headers
 var QuantityType = {
     Needed: 0,
