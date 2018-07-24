@@ -181,12 +181,10 @@ window.GridManager = function()
                 
                 if (headerToDisplay != null)
                 {
-                    HideActiveGrid();
-
                     activeGrid = listToDisplay;
                     activeGrid.ToggleElementVisibility();  
                     headerToDisplay.ToggleElementVisibility();
-                    document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();
+                    UpdateScreenName(activeGrid.GetName());
                 }
                 else
                 {
@@ -220,7 +218,7 @@ window.GridManager = function()
                     activeGrid = null;
                     activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
                     GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
-                    document.getElementById('headerCurrentListName').textContent = '';
+                    console.log("The Active grid was hidden");
                 }
                 else
                 {
@@ -232,6 +230,10 @@ window.GridManager = function()
                 console.log("ERROR: Tried to hide a list which has a ListType of null");
             }
         }
+        else
+            {
+                console.log("Tried to hide the Active Grid but there was none");
+            }
     }
 
     function ToggleListOfLists()
@@ -245,81 +247,33 @@ window.GridManager = function()
 
     function OpenListOfLists()
     {
-        //CloseActiveSettingsViews();
         HideActiveGrid();
 
-        document.getElementById('headerCurrentListName').textContent = 'All Lists';
+        UpdateScreenName('All Lists');
 
-        document.getElementById('newItemRow').hidden = true; //TODO this is super hacky. Make this better
+        SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
     }
 
     function CloseListOfLists()
     {
         GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
-        $('#listOfLists').collapse('hide');
+        
+        $('#listOfLists').collapse('hide'); 
 
-        if (activeGrid != null)
-        {
-            document.getElementById('headerCurrentListName').textContent = activeGrid.GetName();   
-            
-            document.getElementById('newItemRow').hidden = false; //TODO this is super hacky. Make this better
-        }
+        SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
     }
 
-    // function CloseActiveSettingsViews()
-    // {
-    //     GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
-    //     //GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
-    // }
+    //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
+        //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
+    function UpdateScreenName(name)
+    {
+        document.getElementById('headerCurrentListName').textContent = name;
+    }
 
-    // function AddNewList()
-    // {
-    //     AddList("New List", ListType.Travel, GetNextListId());
-    // }
-
-    // function AddList(name, type, id)
-    // {
-    //     var list = new Grid(name, type, id);
-    //     AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-    //     grids.push(list);
-
-    //     SwitchLists((grids.length-1), list.GetName());            
-
-    //     SaveDataToStorage(); 
-    // }
-
-            // var pressTimer;
-        // list.GetDropdownToggleButton().addEventListener
-        // (
-        //     'mousedown', 
-        //     function()
-        //     {
-        //         console.log("Mouse Down");
-        //         pressTimer = window.setTimeout(function(){ EditListName(this)},1000);
-        //         return false; 
-        //     }
-        // ); 
-
-        // list.GetDropdownToggleButton().addEventListener
-        // (
-        //     'mouseup', 
-        //     function()
-        //     {
-        //         console.log("Mouse Up");     
-        //         if (activeListSettingsView == null)
-        //         {
-        //             CategorySelected(this);
-        //         }   
-        //         else
-        //         {
-        //             console.log("Longpress detected");
-        //         }                
-
-        //         clearTimeout(pressTimer);
-        //         activeListSettingsView = null;
-        //         return false;
-        //     }
-        // ); 
+    function SetVisibilityOfNewItemRow(enabled)
+    {
+        document.getElementById('newItemRow').hidden = !enabled;
+    }
 
     /** Public Functions **/
 
@@ -441,12 +395,7 @@ window.GridManager = function()
                 }
                 else
                 {
-                    //TODO I don't think this check is necessary because with the new(ish) List of Lists, the Active Grid index will always be -1 when the list of Lists is displayed.
-                    if (index != grids.indexOf(activeGrid)) //If the list toggle selected is different from the one currently active, switch lists to the selected one
-                    {
-                        SwitchLists(index);
-                    }
-    
+                    SwitchLists(index);
                     CloseListOfLists();
                 }
             }
