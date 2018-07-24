@@ -10,36 +10,36 @@ TO-DOs:
 	- style_new.css   : 2
 
 Upcoming To-Do List:
-- Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
+- ListItem could have a template 'data' object/function that can be re-used, rather than duplicating code, as is being done now. 
+- Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
-- Hit area for 'categories/grid' button is not big enough (should be entire area/div, not just around the text). 
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
-- The Toggle for the List of Lists could be the old dropdown header, or a SWITCH icon next to it. 
-    And the list of lists could show up in the area where the normal rows are. (e.g. active grid gets hidden, list of list gets displayed)
-- Make it pretty and user friendly
-- Add support for deleting lists
-
+- Could change the 'Switch Lists' icon to a 'Home' or 'Lists' icon in the far top-left of the screen. 
+    One potential problem with this is that it's difficult to reach that spot with one hand.
 
 Thoughts:
-
-- !Add state sorting
-- BUG: Setting a quantity to double digits causes overflow issue
+- Could add the Pre-Travel 'To-Do' list to the Travel Checklist
+- ! Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
+    Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
+- A row could have a notion of 'balance' (instead) of state. Balance is determined by quantity amounts, and dictates the color-coding of the row. 
 - Is there a reason for not using shared storage?
+    Could also consider an option to upload data to shared storage at will
 - Freeze top/header row of the different lists
-- To be consistent, maybe have a 'go' button in the list of lists which opens the list, since selecting the list to open it isn't consistent with the rest of the app
+- Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
+- To be consistent, maybe have a 'go' button (or arrow) in the list of lists which opens the list, since selecting the list to open it isn't consistent with the rest of the app
 - Create 'move' buttons to move an item up or down the grid/list
     Grid state would need to be stored when Rows get moved up or down in the grid
 - Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
-    (Does this even work on phone? Should I pull the code out from either project and create a separate library file?)
+    (Does this even work on phone? Should I pull the code out from either project and create a separate library/utility file?)
 - Standardize between " and '
 - Should have a good way to test backwards compatibility
 - Figure out what's causing poor performance with collapsible settings view
-- Is it possible in a clean way to make the quantity popover behavior different on pc (for development) than on mobile 
-- A row could have a notion of 'balance' (instead) of state. Balance is determined by quantity amounts, and dictates the color-coding of the row. 
-- Make this work for a shopping list
+- Is there a type of logging to console that only triggers in a specific mode?
+- Add some mechanism to differentiate or toggle between dev mode and publish mode (this could be used to disable logging or dictate storage location, for example)
 - Perhaps split up header and/or headermanager into its own thing
 - Should long item names be truncated?
 - There should be no hardcoded lists in index.html
+- Could use objects/properties (e.g. { ... }) for certain function parameters (e.g. NewRow) instead of many different individual parameters
 - Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
   //ListManager (All Lists)
         //  Headers
@@ -51,9 +51,6 @@ Thoughts:
 
 Future:
 
-- Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
-    Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
-- Is there a type of logging to console that only triggers in a specific mode?
 - Could group similar item types into categories, which show up in dropdown lists of the category
     Main problem with this is then each dropdown item would also have its own popover, which could get very cluttered
 - Could there be icons for item names (or item categories) instead of text?
@@ -69,9 +66,6 @@ Future:
     - One of the categories could be travel preparation, which would require different columns and interactions
     - The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
         May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
-- Would be nice if buttons changed color or something when pressed
-    This might not be necessary for mobile
-- Could use objects/properties (e.g. { ... }) for certain function parameters (e.g. NewRow) instead of many different individual parameters
 - Need a manager for the whole page, not just grids. Could split up GridManager or rename it. 
     (Could depend on whether or not Interactions get pulled out into a separate manager/file)
 - Color palette of popovers (incl. background) could be better

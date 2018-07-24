@@ -1,5 +1,6 @@
 function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
+    //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
         data: {
             name : null,
@@ -54,7 +55,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
                 model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
             }
             else if (model.GetData().modifiers[QuantityType.Needed].GetValue() == (parseInt(model.GetData().modifiers[QuantityType.Luggage].GetValue()) + parseInt(model.GetData().modifiers[QuantityType.Wearing].GetValue()) + parseInt(model.GetData().modifiers[QuantityType.Backpack].GetValue())))
-            { //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare then compare the 'needed' counter with the 'packed' counter)
+            { //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
                 model.GetData().name.SetColor('mediumseagreen');
             }
             else
@@ -62,26 +63,9 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
                 model.GetData().name.SetColor('peru'); //lightsalmon is also good
             }
         },
-        // GetElements : function()
-        // {
-        //     return elements;
-        // },
     };
 
-    // var Elements = {
-    //     wrapper: CreateNewElement('div', [ ['class','row divItemRow'] ]),
-    //     name: null,
-    //     modifiers: [],
-    //     Settings : {
-    //                 wrapper: null, 
-    //                 editNameTextarea: null,
-    //                 buttonDelete: null,
-    //             },
-    // };
-
     SetupElements();
-    //SetItemColumnColor();
-    //view.SetItemStateColor();
 
     /** Private Functions **/
 
@@ -100,10 +84,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
 
         //Create the List Item Name elements
         data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
-        
-        //Add the List Item Name to the DOM
-        //view.wrapper.appendChild(Elements.name.GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
-
+       
         //Create the modifier elements for the List Item
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
@@ -111,12 +92,6 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, luggageQuantity));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
-
-        //Add the Modifier elements to the DOM
-        // for (var i = 0; i < Elements.modifiers.length; i++)
-        // {
-        //     Elements.wrapper.appendChild(Elements.modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
-        // }
     
         CreateRowSettingsView(rowId, data.Settings, data.name.GetToggle());
 
@@ -125,31 +100,11 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             GridManager.RemoveRow(view.GetWrapper());
         });
 
-        //Elements.wrapper.appendChild(Elements.Settings.wrapper);
-
-        ///
-
         model.SetData(data);
-        console.log(model.GetData().name.GetValue());
+        //console.log(model.GetData().name.GetValue());
         view.AddElementsToDom(model);
         view.Update(model);
     }
-
-    // function SetItemColumnColor()
-    // {
-    //     if (Elements.modifiers[QuantityType.Needed].GetValue() == 0)
-    //     {
-    //         Elements.name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
-    //     }
-    //     else if (Elements.modifiers[QuantityType.Needed].GetValue() == (parseInt(Elements.modifiers[QuantityType.Luggage].GetValue()) + parseInt(Elements.modifiers[QuantityType.Wearing].GetValue()) + parseInt(Elements.modifiers[QuantityType.Backpack].GetValue())))
-    //     { //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare then compare the 'needed' counter with the 'packed' counter)
-    //         Elements.name.SetColor('mediumseagreen');
-    //     }
-    //     else
-    //     {
-    //         Elements.name.SetColor('peru'); //lightsalmon is also good
-    //     }
-    // }
 
     function ModifierValueChanged()
     {

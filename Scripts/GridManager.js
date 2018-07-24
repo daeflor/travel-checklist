@@ -433,7 +433,7 @@ window.GridManager = function()
             {
                 var index = $(elementListToggle).index();
                 
-                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index);
+                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index + ". Index of current Active Grid is: " + grids.indexOf(activeGrid));
                 
                 if (typeof(index) == "undefined")
                 {
@@ -441,6 +441,7 @@ window.GridManager = function()
                 }
                 else
                 {
+                    //TODO I don't think this check is necessary because with the new(ish) List of Lists, the Active Grid index will always be -1 when the list of Lists is displayed.
                     if (index != grids.indexOf(activeGrid)) //If the list toggle selected is different from the one currently active, switch lists to the selected one
                     {
                         SwitchLists(index);
