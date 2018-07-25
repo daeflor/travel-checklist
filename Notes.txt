@@ -1,16 +1,17 @@
 TO-DOs:
 
-	- index.html      : 0
-	- GridManager.js  : 17
-    - Grid.js         : 3
-    - Header.js       : 4
-    - ListToggle.js   : 4
-    - Row.js          : 1
-    - Helpers.js      : 6
-	- style_new.css   : 2
+	- index.html          : 1
+	- GridManager.js      : 22
+    - Grid.js             : 3
+    - Header.js           : 4
+    - ListToggle.js       : 4
+    - ListItem.js         : 9
+    - ListItemModifier.js : 6
+    - Helpers.js          : 7
+	- style_new.css       : 2
 
 Upcoming To-Do List:
-- ListItem could have a template 'data' object/function that can be re-used, rather than duplicating code, as is being done now. 
+- ListItem could have a template 'data' object/function that can be re-used (like in MusicExtension), rather than duplicating code, as is being done now. 
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
@@ -22,15 +23,15 @@ Thoughts:
 - ! Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
     Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
 - A row could have a notion of 'balance' (instead) of state. Balance is determined by quantity amounts, and dictates the color-coding of the row. 
-- Is there a reason for not using shared storage?
-    Could also consider an option to upload data to shared storage at will
+- Consider using MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
+    - Would need an import option for this to be useful. Could possibly have an option to load a list from a specific folder which is part of the project, and in which exports have been manually placed. 
+    - (Does this even work on phone? Should I pull the code out from either project and create a separate library/utility file?)
+    - Could also consider the possibility of uploading the data to Google Drive or something similar (as an extra challenge / learning experience)
 - Freeze top/header row of the different lists
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - To be consistent, maybe have a 'go' button (or arrow) in the list of lists which opens the list, since selecting the list to open it isn't consistent with the rest of the app
 - Create 'move' buttons to move an item up or down the grid/list
     Grid state would need to be stored when Rows get moved up or down in the grid
-- Use MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
-    (Does this even work on phone? Should I pull the code out from either project and create a separate library/utility file?)
 - Standardize between " and '
 - Should have a good way to test backwards compatibility
 - Figure out what's causing poor performance with collapsible settings view

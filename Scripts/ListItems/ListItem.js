@@ -2,15 +2,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
-        data: {
-            name : null,
-            modifiers: [],
-            Settings : {
-                wrapper: null, 
-                editNameTextarea: null,
-                buttonDelete: null,
-            },
-        }, 
+        data: new ListItemData(),
         GetData : function()
         {
             return this.data;
@@ -19,7 +11,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         {
             this.data.name = d.name;
             this.data.modifiers = d.modifiers;
-            this.data.Settings = d.Settings;
+            this.data.settings = d.settings;
         },
     };
 
@@ -46,7 +38,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             }
 
             //Add the Settings panel to the DOM
-            this.elements.wrapper.appendChild(model.GetData().Settings.wrapper);
+            this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
         },
         Update : function(model)
         {
@@ -71,16 +63,8 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
 
     function SetupElements()
     {
-        //TODO this doesn't seem like the right thing to do
-        var data = {
-            name : null,
-            modifiers: [],
-            Settings : {
-                wrapper: null, 
-                editNameTextarea: null,
-                buttonDelete: null,
-            },
-        };
+        //TODO Is it better to edit properties of the model data directly?
+         var data = new ListItemData();
 
         //Create the List Item Name elements
         data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
@@ -93,9 +77,9 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
     
-        CreateRowSettingsView(rowId, data.Settings, data.name.GetToggle());
+        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle());
 
-        data.Settings.buttonDelete.addEventListener('click', function()
+        data.settings.buttonDelete.addEventListener('click', function()
         {   
             GridManager.RemoveRow(view.GetWrapper());
         });
@@ -139,9 +123,20 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         },
         ExpandSettings : function()
         {
-            $(model.GetData().Settings.wrapper).collapse('show');
-            model.GetData().Settings.editNameTextarea.focus();
+            $(model.GetData().settings.wrapper).collapse('show');
+            model.GetData().settings.editNameTextarea.focus();
         }
+    };
+}
+
+function ListItemData()
+{
+    this.name = null;
+    this.modifiers = [];
+    this.settings = {
+         wrapper: null, 
+         editNameTextarea: null,
+         buttonDelete: null,
     };
 }
 
