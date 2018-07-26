@@ -11,7 +11,6 @@ TO-DOs:
 	- style_new.css       : 2
 
 Upcoming To-Do List:
-- ListItem could have a template 'data' object/function that can be re-used (like in MusicExtension), rather than duplicating code, as is being done now. 
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?

@@ -19,7 +19,6 @@ window.GridManager = function()
 
         LoadDataFromStorage();
 
-        //SwitchLists(2); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default. By default could just show the List of Lists
         $('#listOfLists').collapse('show'); //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
 
         SetupInteractibles();
@@ -88,7 +87,6 @@ window.GridManager = function()
             var list = new Grid(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
             AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
-            //TODO the console logs have the wrong indeces
             console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
             
             //Traverse all the rows belonging to the current list, in local storage
@@ -153,9 +151,11 @@ window.GridManager = function()
     function AddNewList()
     {
         var list = new Grid("New List", ListType.Travel, GetNextListId());
+        
         grids.push(list);
+        
         AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-        //SwitchLists((grids.length-1), list.GetName());            
+
         SaveDataToStorage(); 
     }
 
