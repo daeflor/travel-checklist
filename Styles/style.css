@@ -198,7 +198,7 @@ a, a:visited {
     padding-left: 25px;
 } 
 
-.settings-button, #newRow button {
+.settings-button, .buttonAdd {
     background-color: #EFDEB4;
     border: 3px outset;
     /* border-color: black;

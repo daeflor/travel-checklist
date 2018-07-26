@@ -2,24 +2,24 @@ function Header(listType)
 {
     var element = CreateNewElement('div', [ ['class', 'col container-flud'], ['hidden', 'true'] ]);
     var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb 
-    //var type = listType;
 
     element.appendChild(row);
 
     if (listType == ListType.Travel)
     {
         //TODO class data could be contained in the QuantityType object
-        CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-        CreatePopoverForQuantityHeader('col header', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
-        CreatePopoverForQuantityHeader('col header', 'fa fa-male fa-lg', QuantityType.Wearing);
-        CreatePopoverForQuantityHeader('col header smallicon', 'fa fa-briefcase', QuantityType.Backpack);
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-male fa-lg', QuantityType.Wearing);
+        CreatePopoverForQuantityHeader('col divQuantityHeader iconSmall', 'fa fa-briefcase', QuantityType.Backpack);
     }
     else if (listType == ListType.Checklist)
     {
-        CreatePopoverForQuantityHeader('col header', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
     }
 
     //TODO would like a separate 'class' for toggles
+    //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.
     function CreatePopoverForQuantityHeader(divClass, iconClass, index)
     {
         var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
@@ -44,7 +44,6 @@ function Header(listType)
     return { 
         GetElement : function()
         {
-            console.log("Header element: " + element);
             return element;
         },
         ToggleElementVisibility : function()

@@ -4,11 +4,14 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
+    var activeListSettingsView = null;    
     var headers = [];
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
-    var currentFormatVersion = 'fv0';
+    var listCounter = -1; //TODO this is super hacky and TEMP
+
+    /** Grid & Button Setup **/
 
     function Setup()
     {            
@@ -16,51 +19,23 @@ window.GridManager = function()
 
         LoadDataFromStorage();
 
-        SwitchGrids(2, "Test"); //TODO This is hard-coded for test purposes. Will need a proper solution eventually to determine what grid should be active by default
+        $('#listOfLists').collapse('show'); //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
 
         SetupInteractibles();
     }
 
-    /** Grid & Button Setup **/
-
     function SetupInteractibles()
     {
-        var categoryButtons = document.getElementsByClassName('buttonCategory');
-
-        for (var i = 0; i < categoryButtons.length; i++)
-        {
-            categoryButtons[i].addEventListener('click', CategorySelected); 
-        }
-
+        document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
+        document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
     }
-
-    // function GetVisibleGrid()
-    // {
-    //     for (var i = 0; i < grids.length; i++)
-    //     {
-    //         if (grids[i].GetElement().hidden == false)
-    //         {
-    //             return grids[i];
-    //         }
-    //     }
-    // }
 
     function SetupHeaders()
     {
         var header = new Header(ListType.Travel);
         headers.push(header);
         document.getElementById('headerRow').appendChild(header.GetElement());
-
-        //TODO somehow need to have the concept of grid knowing its header:
-        //ListManager (All Lists)
-        //  Headers
-        //  List
-        //    -> Header
-        //    Items
-        //      "Columns"/QuantityTrackers/Checkbox  
-        // ?
-        // Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
 
         header = new Header(ListType.Checklist);
         headers.push(header);
@@ -69,79 +44,66 @@ window.GridManager = function()
 
     /** Storage Management **/
 
+    //TODO should probably have a separate Storage Manager file
+
     function LoadDataFromStorage()
     {
-        var gridData = LoadValueFromLocalStorage('gridData');
+        var storageData = LoadValueFromLocalStorage('gridData');
     
-        if (gridData != null)
+        if (storageData != null)
         {
-            console.log("Loaded from Local Storage: " + gridData);
-            ReloadGridDataFromStorage(JSON.parse(gridData));        
+            console.log("Loaded from Local Storage: " + storageData);
+            ReloadListDataFromStorage(JSON.parse(storageData));        
         }    
         else
         {
-            console.log("Could not find row data saved in local storage.");
+            console.log("Could not find any list data saved in local storage.");
         }
     }
 
-    function ReloadGridDataFromStorage(gridData)
+    function ReloadListDataFromStorage(storageData)
     {
-        var formatVersion = gridData[0];
-        console.log("The parsed Format Version is: " + formatVersion);
+        var storedFormatVersion = storageData[0];
+        var storedFormat;
 
-        if (formatVersion != currentFormatVersion)
+        console.log("The parsed Format Version from storage data is: " + storedFormatVersion + ". The current Format Version is: " + CurrentStorageDataFormat.Version);        
+
+        if (storedFormatVersion == CurrentStorageDataFormat.Version)
         {
-            console.log("The data in storage is in an old format. Parsing it using legacy code.")
-            console.log('There are ' + gridData.length + ' grids saved in local storage.');
-            for (var i = 0; i < gridData.length; i++) //Traverse all the grid data saved in local storage
-            {
-                var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
-                document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid(gridElement, ListType.Travel);
-    
-                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
-                for (var j = 0; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
-                {
-                    if (grid.GetType() == ListType.Travel)
-                    {
-                        console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                        grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                    }
-                    else if (grid.GetType() == ListType.Checklist)
-                    {
-                        //TODO
-                    } 
-                }
-    
-                grids.push(grid);
-            }
+            storedFormat = CurrentStorageDataFormat;
+            console.log("The data in storage is in the current format.");            
         }
-        else if (formatVersion == currentFormatVersion)
+        else
         {
-            console.log("The data in storage is in the current format.");
-            console.log("There are " + ((gridData.length) - 1) + " grids saved in local storage.");
-            for (var i = 1; i < gridData.length; i++) //Traverse all the grid data saved in local storage
+            storedFormat = PreviousStorageDataFormat;
+            console.log("The data in storage is in an old format. Parsing it using legacy code.")            
+        }
+
+        console.log("There are " + ((storageData.length) - storedFormat.FirstListIndex) + " lists saved in local storage.");
+        
+        //Traverse the data for all of the lists saved in local storage
+        for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
+        {
+            var list = new Grid(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
+            AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+
+            console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
+            
+            //Traverse all the rows belonging to the current list, in local storage
+            for (var j = storedFormat.FirstRowIndex; j < storageData[i].length; j++) 
             {
-                var gridElement = CreateNewElement('div', [ ['class','container-fluid grid'], ['hidden', 'true'] ]);
-                document.body.insertBefore(gridElement, document.getElementById('newRow'));
-                var grid = new Grid(gridElement, gridData[i][0]);
-    
-                console.log("Regenerating Grid. Index: " + i + " Type: " + gridData[i][0] + " ----------");
-                for (var j = 1; j < gridData[i].length; j++) //Traverse all the rows belonging to the current grid, in local storage
+                if (list.GetType() == ListType.Travel)
                 {
-                    if (grid.GetType() == ListType.Travel)
-                    {
-                        console.log("Grid: " + i + ". Row: " + j + ". Item: " + gridData[i][j][0]);
-                        grid.AddRow(gridData[i][j][0], gridData[i][j][1], gridData[i][j][2], gridData[i][j][3], gridData[i][j][4]);
-                    }
-                    else if (grid.GetType() == ListType.Checklist)
-                    {
-                        //TODO
-                    } 
+                    console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
+                    list.AddRow(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
                 }
-    
-                grids.push(grid);
+                else if (list.GetType() == ListType.Checklist)
+                {
+                    //TODO
+                } 
             }
+
+            grids.push(list);
         }
     }
 
@@ -154,7 +116,8 @@ window.GridManager = function()
     {
         var data = [];
 
-        data.push(currentFormatVersion);
+        console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
+        data.push(CurrentStorageDataFormat.Version);
 
         for (var i = 0; i < grids.length; i++)
         {
@@ -164,65 +127,65 @@ window.GridManager = function()
         return data;
     }
 
-    /** Button Interactions **/
+    /** List Management **/
 
-    function CategorySelected()
-    {   
-        //If the category selected is different from the one currently active, switch grids to the selected category
-        if (this.dataset.gridindex != grids.indexOf(activeGrid))
+    function GetNextListId()
+    {
+        listCounter++;
+        return listCounter;
+    }
+
+    function AddNewRow()
+    {
+        if (activeGrid != null)
         {
-            SwitchGrids(this.dataset.gridindex, this.textContent);
+            activeGrid.AddNewRow();
+            SaveDataToStorage(); 
+        }
+        else
+        {
+            console.log("ERROR: Tried to add a row to the Active List, which doesn't exist");
         }
     }
 
-    function SwitchGrids(indexToDisplay, categoryTextToDisplay)
+    function AddNewList()
     {
+        var list = new Grid("New List", ListType.Travel, GetNextListId());
+        
+        grids.push(list);
+        
+        AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+
+        SaveDataToStorage(); 
+    }
+
+    function AddListElementsToDOM(elementList, elementListToggle)
+    {
+        //Add the list 
+        document.getElementById('lists').appendChild(elementList);
+        
+        //Add the list toggle
+        document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
+    }
+
+    function SwitchLists(indexToDisplay)
+    {   
         console.log("Request received to switch grids to grid index: " + indexToDisplay);
-
-        GridManager.ToggleActiveSettingsView(null);
-
-        //TODO Maybe the two checks below could be merged into one. 
-            //I think perhaps the we should not de-activate the current grid if there is no valid one to switch to. We should just error out right away.
-
-        if (activeGrid != null)
-        {
-            var listType = activeGrid.GetType();
-
-            if (listType != null)
-            {   
-                if (headers[listType] != null)
-                {
-                    activeGrid.ToggleElementVisibility();   
-                    activeGrid = null;
-                    headers[listType].ToggleElementVisibility(); //TODO this could be more efficient
-                    document.getElementById('buttonCurrentCategory').textContent = '';
-                }
-                else
-                {
-                    console.log("ERROR: Tried to hide a header which doesn't exist");
-                }
-            }
-            else
-            {
-                console.log("ERROR: Tried to hide a list which has a ListType of null");
-            }
-        }
-
+        
         if (indexToDisplay < grids.length)
         {
             var listToDisplay = grids[indexToDisplay];
-            var listType = listToDisplay.GetType()
 
-            if (listType != null)
+            if (listToDisplay.GetType() != null)
             {
-                var headerToDisplay = headers[listType];
+                var headerToDisplay = headers[listToDisplay.GetType()];
                 
                 if (headerToDisplay != null)
                 {
                     activeGrid = listToDisplay;
                     activeGrid.ToggleElementVisibility();  
                     headerToDisplay.ToggleElementVisibility();
-                    document.getElementById('buttonCurrentCategory').textContent = categoryTextToDisplay;
+                    UpdateScreenName(activeGrid.GetName());
                 }
                 else
                 {
@@ -240,21 +203,78 @@ window.GridManager = function()
         }
     }
 
-    function AddNewRow()
+    /** Experimental & In Progress **/
+
+    function HideActiveGrid()
     {
         if (activeGrid != null)
         {
-            activeGrid.AddNewRow();
-            SaveDataToStorage(); 
+            if (activeGrid.GetType() != null)
+            {   
+                var activeHeader = headers[activeGrid.GetType()];
+
+                if (activeHeader != null)
+                {
+                    activeGrid.ToggleElementVisibility();
+                    activeGrid = null;
+                    activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
+                    GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
+                    console.log("The Active grid was hidden");
+                }
+                else
+                {
+                    console.log("ERROR: Tried to hide a header which doesn't exist");
+                }
+            }
+            else
+            {
+                console.log("ERROR: Tried to hide a list which has a ListType of null");
+            }
         }
         else
+            {
+                console.log("Tried to hide the Active Grid but there was none");
+            }
+    }
+
+    function ToggleListOfLists()
+    {
+        if (this.classList.contains('collapsed')) //If the List of Lists is currently closed, open it
         {
-            console.log("ERROR: Tried to add a row to the Active List, which doesn't exist");
+            console.log("Opening the List of Lists");
+            OpenListOfLists();
         }
     }
 
-    /** Experimental & In Progress **/
+    function OpenListOfLists()
+    {
+        HideActiveGrid();
 
+        UpdateScreenName('All Lists');
+
+        SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
+    }
+
+    function CloseListOfLists()
+    {
+        GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
+        
+        $('#listOfLists').collapse('hide'); //Manually force the List of Lists to be collapsed (hidden) when an individual list is selected
+
+        SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
+    }
+
+    //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
+        //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
+    function UpdateScreenName(name)
+    {
+        document.getElementById('headerCurrentListName').textContent = name;
+    }
+
+    function SetVisibilityOfNewItemRow(enabled)
+    {
+        document.getElementById('newItemRow').hidden = !enabled;
+    }
 
     /** Public Functions **/
 
@@ -263,8 +283,29 @@ window.GridManager = function()
         {        
             activeGrid.RemoveRow(rowElementToRemove);
             SaveDataToStorage();
-        },//TODO Maybe should have an Interaction Manager (or popover manager) for these
-        GetActivePopover : function()
+        },
+        RemoveList : function(listElementToRemove)
+        {        
+            var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
+
+            console.log("Index of list to be removed: " + index + ". Class name of list to be removed: " + listElementToRemove.className);  
+            
+            if(index > -1) 
+            {
+                document.getElementById('lists').removeChild(grids[index].GetElement());
+                document.getElementById('listOfLists').removeChild(listElementToRemove);
+                grids.splice(index, 1);
+                
+                console.log("Removed list at index " + index + ". Number of Lists is now: " + grids.length);
+            }
+            else
+            {
+                console.log("Failed to remove list. List index returned invalid value.");
+            }
+
+            SaveDataToStorage();
+        },
+        GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
         {
             return activePopover;
         },
@@ -303,6 +344,25 @@ window.GridManager = function()
                 activeSettingsView = null;
             }
         },
+        ToggleActiveListSettingsView : function(newSettingsView) //TODO these two methods could be private and also merged as one, and pass which view to toggle as param. Can track these in their own object
+        {     
+            //If there is a Settings View currently active, hide it
+            if (activeListSettingsView != null)
+            {
+                $(activeListSettingsView).collapse('hide');
+            }
+
+            //If a new Settings View has been selected, set it as Active
+                //Else, if no new view is selected, just clear the Active view
+            if (newSettingsView != null)
+            {
+                activeListSettingsView = newSettingsView;
+            }
+            else
+            {
+                activeListSettingsView = null;
+            }
+        },
         GridModified : function()
         {
             SaveDataToStorage();
@@ -317,10 +377,34 @@ window.GridManager = function()
             console.log("Button pressed to clear column " + columnIndex + " for grid " + activeGrid);
             activeGrid.ClearQuantityColumnValues(columnIndex);
             SaveDataToStorage();
+        },
+        ListSelected : function(elementListToggle)
+        {   
+            if (this == "undefined")
+            {
+                console.log("ERROR: no element selected");
+            }
+            else
+            {
+                var index = $(elementListToggle).index();
+                
+                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index + ". Index of current Active Grid is: " + grids.indexOf(activeGrid));
+                
+                if (typeof(index) == "undefined")
+                {
+                    console.log("ERROR: the index of the selected element is undefined");
+                }
+                else
+                {
+                    SwitchLists(index);
+                    CloseListOfLists();
+                }
+            }
         }
     };
 }();
 
+//TODO Consider moving this to a separate file?
 //TODO expand this to also contain class data for the headers
 var QuantityType = {
     Needed: 0,
@@ -332,4 +416,19 @@ var QuantityType = {
 var ListType = {
     Travel: 0,
     Checklist: 1,
+};
+
+var PreviousStorageDataFormat = {
+    FirstListIndex: 1,
+    ListNameIndex: 0,
+    ListTypeIndex: 0,
+    FirstRowIndex: 1,
+};
+
+var CurrentStorageDataFormat = {
+    Version: 'fv1',
+    FirstListIndex: 1,
+    ListNameIndex: 0,
+    ListTypeIndex: 1, //TODO this and above could be their own sub-object, contained within index 1
+    FirstRowIndex: 2, //TODO this could then always be 1, even if new properties about the list need to be stored
 };

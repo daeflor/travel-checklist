@@ -31,6 +31,7 @@ function CreateNewElement(elementName, attributes, child)
 }
 
 //TODO could standardize this more so that it doesn't need to take an id, if possible?
+    //Maybe pass an options parameter
 function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 {
     return CreateNewElement(
@@ -43,7 +44,7 @@ function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
 function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
 {    
     /* Setup Popover Elements */
-    var divPopover = CreateNewElement('div', [ ['class','popoverElement'] ]); 
+    var divPopover = document.createElement('div');
     for (var i = 0; i < popoverChildren.length; i++)
     {
         divPopover.appendChild(popoverChildren[i]);
@@ -71,6 +72,36 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
     }); 
 
     return popoverToggle;
+}
+
+function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
+{
+    var idReference = '#'.concat(collapsibleId);
+    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
+    
+    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
+    {
+        toggle.textContent = toggleDisplay;        
+    }    
+    else if (toggleDisplay != null && typeof(toggleDisplay) == 'object')
+    {
+        toggle.appendChild(toggleDisplay);        
+    }
+
+    return toggle;
+}
+
+//TODO could standardize this more so that it doesn't need to take an id, if possible?
+    //Maybe pass an options parameter
+function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
+{    
+    var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
+    for (var i = 0; i < collapsedChildren.length; i++)
+    {
+        divCard.appendChild(collapsedChildren[i]);
+    } 
+
+    return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
 }
 
 /** Storage **/
@@ -103,66 +134,67 @@ function LoadValueFromLocalStorage(name)
 
 /** Experimental & In Progress **/
 
-function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
+//TODO I think these should move back to the ListItem (possibly part of the 'vewcontroller')
+
+function CreateRowSettingsView(index, elements, nameButton)
 {
-    var idReference = '#'.concat(collapsibleId);
-    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
-    
-    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
-    {
-        toggle.textContent = toggleDisplay;        
-    }    
-
-    return toggle;
+    CreateSettingsView(index, elements, nameButton, 'row', GridManager.ToggleActiveSettingsView);
 }
 
-function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
-{    
-    var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
-    for (var i = 0; i < collapsedChildren.length; i++)
-    {
-        divCard.appendChild(collapsedChildren[i]);
-    } 
-
-    return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
+function CreateListSettingsView(index, elements, nameButton)
+{
+    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveListSettingsView);
 }
 
-// function CreateCollapsibleElements(toggleId, toggleClass, toggleDisplay, collapsedClass, collapsedChildren)
-// {
-//     //console.log("Request to create a dropdown with display of type: " + typeof(toggleDisplay) + ". Display value: " + toggleDisplay);
-    
-//     /* Setup Collapsible Elements */
-//     var divCard = CreateNewElement('div', [ ['class','row'] ]);//card card-body
-//     for (var i = 0; i < collapsedChildren.length; i++)
-//     {
-//         //divCard.appendChild(CreateNewElement('div', [ ['class','col'] ], collapsedChildren[i])); 
-//         divCard.appendChild(collapsedChildren[i]);
-//         //console.log("Added a child of type " + typeof(collapsedChildren[i]) + " to dropdown for item: " + toggleDisplay);
-//     } 
+/**
+ * Creates a Settings View
+ * @param {number} index The Index
+ * @param {array} elements The elements that are part of the view
+ * @param {*} nameButton The button with the name string that also toggles the settings view
+ * @param {string} parentType The type of parent ('row' or 'list')
+ * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
+ */
+function CreateSettingsView(index, elements, nameButton, parentType, toggleViewFunction)
+{
+    //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 
-//     var divCollapsible = CreateNewElement('div', [ ['class',collapsedClass], ['id',toggleId] ], divCard); 
+    /* Create Text Area */
+    elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
+    elements.editNameTextarea.textContent = nameButton.textContent; 
 
-//     /* Create Toggle */
-//     var idReference = '#'.concat(toggleId);
-//     //console.log("ID Reference is: " + idReference);
-//     var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', toggleId], ['data-toggle','collapse'], ['data-target',idReference] ]);//, ['toggle','collapse']
-    
-//     // toggle.dataset.toggle = 'collapse';
-//     // toggle.dataset.target = idReference;
-    
-//     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
-//     {
-//         toggle.textContent = toggleDisplay;        
-//     }    
+    /* Create Delete Button */
+    elements.buttonDelete = CreateNewElement(
+        'button', 
+        [ ['class','btn'], ['type','button'] ], 
+        CreateNewElement('i', [['class','fa fa-trash']])
+    );
 
-//     return [toggle, divCollapsible];
+    /* Create Element Wrappers */
+    var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
+    var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
+    //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
+    elements.wrapper  = CreateCollapsibleView('edit-'.concat(parentType).concat('-').concat(index), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDelete]);
 
-//     // var divWrapper = CreateNewElement('div', [ ['class',wrapperClass] ]);
-//     // divWrapper.appendChild(toggle);
-//     // divWrapper.appendChild(divCollapsible);
+    /* Setup Listeners */
+    $(elements.wrapper).on('show.bs.collapse', function() 
+    {
+        toggleViewFunction(elements.wrapper); //GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+    });
 
-//     // return divWrapper;
-// }
+    elements.editNameTextarea.addEventListener("keypress", function(e) 
+    {
+        if(e.keyCode==13)
+        {
+            elements.editNameTextarea.blur();
+        }
+    });
+
+    elements.editNameTextarea.addEventListener("change", function() 
+    {
+        nameButton.textContent = elements.editNameTextarea.value;
+        GridManager.GridModified();
+    });
+}
 
 /** Unused **/
 //TODO move these elsewhere

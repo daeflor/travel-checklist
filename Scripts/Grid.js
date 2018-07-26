@@ -1,13 +1,28 @@
-function Grid(gridElement, listType)
+function Grid(listName, listType, listId)
 {
-    var element = gridElement;
+    var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
+    //var name = listName; //TODO is it necessary to store these
     var type = listType;
+    var toggle = new ListToggle(listName, listId);
 
     return { 
+        GetElement : function()
+        {
+            return element;
+        },
+        GetName : function()
+        {
+            return toggle.GetName(); //TODO this is pretty janky
+            //return name;
+        },
         GetType : function()
         {
             return type;
+        },
+        GetToggle : function()
+        {
+            return toggle;
         },
         ToggleElementVisibility : function()
         {
@@ -24,6 +39,7 @@ function Grid(gridElement, listType)
         {
             var data = [];
             
+            data.push(toggle.GetName());
             data.push(type);
 
             for (var i = 0; i < rows.length; i++)
@@ -52,21 +68,21 @@ function Grid(gridElement, listType)
         },
         AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
         {
-            var itemRow = new Row(GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
+            var itemRow = new ListItem(GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetDiv());
+            element.appendChild(itemRow.GetWrapper());
             
             //return itemRow;
         },
         AddNewRow : function()
         {
-            var itemRow = new Row(GridManager.GetNextRowId(), "", 0, 0, 0, 0);
+            var itemRow = new ListItem(GridManager.GetNextRowId(), "", 0, 0, 0, 0);
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetDiv());
+            element.appendChild(itemRow.GetWrapper());
             
             itemRow.ExpandSettings();
         },
