@@ -1,6 +1,7 @@
 window.GridManager = function()
 {
-    document.addEventListener('DOMContentLoaded', Setup);    
+    //Initiate Setup once the DOM content has loaded
+    document.addEventListener('DOMContentLoaded', Setup);
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
@@ -15,11 +16,15 @@ window.GridManager = function()
 
     function Setup()
     {            
+        //Once the DOM content has loaded and Setup initiated, remove the event listener
+        document.removeEventListener('DOMContentLoaded', Setup);
+
         SetupHeaders();
 
         LoadDataFromStorage();
 
-        $('#listOfLists').collapse('show'); //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
+        //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
+        $('#listOfLists').collapse('show'); 
 
         SetupInteractibles();
     }

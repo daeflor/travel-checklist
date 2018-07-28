@@ -1,3 +1,13 @@
+function ListItemData()
+{
+    this.name = null;
+    this.modifiers = [];
+    this.settings = {
+         wrapper: null, 
+         editNameTextarea: null,
+         buttonDelete: null,
+    };
+}
 function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
@@ -12,6 +22,15 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             this.data.name = d.name;
             this.data.modifiers = d.modifiers;
             this.data.settings = d.settings;
+        },
+        GetQuantityNeeded : function()
+        {
+            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed].GetValue());
+            return this.data.modifiers[QuantityType.Needed].GetValue();
+        },
+        GetQuantityBalance : function()
+        {
+            return (this.data.modifiers[QuantityType.Needed].GetValue() - this.data.modifiers[QuantityType.Luggage].GetValue() - this.data.modifiers[QuantityType.Wearing].GetValue() - this.data.modifiers[QuantityType.Backpack].GetValue());
         },
     };
 
@@ -40,19 +59,21 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             //Add the Settings panel to the DOM
             this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
         },
-        Update : function(model)
+        Update : function(model) //TODO update this to use the Render method used by ListItemModifier, and pass the specific data values needed
         {
-            if (model.GetData().modifiers[QuantityType.Needed].GetValue() == 0)
+            //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
+            if (model.GetQuantityBalance() != 0)
             {
-                model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
+                //TODO The View shouldn't be telling the Model to update a color...
+                model.GetData().name.SetColor('peru'); //lightsalmon is also good
             }
-            else if (model.GetData().modifiers[QuantityType.Needed].GetValue() == (parseInt(model.GetData().modifiers[QuantityType.Luggage].GetValue()) + parseInt(model.GetData().modifiers[QuantityType.Wearing].GetValue()) + parseInt(model.GetData().modifiers[QuantityType.Backpack].GetValue())))
-            { //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
+            else if (model.GetQuantityNeeded() != 0)
+            {
                 model.GetData().name.SetColor('mediumseagreen');
             }
-            else
+            else 
             {
-                model.GetData().name.SetColor('peru'); //lightsalmon is also good
+                model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
             }
         },
     };
@@ -88,7 +109,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         model.SetData(data);
         //console.log(model.GetData().name.GetValue());
         view.AddElementsToDom(model);
-        view.Update(model);
+        view.Update(model); //TODO maybe don't force call this here. The modifiers could call it
     }
 
     function ModifierValueChanged()
@@ -127,17 +148,6 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             $(model.GetData().settings.wrapper).collapse('show');
             model.GetData().settings.editNameTextarea.focus();
         }
-    };
-}
-
-function ListItemData()
-{
-    this.name = null;
-    this.modifiers = [];
-    this.settings = {
-         wrapper: null, 
-         editNameTextarea: null,
-         buttonDelete: null,
     };
 }
 

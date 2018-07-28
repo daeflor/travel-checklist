@@ -55,7 +55,7 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
     
     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string') || typeof(toggleDisplay) == 'number')
     {
-        popoverToggle.text = toggleDisplay;        
+        popoverToggle.text = toggleDisplay;  
     }
     else if (toggleDisplay != null && typeof(toggleDisplay) == 'object')
     {
@@ -181,7 +181,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
         toggleViewFunction(elements.wrapper); //GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
     });
 
-    elements.editNameTextarea.addEventListener("keypress", function(e) 
+    elements.editNameTextarea.addEventListener('keypress', function(e) 
     {
         if(e.keyCode==13)
         {
@@ -189,7 +189,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
         }
     });
 
-    elements.editNameTextarea.addEventListener("change", function() 
+    elements.editNameTextarea.addEventListener('change', function() 
     {
         nameButton.textContent = elements.editNameTextarea.value;
         GridManager.GridModified();
