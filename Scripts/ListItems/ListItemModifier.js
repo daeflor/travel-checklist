@@ -11,27 +11,19 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
         data : {
             value : 0,
         },
-        // GetData : function()
-        // {
-        //     return this.data;
-        // },
-        // SetData : function(d)
-        // {
-        //     this.data.value = d.value;
-        // },
         GetValue : function()
         {
             //console.log("The modifier value was requested. Current value is: " + this.data.value);
             return this.data.value;
         },
-        SetValue : function(newValue) //TODO not all of these functions are used. Remove any unused ones.
+        SetValue : function(newValue) //TODO so far we've only been supposed to use SetData
         {
             if (newValue != null)
             {
                 this.data.value = newValue;
                 console.log("The modifier value was set to: " + newValue);
             }
-        }, //TODO ultimately this kind of functionality should probably be handled partially in the controller
+        }, //TODO ultimately this kind of functionality should probably be handled partially in the controller, with data only/simply getting set (and maybe stored) in the model
         DecrementValue : function()
         {
             this.data.value--;
@@ -47,7 +39,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
     var view = {
         elements: {
             wrapper : null,
-            popoverToggle : null,
+            popoverToggle : null, //TODO Consider renaming this (perhaps to 'toggle'), as well as other variables
         }, 
         GetElements : function()
         {
@@ -87,41 +79,12 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 }
             });
 
-            // //TODO maybe adding these event listeners should be handled by the parent (List Item) (or a controller...)
-            // //Set the behavior for when the popover is made visible
-            // $(this.elements.popoverToggle).on('shown.bs.popover', function() 
-            // {
-            //     console.log("A Popover was shown");
-            //     GridManager.SetActivePopover(this.elements.popoverToggle);
-
-            //     document.getElementById('buttonMinus').addEventListener('click', function() 
-            //     {
-            //         ModifyQuantityValue(this.elements.popoverToggle, false);
-            //     });         
-            //     document.getElementById('buttonPlus').addEventListener('click', function() 
-            //     {
-            //         ModifyQuantityValue(this.elements.popoverToggle, true);
-            //     }); 
-
-            //     document.addEventListener('click', GridManager.HideActiveQuantityPopover);
-            //     console.log("An onclick listener was added to the whole document");
-            // });
-
             //Set the behavior for when the popover is hidden
             $(self.elements.popoverToggle).on('hidden.bs.popover', function()
             {
                 console.log("A Popover was hidden");
                 GridManager.SetActivePopover(null);
             });
-
-            // //TEMP TEST
-            // //var targetNode = document.getElementById('some-id');
-
-            // popoverToggle.innerHTML.addEventListener('input', function(e)
-            // {
-            //     console.log("An item quantity was changed. Event e: " + e + ". Popover Toggle element: " + popoverToggle);
-            //     modifierChangedCallback();
-            // });
 
             self.elements.wrapper = CreateNewElement('div', [ ['class','col'] ], self.elements.popoverToggle);
         },
@@ -133,7 +96,6 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 updateModifierText: function() 
                 {
                     self.elements.popoverToggle.text = parameter;
-                    //modifierChangedCallback(); 
                 },
             };
 
@@ -145,18 +107,11 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
 
             if (event === 'showPopover') 
             {
-                //TODO maybe adding these event listeners should be handled by the parent (List Item) (or a controller...)
                 //Set the behavior for when the popover is made visible
                 $(self.elements.popoverToggle).on('shown.bs.popover', function() 
                 {
                     console.log("A Popover was shown");
-
-                    // GridManager.SetActivePopover(this.elements.popoverToggle);
-
-                    // document.addEventListener('click', GridManager.HideActiveQuantityPopover);
-                    // console.log("An onclick listener was added to the whole document");
-
-                    callback();
+                    callback(self.elements.popoverToggle);
                 });    
             }
             else if (event === 'decrementQuantity') 
@@ -164,7 +119,6 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 document.getElementById('buttonMinus').addEventListener('click', function() 
                 {
                     callback(false);
-                    //ModifyQuantityValue(this.elements.popoverToggle, false);
                 });         
             }
             else if (event === 'incrementQuantity') 
@@ -172,16 +126,10 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 document.getElementById('buttonPlus').addEventListener('click', function() 
                 {
                     callback(true);
-                    //ModifyQuantityValue(this.elements.popoverToggle, true);
                 });      
             }
         },
     };
-
-
-    //var modified = ModifierModified; //TODO TEMP until we re-assess
-    //var popoverToggle; //TODO rename to 'toggle'
-    //var wrapper;
 
     SetupModelAndView();
 
@@ -190,24 +138,22 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
         // var data;
         // data.value = modifierValue;
         // model.SetData(data);
-
         model.SetValue(modifierValue);
 
         view.AddElementsToDom(model.GetValue());
 
-        view.Bind('showPopover', function()
+        view.Bind('showPopover', function(popoverElement)
         {
-            //console.log("A Popover was shown");
-            GridManager.SetActivePopover(view.GetElements().popoverToggle);
+            GridManager.SetActivePopover(popoverElement);
 
             view.Bind('decrementQuantity', function(increase)
             {
-                ModifyQuantityValue(view.GetElements().popoverToggle, increase);
+                ModifyQuantityValue(increase);
             });
 
             view.Bind('incrementQuantity', function(increase)
             {
-                ModifyQuantityValue(view.GetElements().popoverToggle, increase);
+                ModifyQuantityValue(increase);
             });
 
             //TODO could move this to a Bind as well, assuming this all even works
@@ -216,9 +162,8 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
         });
     }
 
-    //TODO if this stays here, don't need to pass quantityElement. Could use popoverToggle/toggle variable instead
     //TODO changing the UI/DOM to display the modifier value maybe should be handled separately from informing the parent that a change has happened
-    function ModifyQuantityValue(quantityElement, increase)
+    function ModifyQuantityValue(increase)
     {
         console.log("Request called to modify a quantity value.");
 
@@ -228,16 +173,8 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
             //TODO Whenever the model is updated, also update the view and the parent
             model.IncrementValue();
             view.Render('updateModifierText', model.GetValue()); //TODO in the future this may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
-
-            //model.GetData().value++; //TODO so far we've only been supposed to use SetData
-            //quantityElement.text = parseInt(quantityElement.text) + 1;
             
-            modifierChangedCallback(); 
-            //console.log("my parent is: " + parent);
-            //parent.Modify();
-            //parent.ModifierValueModified(); //TODO figure out a cleaner way to do this
-            // SetItemColumnColor();
-            // GridManager.GridModified();
+            modifierChangedCallback(); //TODO still seems like this should be handled more cleanly
         }
         else if (model.GetValue() > 0)
         {
@@ -245,24 +182,21 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
             view.Render('updateModifierText', model.GetValue());
             
             modifierChangedCallback();
-            //parent.ModifierValueModified();
-            // SetItemColumnColor();
-            // GridManager.GridModified();
         }
     }
 
     /** Public Functions **/
 
     return { 
-        GetWrapper : function()
+        GetWrapper : function() //Returns the element for the modifier's wrapper
         {
             return view.GetElements().wrapper;
         },
-        GetValue : function()
+        GetValue : function() //Returns the value of the modifier stored in the Model
         {
             return model.GetValue();
         },
-        SetValue : function(value) //Sets the value of the modifier
+        SetValue : function(value) //Updates the value of the modifier in the Model and then updates the View accordingly
         {
             model.SetValue(value);
             view.Render('updateModifierText', model.GetValue()); 

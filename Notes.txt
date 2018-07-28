@@ -1,12 +1,12 @@
 TO-DOs:
 
 	- index.html          : 1
-	- GridManager.js      : 18
+	- GridManager.js      : 17
     - Grid.js             : 3
     - Header.js           : 4
     - ListToggle.js       : 4
     - ListItem.js         : 11
-    - ListItemModifier.js : 17
+    - ListItemModifier.js : 12
     - Helpers.js          : 7
 	- style_new.css       : 2
 
