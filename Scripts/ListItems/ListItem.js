@@ -42,6 +42,8 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         },
         Update : function(model)
         {
+            //TODO should no longer need to use parseint.
+
             if (model.GetData().modifiers[QuantityType.Needed].GetValue() == 0)
             {
                 model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
@@ -88,7 +90,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         model.SetData(data);
         //console.log(model.GetData().name.GetValue());
         view.AddElementsToDom(model);
-        view.Update(model);
+        view.Update(model); //TODO maybe don't force call this here. The modifiers could call it
     }
 
     function ModifierValueChanged()
