@@ -1,12 +1,12 @@
 TO-DOs:
 
 	- index.html          : 1
-	- GridManager.js      : 22
+	- GridManager.js      : 18
     - Grid.js             : 3
     - Header.js           : 4
     - ListToggle.js       : 4
-    - ListItem.js         : 9
-    - ListItemModifier.js : 6
+    - ListItem.js         : 11
+    - ListItemModifier.js : 17
     - Helpers.js          : 7
 	- style_new.css       : 2
 
@@ -18,6 +18,7 @@ Upcoming To-Do List:
     One potential problem with this is that it's difficult to reach that spot with one hand.
 
 Thoughts:
+- Would it help to remove eventlisteners that aren't being used?
 - Could add the Pre-Travel 'To-Do' list to the Travel Checklist
 - ! Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
     Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
