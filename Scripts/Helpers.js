@@ -74,6 +74,12 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
     return popoverToggle;
 }
 
+/**
+ * 
+ * @param {string} collapsibleId The id for the toggle element
+ * @param {string} toggleClass The class for the toggle element
+ * @param {*} toggleDisplay The string or object (element) that will be displayed in the toggle
+ */
 function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
 {
     var idReference = '#'.concat(collapsibleId);
@@ -105,6 +111,8 @@ function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildre
 }
 
 /** Storage **/
+
+//TODO break this file up into different, more specific Utility files
 
 function SaveNameValuePairToLocalStorage(name, value)
 {
@@ -143,14 +151,14 @@ function CreateRowSettingsView(index, elements, nameButton)
 
 function CreateListSettingsView(index, elements, nameButton)
 {
-    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveListSettingsView);
+    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveSettingsView);
 }
 
 /**
  * Creates a Settings View
  * @param {number} index The Index
  * @param {array} elements The elements that are part of the view
- * @param {*} nameButton The button with the name string that also toggles the settings view
+ * @param {*} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
  * @param {string} parentType The type of parent ('row' or 'list')
  * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
  */
@@ -178,7 +186,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     /* Setup Listeners */
     $(elements.wrapper).on('show.bs.collapse', function() 
     {
-        toggleViewFunction(elements.wrapper); //GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+        toggleViewFunction(elements.wrapper);
     });
 
     elements.editNameTextarea.addEventListener('keypress', function(e) 

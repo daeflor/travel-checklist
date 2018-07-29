@@ -5,7 +5,6 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
-    var activeListSettingsView = null; //TODO I don't see a reason why it's necessary to have two separate 'ActiveSettingsViews'. It should only be possible to have one active at a time. 
     var headers = [];
     var grids = [];
     var activeGrid;
@@ -24,9 +23,6 @@ window.GridManager = function()
         SetupHeaders();
 
         LoadDataFromStorage();
-
-        //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
-        //$('#listOfLists').collapse('show'); 
 
         SetupInteractibles();
     }
@@ -292,7 +288,7 @@ window.GridManager = function()
     function CloseListOfLists()
     {
         //If there is any active list settings view, close it
-        GridManager.ToggleActiveListSettingsView(null);
+        GridManager.ToggleActiveSettingsView(null);
 
         //Hide the Home header when an individual List is displayed
         document.getElementById('divHomeHeader').hidden = true;
@@ -386,25 +382,6 @@ window.GridManager = function()
             else
             {
                 activeSettingsView = null;
-            }
-        },
-        ToggleActiveListSettingsView : function(newSettingsView) //TODO these two methods could be private and also merged as one, and pass which view to toggle as param. Can track these in their own object
-        {     
-            //If there is a Settings View currently active, hide it
-            if (activeListSettingsView != null)
-            {
-                $(activeListSettingsView).collapse('hide');
-            }
-
-            //If a new Settings View has been selected, set it as Active
-                //Else, if no new view is selected, just clear the Active view
-            if (newSettingsView != null)
-            {
-                activeListSettingsView = newSettingsView;
-            }
-            else
-            {
-                activeListSettingsView = null;
             }
         },
         GridModified : function()
