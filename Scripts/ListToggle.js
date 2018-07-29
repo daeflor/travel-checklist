@@ -50,7 +50,7 @@ function ListToggle(listName, listId)
         //Create the div wrapper for the List Item Name 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], toggle);
 
-        // //TODO I don't think ID will work here. Has to be index or need a new way of switching grids. Will become a problem once we start deleting lists
+        // //TODO I don't think ID will work here. Has to be index or need a new way of switching lists. Will become a problem once we start deleting lists
         // //TODO can we get rid of data-gridindex now?
         // nameButton = CreateNewElement('button', [ ['class','btn buttonItemName'], ['data-gridindex',listId] ]); 
         // nameButton.textContent = listName;

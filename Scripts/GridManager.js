@@ -5,14 +5,14 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
-    var grids = [];
-    var activeGrid;
+    var lists = [];
+    var activeList;
     var rowCounter = 0;
     var listCounter = -1; //TODO this is super hacky and TEMP
 
     //TODO idea for IDs: List0Item0, List1Item4, List2Item12, etc.
 
-    /** Grid & Button Setup **/
+    /** List & Button Setup **/
 
     function Setup()
     {            
@@ -81,7 +81,7 @@ window.GridManager = function()
         //Traverse the data for all of the lists saved in local storage
         for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
         {
-            var list = new Grid(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
+            var list = new List(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
             AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
             console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
@@ -100,7 +100,7 @@ window.GridManager = function()
                 } 
             }
 
-            grids.push(list);
+            lists.push(list);
         }
     }
 
@@ -116,9 +116,9 @@ window.GridManager = function()
         console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
         data.push(CurrentStorageDataFormat.Version);
 
-        for (var i = 0; i < grids.length; i++)
+        for (var i = 0; i < lists.length; i++)
         {
-            data.push(grids[i].GetDataForStorage());
+            data.push(lists[i].GetDataForStorage());
         }
 
         return data;
@@ -134,9 +134,9 @@ window.GridManager = function()
 
     function AddNewRow()
     {
-        if (activeGrid != null)
+        if (activeList != null)
         {
-            activeGrid.AddNewRow();
+            activeList.AddNewRow();
             SaveDataToStorage(); 
         }
         else
@@ -148,9 +148,9 @@ window.GridManager = function()
     function AddNewList()
     {
         //TODO May be better to pass parameters like list name and type in a single object
-        var list = new Grid("", ListType.Travel, GetNextListId());
+        var list = new List("", ListType.Travel, GetNextListId());
         
-        grids.push(list);
+        lists.push(list);
         
         AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
@@ -170,17 +170,17 @@ window.GridManager = function()
 
     function NavigateToList(indexToDisplay)
     {   
-        console.log("Request received to switch grids to grid index: " + indexToDisplay);
+        console.log("Request received to switch lists to grid index: " + indexToDisplay);
         
-        if (indexToDisplay < grids.length)
+        if (indexToDisplay < lists.length)
         {
-            var listToDisplay = grids[indexToDisplay];
+            var listToDisplay = lists[indexToDisplay];
 
             if (listToDisplay.GetType() != null)
             {
-                activeGrid = listToDisplay;
-                activeGrid.ToggleElementVisibility();  
-                UpdateListTitle(activeGrid.GetName());
+                activeList = listToDisplay;
+                activeList.ToggleElementVisibility();  
+                UpdateListTitle(activeList.GetName());
             }
             else
             {
@@ -197,12 +197,12 @@ window.GridManager = function()
 
     function HideActiveList()
     {
-        if (activeGrid != null)
+        if (activeList != null)
         {
-            if (activeGrid.GetType() != null)
+            if (activeList.GetType() != null)
             {   
-                activeGrid.ToggleElementVisibility();
-                activeGrid = null;
+                activeList.ToggleElementVisibility();
+                activeList = null;
 
                 console.log("The Active list was hidden");
             }
@@ -213,7 +213,7 @@ window.GridManager = function()
         }
         else
             {
-                console.log("Tried to hide the Active Grid but there was none");
+                console.log("Tried to hide the Active List but there was none");
             }
     }
 
@@ -278,7 +278,7 @@ window.GridManager = function()
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
         RemoveRow : function(rowElementToRemove)
         {        
-            activeGrid.RemoveRow(rowElementToRemove);
+            activeList.RemoveRow(rowElementToRemove);
             SaveDataToStorage();
         },
         RemoveList : function(listElementToRemove)
@@ -289,11 +289,11 @@ window.GridManager = function()
             
             if(index > -1) 
             {
-                document.getElementById('lists').removeChild(grids[index].GetElement());
+                document.getElementById('lists').removeChild(lists[index].GetElement());
                 document.getElementById('listOfLists').removeChild(listElementToRemove);
-                grids.splice(index, 1);
+                lists.splice(index, 1);
                 
-                console.log("Removed list at index " + index + ". Number of Lists is now: " + grids.length);
+                console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
             }
             else
             {
@@ -347,8 +347,8 @@ window.GridManager = function()
         },
         ClearButtonPressed : function(columnIndex)
         {
-            console.log("Button pressed to clear column " + columnIndex + " for grid " + activeGrid);
-            activeGrid.ClearQuantityColumnValues(columnIndex);
+            console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
+            activeList.ClearQuantityColumnValues(columnIndex);
             SaveDataToStorage();
         },
         ListSelected : function(elementListToggle)
@@ -361,7 +361,7 @@ window.GridManager = function()
             {
                 var index = $(elementListToggle).index();
                 
-                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index + ". Index of current Active Grid is: " + grids.indexOf(activeGrid));
+                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index + ". Index of current Active List is: " + lists.indexOf(activeList));
                 
                 if (typeof(index) == "undefined")
                 {

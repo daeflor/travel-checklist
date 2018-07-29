@@ -1,4 +1,4 @@
-function Grid(listName, listType, listId)
+function List(listName, listType, listId)
 {
     var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
@@ -59,7 +59,7 @@ function Grid(listName, listType, listId)
             {
                 rows.splice(index, 1);
                 element.removeChild(rowElementToRemove);
-                console.log("Removed row at index " + index + ". Number of Row Items in Grid's list is now: " + rows.length);
+                console.log("Removed row at index " + index + ". Number of Row Items in List's list is now: " + rows.length);
             }
             else
             {
