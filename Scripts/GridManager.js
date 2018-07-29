@@ -5,12 +5,14 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
-    var activeListSettingsView = null;    
+    var activeListSettingsView = null; //TODO I don't see a reason why it's necessary to have two separate 'ActiveSettingsViews'. It should only be possible to have one active at a time. 
     var headers = [];
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
     var listCounter = -1; //TODO this is super hacky and TEMP
+
+    //TODO idea for IDs: List0Item0, List1Item4, List2Item12, etc.
 
     /** Grid & Button Setup **/
 
@@ -24,7 +26,7 @@ window.GridManager = function()
         LoadDataFromStorage();
 
         //Manually force the List of Lists to be expanded (visible) when the site/app is first opened
-        $('#listOfLists').collapse('show'); 
+        //$('#listOfLists').collapse('show'); 
 
         SetupInteractibles();
     }
@@ -33,18 +35,19 @@ window.GridManager = function()
     {
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-        document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
+        //document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
+        document.getElementById('buttonHome').onclick = NavigateHome;
     }
 
     function SetupHeaders()
     {
         var header = new Header(ListType.Travel);
-        headers.push(header);
-        document.getElementById('headerRow').appendChild(header.GetElement());
+        headers.push(header); //TODO May not actually be necessary to have multiple headers...
+        document.getElementById('divListHeader').appendChild(header.GetElement());
 
-        header = new Header(ListType.Checklist);
-        headers.push(header);
-        document.getElementById('headerRow').appendChild(header.GetElement());
+        // header = new Header(ListType.Checklist);
+        // headers.push(header);
+        // document.getElementById('headerRow').appendChild(header.GetElement());
     }
 
     /** Storage Management **/
@@ -155,11 +158,14 @@ window.GridManager = function()
 
     function AddNewList()
     {
-        var list = new Grid("New List", ListType.Travel, GetNextListId());
+        //TODO May be better to pass parameters like list name and type in a single object
+        var list = new Grid("", ListType.Travel, GetNextListId());
         
         grids.push(list);
         
         AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+
+        list.GetToggle().ExpandSettings();
 
         SaveDataToStorage(); 
     }
@@ -173,7 +179,7 @@ window.GridManager = function()
         document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
     }
 
-    function SwitchLists(indexToDisplay)
+    function NavigateToList(indexToDisplay)
     {   
         console.log("Request received to switch grids to grid index: " + indexToDisplay);
         
@@ -189,7 +195,8 @@ window.GridManager = function()
                 {
                     activeGrid = listToDisplay;
                     activeGrid.ToggleElementVisibility();  
-                    headerToDisplay.ToggleElementVisibility();
+                    //document.getElementById('divListHeader').hidden = false; //TODO TEMP while testing
+                    //headerToDisplay.ToggleElementVisibility();
                     UpdateScreenName(activeGrid.GetName());
                 }
                 else
@@ -222,7 +229,8 @@ window.GridManager = function()
                 {
                     activeGrid.ToggleElementVisibility();
                     activeGrid = null;
-                    activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
+                    //document.getElementById('divListHeader').hidden = true; //TODO TEMP while testing
+                    //activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
                     GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
                     console.log("The Active grid was hidden");
                 }
@@ -242,29 +250,60 @@ window.GridManager = function()
             }
     }
 
-    function ToggleListOfLists()
-    {
-        if (this.classList.contains('collapsed')) //If the List of Lists is currently closed, open it
-        {
-            console.log("Opening the List of Lists");
-            OpenListOfLists();
-        }
-    }
+    // function ToggleListOfLists()
+    // {
+    //     if (this.classList.contains('collapsed')) //If the List of Lists is currently closed, open it
+    //     {
+    //         console.log("Opening the List of Lists");
+    //         OpenListOfLists();
+    //     }
+    // }
 
-    function OpenListOfLists()
+    function NavigateHome()
     {
+        //Hide the List header when the Home screen (List of Lists) is displayed
+        document.getElementById('divListHeader').hidden = true;
+
+        //Show the Home header when the Home screen (List of Lists) is displayed
+        document.getElementById('divHomeHeader').hidden = false;
+
+        //Show the List of Lists when the Home screen is displayed
+        document.getElementById('listOfLists').hidden = false;
+
+        console.log("Opening the List of Lists");
+
+        //OpenListOfLists();
+
         HideActiveGrid();
 
-        UpdateScreenName('All Lists');
-
+    
         SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
     }
 
+    // function OpenListOfLists()
+    // {
+    //     HideActiveGrid();
+
+    //     //UpdateScreenName('All Lists');
+
+    //     SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
+    // }
+
     function CloseListOfLists()
     {
-        GridManager.ToggleActiveListSettingsView(null); //If there is any active list settings view, close it
+        //If there is any active list settings view, close it
+        GridManager.ToggleActiveListSettingsView(null);
+
+        //Hide the Home header when an individual List is displayed
+        document.getElementById('divHomeHeader').hidden = true;
+
+        //Hide the List of Lists when an individual List is displayed
+        document.getElementById('listOfLists').hidden = true;
         
-        $('#listOfLists').collapse('hide'); //Manually force the List of Lists to be collapsed (hidden) when an individual list is selected
+        //Show the List header when an individual List is displayed
+        document.getElementById('divListHeader').hidden = false;
+
+        //$('#listOfLists').collapse('hide'); //Manually force the List of Lists to be collapsed (hidden) when an individual list is selected
 
         SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
     }
@@ -401,7 +440,7 @@ window.GridManager = function()
                 }
                 else
                 {
-                    SwitchLists(index);
+                    NavigateToList(index);
                     CloseListOfLists();
                 }
             }

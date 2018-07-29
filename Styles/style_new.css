@@ -21,7 +21,7 @@ textarea
 /** Bootstrap **/
 
 .btn { /* TODO Do we really need to use the bootstrap btn class? */
-    border: 3px outset;
+    border: 3px outset; /* TODO experiment with different border styles for different buttons (e.g. flat/material look) */
 
     background-color: #EFDEB4;
 }
@@ -45,6 +45,37 @@ textarea
 
 /** Header Row **/
 
+#divHomeHeader {
+    border-color: black;
+    border-width: 2px;
+    border-bottom-width: 1px;
+    border-style: solid;
+
+    background-color: ghostwhite;
+
+    justify-content: center;
+    align-items: center;
+    
+    font-size: 1.2rem;
+
+    height: 40px;
+}
+
+#divListHeader {
+    border-color: black;
+    border-width: 2px;
+    border-bottom-width: 1px;
+    border-style: solid;
+
+    background-color: ghostwhite;
+
+    align-items: center;
+    
+    font-size: 1.2rem;
+
+    height: 40px;
+}
+
 .divQuantityHeader {
     padding-left: 0px;
     padding-right: 0px;
@@ -65,34 +96,34 @@ textarea
     padding-bottom: 0px;
 }
 
-#buttonSwitchLists {
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;    
+#buttonHome {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;  
+    
+    border-style: none;
 
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
+    background-color: #EFDEB4; /*rgb(248, 242, 227);*/
 
     margin-left: 0;
-} 
+}  
 
 #headerCurrentListName {
-    padding-left: 0px;
+    padding-left: 20px;
     padding-right: 0px;
-    padding-top: 3px;
+    padding-top: 0px;
     padding-bottom: 0px;  
 
     /* text-align: center; */
 }
 
-#iconExchange {
+/* #iconExchange {
     padding-left: 2px;
     padding-right: 2px;
     padding-top: 2px;
     padding-bottom: 2px;  
-}
+} */
 
 /** Item & List Rows **/
 
@@ -194,5 +225,29 @@ textarea
 /** Experimental & In Progress **/
 
 #listOfLists {
-    background-color: burlywood;
+    padding-right: 15px;
+    padding-left: 15px;
+
+    background-color: aliceblue;
+
+    /* TODO Consider centering list of list and having only a bottom-border */
+}
+
+.buttonNavigateToList {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;   
+    
+    /* TODO shouldn't have to specify blank border. Instead, the default should be blank and the special ones should be explicitly specified.  */
+    border-style: none; 
+
+    background-color: #EFDEB4; /*rgb(248, 242, 227);*/
+}
+
+.divSmallPadding {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;  
 }

@@ -1,6 +1,6 @@
 function Header(listType)
 {
-    var element = CreateNewElement('div', [ ['class', 'col container-flud'], ['hidden', 'true'] ]);
+    var element = CreateNewElement('div', [ ['class', 'col container-flud'] ]);
     var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb 
 
     element.appendChild(row);

@@ -30,7 +30,7 @@ function ListToggle(listName, listId)
     function SetupElements()
     {
         CreateNameWrapper();
-        CreateSelectButton();
+        CreateNavigationButton();
         CreateListSettingsView(listId, Settings, toggle);
             
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
@@ -63,9 +63,10 @@ function ListToggle(listName, listId)
         wrapper.appendChild(nameWrapper);
     }
 
-    function CreateSelectButton()
+    function CreateNavigationButton()
     {
-        var button = CreateButtonWithIcon('buttonSelectList', 'btn', 'fa fa-angle-double-right');
+        //TODO can't/shouldn't use CreateButtonWithIcon here because it requires an ID and the one being passed isn't unique
+        var button = CreateButtonWithIcon('buttonSelectList', 'btn buttonNavigateToList', 'fa fa-angle-double-right');
 
         button.addEventListener('click', function() 
         {
@@ -96,6 +97,11 @@ function ListToggle(listName, listId)
             {
                 element.hidden = true;
             }
+        },
+        ExpandSettings : function()
+        {
+            $(Settings.wrapper).collapse('show');
+            Settings.editNameTextarea.focus();
         }
     };
 }
