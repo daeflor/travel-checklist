@@ -81,7 +81,7 @@ window.GridManager = function()
         //Traverse the data for all of the lists saved in local storage
         for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
         {
-            var list = new List(storageData[i][storedFormat.ListNameIndex], storageData[i][storedFormat.ListTypeIndex], GetNextListId());
+            var list = new List({name:storageData[i][storedFormat.ListNameIndex], type:storageData[i][storedFormat.ListTypeIndex], id:GetNextListId()});
             AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
             console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
@@ -147,8 +147,7 @@ window.GridManager = function()
 
     function AddNewList()
     {
-        //TODO May be better to pass parameters like list name and type in a single object
-        var list = new List("", ListType.Travel, GetNextListId());
+        var list = new List({name:'', type:ListType.Travel, id:GetNextListId()});
         
         lists.push(list);
         
@@ -161,10 +160,10 @@ window.GridManager = function()
 
     function AddListElementsToDOM(elementList, elementListToggle)
     {
-        //Add the list 
+        //Add the list to the DOM
         document.getElementById('lists').appendChild(elementList);
         
-        //Add the list toggle
+        //Add the list toggle to the DOM
         document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
     }
 
