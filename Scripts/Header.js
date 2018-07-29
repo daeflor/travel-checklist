@@ -13,10 +13,10 @@ function Header(listType)
         CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-male fa-lg', QuantityType.Wearing);
         CreatePopoverForQuantityHeader('col divQuantityHeader iconSmall', 'fa fa-briefcase', QuantityType.Backpack);
     }
-    else if (listType == ListType.Checklist)
-    {
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-    }
+    // else if (listType == ListType.Checklist)
+    // {
+    //     CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+    // }
 
     //TODO would like a separate 'class' for toggles
     //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.

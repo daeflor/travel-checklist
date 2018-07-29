@@ -5,7 +5,6 @@ window.GridManager = function()
 
     var activePopover = null; //TODO should there be a separate popover manager? 
     var activeSettingsView = null;
-    var headers = [];
     var grids = [];
     var activeGrid;
     var rowCounter = 0;
@@ -20,7 +19,7 @@ window.GridManager = function()
         //Once the DOM content has loaded and Setup initiated, remove the event listener
         document.removeEventListener('DOMContentLoaded', Setup);
 
-        SetupHeaders();
+        SetupListHeader();
 
         LoadDataFromStorage();
 
@@ -31,19 +30,13 @@ window.GridManager = function()
     {
         document.getElementById('buttonAddList').onclick = AddNewList;
         document.getElementById('buttonAddRow').onclick = AddNewRow;
-        //document.getElementById('buttonSwitchLists').onclick = ToggleListOfLists;
         document.getElementById('buttonHome').onclick = NavigateHome;
     }
 
-    function SetupHeaders()
+    function SetupListHeader()
     {
         var header = new Header(ListType.Travel);
-        headers.push(header); //TODO May not actually be necessary to have multiple headers...
         document.getElementById('divListHeader').appendChild(header.GetElement());
-
-        // header = new Header(ListType.Checklist);
-        // headers.push(header);
-        // document.getElementById('headerRow').appendChild(header.GetElement());
     }
 
     /** Storage Management **/
@@ -185,20 +178,9 @@ window.GridManager = function()
 
             if (listToDisplay.GetType() != null)
             {
-                var headerToDisplay = headers[listToDisplay.GetType()];
-                
-                if (headerToDisplay != null)
-                {
-                    activeGrid = listToDisplay;
-                    activeGrid.ToggleElementVisibility();  
-                    //document.getElementById('divListHeader').hidden = false; //TODO TEMP while testing
-                    //headerToDisplay.ToggleElementVisibility();
-                    UpdateScreenName(activeGrid.GetName());
-                }
-                else
-                {
-                    console.log("ERROR: Tried to display a header which doesn't exist");
-                }
+                activeGrid = listToDisplay;
+                activeGrid.ToggleElementVisibility();  
+                UpdateListTitle(activeGrid.GetName());
             }
             else
             {
@@ -213,27 +195,16 @@ window.GridManager = function()
 
     /** Experimental & In Progress **/
 
-    function HideActiveGrid()
+    function HideActiveList()
     {
         if (activeGrid != null)
         {
             if (activeGrid.GetType() != null)
             {   
-                var activeHeader = headers[activeGrid.GetType()];
+                activeGrid.ToggleElementVisibility();
+                activeGrid = null;
 
-                if (activeHeader != null)
-                {
-                    activeGrid.ToggleElementVisibility();
-                    activeGrid = null;
-                    //document.getElementById('divListHeader').hidden = true; //TODO TEMP while testing
-                    //activeHeader.ToggleElementVisibility(); //TODO this could be more efficient
-                    GridManager.ToggleActiveSettingsView(null); //If there is any active row settings view, close it
-                    console.log("The Active grid was hidden");
-                }
-                else
-                {
-                    console.log("ERROR: Tried to hide a header which doesn't exist");
-                }
+                console.log("The Active list was hidden");
             }
             else
             {
@@ -246,17 +217,15 @@ window.GridManager = function()
             }
     }
 
-    // function ToggleListOfLists()
-    // {
-    //     if (this.classList.contains('collapsed')) //If the List of Lists is currently closed, open it
-    //     {
-    //         console.log("Opening the List of Lists");
-    //         OpenListOfLists();
-    //     }
-    // }
-
     function NavigateHome()
     {
+        //If there is any active settings view, close it
+        GridManager.ToggleActiveSettingsView(null);
+
+        console.log("Opening the List of Lists");
+
+        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
+
         //Hide the List header when the Home screen (List of Lists) is displayed
         document.getElementById('divListHeader').hidden = true;
 
@@ -266,29 +235,17 @@ window.GridManager = function()
         //Show the List of Lists when the Home screen is displayed
         document.getElementById('listOfLists').hidden = false;
 
-        console.log("Opening the List of Lists");
-
-        //OpenListOfLists();
-
-        HideActiveGrid();
-
+        HideActiveList();
     
         SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
     }
 
-    // function OpenListOfLists()
-    // {
-    //     HideActiveGrid();
-
-    //     //UpdateScreenName('All Lists');
-
-    //     SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
-    // }
-
     function CloseListOfLists()
     {
-        //If there is any active list settings view, close it
+        //If there is any active settings view, close it
         GridManager.ToggleActiveSettingsView(null);
+
+        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
 
         //Hide the Home header when an individual List is displayed
         document.getElementById('divHomeHeader').hidden = true;
@@ -306,7 +263,7 @@ window.GridManager = function()
 
     //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
         //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
-    function UpdateScreenName(name)
+    function UpdateListTitle(name)
     {
         document.getElementById('headerCurrentListName').textContent = name;
     }
@@ -373,15 +330,10 @@ window.GridManager = function()
                 $(activeSettingsView).collapse('hide');
             }
 
-            //If a new Settings View has been selected, set it as Active
-                //Else, if no new view is selected, just clear the Active view
-            if (newSettingsView != null)
+            //If the new Settings View is defined (e.g. could be an actual Settings view or deliberately null), set it as the Active Settings View
+            if (newSettingsView !== undefined)
             {
                 activeSettingsView = newSettingsView;
-            }
-            else
-            {
-                activeSettingsView = null;
             }
         },
         GridModified : function()
