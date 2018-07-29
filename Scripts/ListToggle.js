@@ -30,7 +30,7 @@ function ListToggle(listName, listId)
     function SetupElements()
     {
         CreateNameWrapper();
-        CreateSettingsToggle();
+        CreateSelectButton();
         CreateListSettingsView(listId, Settings, toggle);
             
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
@@ -63,19 +63,23 @@ function ListToggle(listName, listId)
         wrapper.appendChild(nameWrapper);
     }
 
-    function CreateSettingsToggle()
+    function CreateSelectButton()
     {
-        var settingsToggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'btn', CreateNewElement('i', [['class','fa fa-cog']]));
+        var button = CreateButtonWithIcon('buttonSelectList', 'btn', 'fa fa-angle-double-right');
 
-        var toggleWrapper = CreateNewElement('div', [ ['class','col-2'] ], settingsToggle);
+        button.addEventListener('click', function() 
+        {
+            GridManager.ListSelected(wrapper);
+        });    
 
-        wrapper.appendChild(toggleWrapper);
+        var buttonWrapper = CreateNewElement('div', [ ['class','col-2'] ], button);
+
+        wrapper.appendChild(buttonWrapper);
     }
 
     return { 
         GetName : function() 
         {
-            //return nameButton.textContent;
             return toggle.textContent;
         },
         GetElement : function() //TODO standardize these
