@@ -72,17 +72,18 @@ button {
     border-bottom-width: 1px;
 
     align-items: center;
-    
-    font-size: 1.1rem;
 
     height: 44px;
 
-    background-color: ghostwhite;
-    /* background-color: steelblue; */
+    /* background-color: ghostwhite; */
+    background-color: rgb(70, 130, 180, 0.8);
+    /* TODO How about a simple black (or dark gray) background instead? */
 }
 
 #divHomeHeader {
     padding-left: 10px;
+    /* padding-left: 0px; */
+    /* padding-right: 0px; */
 
     border-bottom-width: 3px;
 
@@ -91,9 +92,10 @@ button {
 
     justify-content: left;
 
-    /* font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.1rem;
     color: white;
-    text-shadow: 1px 1px 10px black; */
+    text-shadow: 1px 1px 10px black;
 }
 
 #divListHeader {
@@ -108,6 +110,7 @@ button {
     /* background-color: ghostwhite; */
 }
 
+/* TODO Consider changing the Home Button background to match the header background and the color to match the List Name font color (e.g. blue and white, respectively). */
 #buttonHome {
     padding-left: 6px;
     padding-right: 6px;
@@ -122,7 +125,7 @@ button {
 }  
 
 #headerCurrentListName {
-    padding-left: 20px;
+    padding-left: 10px;
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px; 
@@ -130,6 +133,10 @@ button {
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    text-shadow: 1px 1px 10px black;
 }
 
 .divQuantityHeader {
@@ -176,6 +183,11 @@ button {
     padding-bottom: 6px;  
 }
 
+.divListToggleName {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .buttonListItem {
     padding-left: 10px;
     padding-right: 1px;
@@ -213,6 +225,7 @@ button {
 
 /** Quantity Toggles **/
 
+/* Consider changing to Quantity toggle colors (e.g. no background, white icon). */
 .buttonQuantity {
     border-width: 1px;
     border-style: ridge;
@@ -223,7 +236,7 @@ button {
     font-weight: bold;
 
     color: black;
-    width: 100%;
+    /* width: 100%; */
 }
 
 .buttonClear {
@@ -250,6 +263,10 @@ button {
 
     border-color: black;
     border-style: solid;
+}
+
+.divSettingsWrapperRow {
+    margin-right: 0px;
 }
 
 .divListSettingsWrapperRow {
@@ -290,7 +307,7 @@ button {
 /** New List/Row Section **/
 
 .newRow {
-    padding-left: 4px;
+    padding-left: 20px;
     padding-right: 4px;
     padding-top: 4px;
     padding-bottom: 4px;  
@@ -302,6 +319,9 @@ button {
 
     border-color: black;
     border-style: solid;
+
+    margin-left: -15px;
+    /* margin-right: -15px; */
 }
 
 /** Experimental & In Progress **/
@@ -311,5 +331,9 @@ button {
     padding-right: 5px;
     padding-top: 0px;
     padding-bottom: 0px;  
+}
+
+.divListToggleWrapper {
+    margin-right: 0px;
 }
 

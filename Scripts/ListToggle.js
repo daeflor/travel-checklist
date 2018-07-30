@@ -15,7 +15,7 @@ function ListToggle(listName, listId)
         // },
     };
     
-    var wrapper = CreateNewElement('div', [ ['class','row divItemRow'] ]);
+    var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
     //var nameButton;
     var toggle; //TODO this is hacky and TEMP, just to replace nameButton above, until a better solution is implemented
 
@@ -48,7 +48,7 @@ function ListToggle(listName, listId)
         toggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'buttonListItem buttonListToggle', listName);
         
         //Create the div wrapper for the List Item Name 
-        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], toggle);
+        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], toggle);
 
         // //TODO I don't think ID will work here. Has to be index or need a new way of switching lists. Will become a problem once we start deleting lists
         // //TODO can we get rid of data-gridindex now?

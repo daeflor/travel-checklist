@@ -204,7 +204,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
     var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
     
-    var settingsRowClass = (parentType == 'list') ? 'row divListSettingsWrapperRow' : 'row';
+    var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
 
     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
     elements.wrapper  = CreateCollapsibleView({collapsibleId:'edit-'.concat(parentType).concat('-').concat(index), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
