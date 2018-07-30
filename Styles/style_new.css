@@ -25,10 +25,10 @@ button {
     padding-top: .5rem;
     padding-bottom: .5rem;
 
-    border-left-width: 3px;
-    border-right-width: 3px;
-    border-top-width: 3px;
-    border-bottom-width: 3px;
+    /* border-left-width: 3px; */
+    border-right-width: 2px;
+    /* border-top-width: 3px; */
+    border-bottom-width: 2px;
 
     border-style: outset;
 
@@ -37,6 +37,10 @@ button {
     background-color: #EFDEB4;
 
     line-height: 1.25;
+
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /** Bootstrap **/
@@ -58,37 +62,74 @@ button {
     transition: height .1s;
 }
 
-/** Header Row **/
+/** Header Rows **/
 
-#divHomeHeader {
-    border-color: black;
-    border-width: 2px;
+/* TODO Border Width is stated explicitly more than seems necessary through this stylesheet. */
+.divHeader {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 2px;
     border-bottom-width: 1px;
-    border-style: solid;
 
-    background-color: ghostwhite;
-
-    justify-content: center;
     align-items: center;
     
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 
-    height: 40px;
+    height: 44px;
+
+    background-color: ghostwhite;
+    /* background-color: steelblue; */
+}
+
+#divHomeHeader {
+    padding-left: 10px;
+
+    border-bottom-width: 3px;
+
+    border-bottom-style: double;
+    border-bottom-color: gray;
+
+    justify-content: left;
+
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    text-shadow: 1px 1px 10px black; */
 }
 
 #divListHeader {
-    border-color: black;
-    border-width: 2px;
-    border-bottom-width: 1px;
+    /* border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 1px; */
+
     border-style: solid;
+    border-color: black;
 
-    background-color: ghostwhite;
+    /* background-color: ghostwhite; */
+}
 
-    align-items: center;
+#buttonHome {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;  
     
-    font-size: 1.2rem;
+    /* border-style: none; */
 
-    height: 40px;
+    /*background-color: #EFDEB4; /*rgb(248, 242, 227);*/
+
+    margin-left: 0;
+}  
+
+#headerCurrentListName {
+    padding-left: 20px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px; 
+    
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .divQuantityHeader {
@@ -111,31 +152,15 @@ button {
     padding-bottom: 0px;
 }
 
-#buttonHome {
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 4px;
-    padding-bottom: 4px;  
-    
-    border-style: none;
-
-    background-color: #EFDEB4; /*rgb(248, 242, 227);*/
-
-    margin-left: 0;
-}  
-
-#headerCurrentListName {
-    padding-left: 20px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;  
-}
-
 /** Item & List Rows **/
 
 .divItemRow {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
     border-color: black;
-    border-width: 1px;
     border-style: solid;
 
     background-color: inherit;
@@ -151,17 +176,39 @@ button {
     padding-bottom: 6px;  
 }
 
-.newRow {
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 4px;
-    padding-bottom: 4px;  
-
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
+.buttonListItem {
+    padding-left: 10px;
+    padding-right: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;  
     
-    /* width: 100%; */
+    text-align: left;
+   
+    width: 100%;
+    height: 30px;
+}
+
+.buttonListToggle {
+    border-left-width: 0px;
+    /* border-right-width: 0px; */
+    border-top-width: 0px;
+    
+    border-style: outset;
+
+    background-color: aliceblue;
+}
+
+.buttonListItemName {     
+    border-left-width: 1px;
+    border-right-width: 3px;
+    border-top-width: 1px;
+    border-bottom-width: 3px;
+
+    border-style: solid;
+
+    background-color: #edf7f7;
+
+    line-height: 1.25;
 }
 
 /** Quantity Toggles **/
@@ -196,12 +243,15 @@ button {
     padding-top: 5px;
     padding-bottom: 5px;  
     
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
     border-color: black;
-    border-width: 1px;
     border-style: solid;
 }
 
-/*TODO Curently not used! Implementing this will require some JS changes*/
 .divListSettingsWrapperRow {
     justify-content: center;
 }
@@ -213,26 +263,48 @@ button {
     align-items: center; 
 } 
 
-/** Experimental & In Progress **/
-
-/* #listOfLists {
-    padding-right: 15px;
-    padding-left: 15px;
-
-    background-color: aliceblue;
-} */
+/** Home Screen **/
 
 .buttonNavigateToList {
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 4px;
     padding-bottom: 4px;   
-    
-    /* TODO shouldn't have to specify blank border. Instead, the default should be blank and the special ones should be explicitly specified.  */
-    border-style: none; 
 
-    background-color: #EFDEB4; /* rgb(248, 242, 227) is also good */
+    border-left-width: 0px;
+    border-top-width: 0px;
+    
+    /*background-color: #EFDEB4; /* rgb(248, 242, 227) is also good */
 }
+
+#listOfLists {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+
+    border-color: black;
+    border-style: solid;
+}
+
+/** New List/Row Section **/
+
+.newRow {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-color: black;
+    border-style: solid;
+}
+
+/** Experimental & In Progress **/
 
 .divSmallPadding {
     padding-left: 5px;
@@ -241,32 +313,3 @@ button {
     padding-bottom: 0px;  
 }
 
-.buttonListItem {
-    padding-left: 10px;
-    padding-right: 1px;
-    padding-top: 1px;
-    padding-bottom: 1px;  
-    
-    text-align: left;
-   
-    width: 100%;
-    height: 30px;
-}
-
-.buttonListToggle {
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    
-    border-style: outset;
-
-    background-color: aliceblue;
-}
-
-.buttonListItemName {     
-    border-style: solid;
-
-    background-color: #edf7f7;
-
-    line-height: 1.25;
-}
