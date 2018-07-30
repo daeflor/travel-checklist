@@ -192,28 +192,23 @@ window.GridManager = function()
         }
     }
 
-    /** Experimental & In Progress **/
-
-    function HideActiveList()
+    function CloseListOfLists()
     {
-        if (activeList != null)
-        {
-            if (activeList.GetType() != null)
-            {   
-                activeList.ToggleElementVisibility();
-                activeList = null;
+        //If there is any active settings view, close it
+        GridManager.ToggleActiveSettingsView(null);
 
-                console.log("The Active list was hidden");
-            }
-            else
-            {
-                console.log("ERROR: Tried to hide a list which has a ListType of null");
-            }
-        }
-        else
-            {
-                console.log("Tried to hide the Active List but there was none");
-            }
+        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
+
+        //Hide the Home header when an individual List is displayed
+        document.getElementById('divHomeHeader').hidden = true;
+
+        //Hide the List of Lists when an individual List is displayed
+        document.getElementById('listOfLists').hidden = true;
+        
+        //Show the List header when an individual List is displayed
+        document.getElementById('divListHeader').hidden = false;
+
+        SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
     }
 
     function NavigateHome()
@@ -239,26 +234,29 @@ window.GridManager = function()
         SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
     }
 
-    function CloseListOfLists()
+    function HideActiveList()
     {
-        //If there is any active settings view, close it
-        GridManager.ToggleActiveSettingsView(null);
+        if (activeList != null)
+        {
+            if (activeList.GetType() != null)
+            {   
+                activeList.ToggleElementVisibility();
+                activeList = null;
 
-        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
-
-        //Hide the Home header when an individual List is displayed
-        document.getElementById('divHomeHeader').hidden = true;
-
-        //Hide the List of Lists when an individual List is displayed
-        document.getElementById('listOfLists').hidden = true;
-        
-        //Show the List header when an individual List is displayed
-        document.getElementById('divListHeader').hidden = false;
-
-        //$('#listOfLists').collapse('hide'); //Manually force the List of Lists to be collapsed (hidden) when an individual list is selected
-
-        SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
+                console.log("The Active list was hidden");
+            }
+            else
+            {
+                console.log("ERROR: Tried to hide a list which has a ListType of null");
+            }
+        }
+        else
+            {
+                console.log("Tried to hide the Active List but there was none");
+            }
     }
+
+    /** Experimental & In Progress **/
 
     //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
         //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
