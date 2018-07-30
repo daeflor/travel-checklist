@@ -1,6 +1,6 @@
 /** Element Creation **/
 
-//TODO could change child parameter to a list of children instead
+//TODO could change child parameter to a list of children instead. Rather, change to a single data param, and one of the properties is a list of children
 function CreateNewElement(elementName, attributes, child)
 {
     var element;
@@ -30,15 +30,28 @@ function CreateNewElement(elementName, attributes, child)
     }
 }
 
-//TODO could standardize this more so that it doesn't need to take an id, if possible?
-    //Maybe pass an options parameter
-function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
+function CreateButtonWithIcon(data)
 {
-    return CreateNewElement(
-        'button', 
-        [ ['id',buttonId], ['class',buttonClass], ['type','button'] ], 
-        CreateNewElement('i', [['class',iconClass]])
-    );
+    var iconElement = document.createElement('i');
+
+    if (data.iconClass !== undefined)
+    {
+        iconElement.setAttribute('class', data.iconClass);
+    }
+
+    var buttonElement = CreateNewElement('button', [ ['type','button'] ], iconElement);
+
+    if (data.buttonId !== undefined)
+    {
+        buttonElement.setAttribute('id', data.buttonId);
+    }
+
+    if (data.buttonClass !== undefined)
+    {
+        buttonElement.setAttribute('class', data.buttonClass);
+    }
+
+    return buttonElement;
 }
 
 function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)

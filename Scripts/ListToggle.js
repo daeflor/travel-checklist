@@ -65,8 +65,7 @@ function ListToggle(listName, listId)
 
     function CreateNavigationButton()
     {
-        //TODO can't/shouldn't use CreateButtonWithIcon here because it requires an ID and the one being passed isn't unique
-        var button = CreateButtonWithIcon('buttonSelectList', 'btn buttonNavigateToList', 'fa fa-angle-double-right');
+        var button = CreateButtonWithIcon({buttonClass:'btn buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
 
         button.addEventListener('click', function() 
         {

@@ -1,7 +1,7 @@
 function Header(listType)
 {
     var element = CreateNewElement('div', [ ['class', 'col container-flud'] ]);
-    var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb 
+    var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb (why?)
 
     element.appendChild(row);
 
@@ -22,7 +22,7 @@ function Header(listType)
     //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.
     function CreatePopoverForQuantityHeader(divClass, iconClass, index)
     {
-        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
+        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
         var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
         var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
