@@ -22,7 +22,7 @@ function Header(listType)
     //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.
     function CreatePopoverForQuantityHeader(divClass, iconClass, index)
     {
-        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
+        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
         var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
         var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');

@@ -50,12 +50,12 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
             var self = this;
 
             //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
-            var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'btn popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
-            var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'btn popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
+            var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
+            var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
 
             //TODO is it necessary to pass a default/initial value for what the toggle displays? 
             //Create the element that toggles the visibility of the modifier's popover
-            self.elements.popoverToggle = CreatePopoverToggle('btn btn-sm buttonQuantity', initialValue, [buttonMinus, buttonPlus], 'manual');
+            self.elements.popoverToggle = CreatePopoverToggle('btn-sm buttonQuantity', initialValue, [buttonMinus, buttonPlus], 'manual');
 
             //Add a listener to the toggle 
             self.elements.popoverToggle.addEventListener('click', function(e) 

@@ -114,7 +114,7 @@ function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDispla
     //Maybe pass an options parameter
 function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
 {    
-    var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
+    var divCard = CreateNewElement('div', [ ['class','row'] ]); 
     for (var i = 0; i < collapsedChildren.length; i++)
     {
         divCard.appendChild(collapsedChildren[i]);
@@ -186,15 +186,22 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     /* Create Delete Button */
     elements.buttonDelete = CreateNewElement(
         'button', 
-        [ ['class','btn'], ['type','button'] ], 
+        [ ['type','button'] ], 
         CreateNewElement('i', [['class','fa fa-trash']])
     );
 
     /* Create Element Wrappers */
     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
     var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
+    
+    var wrapperClass = 'collapse container-fluid divSettingsWrapper';
+    if (parentType == 'list')
+    {
+        wrapperClass += ' divListSettingsWrapper'
+    }
+    
     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-    elements.wrapper  = CreateCollapsibleView('edit-'.concat(parentType).concat('-').concat(index), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDelete]);
+    elements.wrapper  = CreateCollapsibleView('edit-'.concat(parentType).concat('-').concat(index), wrapperClass, [divTextareaName, divButtonDelete]);
 
     /* Setup Listeners */
     $(elements.wrapper).on('show.bs.collapse', function() 

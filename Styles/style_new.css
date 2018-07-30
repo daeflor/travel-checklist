@@ -18,13 +18,28 @@ textarea
     max-height: 30px;
 } 
 
-/** Bootstrap **/
+/* Most utlity buttons use the same backgroundcolor and border. Any exceptions set these options explicitly. */
+button {
+    padding-left: .75rem;
+    padding-right: .75rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
 
-.btn { /* TODO Do we really need to use the bootstrap btn class? */
-    border: 3px outset; /* TODO experiment with different border styles for different buttons (e.g. flat/material look) */
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+
+    border-style: outset;
+
+    border-radius: .25rem;
 
     background-color: #EFDEB4;
+
+    line-height: 1.25;
 }
+
+/** Bootstrap **/
 
 /*TODO would be nice to be able to affect different popover bodies separately*/
 .popover-body {
@@ -114,16 +129,7 @@ textarea
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px;  
-
-    /* text-align: center; */
 }
-
-/* #iconExchange {
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;  
-} */
 
 /** Item & List Rows **/
 
@@ -133,8 +139,9 @@ textarea
     border-style: solid;
 
     background-color: inherit;
-    /* background-color: aliceblue; */
+
     align-items: center;
+    justify-content: center;
 }
 
 .divItemName {
@@ -142,22 +149,6 @@ textarea
     padding-right: 6px;
     padding-top: 6px;
     padding-bottom: 6px;  
-}
-
-.buttonItemName {
-    padding-left: 10px;
-    padding-right: 1px;
-    padding-top: 1px;
-    padding-bottom: 1px;  
-    
-    border-style: solid;
-
-    background-color: #edf7f7;
-    
-    text-align: left;
-   
-    width: 100%;
-    height: 30px;
 }
 
 .newRow {
@@ -210,17 +201,17 @@ textarea
     border-style: solid;
 }
 
+/*TODO Curently not used! Implementing this will require some JS changes*/
+.divListSettingsWrapper {
+    justify-content: center;
+}
+
 .divEditName {
     padding-left: 25px;
     
     display: flex;
     align-items: center; 
 } 
-
-/* .divEditName textarea
-{
-    width: 100%;
-}  */
 
 /** Experimental & In Progress **/
 
@@ -229,8 +220,6 @@ textarea
     padding-left: 15px;
 
     background-color: aliceblue;
-
-    /* TODO Consider centering list of list and having only a bottom-border */
 }
 
 .buttonNavigateToList {
@@ -242,7 +231,7 @@ textarea
     /* TODO shouldn't have to specify blank border. Instead, the default should be blank and the special ones should be explicitly specified.  */
     border-style: none; 
 
-    background-color: #EFDEB4; /*rgb(248, 242, 227);*/
+    background-color: #EFDEB4; /* rgb(248, 242, 227) is also good */
 }
 
 .divSmallPadding {
@@ -250,4 +239,34 @@ textarea
     padding-right: 5px;
     padding-top: 0px;
     padding-bottom: 0px;  
+}
+
+.buttonListItem {
+    padding-left: 10px;
+    padding-right: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;  
+    
+    text-align: left;
+   
+    width: 100%;
+    height: 30px;
+}
+
+.buttonListToggle {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    
+    border-style: outset;
+
+    background-color: aliceblue;
+}
+
+.buttonListItemName {     
+    border-style: solid;
+
+    background-color: #edf7f7;
+
+    line-height: 1.25;
 }
