@@ -110,17 +110,27 @@ function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDispla
     return toggle;
 }
 
-//TODO could standardize this more so that it doesn't need to take an id, if possible?
-    //Maybe pass an options parameter
-function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
+function CreateCollapsibleView(data)
 {    
-    var divCard = CreateNewElement('div', [ ['class','row'] ]); 
-    for (var i = 0; i < collapsedChildren.length; i++)
+    var divCard = CreateNewElement('div', [ ['class', data.rowClass] ]); 
+    for (var i = 0; i < data.collapsedChildren.length; i++)
     {
-        divCard.appendChild(collapsedChildren[i]);
+        divCard.appendChild(data.collapsedChildren[i]);
     } 
 
-    return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
+    var wrapperElement = CreateNewElement('div', null, divCard);
+
+    if (data.collapsibleId !== undefined)
+    {
+        wrapperElement.setAttribute('id', data.collapsibleId);
+    }
+
+    if (data.collapsibleClass !== undefined)
+    {
+        wrapperElement.setAttribute('class', data.collapsibleClass);
+    }
+
+    return wrapperElement;
 }
 
 /** Storage **/
@@ -194,14 +204,10 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
     var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
     
-    var wrapperClass = 'collapse container-fluid divSettingsWrapper';
-    if (parentType == 'list')
-    {
-        wrapperClass += ' divListSettingsWrapper'
-    }
-    
+    var settingsRowClass = (parentType == 'list') ? 'row divListSettingsWrapperRow' : 'row';
+
     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-    elements.wrapper  = CreateCollapsibleView('edit-'.concat(parentType).concat('-').concat(index), wrapperClass, [divTextareaName, divButtonDelete]);
+    elements.wrapper  = CreateCollapsibleView({collapsibleId:'edit-'.concat(parentType).concat('-').concat(index), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
     /* Setup Listeners */
     $(elements.wrapper).on('show.bs.collapse', function() 
