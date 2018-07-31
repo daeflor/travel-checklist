@@ -83,10 +83,9 @@ button {
 #divHomeHeader {
     padding-left: 10px;
 
-    border-bottom-width: 3px;
-
-    border-bottom-style: double;
-    border-bottom-color: gray;
+    border-bottom-width: 1px;
+    border-bottom-style: outset;
+    border-bottom-color: white;
 
     justify-content: left;
 
@@ -96,6 +95,7 @@ button {
     text-shadow: 1px 1px 10px black;
 }
 
+/* TODO Should both headers have the same border? Probably... */
 #divListHeader {
     /* border-left-width: 2px;
     border-right-width: 2px;
@@ -237,15 +237,17 @@ button {
     background-color: #EFDEB4;
 
     text-align: center;
+    line-height: normal;
 
     color: black;
 
     display: inline-block;
     width: 50%; 
 
-    white-space: nowrap; 
+    /* Setting overflow: hidden causes the position of the element to move slightly, which causes more issues in this case than is worth it.
+    /* white-space: nowrap; 
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; */
 }
 
 .buttonClear {
@@ -378,6 +380,7 @@ button {
 .divListItemModifier {
     padding-left: 0px;
     padding-right: 0px;
-
+    
     text-align: center;
+    line-height: normal;
 }
