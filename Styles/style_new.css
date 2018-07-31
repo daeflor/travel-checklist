@@ -75,15 +75,13 @@ button {
 
     height: 44px;
 
+    background-color: #333333;
     /* background-color: ghostwhite; */
-    background-color: rgb(70, 130, 180, 0.8);
-    /* TODO How about a simple black (or dark gray) background instead? */
+    /* background-color: rgb(70, 130, 180, 0.8); */
 }
 
 #divHomeHeader {
     padding-left: 10px;
-    /* padding-left: 0px; */
-    /* padding-right: 0px; */
 
     border-bottom-width: 3px;
 
@@ -110,18 +108,25 @@ button {
     /* background-color: ghostwhite; */
 }
 
-/* TODO Consider changing the Home Button background to match the header background and the color to match the List Name font color (e.g. blue and white, respectively). */
 #buttonHome {
     padding-left: 6px;
     padding-right: 6px;
     padding-top: 3px;
     padding-bottom: 3px;  
-    
-    /* border-style: none; */
 
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+    border-color: white;
+    
+    background-color:inherit;
+    /* background-color:ghostwhite; */
     /*background-color: #EFDEB4; /*rgb(248, 242, 227);*/
 
     margin-left: 0;
+
+    color:white;
 }  
 
 #headerCurrentListName {
@@ -142,21 +147,15 @@ button {
 .divQuantityHeader {
     padding-left: 0px;
     padding-right: 0px;
-    padding-top: 5px;
-    padding-bottom: 5px;    
+    padding-top: 0px;
+    padding-bottom: 0px;    
 
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
-
-    background-color: lavenderblush;
+    /* background-color: lavenderblush; */
+    background-color: inherit;
 
     text-align: center;
-}
 
-.iconSmall {
-    padding-top: 8px;
-    padding-bottom: 0px;
+    font-size: .9rem;
 }
 
 /** Item & List Rows **/
@@ -202,7 +201,6 @@ button {
 
 .buttonListToggle {
     border-left-width: 0px;
-    /* border-right-width: 0px; */
     border-top-width: 0px;
     
     border-style: outset;
@@ -225,18 +223,29 @@ button {
 
 /** Quantity Toggles **/
 
-/* Consider changing to Quantity toggle colors (e.g. no background, white icon). */
 .buttonQuantity {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
     border-width: 1px;
     border-style: ridge;
+    border-color: #EFDEB4;
 
-    background-color: burlywood;
+    /* background-color: burlywood; */
+    background-color: #EFDEB4;
 
     text-align: center;
-    font-weight: bold;
 
     color: black;
-    /* width: 100%; */
+
+    display: inline-block;
+    width: 50%; 
+
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .buttonClear {
@@ -337,3 +346,38 @@ button {
     margin-right: 0px;
 }
 
+.toggleQuantityHeader {
+    /* padding-left: 8px;
+    padding-right: 8px; */
+    padding-top: 3px;
+    padding-bottom: 3px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+
+    border-color: white;
+    border-style: outset;
+    border-radius: .25rem;
+
+    display: inline-block;
+    width:65%;
+    height:100%;
+}
+
+.toggleSmallIcon {
+    padding-top: 8px;
+    padding-bottom: 0px;
+}
+
+.iconQuantityHeader {
+    color:white;
+}
+
+.divListItemModifier {
+    padding-left: 0px;
+    padding-right: 0px;
+
+    text-align: center;
+}

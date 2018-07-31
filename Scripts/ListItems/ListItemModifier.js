@@ -86,7 +86,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 GridManager.SetActivePopover(null);
             });
 
-            self.elements.wrapper = CreateNewElement('div', [ ['class','col'] ], self.elements.popoverToggle);
+            self.elements.wrapper = CreateNewElement('div', [ ['class','col divListItemModifier'] ], self.elements.popoverToggle);
         },
         Render : function(command, parameter)
         {

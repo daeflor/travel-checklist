@@ -8,10 +8,10 @@ function Header(listType)
     if (listType == ListType.Travel)
     {
         //TODO class data could be contained in the QuantityType object
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-male fa-lg', QuantityType.Wearing);
-        CreatePopoverForQuantityHeader('col divQuantityHeader iconSmall', 'fa fa-briefcase', QuantityType.Backpack);
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg iconQuantityHeader', QuantityType.Needed, 'toggleQuantityHeader');
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-suitcase fa-lg iconQuantityHeader', QuantityType.Luggage, 'toggleQuantityHeader');
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-male fa-lg iconQuantityHeader', QuantityType.Wearing, 'toggleQuantityHeader');
+        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-briefcase iconQuantityHeader', QuantityType.Backpack, 'toggleQuantityHeader toggleSmallIcon');
     }
     // else if (listType == ListType.Checklist)
     // {
@@ -20,12 +20,13 @@ function Header(listType)
 
     //TODO would like a separate 'class' for toggles
     //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.
-    function CreatePopoverForQuantityHeader(divClass, iconClass, index)
+    //TODO change to take a data object
+    function CreatePopoverForQuantityHeader(divClass, iconClass, index, toggleClass) //TODO the addition of toggleClass in this manner is TEMP
     {
         var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
         var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
+        var popoverToggle = CreatePopoverToggle(toggleClass, iconToggle, [buttonClear], 'focus');
         
         $(popoverToggle).on('shown.bs.popover', function() 
         {
