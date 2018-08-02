@@ -1,5 +1,104 @@
 window.GridManager = function()
 {
+    var view = {
+        elements: {  
+            listHeader : null,
+            homeHeader : null,
+            listOfLists : null,
+            listsWrapper : null,
+        }, 
+        AddElementsToDom : function(data)
+        {
+            var self = this;
+
+            self.elements.listHeader = document.getElementById('divListHeader');
+            self.elements.homeHeader = document.getElementById('divHomeHeader');
+            self.elements.listOfLists = document.getElementById('divListOfLists'); //TODO this and the one below could probably be renamed for clarity
+            self.elements.listsWrapper = document.getElementById('divLists');
+
+            self.elements.listHeader.appendChild(data.headerElement); //TODO These should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
+        },
+        Render : function(command, parameter)
+        {
+            var self = this;
+
+            var viewCommands = {
+                showHomeScreen: function() 
+                {
+                    //Hide the List header when the Home screen (List of Lists) is displayed
+                    self.elements.listHeader.hidden = true;
+
+                    //Show the Home header when the Home screen (List of Lists) is displayed
+                    self.elements.homeHeader.hidden = false;
+
+                    //Show the List of Lists when the Home screen is displayed
+                    self.elements.listOfLists.hidden = false;
+
+                    //TODO this shouldn't be necessary if the row is moved into the lists div ('divLists')
+                    //Hide the New List Item row when the Home screen is displayed
+                    document.getElementById('newItemRow').hidden = true;
+                },
+                hideHomeScreen: function() 
+                {
+                    //Hide the Home header when an individual List is displayed
+                    self.elements.homeHeader.hidden = true;
+
+                    //Hide the List of Lists when an individual List is displayed
+                    self.elements.listOfLists.hidden = true;
+                    
+                    //Show the List header when an individual List is displayed
+                    self.elements.listHeader.hidden = false;
+
+                    //TODO this shouldn't be necessary if the row is moved into the lists div ('divLists')
+                    //Show the New List Item row when an individual List is displayed
+                    document.getElementById('newItemRow').hidden = false;
+                },
+                addList: function() 
+                {
+                    //Add the list to the DOM
+                    self.elements.listsWrapper.appendChild(parameter.listElement); //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
+                    
+                    //Add the list toggle to the DOM
+                    self.elements.listOfLists.insertBefore(parameter.listToggleElement, document.getElementById('newListRow'));
+                },
+                setListTitle: function() 
+                {
+                    document.getElementById('headerCurrentListName').textContent = parameter.listName;
+                },
+                removeList: function() 
+                {
+                    //Remove the List element from the Lists wrapper
+                    self.elements.listsWrapper.removeChild(parameter.listElement);
+
+                    //Remove the List Toggle element from the Lists of Lists wrapper
+                    self.elements.listOfLists.removeChild(parameter.listToggleElement);
+                },
+            };
+
+            viewCommands[command]();
+        },
+        Bind : function(event, callback)
+        {
+            var self = this;
+
+            if (event === 'NavigateHome') 
+            {
+                //Set the behavior for when the Home button is pressed
+                document.getElementById('buttonHome').addEventListener('click', callback);         
+            }
+            else if (event === 'AddList') 
+            {
+                //Set the behavior for when the Add List button is pressed
+                document.getElementById('buttonAddList').addEventListener('click', callback);         
+            }
+            else if (event === 'AddRow') 
+            {
+                //Set the behavior for when the Add Row button is pressed
+                document.getElementById('buttonAddRow').addEventListener('click', callback);         
+            }
+        },
+    };
+
     //Initiate Setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', Setup);
 
@@ -19,25 +118,32 @@ window.GridManager = function()
         //Once the DOM content has loaded and Setup initiated, remove the event listener
         document.removeEventListener('DOMContentLoaded', Setup);
 
-        SetupListHeader();
+        var header = new Header(ListType.Travel);
+        view.AddElementsToDom({headerElement: header.GetElement()})
+
+        view.Bind('NavigateHome', NavigateHome);
+        view.Bind('AddList', AddNewList);
+        view.Bind('AddRow', AddNewRow);
+
+        // SetupListHeader();
 
         LoadDataFromStorage();
 
-        SetupInteractibles();
+        // SetupInteractibles();
     }
 
-    function SetupInteractibles()
-    {
-        document.getElementById('buttonAddList').onclick = AddNewList;
-        document.getElementById('buttonAddRow').onclick = AddNewRow;
-        document.getElementById('buttonHome').onclick = NavigateHome;
-    }
+    // function SetupListHeader()
+    // {
+    //     var header = new Header(ListType.Travel);
+    //     document.getElementById('divListHeader').appendChild(header.GetElement());
+    // }
 
-    function SetupListHeader()
-    {
-        var header = new Header(ListType.Travel);
-        document.getElementById('divListHeader').appendChild(header.GetElement());
-    }
+    // function SetupInteractibles()
+    // {
+    //     document.getElementById('buttonAddList').onclick = AddNewList;
+    //     document.getElementById('buttonAddRow').onclick = AddNewRow;
+    //     document.getElementById('buttonHome').onclick = NavigateHome;
+    // }
 
     /** Storage Management **/
 
@@ -82,7 +188,8 @@ window.GridManager = function()
         for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
         {
             var list = new List({name:storageData[i][storedFormat.ListNameIndex], type:storageData[i][storedFormat.ListTypeIndex], id:GetNextListId()});
-            AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+            view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+            //AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
             console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
             
@@ -94,10 +201,6 @@ window.GridManager = function()
                     console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
                     list.AddRow(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
                 }
-                else if (list.GetType() == ListType.Checklist)
-                {
-                    //TODO
-                } 
             }
 
             lists.push(list);
@@ -150,22 +253,25 @@ window.GridManager = function()
         var list = new List({name:'', type:ListType.Travel, id:GetNextListId()});
         
         lists.push(list);
+
+        //TODO do something with the Model here, first
+        view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
-        AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
+        // AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
         list.GetToggle().ExpandSettings();
 
         SaveDataToStorage(); 
     }
 
-    function AddListElementsToDOM(elementList, elementListToggle)
-    {
-        //Add the list to the DOM
-        document.getElementById('lists').appendChild(elementList);
+    // function AddListElementsToDOM(elementList, elementListToggle)
+    // {
+    //     //Add the list to the DOM
+    //     document.getElementById('lists').appendChild(elementList);
         
-        //Add the list toggle to the DOM
-        document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
-    }
+    //     //Add the list toggle to the DOM
+    //     document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
+    // }
 
     function NavigateToList(indexToDisplay)
     {   
@@ -179,7 +285,9 @@ window.GridManager = function()
             {
                 activeList = listToDisplay;
                 activeList.ToggleElementVisibility();  
-                UpdateListTitle(activeList.GetName());
+
+                view.Render('setListTitle', {listName:activeList.GetName()});
+                //UpdateListTitle(activeList.GetName());
             }
             else
             {
@@ -197,18 +305,20 @@ window.GridManager = function()
         //If there is any active settings view, close it
         GridManager.ToggleActiveSettingsView(null);
 
-        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
+        //TODO should have a separate section (View) that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
 
-        //Hide the Home header when an individual List is displayed
-        document.getElementById('divHomeHeader').hidden = true;
+        // //Hide the Home header when an individual List is displayed
+        // document.getElementById('divHomeHeader').hidden = true;
 
-        //Hide the List of Lists when an individual List is displayed
-        document.getElementById('listOfLists').hidden = true;
+        // //Hide the List of Lists when an individual List is displayed
+        // document.getElementById('listOfLists').hidden = true;
         
-        //Show the List header when an individual List is displayed
-        document.getElementById('divListHeader').hidden = false;
+        // //Show the List header when an individual List is displayed
+        // document.getElementById('divListHeader').hidden = false;
 
-        SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
+        view.Render('hideHomeScreen'); //TODO this should happen after updating the Model
+
+        //SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
     }
 
     function NavigateHome()
@@ -220,18 +330,20 @@ window.GridManager = function()
 
         //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
 
-        //Hide the List header when the Home screen (List of Lists) is displayed
-        document.getElementById('divListHeader').hidden = true;
+        // //Hide the List header when the Home screen (List of Lists) is displayed
+        // document.getElementById('divListHeader').hidden = true;
 
-        //Show the Home header when the Home screen (List of Lists) is displayed
-        document.getElementById('divHomeHeader').hidden = false;
+        // //Show the Home header when the Home screen (List of Lists) is displayed
+        // document.getElementById('divHomeHeader').hidden = false;
 
-        //Show the List of Lists when the Home screen is displayed
-        document.getElementById('listOfLists').hidden = false;
+        // //Show the List of Lists when the Home screen is displayed
+        // document.getElementById('listOfLists').hidden = false;
+
+        view.Render('showHomeScreen'); //TODO this should happen after updating the Model
 
         HideActiveList();
     
-        SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
+        //SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
     }
 
     function HideActiveList()
@@ -260,15 +372,15 @@ window.GridManager = function()
 
     //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
         //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
-    function UpdateListTitle(name)
-    {
-        document.getElementById('headerCurrentListName').textContent = name;
-    }
+    // function UpdateListTitle(name)
+    // {
+    //     document.getElementById('headerCurrentListName').textContent = name;
+    // }
 
-    function SetVisibilityOfNewItemRow(enabled)
-    {
-        document.getElementById('newItemRow').hidden = !enabled;
-    }
+    // function SetVisibilityOfNewItemRow(enabled)
+    // {
+    //     document.getElementById('newItemRow').hidden = !enabled;
+    // }
 
     /** Public Functions **/
 
@@ -286,8 +398,10 @@ window.GridManager = function()
             
             if(index > -1) 
             {
-                document.getElementById('lists').removeChild(lists[index].GetElement());
-                document.getElementById('listOfLists').removeChild(listElementToRemove);
+                //TODO Do something with the Model here, no?
+                view.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
+                // document.getElementById('divLists').removeChild(lists[index].GetElement());
+                // document.getElementById('divListOfLists').removeChild(listElementToRemove);
                 lists.splice(index, 1);
                 
                 console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
