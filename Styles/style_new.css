@@ -18,13 +18,32 @@ textarea
     max-height: 30px;
 } 
 
-/** Bootstrap **/
+/* Most utlity buttons use the same backgroundcolor and border. Any exceptions set these options explicitly. */
+button {
+    padding-left: .75rem;
+    padding-right: .75rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
 
-.btn { /* TODO Do we really need to use the bootstrap btn class? */
-    border: 3px outset;
+    /* border-left-width: 3px; */
+    border-right-width: 2px;
+    /* border-top-width: 3px; */
+    border-bottom-width: 2px;
+
+    border-style: outset;
+
+    border-radius: .25rem;
 
     background-color: #EFDEB4;
+
+    line-height: 1.25;
+
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+/** Bootstrap **/
 
 /*TODO would be nice to be able to affect different popover bodies separately*/
 .popover-body {
@@ -43,67 +62,117 @@ textarea
     transition: height .1s;
 }
 
-/** Header Row **/
+/** Header Rows **/
+
+/* TODO Border Width is stated explicitly more than seems necessary through this stylesheet. */
+.divHeader {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 2px;
+    border-bottom-width: 1px;
+
+    align-items: center;
+
+    height: 44px;
+
+    background-color: #333333;
+    /* background-color: ghostwhite; */
+    /* background-color: rgb(70, 130, 180, 0.8); */
+}
+
+#divHomeHeader {
+    padding-left: 10px;
+
+    border-bottom-width: 1px;
+    border-bottom-style: outset;
+    border-bottom-color: white;
+
+    justify-content: left;
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.1rem;
+    color: white;
+    text-shadow: 1px 1px 10px black;
+}
+
+/* TODO Should both headers have the same border? Probably... */
+#divListHeader {
+    /* border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 1px; */
+
+    border-style: solid;
+    border-color: black;
+
+    /* background-color: ghostwhite; */
+}
+
+#buttonHome {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+    border-color: white;
+    
+    background-color:inherit;
+    /* background-color:ghostwhite; */
+    /*background-color: #EFDEB4; /*rgb(248, 242, 227);*/
+
+    margin-left: 0;
+
+    color:white;
+}  
+
+#headerCurrentListName {
+    padding-left: 10px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px; 
+    
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    text-shadow: 1px 1px 10px black;
+}
 
 .divQuantityHeader {
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 5px;
-    padding-bottom: 5px;    
-
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
-
-    background-color: lavenderblush;
-
-    text-align: center;
-}
-
-.iconSmall {
-    padding-top: 8px;
-    padding-bottom: 0px;
-}
-
-#buttonSwitchLists {
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px;    
 
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
+    /* background-color: lavenderblush; */
+    background-color: inherit;
 
-    margin-left: 0;
-} 
+    text-align: center;
 
-#headerCurrentListName {
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 3px;
-    padding-bottom: 0px;  
-
-    /* text-align: center; */
-}
-
-#iconExchange {
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;  
+    font-size: .9rem;
 }
 
 /** Item & List Rows **/
 
 .divItemRow {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
     border-color: black;
-    border-width: 1px;
     border-style: solid;
 
     background-color: inherit;
-    /* background-color: aliceblue; */
+
     align-items: center;
+    justify-content: center;
 }
 
 .divItemName {
@@ -113,15 +182,16 @@ textarea
     padding-bottom: 6px;  
 }
 
-.buttonItemName {
+.divListToggleName {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.buttonListItem {
     padding-left: 10px;
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;  
-    
-    border-style: solid;
-
-    background-color: #edf7f7;
     
     text-align: left;
    
@@ -129,32 +199,55 @@ textarea
     height: 30px;
 }
 
-.newRow {
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 4px;
-    padding-bottom: 4px;  
-
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
+.buttonListToggle {
+    border-left-width: 0px;
+    border-top-width: 0px;
     
-    /* width: 100%; */
+    border-style: outset;
+
+    background-color: aliceblue;
+}
+
+.buttonListItemName {     
+    border-left-width: 1px;
+    border-right-width: 3px;
+    border-top-width: 1px;
+    border-bottom-width: 3px;
+
+    border-style: solid;
+
+    background-color: #edf7f7;
+
+    line-height: 1.25;
 }
 
 /** Quantity Toggles **/
 
 .buttonQuantity {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
     border-width: 1px;
     border-style: ridge;
+    border-color: #EFDEB4;
 
-    background-color: burlywood;
+    /* background-color: burlywood; */
+    background-color: #EFDEB4;
 
     text-align: center;
-    font-weight: bold;
+    line-height: normal;
 
     color: black;
-    width: 100%;
+
+    display: inline-block;
+    width: 50%; 
+
+    /* Setting overflow: hidden causes the position of the element to move slightly, which causes more issues in this case than is worth it.
+    /* white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; */
 }
 
 .buttonClear {
@@ -174,9 +267,21 @@ textarea
     padding-top: 5px;
     padding-bottom: 5px;  
     
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
     border-color: black;
-    border-width: 1px;
     border-style: solid;
+}
+
+.divSettingsWrapperRow {
+    margin-right: 0px;
+}
+
+.divListSettingsWrapperRow {
+    justify-content: center;
 }
 
 .divEditName {
@@ -186,13 +291,96 @@ textarea
     align-items: center; 
 } 
 
-/* .divEditName textarea
-{
-    width: 100%;
-}  */
+/** Home Screen **/
+
+.buttonNavigateToList {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;   
+
+    border-left-width: 0px;
+    border-top-width: 0px;
+    
+    /*background-color: #EFDEB4; /* rgb(248, 242, 227) is also good */
+}
+
+#listOfLists {
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+
+    border-color: black;
+    border-style: solid;
+}
+
+/** New List/Row Section **/
+
+.newRow {
+    padding-left: 20px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+
+    border-color: black;
+    border-style: solid;
+
+    margin-left: -15px;
+    /* margin-right: -15px; */
+}
 
 /** Experimental & In Progress **/
 
-#listOfLists {
-    background-color: burlywood;
+.divSmallPadding {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;  
+}
+
+.divListToggleWrapper {
+    margin-right: 0px;
+}
+
+.toggleQuantityHeader {
+    /* padding-left: 8px;
+    padding-right: 8px; */
+    padding-top: 3px;
+    padding-bottom: 3px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+
+    border-color: white;
+    border-style: outset;
+    border-radius: .25rem;
+
+    display: inline-block;
+    width:65%;
+    height:100%;
+}
+
+.toggleSmallIcon {
+    padding-top: 8px;
+    padding-bottom: 0px;
+}
+
+.iconQuantityHeader {
+    color:white;
+}
+
+.divListItemModifier {
+    padding-left: 0px;
+    padding-right: 0px;
+    
+    text-align: center;
+    line-height: normal;
 }

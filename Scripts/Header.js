@@ -1,42 +1,41 @@
 function Header(listType)
 {
-    var element = CreateNewElement('div', [ ['class', 'col container-flud'], ['hidden', 'true'] ]);
-    var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb 
+    var element = CreateNewElement('div', [ ['class', 'col container-flud'] ]);
+    var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb (why?)
 
     element.appendChild(row);
 
     if (listType == ListType.Travel)
     {
         //TODO class data could be contained in the QuantityType object
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-suitcase fa-lg', QuantityType.Luggage);
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-male fa-lg', QuantityType.Wearing);
-        CreatePopoverForQuantityHeader('col divQuantityHeader iconSmall', 'fa fa-briefcase', QuantityType.Backpack);
+        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-pie-chart fa-lg iconQuantityHeader', index:QuantityType.Needed});
+        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-suitcase fa-lg iconQuantityHeader', index:QuantityType.Luggage});
+        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-male fa-lg iconQuantityHeader', index:QuantityType.Wearing});
+        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader toggleSmallIcon', iconClass:'fa fa-briefcase iconQuantityHeader', index:QuantityType.Backpack});
     }
-    else if (listType == ListType.Checklist)
-    {
-        CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
-    }
+    // else if (listType == ListType.Checklist)
+    // {
+    //     CreatePopoverForQuantityHeader('col divQuantityHeader', 'fa fa-pie-chart fa-lg', QuantityType.Needed);
+    // }
 
-    //TODO would like a separate 'class' for toggles
     //TODO should rename this to be clearer. Like 'createHeaderWithToggle' or something.
-    function CreatePopoverForQuantityHeader(divClass, iconClass, index)
+    function CreatePopoverForQuantityHeader(data)
     {
-        var buttonClear = CreateButtonWithIcon('buttonClear', 'btn btn-lg buttonClear', 'fa fa-lg fa-eraser');
+        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
-        var iconToggle = CreateNewElement('i', [ ['class',iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle('', iconToggle, [buttonClear], 'focus');
+        var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle(data.toggleClass, iconToggle, [buttonClear], 'focus');
         
         $(popoverToggle).on('shown.bs.popover', function() 
         {
             console.log("A Header Popover was shown");
             document.getElementById('buttonClear').addEventListener('click', function()
             {
-                GridManager.ClearButtonPressed(index);
+                GridManager.ClearButtonPressed(data.index);
             });
         });
 
-        var divWrapper = CreateNewElement('div', [ ['class',divClass] ], popoverToggle);
+        var divWrapper = CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
         // document.getElementById('headerRow').appendChild(divWrapper);
         row.appendChild(divWrapper);
     }

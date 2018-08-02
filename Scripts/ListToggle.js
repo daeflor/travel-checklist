@@ -1,7 +1,23 @@
 function ListToggle(listName, listId) 
 {
-    var wrapper = CreateNewElement('div', [ ['class','row divItemRow'] ]);
-    var nameButton;
+    var model = {
+        data : {
+            name : null,
+        },
+        GetName : function()
+        {
+            return this.data.name;
+        },
+        // SetName : function(name)
+        // {
+        //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
+        //     this.data.name = name;
+        // },
+    };
+    
+    var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
+    //var nameButton;
+    var toggle; //TODO this is hacky and TEMP, just to replace nameButton above, until a better solution is implemented
 
     var Settings = {
         wrapper: null,
@@ -14,8 +30,8 @@ function ListToggle(listName, listId)
     function SetupElements()
     {
         CreateNameWrapper();
-        CreateSettingsToggle();
-        CreateListSettingsView(listId, Settings, nameButton);
+        CreateNavigationButton();
+        CreateListSettingsView(listId, Settings, toggle);
             
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
@@ -28,32 +44,43 @@ function ListToggle(listName, listId)
 
     function CreateNameWrapper()
     {
-        //TODO I don't think ID will work here. Has to be index or need a new way of switching grids. Will become a problem once we start deleting lists
-        //TODO can we get rid of data-gridindex now?
-        nameButton = CreateNewElement('button', [ ['class','btn buttonItemName'], ['data-gridindex',listId] ]); 
-        nameButton.textContent = listName;
-        nameButton.addEventListener('click', function() {
-            GridManager.ListSelected(wrapper);
-        });        
+       //Create the name toggle that can be selected to open or close the settings view for the List Item
+        toggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'buttonListItem buttonListToggle', listName);
+        
+        //Create the div wrapper for the List Item Name 
+        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], toggle);
 
-        var nameWrapper = CreateNewElement('div', [ ['class','col-8 divItemName'] ], nameButton);
+        // //TODO I don't think ID will work here. Has to be index or need a new way of switching lists. Will become a problem once we start deleting lists
+        // //TODO can we get rid of data-gridindex now?
+        // nameButton = CreateNewElement('button', [ ['class','btn buttonItemName'], ['data-gridindex',listId] ]); 
+        // nameButton.textContent = listName;
+        // nameButton.addEventListener('click', function() {
+        //     GridManager.ListSelected(wrapper);
+        // });        
+
+        //var nameWrapper = CreateNewElement('div', [ ['class','col-8 divItemName'] ], nameButton);
         
         wrapper.appendChild(nameWrapper);
     }
 
-    function CreateSettingsToggle()
+    function CreateNavigationButton()
     {
-        var settingsToggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'btn', CreateNewElement('i', [['class','fa fa-cog']]));
+        var button = CreateButtonWithIcon({buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
 
-        var toggleWrapper = CreateNewElement('div', [ ['class','col-2'] ], settingsToggle);
+        button.addEventListener('click', function() 
+        {
+            GridManager.ListSelected(wrapper);
+        });    
 
-        wrapper.appendChild(toggleWrapper);
+        var buttonWrapper = CreateNewElement('div', [ ['class','col-2'] ], button);
+
+        wrapper.appendChild(buttonWrapper);
     }
 
     return { 
         GetName : function() 
         {
-            return nameButton.textContent;
+            return toggle.textContent;
         },
         GetElement : function() //TODO standardize these
         {
@@ -69,6 +96,11 @@ function ListToggle(listName, listId)
             {
                 element.hidden = true;
             }
+        },
+        ExpandSettings : function()
+        {
+            $(Settings.wrapper).collapse('show');
+            Settings.editNameTextarea.focus();
         }
     };
 }
