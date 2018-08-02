@@ -6,15 +6,22 @@ window.GridManager = function()
             homeHeader : null,
             listOfLists : null,
             listsWrapper : null,
+            newListRow : null,
+            newListItemRow : null,
+            listTitle : null,
         }, 
         AddElementsToDom : function(data)
         {
             var self = this;
 
+            //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
             self.elements.listHeader = document.getElementById('divListHeader');
             self.elements.homeHeader = document.getElementById('divHomeHeader');
-            self.elements.listOfLists = document.getElementById('divListOfLists'); //TODO this and the one below could probably be renamed for clarity
+            self.elements.listOfLists = document.getElementById('divListOfLists'); 
             self.elements.listsWrapper = document.getElementById('divLists');
+            self.elements.newListRow = document.getElementById('newListRow');
+            self.elements.newListItemRow = document.getElementById('newListItemRow');
+            self.elements.listTitle = document.getElementById('headerCurrentListName');
 
             self.elements.listHeader.appendChild(data.headerElement); //TODO These should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
         },
@@ -28,15 +35,14 @@ window.GridManager = function()
                     //Hide the List header when the Home screen (List of Lists) is displayed
                     self.elements.listHeader.hidden = true;
 
+                    //Hide the Lists wrapper when the Home screen (List of Lists) is displayed
+                    self.elements.listsWrapper.hidden = true;
+
                     //Show the Home header when the Home screen (List of Lists) is displayed
                     self.elements.homeHeader.hidden = false;
 
                     //Show the List of Lists when the Home screen is displayed
                     self.elements.listOfLists.hidden = false;
-
-                    //TODO this shouldn't be necessary if the row is moved into the lists div ('divLists')
-                    //Hide the New List Item row when the Home screen is displayed
-                    document.getElementById('newItemRow').hidden = true;
                 },
                 hideHomeScreen: function() 
                 {
@@ -49,21 +55,21 @@ window.GridManager = function()
                     //Show the List header when an individual List is displayed
                     self.elements.listHeader.hidden = false;
 
-                    //TODO this shouldn't be necessary if the row is moved into the lists div ('divLists')
-                    //Show the New List Item row when an individual List is displayed
-                    document.getElementById('newItemRow').hidden = false;
+                    //Show the Lists wrapper when an individual List is displayed
+                    self.elements.listsWrapper.hidden = false;
                 },
                 addList: function() 
                 {
-                    //Add the list to the DOM
-                    self.elements.listsWrapper.appendChild(parameter.listElement); //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
+                    //Add the List Toggle element to the DOM, inserted before the New List row
+                    self.elements.listOfLists.insertBefore(parameter.listToggleElement, self.elements.newListRow);
                     
-                    //Add the list toggle to the DOM
-                    self.elements.listOfLists.insertBefore(parameter.listToggleElement, document.getElementById('newListRow'));
+                    //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
+                    //Add the List element to the DOM, inserted before the New List Item row
+                    self.elements.listsWrapper.insertBefore(parameter.listElement, self.elements.newListItemRow);       
                 },
                 setListTitle: function() 
                 {
-                    document.getElementById('headerCurrentListName').textContent = parameter.listName;
+                    self.elements.listTitle.textContent = parameter.listName;
                 },
                 removeList: function() 
                 {
@@ -78,7 +84,7 @@ window.GridManager = function()
             viewCommands[command]();
         },
         Bind : function(event, callback)
-        {
+        { //TODO There are still a lot more things in GridManager that can be bound here
             var self = this;
 
             if (event === 'NavigateHome') 
@@ -107,9 +113,7 @@ window.GridManager = function()
     var lists = [];
     var activeList;
     var rowCounter = 0;
-    var listCounter = -1; //TODO this is super hacky and TEMP
-
-    //TODO idea for IDs: List0Item0, List1Item4, List2Item12, etc.
+    var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc.
 
     /** List & Button Setup **/
 
@@ -125,25 +129,8 @@ window.GridManager = function()
         view.Bind('AddList', AddNewList);
         view.Bind('AddRow', AddNewRow);
 
-        // SetupListHeader();
-
         LoadDataFromStorage();
-
-        // SetupInteractibles();
     }
-
-    // function SetupListHeader()
-    // {
-    //     var header = new Header(ListType.Travel);
-    //     document.getElementById('divListHeader').appendChild(header.GetElement());
-    // }
-
-    // function SetupInteractibles()
-    // {
-    //     document.getElementById('buttonAddList').onclick = AddNewList;
-    //     document.getElementById('buttonAddRow').onclick = AddNewRow;
-    //     document.getElementById('buttonHome').onclick = NavigateHome;
-    // }
 
     /** Storage Management **/
 
@@ -188,8 +175,9 @@ window.GridManager = function()
         for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
         {
             var list = new List({name:storageData[i][storedFormat.ListNameIndex], type:storageData[i][storedFormat.ListTypeIndex], id:GetNextListId()});
+            
+            //TODO Do Something with the Model here first
             view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-            //AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
 
             console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
             
@@ -257,21 +245,10 @@ window.GridManager = function()
         //TODO do something with the Model here, first
         view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
-        // AddListElementsToDOM(list.GetElement(), list.GetToggle().GetElement());
-
         list.GetToggle().ExpandSettings();
 
         SaveDataToStorage(); 
     }
-
-    // function AddListElementsToDOM(elementList, elementListToggle)
-    // {
-    //     //Add the list to the DOM
-    //     document.getElementById('lists').appendChild(elementList);
-        
-    //     //Add the list toggle to the DOM
-    //     document.getElementById('listOfLists').insertBefore(elementListToggle, document.getElementById('newListRow'));
-    // }
 
     function NavigateToList(indexToDisplay)
     {   
@@ -286,8 +263,8 @@ window.GridManager = function()
                 activeList = listToDisplay;
                 activeList.ToggleElementVisibility();  
 
+                //TODO do something with the Model here
                 view.Render('setListTitle', {listName:activeList.GetName()});
-                //UpdateListTitle(activeList.GetName());
             }
             else
             {
@@ -302,85 +279,43 @@ window.GridManager = function()
 
     function CloseListOfLists()
     {
+        //TODO move some of this to the View
+        //TODO And then eventually get rid of this function?
         //If there is any active settings view, close it
         GridManager.ToggleActiveSettingsView(null);
 
-        //TODO should have a separate section (View) that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
-
-        // //Hide the Home header when an individual List is displayed
-        // document.getElementById('divHomeHeader').hidden = true;
-
-        // //Hide the List of Lists when an individual List is displayed
-        // document.getElementById('listOfLists').hidden = true;
-        
-        // //Show the List header when an individual List is displayed
-        // document.getElementById('divListHeader').hidden = false;
-
-        view.Render('hideHomeScreen'); //TODO this should happen after updating the Model
-
-        //SetVisibilityOfNewItemRow(true); //TODO this is super hacky. Make it better.
+        //TODO Do something with the Model here
+        view.Render('hideHomeScreen'); 
     }
 
     function NavigateHome()
     {
+        //TODO move some of this to the View
         //If there is any active settings view, close it
         GridManager.ToggleActiveSettingsView(null);
 
-        console.log("Opening the List of Lists");
+        //TODO Do something with the Model here (e.g. update it)
+        view.Render('showHomeScreen'); 
 
-        //TODO should have a separate section that abstracts away the element IDs and has a getter with a check that they are valid (error handling). That way if the IDs change, this section does not have to be updated. 
-
-        // //Hide the List header when the Home screen (List of Lists) is displayed
-        // document.getElementById('divListHeader').hidden = true;
-
-        // //Show the Home header when the Home screen (List of Lists) is displayed
-        // document.getElementById('divHomeHeader').hidden = false;
-
-        // //Show the List of Lists when the Home screen is displayed
-        // document.getElementById('listOfLists').hidden = false;
-
-        view.Render('showHomeScreen'); //TODO this should happen after updating the Model
-
-        HideActiveList();
-    
-        //SetVisibilityOfNewItemRow(false); //TODO this is super hacky. Make it better.
+        HideActiveList();    
     }
 
     function HideActiveList()
     {
         if (activeList != null)
         {
-            if (activeList.GetType() != null)
-            {   
-                activeList.ToggleElementVisibility();
-                activeList = null;
+            activeList.ToggleElementVisibility();
+            //activeList = null;
 
-                console.log("The Active list was hidden");
-            }
-            else
-            {
-                console.log("ERROR: Tried to hide a list which has a ListType of null");
-            }
+            console.log("The Active list was hidden");
         }
         else
-            {
-                console.log("Tried to hide the Active List but there was none");
-            }
+        {
+            console.log("Tried to hide the Active List but there was none");
+        }
     }
 
     /** Experimental & In Progress **/
-
-    //TODO (maybe) split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
-        //It might not be necessary in this particular case because the name should already be stored in the ListItem itself. In this case ALL we're doing here is updating the UI
-    // function UpdateListTitle(name)
-    // {
-    //     document.getElementById('headerCurrentListName').textContent = name;
-    // }
-
-    // function SetVisibilityOfNewItemRow(enabled)
-    // {
-    //     document.getElementById('newItemRow').hidden = !enabled;
-    // }
 
     /** Public Functions **/
 
@@ -400,8 +335,7 @@ window.GridManager = function()
             {
                 //TODO Do something with the Model here, no?
                 view.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
-                // document.getElementById('divLists').removeChild(lists[index].GetElement());
-                // document.getElementById('divListOfLists').removeChild(listElementToRemove);
+
                 lists.splice(index, 1);
                 
                 console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
@@ -433,7 +367,7 @@ window.GridManager = function()
                 console.log("The active popover was told to hide");
             }
         },
-        ToggleActiveSettingsView : function(newSettingsView)
+        ToggleActiveSettingsView : function(newSettingsView) //TODO Part of this should be moved to View
         {     
             //If there is a Settings View currently active, hide it
             if (activeSettingsView != null)
@@ -472,7 +406,7 @@ window.GridManager = function()
             {
                 var index = $(elementListToggle).index();
                 
-                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index + ". Index of current Active List is: " + lists.indexOf(activeList));
+                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index);
                 
                 if (typeof(index) == "undefined")
                 {
