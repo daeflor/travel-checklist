@@ -1,6 +1,6 @@
 /** Element Creation **/
 
-//TODO could change child parameter to a list of children instead
+//TODO could change child parameter to a list of children instead. Rather, change to a single data param, and one of the properties is a list of children
 function CreateNewElement(elementName, attributes, child)
 {
     var element;
@@ -30,15 +30,28 @@ function CreateNewElement(elementName, attributes, child)
     }
 }
 
-//TODO could standardize this more so that it doesn't need to take an id, if possible?
-    //Maybe pass an options parameter
-function CreateButtonWithIcon(buttonId, buttonClass, iconClass)
+function CreateButtonWithIcon(data)
 {
-    return CreateNewElement(
-        'button', 
-        [ ['id',buttonId], ['class',buttonClass], ['type','button'] ], 
-        CreateNewElement('i', [['class',iconClass]])
-    );
+    var iconElement = document.createElement('i');
+
+    if (data.iconClass !== undefined)
+    {
+        iconElement.setAttribute('class', data.iconClass);
+    }
+
+    var buttonElement = CreateNewElement('button', [ ['type','button'] ], iconElement);
+
+    if (data.buttonId !== undefined)
+    {
+        buttonElement.setAttribute('id', data.buttonId);
+    }
+
+    if (data.buttonClass !== undefined)
+    {
+        buttonElement.setAttribute('class', data.buttonClass);
+    }
+
+    return buttonElement;
 }
 
 function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
@@ -74,6 +87,12 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
     return popoverToggle;
 }
 
+/**
+ * 
+ * @param {string} collapsibleId The id for the toggle element
+ * @param {string} toggleClass The class for the toggle element
+ * @param {*} toggleDisplay The string or object (element) that will be displayed in the toggle
+ */
 function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
 {
     var idReference = '#'.concat(collapsibleId);
@@ -91,20 +110,32 @@ function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDispla
     return toggle;
 }
 
-//TODO could standardize this more so that it doesn't need to take an id, if possible?
-    //Maybe pass an options parameter
-function CreateCollapsibleView(collapsibleId, collapsibleClass, collapsedChildren)
+function CreateCollapsibleView(data)
 {    
-    var divCard = CreateNewElement('div', [ ['class','row'] ]); //card card-body
-    for (var i = 0; i < collapsedChildren.length; i++)
+    var divCard = CreateNewElement('div', [ ['class', data.rowClass] ]); 
+    for (var i = 0; i < data.collapsedChildren.length; i++)
     {
-        divCard.appendChild(collapsedChildren[i]);
+        divCard.appendChild(data.collapsedChildren[i]);
     } 
 
-    return CreateNewElement('div', [ ['class',collapsibleClass], ['id',collapsibleId] ], divCard); 
+    var wrapperElement = CreateNewElement('div', null, divCard);
+
+    if (data.collapsibleId !== undefined)
+    {
+        wrapperElement.setAttribute('id', data.collapsibleId);
+    }
+
+    if (data.collapsibleClass !== undefined)
+    {
+        wrapperElement.setAttribute('class', data.collapsibleClass);
+    }
+
+    return wrapperElement;
 }
 
 /** Storage **/
+
+//TODO break this file up into different, more specific Utility files
 
 function SaveNameValuePairToLocalStorage(name, value)
 {
@@ -143,14 +174,14 @@ function CreateRowSettingsView(index, elements, nameButton)
 
 function CreateListSettingsView(index, elements, nameButton)
 {
-    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveListSettingsView);
+    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveSettingsView);
 }
 
 /**
  * Creates a Settings View
  * @param {number} index The Index
  * @param {array} elements The elements that are part of the view
- * @param {*} nameButton The button with the name string that also toggles the settings view
+ * @param {*} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
  * @param {string} parentType The type of parent ('row' or 'list')
  * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
  */
@@ -165,20 +196,23 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     /* Create Delete Button */
     elements.buttonDelete = CreateNewElement(
         'button', 
-        [ ['class','btn'], ['type','button'] ], 
+        [ ['type','button'] ], 
         CreateNewElement('i', [['class','fa fa-trash']])
     );
 
     /* Create Element Wrappers */
     var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
     var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
+    
+    var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
+
     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-    elements.wrapper  = CreateCollapsibleView('edit-'.concat(parentType).concat('-').concat(index), 'collapse container-fluid divSettingsWrapper', [divTextareaName, divButtonDelete]);
+    elements.wrapper  = CreateCollapsibleView({collapsibleId:'edit-'.concat(parentType).concat('-').concat(index), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
     /* Setup Listeners */
     $(elements.wrapper).on('show.bs.collapse', function() 
     {
-        toggleViewFunction(elements.wrapper); //GridManager.ToggleActiveSettingsView(Elements.settingsWrapper);
+        toggleViewFunction(elements.wrapper);
     });
 
     elements.editNameTextarea.addEventListener('keypress', function(e) 

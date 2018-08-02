@@ -18,6 +18,7 @@ Upcoming To-Do List:
     One potential problem with this is that it's difficult to reach that spot with one hand.
 
 Thoughts:
+- Create a file or section that is simply to abstract away DOM element IDs, names, etc.
 - Would it help to remove eventlisteners that aren't being used?
 - Could add the Pre-Travel 'To-Do' list to the Travel Checklist
 - ! Ability to sort by state (e.g. 'Completed' items at the bottom of the list).

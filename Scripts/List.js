@@ -1,10 +1,9 @@
-function Grid(listName, listType, listId)
+function List(data)
 {
     var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
-    //var name = listName; //TODO is it necessary to store these
-    var type = listType;
-    var toggle = new ListToggle(listName, listId);
+    var type = data.type; //TODO is it necessary to save these variables? (Maybe just store them in storage instead)
+    var toggle = new ListToggle(data.name, data.id);
 
     return { 
         GetElement : function()
@@ -14,7 +13,6 @@ function Grid(listName, listType, listId)
         GetName : function()
         {
             return toggle.GetName(); //TODO this is pretty janky
-            //return name;
         },
         GetType : function()
         {
@@ -59,7 +57,7 @@ function Grid(listName, listType, listId)
             {
                 rows.splice(index, 1);
                 element.removeChild(rowElementToRemove);
-                console.log("Removed row at index " + index + ". Number of Row Items in Grid's list is now: " + rows.length);
+                console.log("Removed row at index " + index + ". Number of Row Items in List's list is now: " + rows.length);
             }
             else
             {

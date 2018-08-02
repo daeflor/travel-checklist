@@ -14,7 +14,7 @@
   <script src='Libraries/bootstrap.min.js'></script>
   <script src='Scripts/GridManager.js'></script>
   <script src='Scripts/Header.js'></script>
-  <script src='Scripts/Grid.js'></script>
+  <script src='Scripts/List.js'></script>
   <script src='Scripts/ListToggle.js'></script>
   <script src='Scripts/ListItems/ListItem.js'></script>
   <script src='Scripts/ListItems/ListItemName.js'></script>
@@ -35,38 +35,37 @@
 -->
 </head>
 <body>      
-  <div class="container-fluid"> 
+  <div class='container-fluid'> 
     
-    <div class="row" id="headerRow">
+    <div class='row divHeader' id='divHomeHeader'>
+      TraveLists
+    </div>
 
-      <button class='col-5 container collapsed' id='buttonSwitchLists' type='button' data-toggle='collapse' data-target='#listOfLists'> 
-        <div class='row'>
-          <div class='col' id='headerCurrentListName'>All Lists</div>
-          <div class='col-4'>
-            <i class='btn fa fa-exchange fa-lg' id='iconExchange'></i>
-          </div>
-        </div>
-      </button>  
-      
+    <!-- TODO The div list header could have a stronger color and a shadow/outset bottom border, and could be left aligned, with a different font -->
+    <div class='row divHeader' id='divListHeader' hidden='true'>
+      <div class='col-1 divSmallPadding'>
+        <button id='buttonHome' type='button'> 
+              <i class='fa fa-home'></i>
+        </button>  
+      </div>
+      <div class='col-4' id='headerCurrentListName'></div>
     </div>
 
   </div>
 
-  <!-- TODO Do we really want the List of Lists to be collapsible? -->
-  <div class='container-fluid collapse' id='listOfLists'>
+  <div id='listOfLists'>
       
-    <div class='newRow row' id='newListRow'>
-        <button class='btn' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
+    <div class='newRow' id='newListRow'>
+        <button id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
     </div>
 
   </div>
 
   <div id='lists'>
-
   </div>
 
   <div class='newRow' id='newItemRow' hidden='true'>
-    <button class='btn' id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
+    <button id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
   </div>
   
 </body>
