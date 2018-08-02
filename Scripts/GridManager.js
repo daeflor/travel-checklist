@@ -375,12 +375,31 @@ window.GridManager = function()
 }();
 
 //TODO Consider moving this to a separate file?
-//TODO expand this to also contain class data for the headers
 var QuantityType = {
-    Needed: 0,
-    Luggage: 1,
-    Wearing: 2,
-    Backpack: 3,
+    Needed: {
+        index: 0,
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-pie-chart fa-lg iconQuantityHeader'
+    },
+    Luggage: {
+        index: 1,
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-suitcase fa-lg iconQuantityHeader'
+    },
+    Wearing: {
+        index: 2,
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-male fa-lg iconQuantityHeader'
+    },
+    Backpack: {
+        index: 3,
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
+        iconClass: 'fa fa-briefcase iconQuantityHeader'
+    },
 };
 
 var ListType = {

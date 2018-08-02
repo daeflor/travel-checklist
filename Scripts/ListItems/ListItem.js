@@ -25,12 +25,12 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         },
         GetQuantityNeeded : function()
         {
-            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed].GetValue());
-            return this.data.modifiers[QuantityType.Needed].GetValue();
+            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed.index].GetValue());
+            return this.data.modifiers[QuantityType.Needed.index].GetValue();
         },
         GetQuantityBalance : function()
         {
-            return (this.data.modifiers[QuantityType.Needed].GetValue() - this.data.modifiers[QuantityType.Luggage].GetValue() - this.data.modifiers[QuantityType.Wearing].GetValue() - this.data.modifiers[QuantityType.Backpack].GetValue());
+            return (this.data.modifiers[QuantityType.Needed.index].GetValue() - this.data.modifiers[QuantityType.Luggage.index].GetValue() - this.data.modifiers[QuantityType.Wearing.index].GetValue() - this.data.modifiers[QuantityType.Backpack.index].GetValue());
         },
     };
 
@@ -132,10 +132,10 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         {
             return [
                 model.GetData().name.GetValue(), 
-                model.GetData().modifiers[QuantityType.Needed].GetValue(), 
-                model.GetData().modifiers[QuantityType.Luggage].GetValue(), 
-                model.GetData().modifiers[QuantityType.Wearing].GetValue(), 
-                model.GetData().modifiers[QuantityType.Backpack].GetValue()
+                model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
             ];
         },
         ClearQuantityValue : function(quantityIndex)
