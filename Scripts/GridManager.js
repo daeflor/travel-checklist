@@ -267,9 +267,6 @@ window.GridManager = function()
 
             //TODO move some (much) of this to the View
 
-            //If there is any active settings view, close it
-            GridManager.ToggleActiveSettingsView(null);
-
             if (listToDisplay != activeList)
             {
                 //If there was a previous Active List, hide it
@@ -294,6 +291,9 @@ window.GridManager = function()
                 console.log("Navigating to the list which was already Active");
             }
 
+            //If there is any active settings view, close it
+            GridManager.ToggleActiveSettingsView(null);
+
             //Display the List Screen
             view.Render('showListScreen'); 
         }
@@ -302,20 +302,6 @@ window.GridManager = function()
             console.log("ERROR: Tried to switch to a list which doesn't exist");
         }
     }
-
-    // function CloseHomeScreen()
-    // {
-    //     //TODO Move this into functon above, and also probably merge the View calls.
-
-    //     //TODO move some of this to the View
-    //     //TODO And then eventually get rid of this function?
-        
-    //     //If there is any active settings view, close it
-    //     GridManager.ToggleActiveSettingsView(null);
-
-    //     //TODO Do something with the Model here
-    //     view.Render('hideHomeScreen'); 
-    // }
 
     function NavigateHome()
     {
@@ -330,21 +316,6 @@ window.GridManager = function()
 
         //HideActiveList();    
     }
-
-    // function HideActiveList()
-    // {
-    //     if (activeList != null)
-    //     {
-    //         activeList.ToggleElementVisibility();
-    //         //activeList = null;
-
-    //         console.log("The Active list was hidden");
-    //     }
-    //     else
-    //     {
-    //         console.log("Tried to hide the Active List but there was none");
-    //     }
-    // }
 
     /** Experimental & In Progress **/
 
@@ -449,7 +420,7 @@ window.GridManager = function()
             }
             else
             {
-                var index = $(elementListToggle).index();
+                var index = $(elementListToggle).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
                 
                 console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index);
                 
