@@ -100,7 +100,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
     
-        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle());
+        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle(), SettingsViewExpanded);
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
@@ -118,6 +118,12 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         console.log("A modifier value was changed");
         view.Update(model);
         GridManager.GridModified();
+    }
+
+    function SettingsViewExpanded()
+    {
+        console.log("A Settings View has been expanded.");
+        view.GetWrapper().scrollIntoView(true);
     }
 
     /** Experimental & In Progress **/
@@ -146,15 +152,19 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
+            //Manually trigger the Settings View to begin expanding
             $(model.GetData().settings.wrapper).collapse('show');
 
-            //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
-            $(model.GetData().settings.wrapper).on('shown.bs.collapse', function() 
-            {
-                console.log("A Settings View has been expanded.");
-                model.GetData().settings.editNameTextarea.focus();
-                view.GetWrapper().scrollIntoView(true);
-            });               
+            //Bring focus to the Text Area to edit the List Item name
+            model.GetData().settings.editNameTextarea.focus();
+
+            // //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
+            // $(model.GetData().settings.wrapper).on('shown.bs.collapse', function() 
+            // {
+            //     console.log("A Settings View has been expanded.");
+            //     model.GetData().settings.editNameTextarea.focus();
+            //     // view.GetWrapper().scrollIntoView(true);
+            // });               
         }
     };
 }

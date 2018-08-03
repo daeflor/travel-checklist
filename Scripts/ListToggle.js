@@ -31,7 +31,7 @@ function ListToggle(listName, listId)
     {
         CreateNameWrapper();
         CreateNavigationButton();
-        CreateListSettingsView(listId, Settings, toggle);
+        CreateListSettingsView(listId, Settings, toggle, SettingsViewExpanded);
             
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
@@ -77,6 +77,12 @@ function ListToggle(listName, listId)
         wrapper.appendChild(buttonWrapper);
     }
 
+    function SettingsViewExpanded()
+    {
+        console.log("A Settings View has been expanded.");
+        wrapper.scrollIntoView(true);
+    }
+
     return { 
         GetName : function() 
         {
@@ -97,17 +103,20 @@ function ListToggle(listName, listId)
                 element.hidden = true;
             }
         },
-        ExpandSettings : function(callback) //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
+        ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
+            //Manually trigger the Settings View to begin expanding
             $(Settings.wrapper).collapse('show');
 
+            //Bring focus to the Text Area to edit the List name
+            Settings.editNameTextarea.focus();
+
             //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
-            $(Settings.wrapper).on('shown.bs.collapse', function() 
-            {
-                console.log("A Settings View has been expanded.");
-                Settings.editNameTextarea.focus();
-                wrapper.scrollIntoView(true);
-            });    
+            //TODO Another problem here is that in a session, NEW rows added will auto focus when expand settings any time, not just the first time. But old/existing rows (loaded from storage) don't have this listener attached. 
+            // $(Settings.wrapper).on('shown.bs.collapse', function() 
+            // {
+
+            // });    
         }
     };
 }

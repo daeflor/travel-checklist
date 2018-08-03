@@ -167,25 +167,25 @@ function LoadValueFromLocalStorage(name)
 
 //TODO I think these should move back to the ListItem (possibly part of the 'vewcontroller')
 
-function CreateRowSettingsView(index, elements, nameButton)
+function CreateRowSettingsView(index, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'row', GridManager.ToggleActiveSettingsView);
+    CreateSettingsView(index, elements, nameButton, 'row', GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
-function CreateListSettingsView(index, elements, nameButton)
+function CreateListSettingsView(index, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveSettingsView);
+    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
 /**
  * Creates a Settings View
  * @param {number} index The Index
- * @param {array} elements The elements that are part of the view
+ * @param {array} elements The elements that are part of the Settings View
  * @param {*} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
  * @param {string} parentType The type of parent ('row' or 'list')
  * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
  */
-function CreateSettingsView(index, elements, nameButton, parentType, toggleViewFunction)
+function CreateSettingsView(index, elements, nameButton, parentType, toggleViewFunction, viewExpandedCallback)
 {
     //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 
@@ -210,9 +210,17 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     elements.wrapper  = CreateCollapsibleView({collapsibleId:'edit-'.concat(parentType).concat('-').concat(index), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
     /* Setup Listeners */
+
+    //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
     $(elements.wrapper).on('show.bs.collapse', function() 
     {
         toggleViewFunction(elements.wrapper);
+    });
+
+    //When the animation to expand the Settings View ends, scroll the Settings View into view
+    $(elements.wrapper).on('shown.bs.collapse', function() 
+    {
+        viewExpandedCallback();
     });
 
     elements.editNameTextarea.addEventListener('keypress', function(e) 
