@@ -1,19 +1,19 @@
 function ListToggle(listName, listId) 
 {
-    var model = {
-        data : {
-            name : null,
-        },
-        GetName : function()
-        {
-            return this.data.name;
-        },
-        // SetName : function(name)
-        // {
-        //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
-        //     this.data.name = name;
-        // },
-    };
+    // var model = {
+    //     data : {
+    //         name : null,
+    //     },
+    //     GetName : function()
+    //     {
+    //         return this.data.name;
+    //     },
+    //     // SetName : function(name)
+    //     // {
+    //     //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
+    //     //     this.data.name = name;
+    //     // },
+    // };
     
     var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
     //var nameButton;
@@ -97,10 +97,17 @@ function ListToggle(listName, listId)
                 element.hidden = true;
             }
         },
-        ExpandSettings : function()
+        ExpandSettings : function(callback) //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
             $(Settings.wrapper).collapse('show');
-            Settings.editNameTextarea.focus();
+
+            //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
+            $(Settings.wrapper).on('shown.bs.collapse', function() 
+            {
+                console.log("A Settings View has been expanded.");
+                Settings.editNameTextarea.focus();
+                wrapper.scrollIntoView(true);
+            });    
         }
     };
 }

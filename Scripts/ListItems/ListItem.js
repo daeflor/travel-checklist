@@ -2,12 +2,13 @@ function ListItemData()
 {
     this.name = null;
     this.modifiers = [];
-    this.settings = {
+    this.settings = { //TODO this should not be in the Model
          wrapper: null, 
          editNameTextarea: null,
          buttonDelete: null,
     };
 }
+
 function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
@@ -143,10 +144,17 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             model.GetData().modifiers[quantityIndex].SetValue(0);
             view.Update(model);
         },
-        ExpandSettings : function()
+        ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
             $(model.GetData().settings.wrapper).collapse('show');
-            model.GetData().settings.editNameTextarea.focus();
+
+            //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
+            $(model.GetData().settings.wrapper).on('shown.bs.collapse', function() 
+            {
+                console.log("A Settings View has been expanded.");
+                model.GetData().settings.editNameTextarea.focus();
+                view.GetWrapper().scrollIntoView(true);
+            });               
         }
     };
 }

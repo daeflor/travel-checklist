@@ -8,7 +8,7 @@ window.GridManager = function()
             listsWrapper : null,
             listTitle : null,
         }, 
-        AddElementsToDom : function(data)
+        AddElementsToDom : function(data) //TODO should rename this
         {
             var self = this;
 
@@ -112,7 +112,7 @@ window.GridManager = function()
     document.addEventListener('DOMContentLoaded', Setup);
 
     var activePopover = null; //TODO should there be a separate popover manager? 
-    var activeSettingsView = null;
+    var activeSettingsView = null; //TODO could this be moved into the View? 
     var lists = [];
     var activeList;
     var rowCounter = 0;
@@ -252,7 +252,10 @@ window.GridManager = function()
         //TODO do something with the Model here, first
         view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
-        list.GetToggle().ExpandSettings(); //TODO maybe also scroll to the list settings view, in case it's at the bottom of the screen and pops in out of view. 
+        list.GetToggle().ExpandSettings(); 
+        
+        // document.getElementById('divHomeScreenListElements').scrollTop = document.getElementById('divHomeScreenListElements').scrollHeight + 100;
+        // console.log("ScrollHeight: " + document.getElementById('divHomeScreenListElements').scrollHeight);
 
         SaveDataToStorage(); 
     }
