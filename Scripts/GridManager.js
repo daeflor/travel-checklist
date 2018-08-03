@@ -6,8 +6,6 @@ window.GridManager = function()
             homeHeader : null,
             homeScreen : null,
             listsWrapper : null,
-            // newListRow : null,
-            // newListItemRow : null,
             listTitle : null,
         }, 
         AddElementsToDom : function(data)
@@ -20,14 +18,12 @@ window.GridManager = function()
             self.elements.homeHeader = document.getElementById('divHomeHeader');
             self.elements.homeScreen = document.getElementById('divHomeScreen'); 
             self.elements.homeScreenListElements = document.getElementById('divHomeScreenListElements'); 
-            // self.elements.newListRow = document.getElementById('newListRow');
 
             //Assign the List Screen elements
             self.elements.listHeader = document.getElementById('divListHeader');
             self.elements.listTitle = document.getElementById('headerCurrentListName');
             self.elements.listScreen = document.getElementById('divListScreen'); 
             self.elements.listScreenListElements = document.getElementById('divListScreenListElements');
-            // self.elements.newListItemRow = document.getElementById('newListItemRow');
             
             self.elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
         },
@@ -44,16 +40,13 @@ window.GridManager = function()
                     //Hide the List Screen
                     self.elements.listScreen.hidden = true;
 
-                    //Hide the Lists wrapper when the Home screen (List of Lists) is displayed
-                    // self.elements.listsWrapper.hidden = true;
-
                     //Show the Home Header
                     self.elements.homeHeader.hidden = false;
 
                     //Show the Home Screen
                     self.elements.homeScreen.hidden = false;
                 },
-                hideHomeScreen: function() 
+                showListScreen: function() 
                 {
                     //Hide the Home Header when an individual List is displayed
                     self.elements.homeHeader.hidden = true;
@@ -66,20 +59,15 @@ window.GridManager = function()
 
                     //Show the List Screen when an individual List is displayed
                     self.elements.listScreen.hidden = false;
-
-                    //Show the Lists wrapper when an individual List is displayed
-                    // self.elements.listsWrapper.hidden = false;
                 },
                 addList: function() 
                 {
                     //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                     self.elements.homeScreenListElements.appendChild(parameter.listToggleElement);
-                    // self.elements.homeScreen.insertBefore(parameter.listToggleElement, self.elements.newListRow);
                     
                     //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                     //Add the List element to the DOM, under the List Screen List Elements div
                     self.elements.listScreenListElements.appendChild(parameter.listElement);
-                    // self.elements.listsWrapper.insertBefore(parameter.listElement, self.elements.newListItemRow);       
                 },
                 setListTitle: function() 
                 {
@@ -204,6 +192,10 @@ window.GridManager = function()
                     console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
                     list.AddRow(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
                 }
+                else if (list.GetType() == null)
+                {
+                    console.log("ERROR: Tried to load a List with a ListType of null from storage");
+                }
             }
 
             lists.push(list);
@@ -271,67 +263,88 @@ window.GridManager = function()
         
         if (indexToDisplay < lists.length)
         {
-            //TODO can some of this be avoided if the List to Display is already the Active List?
             var listToDisplay = lists[indexToDisplay];
 
-            if (listToDisplay.GetType() != null)
+            //TODO move some (much) of this to the View
+
+            //If there is any active settings view, close it
+            GridManager.ToggleActiveSettingsView(null);
+
+            if (listToDisplay != activeList)
             {
+                //If there was a previous Active List, hide it
+                if (activeList != null)
+                {
+                    activeList.ToggleElementVisibility();
+                }
+
+                //Set the selected List as Active
                 activeList = listToDisplay;
+
+                //Display the selected List
                 activeList.ToggleElementVisibility();  
 
                 //TODO do something with the Model here
+
+                //Udate the List Title text
                 view.Render('setListTitle', {listName:activeList.GetName()});
             }
             else
             {
-                console.log("ERROR: Tried to switch to a list which has a ListType of null");
+                console.log("Navigating to the list which was already Active");
             }
+
+            //Display the List Screen
+            view.Render('showListScreen'); 
         }
         else
         {
-            console.log("ERROR: Tried to switch to a grid which doesn't exist");
+            console.log("ERROR: Tried to switch to a list which doesn't exist");
         }
     }
 
-    function CloseHomeScreen()
-    {
-        //TODO Move this into functon above, and also probably merge the View calls.
+    // function CloseHomeScreen()
+    // {
+    //     //TODO Move this into functon above, and also probably merge the View calls.
 
-        //TODO move some of this to the View
-        //TODO And then eventually get rid of this function?
-        //If there is any active settings view, close it
-        GridManager.ToggleActiveSettingsView(null);
+    //     //TODO move some of this to the View
+    //     //TODO And then eventually get rid of this function?
+        
+    //     //If there is any active settings view, close it
+    //     GridManager.ToggleActiveSettingsView(null);
 
-        //TODO Do something with the Model here
-        view.Render('hideHomeScreen'); 
-    }
+    //     //TODO Do something with the Model here
+    //     view.Render('hideHomeScreen'); 
+    // }
 
     function NavigateHome()
     {
         //TODO move some of this to the View
+
         //If there is any active settings view, close it
         GridManager.ToggleActiveSettingsView(null);
 
         //TODO Do something with the Model here (e.g. update it)
         view.Render('showHomeScreen'); 
+        //TODO can hiding the Active settings view be part of showing the home screen?
 
-        HideActiveList();    
+        //HideActiveList();    
     }
 
-    function HideActiveList()
-    {
-        if (activeList != null)
-        {
-            activeList.ToggleElementVisibility();
-            //activeList = null;
+    // function HideActiveList()
+    // {
+    //     if (activeList != null)
+    //     {
+    //         activeList.ToggleElementVisibility();
+    //         //activeList = null;
 
-            console.log("The Active list was hidden");
-        }
-        else
-        {
-            console.log("Tried to hide the Active List but there was none");
-        }
-    }
+    //         console.log("The Active list was hidden");
+    //     }
+    //     else
+    //     {
+    //         console.log("Tried to hide the Active List but there was none");
+    //     }
+    // }
 
     /** Experimental & In Progress **/
 
@@ -340,8 +353,15 @@ window.GridManager = function()
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
         RemoveRow : function(rowElementToRemove)
         {        
-            activeList.RemoveRow(rowElementToRemove);
-            SaveDataToStorage();
+            if (activeList != null)
+            {
+                activeList.RemoveRow(rowElementToRemove);
+                SaveDataToStorage(); 
+            }
+            else
+            {
+                console.log("ERROR: Tried to remove a row from the Active List, which doesn't exist");
+            }
         },
         RemoveList : function(listElementToRemove)
         {        
@@ -410,9 +430,16 @@ window.GridManager = function()
         },
         ClearButtonPressed : function(columnIndex)
         {
-            console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
-            activeList.ClearQuantityColumnValues(columnIndex);
-            SaveDataToStorage();
+            if (activeList != null)
+            {
+                console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
+                activeList.ClearQuantityColumnValues(columnIndex);
+                SaveDataToStorage();
+            }
+            else
+            {
+                console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
+            }
         },
         ListSelected : function(elementListToggle)
         {   
@@ -433,7 +460,7 @@ window.GridManager = function()
                 else
                 {
                     NavigateToList(index);
-                    CloseHomeScreen();
+                    //CloseHomeScreen();
                 }
             }
         }
