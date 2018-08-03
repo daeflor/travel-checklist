@@ -41,6 +41,7 @@
       TraveLists
     </div>
 
+    <!--TODO Perhaps move the headers into the screen sections, below-->
     <div class='row divHeader' id='divListHeader' hidden='true'>
       <div class='col-1 divSmallPadding'>
         <button id='buttonHome' type='button'> 
@@ -52,20 +53,21 @@
 
   </div>
 
-  <div id='divListOfLists'>
-      
+  <div id='divHomeScreen'>
+    <div class='divListElements' id='divHomeScreenListElements'>
+    </div>
     <div class='newRow' id='newListRow'>
-        <button id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
+        <button class='buttonAddListItem' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>                  
     </div>
-
   </div>
 
-  <div id='divLists' hidden='true'>
-
+  <div id='divListScreen' hidden='true'>
+    <div class='divListElements' id='divListScreenListElements'>
+    </div>
     <div class='newRow' id='newListItemRow'>
-      <button id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
+        <button class='buttonAddListItem' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
     </div>
-  </div>
+  </div>  
   
 </body>
 </html>

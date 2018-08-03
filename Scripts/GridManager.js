@@ -4,10 +4,10 @@ window.GridManager = function()
         elements: {  
             listHeader : null,
             homeHeader : null,
-            listOfLists : null,
+            homeScreen : null,
             listsWrapper : null,
-            newListRow : null,
-            newListItemRow : null,
+            // newListRow : null,
+            // newListItemRow : null,
             listTitle : null,
         }, 
         AddElementsToDom : function(data)
@@ -15,15 +15,21 @@ window.GridManager = function()
             var self = this;
 
             //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
-            self.elements.listHeader = document.getElementById('divListHeader');
+            
+            //Assign the Home Screen elements
             self.elements.homeHeader = document.getElementById('divHomeHeader');
-            self.elements.listOfLists = document.getElementById('divListOfLists'); 
-            self.elements.listsWrapper = document.getElementById('divLists');
-            self.elements.newListRow = document.getElementById('newListRow');
-            self.elements.newListItemRow = document.getElementById('newListItemRow');
-            self.elements.listTitle = document.getElementById('headerCurrentListName');
+            self.elements.homeScreen = document.getElementById('divHomeScreen'); 
+            self.elements.homeScreenListElements = document.getElementById('divHomeScreenListElements'); 
+            // self.elements.newListRow = document.getElementById('newListRow');
 
-            self.elements.listHeader.appendChild(data.headerElement); //TODO These should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
+            //Assign the List Screen elements
+            self.elements.listHeader = document.getElementById('divListHeader');
+            self.elements.listTitle = document.getElementById('headerCurrentListName');
+            self.elements.listScreen = document.getElementById('divListScreen'); 
+            self.elements.listScreenListElements = document.getElementById('divListScreenListElements');
+            // self.elements.newListItemRow = document.getElementById('newListItemRow');
+            
+            self.elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
         },
         Render : function(command, parameter)
         {
@@ -32,52 +38,61 @@ window.GridManager = function()
             var viewCommands = {
                 showHomeScreen: function() 
                 {
-                    //Hide the List header when the Home screen (List of Lists) is displayed
+                    //Hide the List Header
                     self.elements.listHeader.hidden = true;
 
-                    //Hide the Lists wrapper when the Home screen (List of Lists) is displayed
-                    self.elements.listsWrapper.hidden = true;
+                    //Hide the List Screen
+                    self.elements.listScreen.hidden = true;
 
-                    //Show the Home header when the Home screen (List of Lists) is displayed
+                    //Hide the Lists wrapper when the Home screen (List of Lists) is displayed
+                    // self.elements.listsWrapper.hidden = true;
+
+                    //Show the Home Header
                     self.elements.homeHeader.hidden = false;
 
-                    //Show the List of Lists when the Home screen is displayed
-                    self.elements.listOfLists.hidden = false;
+                    //Show the Home Screen
+                    self.elements.homeScreen.hidden = false;
                 },
                 hideHomeScreen: function() 
                 {
-                    //Hide the Home header when an individual List is displayed
+                    //Hide the Home Header when an individual List is displayed
                     self.elements.homeHeader.hidden = true;
 
-                    //Hide the List of Lists when an individual List is displayed
-                    self.elements.listOfLists.hidden = true;
+                    //Hide the Home Screen when an individual List is displayed
+                    self.elements.homeScreen.hidden = true;
                     
-                    //Show the List header when an individual List is displayed
+                    //Show the List Header when an individual List is displayed
                     self.elements.listHeader.hidden = false;
 
+                    //Show the List Screen when an individual List is displayed
+                    self.elements.listScreen.hidden = false;
+
                     //Show the Lists wrapper when an individual List is displayed
-                    self.elements.listsWrapper.hidden = false;
+                    // self.elements.listsWrapper.hidden = false;
                 },
                 addList: function() 
                 {
-                    //Add the List Toggle element to the DOM, inserted before the New List row
-                    self.elements.listOfLists.insertBefore(parameter.listToggleElement, self.elements.newListRow);
+                    //Add the List Toggle element to the DOM, under the Home Screen List Elements div
+                    self.elements.homeScreenListElements.appendChild(parameter.listToggleElement);
+                    // self.elements.homeScreen.insertBefore(parameter.listToggleElement, self.elements.newListRow);
                     
                     //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
-                    //Add the List element to the DOM, inserted before the New List Item row
-                    self.elements.listsWrapper.insertBefore(parameter.listElement, self.elements.newListItemRow);       
+                    //Add the List element to the DOM, under the List Screen List Elements div
+                    self.elements.listScreenListElements.appendChild(parameter.listElement);
+                    // self.elements.listsWrapper.insertBefore(parameter.listElement, self.elements.newListItemRow);       
                 },
                 setListTitle: function() 
                 {
+                    //Set the List title
                     self.elements.listTitle.textContent = parameter.listName;
                 },
                 removeList: function() 
                 {
                     //Remove the List element from the Lists wrapper
-                    self.elements.listsWrapper.removeChild(parameter.listElement);
+                    self.elements.listScreenListElements.removeChild(parameter.listElement);
 
                     //Remove the List Toggle element from the Lists of Lists wrapper
-                    self.elements.listOfLists.removeChild(parameter.listToggleElement);
+                    self.elements.homeScreenListElements.removeChild(parameter.listToggleElement);
                 },
             };
 
@@ -245,7 +260,7 @@ window.GridManager = function()
         //TODO do something with the Model here, first
         view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
-        list.GetToggle().ExpandSettings();
+        list.GetToggle().ExpandSettings(); //TODO maybe also scroll to the list settings view, in case it's at the bottom of the screen and pops in out of view. 
 
         SaveDataToStorage(); 
     }
@@ -256,6 +271,7 @@ window.GridManager = function()
         
         if (indexToDisplay < lists.length)
         {
+            //TODO can some of this be avoided if the List to Display is already the Active List?
             var listToDisplay = lists[indexToDisplay];
 
             if (listToDisplay.GetType() != null)
@@ -277,8 +293,10 @@ window.GridManager = function()
         }
     }
 
-    function CloseListOfLists()
+    function CloseHomeScreen()
     {
+        //TODO Move this into functon above, and also probably merge the View calls.
+
         //TODO move some of this to the View
         //TODO And then eventually get rid of this function?
         //If there is any active settings view, close it
@@ -415,7 +433,7 @@ window.GridManager = function()
                 else
                 {
                     NavigateToList(index);
-                    CloseListOfLists();
+                    CloseHomeScreen();
                 }
             }
         }
@@ -428,25 +446,25 @@ var QuantityType = {
         index: 0,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-pie-chart fa-lg iconQuantityHeader'
+        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
     },
     Luggage: {
         index: 1,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-suitcase fa-lg iconQuantityHeader'
+        iconClass: 'fa fa-suitcase fa-lg iconHeader'
     },
     Wearing: {
         index: 2,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-male fa-lg iconQuantityHeader'
+        iconClass: 'fa fa-male fa-lg iconHeader'
     },
     Backpack: {
         index: 3,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader toggleSmallIcon',
-        iconClass: 'fa fa-briefcase iconQuantityHeader'
+        iconClass: 'fa fa-briefcase iconHeader'
     },
 };
 
