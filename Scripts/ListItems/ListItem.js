@@ -156,15 +156,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             $(model.GetData().settings.wrapper).collapse('show');
 
             //Bring focus to the Text Area to edit the List Item name
-            model.GetData().settings.editNameTextarea.focus();
-
-            // //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
-            // $(model.GetData().settings.wrapper).on('shown.bs.collapse', function() 
-            // {
-            //     console.log("A Settings View has been expanded.");
-            //     model.GetData().settings.editNameTextarea.focus();
-            //     // view.GetWrapper().scrollIntoView(true);
-            // });               
+            model.GetData().settings.editNameTextarea.focus();         
         }
     };
 }

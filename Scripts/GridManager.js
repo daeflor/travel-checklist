@@ -253,10 +253,7 @@ window.GridManager = function()
         view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
         list.GetToggle().ExpandSettings(); 
-        
-        // document.getElementById('divHomeScreenListElements').scrollTop = document.getElementById('divHomeScreenListElements').scrollHeight + 100;
-        // console.log("ScrollHeight: " + document.getElementById('divHomeScreenListElements').scrollHeight);
-
+  
         SaveDataToStorage(); 
     }
 

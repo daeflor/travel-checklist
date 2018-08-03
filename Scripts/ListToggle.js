@@ -110,13 +110,6 @@ function ListToggle(listName, listId)
 
             //Bring focus to the Text Area to edit the List name
             Settings.editNameTextarea.focus();
-
-            //TODO should get this same functionality working for existing rows/settings views, not just new ones. (i.e. if you open a Settins View and the bottom of the screen, it should scroll)
-            //TODO Another problem here is that in a session, NEW rows added will auto focus when expand settings any time, not just the first time. But old/existing rows (loaded from storage) don't have this listener attached. 
-            // $(Settings.wrapper).on('shown.bs.collapse', function() 
-            // {
-
-            // });    
         }
     };
 }
