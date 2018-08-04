@@ -30,7 +30,7 @@ function Header(listType)
             console.log("A Header Popover was shown");
             document.getElementById('buttonClear').addEventListener('click', function()
             {
-                GridManager.ClearButtonPressed(data.index);
+                window.GridManager.ClearButtonPressed(data.index);
             });
         });
 

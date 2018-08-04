@@ -1,113 +1,5 @@
-window.GridManager = function()
+window.GridManager = (function()
 {
-    var view = {
-        elements: {  
-            listHeader : null,
-            homeHeader : null,
-            homeScreen : null,
-            listsWrapper : null,
-            listTitle : null,
-        }, 
-        AddElementsToDom : function(data) //TODO should rename this
-        {
-            var self = this;
-
-            //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
-            
-            //Assign the Home Screen elements
-            self.elements.homeHeader = document.getElementById('divHomeHeader');
-            self.elements.homeScreen = document.getElementById('divHomeScreen'); 
-            self.elements.homeScreenListElements = document.getElementById('divHomeScreenListElements'); 
-
-            //Assign the List Screen elements
-            self.elements.listHeader = document.getElementById('divListHeader');
-            self.elements.listTitle = document.getElementById('headerCurrentListName');
-            self.elements.listScreen = document.getElementById('divListScreen'); 
-            self.elements.listScreenListElements = document.getElementById('divListScreenListElements');
-            
-            self.elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
-        },
-        Render : function(command, parameter)
-        {
-            var self = this;
-
-            var viewCommands = {
-                showHomeScreen: function() 
-                {
-                    //Hide the List Header
-                    self.elements.listHeader.hidden = true;
-
-                    //Hide the List Screen
-                    self.elements.listScreen.hidden = true;
-
-                    //Show the Home Header
-                    self.elements.homeHeader.hidden = false;
-
-                    //Show the Home Screen
-                    self.elements.homeScreen.hidden = false;
-                },
-                showListScreen: function() 
-                {
-                    //Hide the Home Header when an individual List is displayed
-                    self.elements.homeHeader.hidden = true;
-
-                    //Hide the Home Screen when an individual List is displayed
-                    self.elements.homeScreen.hidden = true;
-                    
-                    //Show the List Header when an individual List is displayed
-                    self.elements.listHeader.hidden = false;
-
-                    //Show the List Screen when an individual List is displayed
-                    self.elements.listScreen.hidden = false;
-                },
-                addList: function() 
-                {
-                    //Add the List Toggle element to the DOM, under the Home Screen List Elements div
-                    self.elements.homeScreenListElements.appendChild(parameter.listToggleElement);
-                    
-                    //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
-                    //Add the List element to the DOM, under the List Screen List Elements div
-                    self.elements.listScreenListElements.appendChild(parameter.listElement);
-                },
-                setListTitle: function() 
-                {
-                    //Set the List title
-                    self.elements.listTitle.textContent = parameter.listName;
-                },
-                removeList: function() 
-                {
-                    //Remove the List element from the Lists wrapper
-                    self.elements.listScreenListElements.removeChild(parameter.listElement);
-
-                    //Remove the List Toggle element from the Lists of Lists wrapper
-                    self.elements.homeScreenListElements.removeChild(parameter.listToggleElement);
-                },
-            };
-
-            viewCommands[command]();
-        },
-        Bind : function(event, callback)
-        { //TODO There are still a lot more things in GridManager that can be bound here
-            var self = this;
-
-            if (event === 'NavigateHome') 
-            {
-                //Set the behavior for when the Home button is pressed
-                document.getElementById('buttonHome').addEventListener('click', callback);         
-            }
-            else if (event === 'AddList') 
-            {
-                //Set the behavior for when the Add List button is pressed
-                document.getElementById('buttonAddList').addEventListener('click', callback);         
-            }
-            else if (event === 'AddRow') 
-            {
-                //Set the behavior for when the Add Row button is pressed
-                document.getElementById('buttonAddRow').addEventListener('click', callback);         
-            }
-        },
-    };
-
     //Initiate Setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', Setup);
 
@@ -116,98 +8,11 @@ window.GridManager = function()
     var lists = [];
     var activeList;
     var rowCounter = 0;
-    var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc.
+    var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc. or instead could use GetDateTime().
 
-    /** List & Button Setup **/
-
-    function Setup()
-    {            
-        //Once the DOM content has loaded and Setup initiated, remove the event listener
-        document.removeEventListener('DOMContentLoaded', Setup);
-
-        var header = new Header(ListType.Travel);
-        view.AddElementsToDom({headerElement: header.GetElement()})
-
-        view.Bind('NavigateHome', NavigateHome);
-        view.Bind('AddList', AddNewList);
-        view.Bind('AddRow', AddNewRow);
-
-        LoadDataFromStorage();
-    }
-
-    /** Storage Management **/
-
-    //TODO should probably have a separate Storage Manager file
-
-    function LoadDataFromStorage()
-    {
-        var storageData = LoadValueFromLocalStorage('gridData');
-    
-        if (storageData != null)
-        {
-            console.log("Loaded from Local Storage: " + storageData);
-            ReloadListDataFromStorage(JSON.parse(storageData));        
-        }    
-        else
-        {
-            console.log("Could not find any list data saved in local storage.");
-        }
-    }
-
-    function ReloadListDataFromStorage(storageData)
-    {
-        var storedFormatVersion = storageData[0];
-        var storedFormat;
-
-        console.log("The parsed Format Version from storage data is: " + storedFormatVersion + ". The current Format Version is: " + CurrentStorageDataFormat.Version);        
-
-        if (storedFormatVersion == CurrentStorageDataFormat.Version)
-        {
-            storedFormat = CurrentStorageDataFormat;
-            console.log("The data in storage is in the current format.");            
-        }
-        else
-        {
-            storedFormat = PreviousStorageDataFormat;
-            console.log("The data in storage is in an old format. Parsing it using legacy code.")            
-        }
-
-        console.log("There are " + ((storageData.length) - storedFormat.FirstListIndex) + " lists saved in local storage.");
-        
-        //Traverse the data for all of the lists saved in local storage
-        for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
-        {
-            var list = new List({name:storageData[i][storedFormat.ListNameIndex], type:storageData[i][storedFormat.ListTypeIndex], id:GetNextListId()});
-            
-            //TODO Do Something with the Model here first
-            view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-
-            console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
-            
-            //Traverse all the rows belonging to the current list, in local storage
-            for (var j = storedFormat.FirstRowIndex; j < storageData[i].length; j++) 
-            {
-                if (list.GetType() == ListType.Travel)
-                {
-                    console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
-                    list.AddRow(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
-                }
-                else if (list.GetType() == null)
-                {
-                    console.log("ERROR: Tried to load a List with a ListType of null from storage");
-                }
-            }
-
-            lists.push(list);
-        }
-    }
+    /** Storage - TEMP **/ //TODO This is temp
 
     function SaveDataToStorage()
-    {
-        SaveNameValuePairToLocalStorage('gridData', JSON.stringify(GetDataForStorage()));
-    }
-
-    function GetDataForStorage()
     {
         var data = [];
 
@@ -219,16 +24,34 @@ window.GridManager = function()
             data.push(lists[i].GetDataForStorage());
         }
 
-        return data;
+        window.StorageManager.SaveDataToStorage(data);
+    }
+
+    /** List & Button Setup **/
+
+    function Setup()
+    {            
+        //Once the DOM content has loaded and Setup initiated, remove the event listener
+        document.removeEventListener('DOMContentLoaded', Setup);
+
+        var header = new Header(ListType.Travel);
+        window.View.Init();
+        window.View.AddHeaderToDom({headerElement: header.GetElement()})
+
+        window.View.Bind('NavigateHome', NavigateHome);
+        window.View.Bind('AddList', AddNewList);
+        window.View.Bind('AddRow', AddNewRow);
+
+        window.StorageManager.LoadDataFromStorage();
     }
 
     /** List Management **/
 
-    function GetNextListId()
-    {
-        listCounter++;
-        return listCounter;
-    }
+    // function GetNextListId()
+    // {
+    //     listCounter++;
+    //     return listCounter;
+    // }
 
     function AddNewRow()
     {
@@ -245,12 +68,12 @@ window.GridManager = function()
 
     function AddNewList()
     {
-        var list = new List({name:'', type:ListType.Travel, id:GetNextListId()});
+        var list = new List({name:'', type:ListType.Travel, id:window.GridManager.GetNextListId()});
         
         lists.push(list);
 
         //TODO do something with the Model here, first
-        view.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+        window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
         list.GetToggle().ExpandSettings(); 
   
@@ -284,7 +107,7 @@ window.GridManager = function()
                 //TODO do something with the Model here
 
                 //Udate the List Title text
-                view.Render('setListTitle', {listName:activeList.GetName()});
+                window.View.Render('setListTitle', {listName:activeList.GetName()});
             }
             else
             {
@@ -292,10 +115,10 @@ window.GridManager = function()
             }
 
             //If there is any active settings view, close it
-            GridManager.ToggleActiveSettingsView(null);
+            window.GridManager.ToggleActiveSettingsView(null);
 
             //Display the List Screen
-            view.Render('showListScreen'); 
+            window.View.Render('showListScreen'); 
         }
         else
         {
@@ -308,10 +131,10 @@ window.GridManager = function()
         //TODO move some of this to the View
 
         //If there is any active settings view, close it
-        GridManager.ToggleActiveSettingsView(null);
+        window.GridManager.ToggleActiveSettingsView(null);
 
         //TODO Do something with the Model here (e.g. update it)
-        view.Render('showHomeScreen'); 
+        window.View.Render('showHomeScreen'); 
         //TODO can hiding the Active settings view be part of showing the home screen?
     }
 
@@ -341,7 +164,7 @@ window.GridManager = function()
             if(index > -1) 
             {
                 //TODO Do something with the Model here, no?
-                view.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
+                window.View.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
 
                 lists.splice(index, 1);
                 
@@ -369,7 +192,7 @@ window.GridManager = function()
                 //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
             if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
             {
-                document.removeEventListener('click', GridManager.HideActiveQuantityPopover);
+                document.removeEventListener('click', window.GridManager.HideActiveQuantityPopover);
                 $(activePopover).popover('hide');
                 console.log("The active popover was told to hide");
             }
@@ -382,7 +205,7 @@ window.GridManager = function()
                 $(activeSettingsView).collapse('hide');
             }
 
-            //If the new Settings View is defined (e.g. could be an actual Settings view or deliberately null), set it as the Active Settings View
+            //If the new Settings View is defined (e.g. could be an actual Settings View or deliberately null), set it as the Active Settings View
             if (newSettingsView !== undefined)
             {
                 activeSettingsView = newSettingsView;
@@ -396,6 +219,11 @@ window.GridManager = function()
         {
             rowCounter++;
             return rowCounter;
+        },
+        GetNextListId : function()
+        {
+            listCounter++;
+            return listCounter;
         },
         ClearButtonPressed : function(columnIndex)
         {
@@ -432,9 +260,17 @@ window.GridManager = function()
                     //CloseHomeScreen();
                 }
             }
+        },
+        AddListFromStorage : function(list) //TODO this one and the one below shoudl be temporary during storage refactor
+        {
+            lists.push(list);
+        },
+        GetListDataForStorage : function()
+        {
+            lists.push(list);
         }
     };
-}();
+})();
 
 //TODO Consider moving this to a separate file?
 var QuantityType = {
@@ -469,17 +305,3 @@ var ListType = {
     Checklist: 1,
 };
 
-var PreviousStorageDataFormat = {
-    FirstListIndex: 1,
-    ListNameIndex: 0,
-    ListTypeIndex: 0,
-    FirstRowIndex: 1,
-};
-
-var CurrentStorageDataFormat = {
-    Version: 'fv1',
-    FirstListIndex: 1,
-    ListNameIndex: 0,
-    ListTypeIndex: 1, //TODO this and above could be their own sub-object, contained within index 1
-    FirstRowIndex: 2, //TODO this could then always be 1, even if new properties about the list need to be stored
-};

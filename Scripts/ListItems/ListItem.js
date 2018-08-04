@@ -104,7 +104,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
-            GridManager.RemoveRow(view.GetWrapper());
+            window.GridManager.RemoveRow(view.GetWrapper());
         });
 
         model.SetData(data);
@@ -117,7 +117,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
     {
         console.log("A modifier value was changed");
         view.Update(model);
-        GridManager.GridModified();
+        window.GridManager.GridModified();
     }
 
     function SettingsViewExpanded()

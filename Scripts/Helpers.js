@@ -133,35 +133,7 @@ function CreateCollapsibleView(data)
     return wrapperElement;
 }
 
-/** Storage **/
-
 //TODO break this file up into different, more specific Utility files
-
-function SaveNameValuePairToLocalStorage(name, value)
-{
-    if (typeof(Storage) !== "undefined") 
-    {
-        localStorage.setItem(name, value);
-        console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
-    } 
-    else 
-    {
-        alert('No Local Storage Available');
-    }
-}
-
-function LoadValueFromLocalStorage(name)
-{
-    if (typeof(Storage) !== "undefined") 
-    {
-        console.log('Request to load value for "' + name +'" from localstorage.');        
-        return localStorage.getItem(name);
-    } 
-    else 
-    {
-        alert('No Local Storage Available');
-    }
-}
 
 /** Experimental & In Progress **/
 
@@ -169,12 +141,12 @@ function LoadValueFromLocalStorage(name)
 
 function CreateRowSettingsView(index, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'row', GridManager.ToggleActiveSettingsView, viewExpandedCallback);
+    CreateSettingsView(index, elements, nameButton, 'row', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
 function CreateListSettingsView(index, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'list', GridManager.ToggleActiveSettingsView, viewExpandedCallback);
+    CreateSettingsView(index, elements, nameButton, 'list', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
 /**
@@ -234,7 +206,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     elements.editNameTextarea.addEventListener('change', function() 
     {
         nameButton.textContent = elements.editNameTextarea.value;
-        GridManager.GridModified();
+        window.GridManager.GridModified();
     });
 }
 

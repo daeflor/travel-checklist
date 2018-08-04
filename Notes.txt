@@ -16,6 +16,8 @@ Upcoming To-Do List:
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
 
 Thoughts:
+- It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions
+- Is it possible to make the Android Back button work in the app (e.g. to go back to the Home Screen from the List Screen)?
 - When focus is brought to a text area, it would be nice to scroll to it. (i.e. when tapping in a text area in Settings View, it doesn't always scroll into view above the keyboard, currently)
 - May want to change back the Add New Item Row to being left-aligned with a light background again
 - May want to change back to having the List Toggle open a List, and a settings button to open the Settings View

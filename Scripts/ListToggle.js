@@ -36,7 +36,7 @@ function ListToggle(listName, listId)
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
             console.log("Received request to delete a list, but this isn't supported yet");
-            GridManager.RemoveList(wrapper);
+            window.GridManager.RemoveList(wrapper);
         });
     
         wrapper.appendChild(Settings.wrapper);
@@ -69,7 +69,7 @@ function ListToggle(listName, listId)
 
         button.addEventListener('click', function() 
         {
-            GridManager.ListSelected(wrapper);
+            window.GridManager.ListSelected(wrapper);
         });    
 
         var buttonWrapper = CreateNewElement('div', [ ['class','col-2'] ], button);

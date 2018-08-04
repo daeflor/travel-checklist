@@ -66,7 +66,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
                 console.log("A Popover toggle was pressed");
 
                 //If there is no popover currently active, show the popover for the selected toggle
-                if(GridManager.GetActivePopover() == null)
+                if(window.GridManager.GetActivePopover() == null)
                 {
                     //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
                     if(e.target == self.elements.popoverToggle)
@@ -83,7 +83,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
             $(self.elements.popoverToggle).on('hidden.bs.popover', function()
             {
                 console.log("A Popover was hidden");
-                GridManager.SetActivePopover(null);
+                window.GridManager.SetActivePopover(null);
             });
 
             self.elements.wrapper = CreateNewElement('div', [ ['class','col divListItemModifier'] ], self.elements.popoverToggle);
@@ -144,7 +144,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
 
         view.Bind('showPopover', function(popoverElement)
         {
-            GridManager.SetActivePopover(popoverElement);
+            window.GridManager.SetActivePopover(popoverElement);
 
             view.Bind('decrementQuantity', function(increase)
             {
@@ -157,7 +157,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
             });
 
             //TODO could move this to a Bind as well, assuming this all even works
-            document.addEventListener('click', GridManager.HideActiveQuantityPopover);
+            document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
             console.log("An onclick listener was added to the whole document");
         });
     }

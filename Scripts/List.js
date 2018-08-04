@@ -67,7 +67,7 @@ function List(data)
         },
         AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
         {
-            var itemRow = new ListItem(GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
+            var itemRow = new ListItem(window.GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
 
             rows.push(itemRow);
             
@@ -77,7 +77,7 @@ function List(data)
         },
         AddNewRow : function()
         {
-            var itemRow = new ListItem(GridManager.GetNextRowId(), "", 0, 0, 0, 0);
+            var itemRow = new ListItem(window.GridManager.GetNextRowId(), "", 0, 0, 0, 0);
 
             rows.push(itemRow);
             
