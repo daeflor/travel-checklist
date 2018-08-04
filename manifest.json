@@ -2,6 +2,6 @@
     "short_name": "TraveList",
     "name": "TraveList by daeflor",
     "start_url": "./index.html",
-    "display": "fullscreen",
+    "display": "standalone",
     "orientation": "portrait-primary"
   }
