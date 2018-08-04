@@ -123,7 +123,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
     function SettingsViewExpanded()
     {
         console.log("A Settings View has been expanded.");
-        view.GetWrapper().scrollIntoView(true);
+        view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     }
 
     /** Experimental & In Progress **/

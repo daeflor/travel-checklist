@@ -80,7 +80,7 @@ function ListToggle(listName, listId)
     function SettingsViewExpanded()
     {
         console.log("A Settings View has been expanded.");
-        wrapper.scrollIntoView(true);
+        wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     }
 
     return { 
