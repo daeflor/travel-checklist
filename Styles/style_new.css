@@ -270,8 +270,8 @@ button {
     border-left-width: 0px;
     border-right-width: 0px;
     border-top-width: 1px;
-    border-bottom-width: 0px; /*TODO the bottom width ends up being 2px thick, which is fine, but maybe not desired*/
-
+    border-bottom-width: 0px; 
+    
     border-color: black;
     border-style: solid;
 }

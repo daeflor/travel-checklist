@@ -313,8 +313,6 @@ window.GridManager = function()
         //TODO Do something with the Model here (e.g. update it)
         view.Render('showHomeScreen'); 
         //TODO can hiding the Active settings view be part of showing the home screen?
-
-        //HideActiveList();    
     }
 
     /** Experimental & In Progress **/
