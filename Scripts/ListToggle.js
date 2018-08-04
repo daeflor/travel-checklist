@@ -1,19 +1,19 @@
 function ListToggle(listName, listId) 
 {
-    var model = {
-        data : {
-            name : null,
-        },
-        GetName : function()
-        {
-            return this.data.name;
-        },
-        // SetName : function(name)
-        // {
-        //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
-        //     this.data.name = name;
-        // },
-    };
+    // var model = {
+    //     data : {
+    //         name : null,
+    //     },
+    //     GetName : function()
+    //     {
+    //         return this.data.name;
+    //     },
+    //     // SetName : function(name)
+    //     // {
+    //     //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
+    //     //     this.data.name = name;
+    //     // },
+    // };
     
     var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
     //var nameButton;
@@ -31,7 +31,7 @@ function ListToggle(listName, listId)
     {
         CreateNameWrapper();
         CreateNavigationButton();
-        CreateListSettingsView(listId, Settings, toggle);
+        CreateListSettingsView(listId, Settings, toggle, SettingsViewExpanded);
             
         Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
         {   
@@ -77,6 +77,12 @@ function ListToggle(listName, listId)
         wrapper.appendChild(buttonWrapper);
     }
 
+    function SettingsViewExpanded()
+    {
+        console.log("A Settings View has been expanded.");
+        wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+    }
+
     return { 
         GetName : function() 
         {
@@ -97,9 +103,12 @@ function ListToggle(listName, listId)
                 element.hidden = true;
             }
         },
-        ExpandSettings : function()
+        ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
+            //Manually trigger the Settings View to begin expanding
             $(Settings.wrapper).collapse('show');
+
+            //Bring focus to the Text Area to edit the List name
             Settings.editNameTextarea.focus();
         }
     };

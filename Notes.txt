@@ -14,11 +14,13 @@ Upcoming To-Do List:
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 - At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
-- Could change the 'Switch Lists' icon to a 'Home' or 'Lists' icon in the far top-left of the screen. 
-    One potential problem with this is that it's difficult to reach that spot with one hand.
 
 Thoughts:
-- Create a file or section that is simply to abstract away DOM element IDs, names, etc.
+- When focus is brought to a text area, it would be nice to scroll to it. (i.e. when tapping in a text area in Settings View, it doesn't always scroll into view above the keyboard, currently)
+- May want to change back the Add New Item Row to being left-aligned with a light background again
+- May want to change back to having the List Toggle open a List, and a settings button to open the Settings View
+- Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
+- Create a file or section that is simply to abstract away DOM element IDs, names, etc. --- Isn't that what the View is for? Is it necessary to take it a step further? Probably not
 - Would it help to remove eventlisteners that aren't being used?
 - Could add the Pre-Travel 'To-Do' list to the Travel Checklist
 - ! Ability to sort by state (e.g. 'Completed' items at the bottom of the list).

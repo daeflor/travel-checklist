@@ -2,12 +2,13 @@ function ListItemData()
 {
     this.name = null;
     this.modifiers = [];
-    this.settings = {
+    this.settings = { //TODO this should not be in the Model
          wrapper: null, 
          editNameTextarea: null,
          buttonDelete: null,
     };
 }
+
 function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
@@ -25,12 +26,12 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         },
         GetQuantityNeeded : function()
         {
-            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed].GetValue());
-            return this.data.modifiers[QuantityType.Needed].GetValue();
+            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed.index].GetValue());
+            return this.data.modifiers[QuantityType.Needed.index].GetValue();
         },
         GetQuantityBalance : function()
         {
-            return (this.data.modifiers[QuantityType.Needed].GetValue() - this.data.modifiers[QuantityType.Luggage].GetValue() - this.data.modifiers[QuantityType.Wearing].GetValue() - this.data.modifiers[QuantityType.Backpack].GetValue());
+            return (this.data.modifiers[QuantityType.Needed.index].GetValue() - this.data.modifiers[QuantityType.Luggage.index].GetValue() - this.data.modifiers[QuantityType.Wearing.index].GetValue() - this.data.modifiers[QuantityType.Backpack.index].GetValue());
         },
     };
 
@@ -99,7 +100,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
     
-        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle());
+        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle(), SettingsViewExpanded);
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
@@ -119,6 +120,12 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         GridManager.GridModified();
     }
 
+    function SettingsViewExpanded()
+    {
+        console.log("A Settings View has been expanded.");
+        view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+    }
+
     /** Experimental & In Progress **/
   
     /** Public Functions **/
@@ -132,10 +139,10 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         {
             return [
                 model.GetData().name.GetValue(), 
-                model.GetData().modifiers[QuantityType.Needed].GetValue(), 
-                model.GetData().modifiers[QuantityType.Luggage].GetValue(), 
-                model.GetData().modifiers[QuantityType.Wearing].GetValue(), 
-                model.GetData().modifiers[QuantityType.Backpack].GetValue()
+                model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
+                model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
             ];
         },
         ClearQuantityValue : function(quantityIndex)
@@ -143,10 +150,13 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
             model.GetData().modifiers[quantityIndex].SetValue(0);
             view.Update(model);
         },
-        ExpandSettings : function()
+        ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
+            //Manually trigger the Settings View to begin expanding
             $(model.GetData().settings.wrapper).collapse('show');
-            model.GetData().settings.editNameTextarea.focus();
+
+            //Bring focus to the Text Area to edit the List Item name
+            model.GetData().settings.editNameTextarea.focus();         
         }
     };
 }

@@ -1,5 +1,6 @@
 function List(data)
 {
+    //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
     var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
     var type = data.type; //TODO is it necessary to save these variables? (Maybe just store them in storage instead)

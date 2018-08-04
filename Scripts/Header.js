@@ -7,11 +7,10 @@ function Header(listType)
 
     if (listType == ListType.Travel)
     {
-        //TODO class data could be contained in the QuantityType object
-        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-pie-chart fa-lg iconQuantityHeader', index:QuantityType.Needed});
-        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-suitcase fa-lg iconQuantityHeader', index:QuantityType.Luggage});
-        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader', iconClass:'fa fa-male fa-lg iconQuantityHeader', index:QuantityType.Wearing});
-        CreatePopoverForQuantityHeader({wrapperClass:'col divQuantityHeader', toggleClass:'toggleQuantityHeader toggleSmallIcon', iconClass:'fa fa-briefcase iconQuantityHeader', index:QuantityType.Backpack});
+        CreatePopoverForQuantityHeader(QuantityType.Needed);
+        CreatePopoverForQuantityHeader(QuantityType.Luggage);
+        CreatePopoverForQuantityHeader(QuantityType.Wearing);
+        CreatePopoverForQuantityHeader(QuantityType.Backpack);
     }
     // else if (listType == ListType.Checklist)
     // {

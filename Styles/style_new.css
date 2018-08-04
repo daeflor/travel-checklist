@@ -73,7 +73,7 @@ button {
 
     align-items: center;
 
-    height: 44px;
+    height: 45px;
 
     background-color: #333333;
     /* background-color: ghostwhite; */
@@ -270,8 +270,8 @@ button {
     border-left-width: 0px;
     border-right-width: 0px;
     border-top-width: 1px;
-    border-bottom-width: 1px;
-
+    border-bottom-width: 0px; 
+    
     border-color: black;
     border-style: solid;
 }
@@ -305,23 +305,14 @@ button {
     /*background-color: #EFDEB4; /* rgb(248, 242, 227) is also good */
 }
 
-#listOfLists {
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-bottom-width: 0px;
-
-    border-color: black;
-    border-style: solid;
-}
-
 /** New List/Row Section **/
 
+/* The New Item button might be better left centered with a light background */
 .newRow {
-    padding-left: 20px;
-    padding-right: 4px;
-    padding-top: 4px;
-    padding-bottom: 4px;  
+    /* padding-left: 20px;
+    padding-right: 4px; */
+    padding-top: 8px;
+    padding-bottom: 8px;  
 
     border-left-width: 0px;
     border-right-width: 0px;
@@ -331,8 +322,13 @@ button {
     border-color: black;
     border-style: solid;
 
+    background-color: #333333;
+
+    display: flex;
+    justify-content: center;
     margin-left: -15px;
-    /* margin-right: -15px; */
+
+    height: 45px;
 }
 
 /** Experimental & In Progress **/
@@ -373,7 +369,7 @@ button {
     padding-bottom: 0px;
 }
 
-.iconQuantityHeader {
+.iconHeader {
     color:white;
 }
 
@@ -383,4 +379,30 @@ button {
     
     text-align: center;
     line-height: normal;
+}
+
+.divListElements {
+    /* overflow-y: 'hidden'; */
+    overflow: scroll;
+    max-height: 86.25vh;
+    /* max-height: 77.5vh; */
+    /* width: 100%;   */
+    /* white-space: nowrap; */
+}
+
+.buttonAddListItem {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 0px;
+    padding-bottom: 0px;  
+
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+    border-color: white;
+    
+    background-color:inherit;
+
+    color: white;
 }

@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <title>Travel Checklist</title>
+  
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#404040">
+
+  <link rel="manifest" href="./manifest.json">
 
   <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
@@ -35,13 +39,13 @@
 -->
 </head>
 <body>      
-  <div class='container-fluid'> 
+  <div class='container-fluid'>  <!--TODO Does this still need to be fluid and is it still necessary to use rows?-->
     
     <div class='row divHeader' id='divHomeHeader'>
       TraveLists
     </div>
 
-    <!-- TODO The div list header could have a stronger color and a shadow/outset bottom border, and could be left aligned, with a different font -->
+    <!--TODO Perhaps move the headers into the screen sections, below-->
     <div class='row divHeader' id='divListHeader' hidden='true'>
       <div class='col-1 divSmallPadding'>
         <button id='buttonHome' type='button'> 
@@ -53,20 +57,21 @@
 
   </div>
 
-  <div id='listOfLists'>
-      
-    <div class='newRow' id='newListRow'>
-        <button id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg'></i></button>                  
+  <div id='divHomeScreen'>
+    <div class='divListElements' id='divHomeScreenListElements'>
     </div>
-
+    <div class='newRow' id='newListRow'>
+        <button class='buttonAddListItem' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>                  
+    </div>
   </div>
 
-  <div id='lists'>
-  </div>
-
-  <div class='newRow' id='newItemRow' hidden='true'>
-    <button id='buttonAddRow' type='button'><i class="fa fa-plus-square-o fa-lg"></i></button>
-  </div>
+  <div id='divListScreen' hidden='true'>
+    <div class='divListElements' id='divListScreenListElements'>
+    </div>
+    <div class='newRow' id='newListItemRow'>
+        <button class='buttonAddListItem' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
+    </div>
+  </div>  
   
 </body>
 </html>
