@@ -73,7 +73,11 @@ button {
 
     align-items: center;
 
-    height: 7vh;
+    /*TODO it seems that when the phone keyboard is displayed, it impacts the height, so this div gets squashed (as well as the new item row) */ 
+    /*TODO also it seems that the Chrome bar at the top of the screen impacts this as well, so really it is still possible to scroll the full screen. Would max-height help?. Maybe add a new class when the keyboard is visible that changes the height...*/
+    height: 45px;
+    /* min-height: 7vh;  */
+    /* min-height: 20%; */
 
     background-color: #333333;
     /* background-color: ghostwhite; */
@@ -328,7 +332,7 @@ button {
     justify-content: center;
     margin-left: -15px;
 
-    height: 7vh;
+    height: 45px;
 }
 
 /** Experimental & In Progress **/
@@ -384,7 +388,7 @@ button {
 .divListElements {
     /* overflow-y: 'hidden'; */
     overflow: scroll;
-    max-height: 86vh;
+    max-height: 77.5vh;
     /* width: 100%;   */
     /* white-space: nowrap; */
 }
