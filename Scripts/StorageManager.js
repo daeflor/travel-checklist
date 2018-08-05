@@ -34,9 +34,7 @@ window.StorageManager = (function () {
 
     function storeListData(data)
     {
-        //TODO
         saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
-        // saveNameValuePairToLocalStorage('gridData', JSON.stringify(getDataForStorage()));
     }
 
     //TODO Could be renamed for clarity (to note that this is more specifically about getting and parsing all the list data and recreating it, not just generally loading something from storage)
@@ -51,7 +49,6 @@ window.StorageManager = (function () {
 
             //Load all list data based on the parsed storage data
             loadAllListData(JSON.parse(storageData));  
-            // parseListDataFromStorage(JSON.parse(storageData));        
         }    
         else
         {
@@ -118,56 +115,6 @@ window.StorageManager = (function () {
         }
     }
 
-    // function parseListDataFromStorage(storageData)
-    // {
-    //     var storedFormatVersion = storageData[0];
-    //     var storedFormat;
-
-    //     console.log("The parsed Format Version from storage data is: " + storedFormatVersion + ". The current Format Version is: " + CurrentStorageDataFormat.Version);        
-
-    //     if (storedFormatVersion == CurrentStorageDataFormat.Version)
-    //     {
-    //         storedFormat = CurrentStorageDataFormat;
-    //         console.log("The data in storage is in the current format.");            
-    //     }
-    //     else
-    //     {
-    //         storedFormat = PreviousStorageDataFormat;
-    //         console.log("The data in storage is in an old format. Parsing it using legacy code.")            
-    //     }
-
-    //     console.log("There are " + ((storageData.length) - storedFormat.FirstListIndex) + " lists saved in local storage.");
-        
-    //     //TODO this can probably be greatly improved by using objects better
-    //     //Traverse the data for all of the lists saved in local storage
-    //     for (var i = storedFormat.FirstListIndex; i < storageData.length; i++) 
-    //     {
-    //         var list = new List({name:storageData[i][storedFormat.ListNameIndex], type:storageData[i][storedFormat.ListTypeIndex], id:window.GridManager.GetNextListId()});
-            
-    //         //TODO Do Something with the Model here first
-    //         window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-
-    //         console.log("Regenerating List. Index: " + (i-storedFormat.FirstListIndex) + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
-            
-    //         //Traverse all the rows belonging to the current list, in local storage
-    //         for (var j = storedFormat.FirstRowIndex; j < storageData[i].length; j++) 
-    //         {
-    //             if (list.GetType() == ListType.Travel)
-    //             {
-    //                 console.log("List: " + (i-storedFormat.FirstListIndex) + ". Row: " + (j-storedFormat.FirstRowIndex) + ". Item: " + storageData[i][j][0]);
-    //                 list.AddListItem(storageData[i][j][0], storageData[i][j][1], storageData[i][j][2], storageData[i][j][3], storageData[i][j][4]);
-    //             }
-    //             else if (list.GetType() == null)
-    //             {
-    //                 console.log("ERROR: Tried to load a List with a ListType of null from storage");
-    //             }
-    //         }
-
-    //         window.GridManager.AddListFromStorage(list);
-    //         // lists.push(list);
-    //     }
-    // }
-
     //TODO this isn't used yet
     function storeNewList(newList)
     {
@@ -209,25 +156,6 @@ window.StorageManager = (function () {
         StoreNewListItem : storeNewListItem
     };
 })();  
-
-//TODO move these inside of the StorageManager
-//TODO It might be time to deprecate this
-var PreviousStorageDataFormat = {
-    FirstListIndex: 1,
-    ListNameIndex: 0,
-    ListTypeIndex: 0,
-    FirstRowIndex: 1,
-};
-
-var CurrentStorageDataFormat = {
-    Version: 'fv1',
-    FirstListIndex: 1,
-    ListNameIndex: 0,
-    ListTypeIndex: 1, //TODO this and above could be their own sub-object, contained within index 1
-    FirstRowIndex: 2, //TODO this could then always be 1, even if new properties about the list need to be stored
-};
-
-//
 
 //Data Model:
 

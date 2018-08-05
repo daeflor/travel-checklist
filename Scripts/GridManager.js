@@ -14,7 +14,7 @@ window.GridManager = (function()
 
     function SaveDataToStorage()
     {
-        console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
+        //console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
 
         var listData = [];     
 
@@ -24,7 +24,7 @@ window.GridManager = (function()
         }
 
         var storageData = {
-			formatVersion : CurrentStorageDataFormat.Version,
+			//formatVersion : CurrentStorageDataFormat.Version,
             lists : listData
         };
 
