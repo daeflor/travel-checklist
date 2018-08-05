@@ -36,17 +36,21 @@ function List(data)
         },
         GetDataForStorage : function()
         {
-            var data = [];
-            
-            data.push(toggle.GetName());
-            data.push(type);
+            var listItemData = [];     
 
             for (var i = 0; i < rows.length; i++)
             {
-                data.push(rows[i].GetDataForStorage());
+                listItemData.push(rows[i].GetDataForStorage());
             }
 
-            return data;
+            // var listItemData = ListItemStorageData();
+
+            return new ListStorageData({
+                id: data.id, 
+                name: toggle.GetName(), 
+                type: type, 
+                listItems: listItemData
+            });
         },
         RemoveRow : function(rowElementToRemove)
         {

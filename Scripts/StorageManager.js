@@ -35,7 +35,7 @@ window.StorageManager = (function () {
     function saveDataToStorage(data)
     {
         //TODO
-        saveNameValuePairToLocalStorage('gridData', JSON.stringify(data));
+        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
         // saveNameValuePairToLocalStorage('gridData', JSON.stringify(getDataForStorage()));
     }
 
@@ -143,3 +143,41 @@ var CurrentStorageDataFormat = {
     ListTypeIndex: 1, //TODO this and above could be their own sub-object, contained within index 1
     FirstRowIndex: 2, //TODO this could then always be 1, even if new properties about the list need to be stored
 };
+
+//
+
+//Data Model:
+
+function ListStorageData(data)
+{
+    this.id = data.id;
+    this.name = data.name;
+    this.type = data.type;
+    this.listItems = data.listItems;
+}
+
+// var ListStorageData = {
+//     id: null,
+//     name: null,
+//     type: null,
+//     listItems : null,
+// };
+
+function ListItemStorageData(data)
+{
+    this.id = data.id;
+    this.name = data.name;
+    this.quantityNeeded = data.quantityNeeded;
+    this.quantityLuggage = data.quantityLuggage;
+    this.quantityWearing = data.quantityWearing;
+    this.quantityBackpack = data.quantityBackpack;
+}
+
+// var ListItemStorageData = {
+//     id: null,
+//     name: null,
+//     quantityNeeded: null,
+//     quantityLuggage: null,
+//     quantityWearing: null,
+//     quantityBackpack: null,
+// };
