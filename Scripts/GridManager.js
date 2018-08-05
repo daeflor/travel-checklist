@@ -28,7 +28,7 @@ window.GridManager = (function()
             lists : listData
         };
 
-        window.StorageManager.SaveDataToStorage(storageData);
+        window.StorageManager.StoreListData(storageData);
     }
 
     /** List & Button Setup **/
@@ -44,30 +44,47 @@ window.GridManager = (function()
 
         window.View.Bind('NavigateHome', NavigateHome);
         window.View.Bind('AddList', AddNewList);
-        window.View.Bind('AddRow', AddNewListItem);
+        window.View.Bind('AddListItem', AddNewListItem);
 
         window.StorageManager.LoadDataFromStorage();
+
+        //TODO these are hacks
+        listCounter = lists[lists.length-1].GetId(); 
+        for (var i = lists.length-1; i >= 0; i--)
+        {
+            rowCounter = lists[i].GetHighestListItemId(); 
+
+            if (rowCounter != null)
+            {
+                console.log("The current highest row ID is: " + rowCounter);
+                break;
+            }
+        }
     }
 
     /** List Management **/
 
-    // function GetNextListId()
-    // {
-    //     listCounter++;
-    //     return listCounter;
-    // }
+    function GetNextListId()
+    {
+        //return (lists[lists.length-1].GetId()+1);
+
+        listCounter++;
+        return listCounter;
+    }
 
     function AddNewListItem()
     {
         //TODO is there a better mechanism for doing error handling?
         if (activeList != null)
         {
-            //activeList.AddNewRow(); 
+            activeList.AddNewRow(); 
             
             //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
-            Model.CreateListItem(activeList.GetId());
+            //Model.CreateListItem(activeList.GetId());
+            SaveDataToStorage(); 
+
+            //TODO need to update View somehow.. Use templates? Not sure...
             // View.Render('addNewListItem', );
-            //SaveDataToStorage(); 
         }
         else
         {
@@ -77,7 +94,7 @@ window.GridManager = (function()
 
     function AddNewList()
     {
-        var list = new List({name:'', type:ListType.Travel, id:window.GridManager.GetNextListId()});
+        var list = new List({name:'', type:ListType.Travel, id:GetNextListId()});
         
         lists.push(list);
 
@@ -229,11 +246,12 @@ window.GridManager = (function()
             rowCounter++;
             return rowCounter;
         },
-        GetNextListId : function()
-        {
-            listCounter++;
-            return listCounter;
-        },
+        // GetNextListId : function()
+        // {
+        //     //return (lists[lists.length-1].GetId()+1)
+        //     listCounter++;
+        //     return listCounter;
+        // },
         ClearButtonPressed : function(columnIndex)
         {
             if (activeList != null)

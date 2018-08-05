@@ -9,7 +9,7 @@ function ListItemData()
     };
 }
 
-function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
+function ListItem(rowId, itemName, quantities)
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
@@ -95,10 +95,10 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
         //TODO could some sort of binding be done here instead of passing the ModifierValueChanged function?
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, neededQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, luggageQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.needed));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.luggage));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.wearing));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.backpack));
     
         CreateRowSettingsView(rowId, data.settings, data.name.GetToggle(), SettingsViewExpanded);
 
@@ -131,6 +131,10 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
     /** Public Functions **/
 
     return { 
+        GetId : function()
+        {
+            return rowId;
+        },
         GetWrapper : function()
         {
             return view.GetWrapper();

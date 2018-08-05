@@ -45,7 +45,7 @@ window.View = (function() {
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
-        else if (event === 'AddRow') 
+        else if (event === 'AddListItem') 
         {
             //Set the behavior for when the Add Row button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
@@ -107,6 +107,10 @@ window.View = (function() {
                 //Remove the List Toggle element from the Lists of Lists wrapper
                 elements.homeScreenListElements.removeChild(parameter.listToggleElement);
             },
+            // addNewListItem: function() 
+            // {
+                
+            // }
         };
 
         viewCommands[command]();

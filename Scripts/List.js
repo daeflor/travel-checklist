@@ -27,6 +27,17 @@ function List(data)
         {
             return toggle;
         },
+        GetHighestListItemId : function() //TODO this is temp and hacky
+        {
+            if (rows.length == 0)
+            {
+                return null;
+            }
+            else 
+            {
+                return rows[rows.length-1].GetId();
+            }
+        },
         ToggleElementVisibility : function()
         {
             if (element.hidden == true)
@@ -71,15 +82,13 @@ function List(data)
                 console.log("Failed to remove row from grid. Row index returned invalid value.");
             }
         },
-        AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
+        AddListItem : function(data)
         {
-            var itemRow = new ListItem(window.GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
+            var itemRow = new ListItem(data.id, data.name, data.quantities);
 
             rows.push(itemRow);
             
             element.appendChild(itemRow.GetWrapper());
-            
-            //return itemRow;
         },
         AddNewRow : function()
         {
