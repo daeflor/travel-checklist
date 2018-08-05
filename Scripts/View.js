@@ -78,6 +78,9 @@ window.View = (function() {
 
                 //Hide the Home Screen when an individual List is displayed
                 elements.homeScreen.hidden = true;
+
+                //Set the List title
+                elements.listTitle.textContent = parameter.listName;
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -93,11 +96,6 @@ window.View = (function() {
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(parameter.listElement);
-            },
-            setListTitle: function() 
-            {
-                //Set the List title
-                elements.listTitle.textContent = parameter.listName;
             },
             removeList: function() 
             {

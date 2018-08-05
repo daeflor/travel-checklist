@@ -110,6 +110,7 @@ window.GridManager = (function()
         SaveDataToStorage(); 
     }
 
+    //TODO Eventually use ID instead of index and get rid of the concept of Active List?
     function NavigateToList(indexToDisplay)
     {   
         console.log("Request received to switch lists to grid index: " + indexToDisplay);
@@ -133,11 +134,6 @@ window.GridManager = (function()
 
                 //Display the selected List
                 activeList.ToggleElementVisibility();  
-
-                //TODO do something with the Model here
-
-                //Udate the List Title text
-                window.View.Render('setListTitle', {listName:activeList.GetName()});
             }
             else
             {
@@ -148,7 +144,17 @@ window.GridManager = (function()
             window.GridManager.ToggleActiveSettingsView(null);
 
             //Display the List Screen
-            window.View.Render('showListScreen'); 
+            if (activeList != null)
+            {
+                //TODO do something with the Model here
+
+                //Show the List Screen and udate the List Title text
+                window.View.Render('showListScreen', {listName:activeList.GetName()}); 
+            }
+            else
+            {
+                console.log("ERROR: Tried to display the Active List but it's null");
+            }
         }
         else
         {
