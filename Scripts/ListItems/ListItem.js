@@ -9,7 +9,7 @@ function ListItemData()
     };
 }
 
-function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
+function ListItem(rowId, itemName, quantities)
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
@@ -95,16 +95,16 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
         //TODO could some sort of binding be done here instead of passing the ModifierValueChanged function?
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, neededQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, luggageQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, wearingQuantity));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, backpackQuantity));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.needed));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.luggage));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.wearing));
+        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.backpack));
     
         CreateRowSettingsView(rowId, data.settings, data.name.GetToggle(), SettingsViewExpanded);
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
-            GridManager.RemoveRow(view.GetWrapper());
+            window.GridManager.RemoveRow(view.GetWrapper());
         });
 
         model.SetData(data);
@@ -117,7 +117,7 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
     {
         console.log("A modifier value was changed");
         view.Update(model);
-        GridManager.GridModified();
+        window.GridManager.GridModified();
     }
 
     function SettingsViewExpanded()
@@ -131,19 +131,24 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
     /** Public Functions **/
 
     return { 
+        GetId : function()
+        {
+            return rowId;
+        },
         GetWrapper : function()
         {
             return view.GetWrapper();
         },
         GetDataForStorage : function()
         {
-            return [
-                model.GetData().name.GetValue(), 
-                model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
-                model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
-                model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
-                model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
-            ];
+            return new ListItemStorageData({
+                id: rowId, 
+                name: model.GetData().name.GetValue(),
+                quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
+                quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
+                quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
+                quantityBackpack: model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
+            });
         },
         ClearQuantityValue : function(quantityIndex)
         {

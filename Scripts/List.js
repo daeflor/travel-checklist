@@ -7,6 +7,10 @@ function List(data)
     var toggle = new ListToggle(data.name, data.id);
 
     return { 
+        GetId : function()
+        {
+            return data.id;
+        },
         GetElement : function()
         {
             return element;
@@ -23,6 +27,17 @@ function List(data)
         {
             return toggle;
         },
+        GetHighestListItemId : function() //TODO this is temp and hacky
+        {
+            if (rows.length == 0)
+            {
+                return null;
+            }
+            else 
+            {
+                return rows[rows.length-1].GetId();
+            }
+        },
         ToggleElementVisibility : function()
         {
             if (element.hidden == true)
@@ -36,17 +51,19 @@ function List(data)
         },
         GetDataForStorage : function()
         {
-            var data = [];
-            
-            data.push(toggle.GetName());
-            data.push(type);
+            var listItemData = [];     
 
             for (var i = 0; i < rows.length; i++)
             {
-                data.push(rows[i].GetDataForStorage());
+                listItemData.push(rows[i].GetDataForStorage());
             }
 
-            return data;
+            return new ListStorageData({
+                id: data.id, 
+                name: toggle.GetName(), 
+                type: type, 
+                listItems: listItemData
+            });
         },
         RemoveRow : function(rowElementToRemove)
         {
@@ -65,19 +82,17 @@ function List(data)
                 console.log("Failed to remove row from grid. Row index returned invalid value.");
             }
         },
-        AddRow : function(itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity)
+        AddListItem : function(data)
         {
-            var itemRow = new ListItem(GridManager.GetNextRowId(), itemName, neededQuantity, luggageQuantity, wearingQuantity, backpackQuantity);
+            var itemRow = new ListItem(data.id, data.name, data.quantities);
 
             rows.push(itemRow);
             
             element.appendChild(itemRow.GetWrapper());
-            
-            //return itemRow;
         },
         AddNewRow : function()
         {
-            var itemRow = new ListItem(GridManager.GetNextRowId(), "", 0, 0, 0, 0);
+            var itemRow = new ListItem(window.GridManager.GetNextRowId(), "", 0, 0, 0, 0);
 
             rows.push(itemRow);
             
