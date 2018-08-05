@@ -41,18 +41,19 @@ window.StorageManager = (function () {
         //TODO Though I guess long term it should be simplified so that the lists aren't 'recreated'
     function loadDataFromStorage()
     {
-        var storageData = loadValueFromLocalStorage('TraveList-Data');
+        var storageDataString = loadValueFromLocalStorage('TraveList-Data');
     
-        if (storageData != null)
+        //If the data string loaded from storage is not null or empty, parse the string to JSON and load the list data from that
+        if (storageDataString != null && storageDataString.length>0)
         {
-            console.log("Loaded from Local Storage: " + storageData);
+            //console.log("Loaded from Local Storage: " + storageDataString);
 
             //Load all list data based on the parsed storage data
-            loadAllListData(JSON.parse(storageData));  
+            loadAllListData(JSON.parse(storageDataString));  
         }    
         else
         {
-            console.log("Could not find any list data saved in local storage.");
+            console.log("Could not find any data for this app saved in local storage.");
         }
     }
 

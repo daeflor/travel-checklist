@@ -7,7 +7,7 @@ window.GridManager = (function()
     var activeSettingsView = null; //TODO could this be moved into the View? 
     var lists = [];
     var activeList;
-    var rowCounter = 0;
+    var rowCounter = -1;
     var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc. or instead could use GetDateTime().
 
     /** Storage - TEMP **/ //TODO This is temp
@@ -48,16 +48,20 @@ window.GridManager = (function()
 
         window.StorageManager.LoadDataFromStorage();
 
-        //TODO these are hacks
-        listCounter = lists[lists.length-1].GetId(); 
-        for (var i = lists.length-1; i >= 0; i--)
+        //TODO This is a hack
+        if (lists.length > 0)
         {
-            rowCounter = lists[i].GetHighestListItemId(); 
+            listCounter = lists[lists.length-1].GetId(); 
 
-            if (rowCounter != null)
+            for (var i = lists.length-1; i >= 0; i--)
             {
-                console.log("The current highest row ID is: " + rowCounter);
-                break;
+                rowCounter = lists[i].GetHighestListItemId(); 
+
+                if (rowCounter != null)
+                {
+                    console.log("The current highest row ID is: " + rowCounter);
+                    break;
+                }
             }
         }
     }
