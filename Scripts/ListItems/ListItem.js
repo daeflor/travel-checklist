@@ -145,14 +145,6 @@ function ListItem(rowId, itemName, neededQuantity, luggageQuantity, wearingQuant
                 quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
                 quantityBackpack: model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
             });
-
-            // return [
-            //     model.GetData().name.GetValue(), 
-            //     model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
-            //     model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
-            //     model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
-            //     model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
-            // ];
         },
         ClearQuantityValue : function(quantityIndex)
         {

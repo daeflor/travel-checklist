@@ -156,28 +156,14 @@ function ListStorageData(data)
     this.listItems = data.listItems;
 }
 
-// var ListStorageData = {
-//     id: null,
-//     name: null,
-//     type: null,
-//     listItems : null,
-// };
-
 function ListItemStorageData(data)
 {
     this.id = data.id;
     this.name = data.name;
-    this.quantityNeeded = data.quantityNeeded;
-    this.quantityLuggage = data.quantityLuggage;
-    this.quantityWearing = data.quantityWearing;
-    this.quantityBackpack = data.quantityBackpack;
+    this.quantities = {
+        needed: data.quantityNeeded,
+        luggage: data.quantityLuggage,
+        wearing: data.quantityWearing,
+        backpack: data.quantityBackpack
+    };
 }
-
-// var ListItemStorageData = {
-//     id: null,
-//     name: null,
-//     quantityNeeded: null,
-//     quantityLuggage: null,
-//     quantityWearing: null,
-//     quantityBackpack: null,
-// };
