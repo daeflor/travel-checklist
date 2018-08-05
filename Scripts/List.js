@@ -7,6 +7,10 @@ function List(data)
     var toggle = new ListToggle(data.name, data.id);
 
     return { 
+        GetId : function()
+        {
+            return data.id;
+        },
         GetElement : function()
         {
             return element;
@@ -42,8 +46,6 @@ function List(data)
             {
                 listItemData.push(rows[i].GetDataForStorage());
             }
-
-            // var listItemData = ListItemStorageData();
 
             return new ListStorageData({
                 id: data.id, 

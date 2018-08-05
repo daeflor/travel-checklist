@@ -106,24 +106,43 @@ window.StorageManager = (function () {
         }
     }
 
-    // function getDataForStorage()
-    // {
-    //     var data = [];
+    function storeNewList(newList)
+    {
+        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
 
-    //     console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
-    //     data.push(CurrentStorageDataFormat.Version);
+        var parsedStorageData = JSON.parse(rawStorageData);
 
-    //     for (var i = 0; i < lists.length; i++)
-    //     {
-    //         data.push(lists[i].GetDataForStorage());
-    //     }
+        var lists = parsedStorageData.lists;
 
-    //     return data;
-    // }
+        lists.push(newList);
+        
+        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+    }
+
+    function storeNewListItem(listId, newListItem)
+    {
+        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+
+        var parsedStorageData = JSON.parse(rawStorageData);
+
+        var lists = parsedStorageData.lists;
+
+        for (var i = 0; i < lists.length; i++)  
+        {
+            if (lists[i].id == listId)
+            {
+                lists[i].listItems.push(newListItem);
+            }
+        }
+        
+        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+    }
 
     return {
         SaveDataToStorage : saveDataToStorage,
-        LoadDataFromStorage : loadDataFromStorage
+        LoadDataFromStorage : loadDataFromStorage,
+        StoreNewList : storeNewList,
+        StoreNewListItem : storeNewListItem
     };
 })();  
 

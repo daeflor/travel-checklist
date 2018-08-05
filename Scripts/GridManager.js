@@ -14,17 +14,21 @@ window.GridManager = (function()
 
     function SaveDataToStorage()
     {
-        var data = [];
-
         console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
-        data.push(CurrentStorageDataFormat.Version);
+
+        var listData = [];     
 
         for (var i = 0; i < lists.length; i++)
         {
-            data.push(lists[i].GetDataForStorage());
+            listData.push(lists[i].GetDataForStorage());
         }
 
-        window.StorageManager.SaveDataToStorage(data);
+        var storageData = {
+			formatVersion : CurrentStorageDataFormat.Version,
+            lists : listData
+        };
+
+        window.StorageManager.SaveDataToStorage(storageData);
     }
 
     /** List & Button Setup **/
@@ -40,7 +44,7 @@ window.GridManager = (function()
 
         window.View.Bind('NavigateHome', NavigateHome);
         window.View.Bind('AddList', AddNewList);
-        window.View.Bind('AddRow', AddNewRow);
+        window.View.Bind('AddRow', AddNewListItem);
 
         window.StorageManager.LoadDataFromStorage();
     }
@@ -53,16 +57,21 @@ window.GridManager = (function()
     //     return listCounter;
     // }
 
-    function AddNewRow()
+    function AddNewListItem()
     {
+        //TODO is there a better mechanism for doing error handling?
         if (activeList != null)
         {
-            activeList.AddNewRow();
-            SaveDataToStorage(); 
+            //activeList.AddNewRow(); 
+            
+            //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
+            Model.CreateListItem(activeList.GetId());
+            // View.Render('addNewListItem', );
+            //SaveDataToStorage(); 
         }
         else
         {
-            console.log("ERROR: Tried to add a row to the Active List, which doesn't exist");
+            console.log("ERROR: Tried to add a new List Item to the Active List, which doesn't exist");
         }
     }
 
