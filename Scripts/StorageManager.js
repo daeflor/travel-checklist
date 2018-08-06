@@ -91,8 +91,8 @@ window.StorageManager = (function () {
                             
                             //Add a row to current List, passing along the data parsed from storage
                             list.AddListItem({
-                                listId: parsedData.lists[i].id, //TODO long term hopefully this won't have to be passed here
-                                listItemId: parsedData.lists[i].listItems[j].id, 
+                                //listId: parsedData.lists[i].id, //TODO long term hopefully this won't have to be passed here
+                                id: parsedData.lists[i].listItems[j].id, 
                                 name: parsedData.lists[i].listItems[j].name, 
                                 quantities: parsedData.lists[i].listItems[j].quantities
                             });

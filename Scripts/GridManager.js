@@ -251,11 +251,11 @@ window.GridManager = (function()
         {
             SaveDataToStorage();
         },
-        GetNextRowId : function()
-        {
-            rowCounter++;
-            return rowCounter;
-        },
+        // GetNextRowId : function()
+        // {
+        //     rowCounter++;
+        //     return rowCounter;
+        // },
         // GetNextListId : function()
         // {
         //     //return (lists[lists.length-1].GetId()+1)

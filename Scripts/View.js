@@ -130,34 +130,21 @@ window.View = (function() {
                             if (parameter.quantityBalance != 0)
                             {
                                 listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
-                                //TODO The View shouldn't be telling the Model to update a color...
-                                //model.GetData().name.SetColor('peru'); //lightsalmon is also good
                             }
                             else if (parameter.quantityNeeded != 0)
                             {
                                 listNameButton.style.borderColor = 'mediumseagreen';
-                                // model.GetData().name.SetColor('mediumseagreen');
                             }
                             else 
                             {
                                 listNameButton.style.borderColor = 'rgb(77, 77, 77)'; //"darkgrey";
-                                //model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
                             }     
                         }
-                        else 
-                        {
-                            console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId);
-                        }
+                        else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); }
                     }
-                    else 
-                    {
-                        console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + parameter.listItemId);
-                    }
+                    else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + parameter.listItemId); }
                 }
-                else 
-                {
-                    console.log("ERROR: Could not find List Item wrapper element with ID: " + parameter.listItemId);
-                }
+                else { console.log("ERROR: Could not find List Item wrapper element with ID: " + parameter.listItemId); }
             }
         };
 

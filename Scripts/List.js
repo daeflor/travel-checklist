@@ -6,6 +6,20 @@ function List(data)
     var type = data.type; //TODO is it necessary to save these variables? (Maybe just store them in storage instead)
     var toggle = new ListToggle(data.name, data.id);
 
+    // function GetNextListItemId()
+    // {
+    //     if (rows.length == 0)
+    //     {
+    //         return parseFloat(data.id + '.' + 0);
+    //     }
+    //     else 
+    //     {   
+    //         console.log("Current highest List Item ID is: " + data.id + "." + (rows[rows.length-1].GetId()));
+    //         return parseFloat(data.id + '.' + (rows[rows.length-1].GetId()+1));
+    //         //return (rows[rows.length-1].GetId()+1);
+    //     }
+    // }
+
     return { 
         GetId : function()
         {
@@ -82,9 +96,9 @@ function List(data)
                 console.log("Failed to remove row from grid. Row index returned invalid value.");
             }
         },
-        AddListItem : function(data)
+        AddListItem : function(listItemData)
         {
-            var itemRow = new ListItem(data.listId, data.listItemId, data.name, data.quantities, );
+            var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, );
 
             rows.push(itemRow);
             
@@ -94,7 +108,7 @@ function List(data)
         },
         AddNewRow : function()
         {
-            var itemRow = new ListItem(data.id, window.GridManager.GetNextRowId(), "", {needed:0, luggage:0, wearing:0, backpack:0});
+            var itemRow = new ListItem(new Date().getTime(), "", {needed:0, luggage:0, wearing:0, backpack:0});
 
             rows.push(itemRow);
             

@@ -9,9 +9,10 @@ function ListItemData()
     };
 }
 
-function ListItem(listId, rowId, itemName, quantities)
+//TODO would prefer to take a data object as a parameter
+function ListItem(listItemId, itemName, quantities)
 {
-    var listItemId = (listId+'-'+rowId);
+    //var listItemId = new Date().getTime();
 
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
@@ -98,7 +99,7 @@ function ListItem(listId, rowId, itemName, quantities)
         //data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
 
         //Create the name toggle that can be selected to open or close the settings view for the List Item
-        nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(rowId), 'buttonListItem buttonListItemName', itemName);
+        nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(listItemId), 'buttonListItem buttonListItemName', itemName);
         
         //Create the div wrapper for the List Item Name 
         nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
@@ -112,7 +113,7 @@ function ListItem(listId, rowId, itemName, quantities)
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.wearing));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.backpack));
     
-        CreateRowSettingsView(rowId, data.settings, nameToggle, SettingsViewExpanded);
+        CreateRowSettingsView(listItemId, data.settings, nameToggle, SettingsViewExpanded);
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
@@ -147,7 +148,7 @@ function ListItem(listId, rowId, itemName, quantities)
     return { 
         GetId : function()
         {
-            return rowId;
+            return listItemId;
         },
         GetWrapper : function()
         {
@@ -156,7 +157,7 @@ function ListItem(listId, rowId, itemName, quantities)
         GetDataForStorage : function()
         {
             return new ListItemStorageData({
-                id: rowId, 
+                id: listItemId, 
                 name: nameToggle.textContent,
                 quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
                 quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 

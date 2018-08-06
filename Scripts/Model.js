@@ -3,7 +3,7 @@ window.Model = (function() {
     function createListItem(listId)
     {
         var newListItem = {
-			id : window.GridManager.GetNextRowId(),
+			id : window.GridManager.GetNextRowId(), //TODO this won't work anymore 
             name : '',
             quantities : {
                 needed: 0,
