@@ -1,24 +1,10 @@
 function List(data)
 {
     //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
-    var element = CreateNewElement('div', [ ['class','container-fluid'], ['hidden', 'true'] ]);
+    var element = CreateNewElement('div', [ ['id',data.id], ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
     var type = data.type; //TODO is it necessary to save these variables? (Maybe just store them in storage instead)
     var toggle = new ListToggle(data.name, data.id);
-
-    // function GetNextListItemId()
-    // {
-    //     if (rows.length == 0)
-    //     {
-    //         return parseFloat(data.id + '.' + 0);
-    //     }
-    //     else 
-    //     {   
-    //         console.log("Current highest List Item ID is: " + data.id + "." + (rows[rows.length-1].GetId()));
-    //         return parseFloat(data.id + '.' + (rows[rows.length-1].GetId()+1));
-    //         //return (rows[rows.length-1].GetId()+1);
-    //     }
-    // }
 
     return { 
         GetId : function()
@@ -98,21 +84,21 @@ function List(data)
         },
         AddListItem : function(listItemData)
         {
-            var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, );
+            var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetWrapper());
+            //element.appendChild(itemRow.GetWrapper());
             
             itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
         },
         AddNewRow : function()
         {
-            var itemRow = new ListItem(new Date().getTime(), "", {needed:0, luggage:0, wearing:0, backpack:0});
+            var itemRow = new ListItem(new Date().getTime(), "", {needed:0, luggage:0, wearing:0, backpack:0}, data.id);
 
             rows.push(itemRow);
             
-            element.appendChild(itemRow.GetWrapper());
+            //element.appendChild(itemRow.GetWrapper());
 
             itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
             

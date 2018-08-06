@@ -1,6 +1,5 @@
 function ListItemData()
 {
-    // this.name = null;
     this.modifiers = [];
     this.settings = { //TODO this should not be in the Model
          wrapper: null, 
@@ -10,7 +9,7 @@ function ListItemData()
 }
 
 //TODO would prefer to take a data object as a parameter
-function ListItem(listItemId, itemName, quantities)
+function ListItem(listItemId, listItemName, quantities, listId) //TODO passing listId should be temporary for a hack
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
@@ -19,11 +18,22 @@ function ListItem(listItemId, itemName, quantities)
         {
             return this.data;
         },
+        GetModifiers : function()
+        {
+            return this.data.modifiers;
+        },
+        GetSettings : function()
+        {
+            return this.data.settings;
+        },
         SetData : function(d)
         {
-            // this.data.name = d.name;
             this.data.modifiers = d.modifiers;
             this.data.settings = d.settings;
+        },
+        AddModifier : function(modifier)
+        {
+            this.data.modifiers.push(modifier); 
         },
         GetQuantityNeeded : function()
         {
@@ -36,32 +46,32 @@ function ListItem(listItemId, itemName, quantities)
         },
     };
 
-    var view = {
-        elements: {
-            wrapper : null,
-        }, 
-        GetWrapper : function()
-        {
-            return this.elements.wrapper;
-        },
-        AddElementsToDom : function(model)
-        {
-            //Create the wrapper for the entire List Item
-            this.elements.wrapper = CreateNewElement('div', [ ['id',listItemId], ['class','row divItemRow'] ]);
+    // var view = {
+    //     elements: {
+    //         wrapper : null,
+    //     }, 
+    //     GetWrapper : function()
+    //     {
+    //         return this.elements.wrapper;
+    //     },
+    //     // AddElementsToDom : function(model)
+    //     // {
+    //     //     //Create the wrapper for the entire List Item
+    //     //     this.elements.wrapper = CreateNewElement('div', [ ['id',listItemId], ['class','row divItemRow'] ]);
 
-            //Add the List Item Name to the DOM
-            this.elements.wrapper.appendChild(nameWrapper);
+    //     //     //Add the List Item Name to the DOM
+    //     //     this.elements.wrapper.appendChild(nameWrapper);
 
-            //Add the Modifier elements to the DOM
-            for (var i = 0; i < model.GetData().modifiers.length; i++)
-            {
-                this.elements.wrapper.appendChild(model.GetData().modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
-            }
+    //     //     //Add the Modifier elements to the DOM
+    //     //     for (var i = 0; i < model.GetData().modifiers.length; i++)
+    //     //     {
+    //     //         this.elements.wrapper.appendChild(model.GetData().modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
+    //     //     }
 
-            //Add the Settings panel to the DOM
-            this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
-        }
-    };
+    //     //     //Add the Settings panel to the DOM
+    //     //     this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
+    //     // }
+    // };
 
     SetupElements();
 
@@ -74,51 +84,67 @@ function ListItem(listItemId, itemName, quantities)
     function SetupElements()
     {
         //TODO Is it better to edit properties of the model data directly?
-         var data = new ListItemData();
+        //var data = new ListItemData();
 
-        //TODO is it necessary to pass listItemId as a parameter?
-        //Create the name toggle that can be selected to open or close the settings view for the List Item
-        nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(listItemId), 'buttonListItem buttonListItemName', itemName);
+        // //Create the name toggle that can be selected to open or close the settings view for the List Item
+        // nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(listItemId), 'buttonListItem buttonListItemName', itemName);
         
-        //Create the div wrapper for the List Item Name 
-        nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
+        // //Create the div wrapper for the List Item Name 
+        // nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
        
         //Create the modifier elements for the List Item
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
         //TODO could some sort of binding be done here instead of passing the ModifierValueChanged function?
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.needed));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.luggage));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.wearing));
-        data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.backpack));
-    
-        CreateRowSettingsView(listItemId, data.settings, nameToggle, SettingsViewExpanded);
+        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.needed));
+        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.luggage));
+        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.wearing));
+        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.backpack));
 
-        data.settings.buttonDelete.addEventListener('click', function()
-        {   
-            window.GridManager.RemoveRow(view.GetWrapper());
-        });
 
-        model.SetData(data);
-        view.AddElementsToDom(model);
+
+        window.View.Render(
+            'addNewListItem', {
+                listItemId: listItemId, 
+                listItemName: listItemName,
+                settings: model.GetSettings(), //TODO This is weird and should be temp
+                modifiers: model.GetModifiers(), //TODO This is weird and should be temp
+                listId: listId, //TODO This is weird and should be temp
+            });
+
+
+
+        //CreateRowSettingsView(listItemId, data.settings, nameToggle, SettingsViewExpanded);
+
+        // data.settings.buttonDelete.addEventListener('click', function()
+        // {   
+        //     window.GridManager.RemoveRow(view.GetWrapper());
+        // });
+
+        //model.SetData(data);
+        //view.AddElementsToDom(model);
     }
 
     function ModifierValueChanged()
     {
         console.log("A modifier value was changed");
         
-        window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()})
-        //view.Update(model);
+        window.View.Render(
+            'updateListItemColor', {
+                listItemId: listItemId, 
+                quantityBalance: model.GetQuantityBalance(), 
+                quantityNeeded: model.GetQuantityNeeded()
+            });
 
         window.GridManager.GridModified();
     }
 
-    function SettingsViewExpanded()
-    {
-        console.log("A Settings View has been expanded.");
+    // function SettingsViewExpanded()
+    // {
+    //     console.log("A Settings View has been expanded.");
 
-        view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-    }
+    //     view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+    // }
 
     /** Experimental & In Progress **/
   
@@ -129,15 +155,17 @@ function ListItem(listItemId, itemName, quantities)
         {
             return listItemId;
         },
-        GetWrapper : function()
-        {
-            return view.GetWrapper();
-        },
+        // GetWrapper : function()
+        // {
+        //     console.log("Request to get Wrapper for List Item with ID: " + listItemId + ". Found List Item Element: " + document.getElementById(listItemId));
+        //     return document.getElementById(listItemId);
+        //     //return view.GetWrapper();
+        // },
         GetDataForStorage : function()
         {
             return new ListItemStorageData({
                 id: listItemId, 
-                name: nameToggle.textContent,
+                name: window.View.GetListItemNameButton(listItemId), //TODO this is a bad hack
                 quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
                 quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
                 quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
@@ -149,7 +177,6 @@ function ListItem(listItemId, itemName, quantities)
             model.GetData().modifiers[quantityIndex].SetValue(0);
 
             ModifierValueChanged();
-            //view.Update(model);
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {

@@ -287,11 +287,7 @@ window.GridManager = (function()
                 }
             }
         },
-        AddListFromStorage : function(list) //TODO this one and the one below shoudl be temporary during storage refactor
-        {
-            lists.push(list);
-        },
-        GetListDataForStorage : function()
+        AddListFromStorage : function(list) //TODO this should be temporary during storage refactor
         {
             lists.push(list);
         }
