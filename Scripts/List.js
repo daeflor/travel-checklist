@@ -84,19 +84,23 @@ function List(data)
         },
         AddListItem : function(data)
         {
-            var itemRow = new ListItem(data.id, data.name, data.quantities);
+            var itemRow = new ListItem(data.listId, data.listItemId, data.name, data.quantities, );
 
             rows.push(itemRow);
             
             element.appendChild(itemRow.GetWrapper());
+            
+            itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
         },
         AddNewRow : function()
         {
-            var itemRow = new ListItem(window.GridManager.GetNextRowId(), "", 0, 0, 0, 0);
+            var itemRow = new ListItem(data.id, window.GridManager.GetNextRowId(), "", {needed:0, luggage:0, wearing:0, backpack:0});
 
             rows.push(itemRow);
             
             element.appendChild(itemRow.GetWrapper());
+
+            itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
             
             itemRow.ExpandSettings();
         },

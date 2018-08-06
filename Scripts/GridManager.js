@@ -268,7 +268,7 @@ window.GridManager = (function()
             {
                 console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
                 activeList.ClearQuantityColumnValues(columnIndex);
-                SaveDataToStorage();
+                //SaveDataToStorage();
             }
             else
             {

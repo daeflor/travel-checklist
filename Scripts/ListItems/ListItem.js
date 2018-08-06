@@ -1,6 +1,6 @@
 function ListItemData()
 {
-    this.name = null;
+    // this.name = null;
     this.modifiers = [];
     this.settings = { //TODO this should not be in the Model
          wrapper: null, 
@@ -9,8 +9,10 @@ function ListItemData()
     };
 }
 
-function ListItem(rowId, itemName, quantities)
+function ListItem(listId, rowId, itemName, quantities)
 {
+    var listItemId = (listId+'-'+rowId);
+
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
         data: new ListItemData(), //TODO would it be better if this were just null?
@@ -20,7 +22,7 @@ function ListItem(rowId, itemName, quantities)
         },
         SetData : function(d)
         {
-            this.data.name = d.name;
+            // this.data.name = d.name;
             this.data.modifiers = d.modifiers;
             this.data.settings = d.settings;
         },
@@ -46,10 +48,10 @@ function ListItem(rowId, itemName, quantities)
         AddElementsToDom : function(model)
         {
             //Create the wrapper for the entire List Item
-            this.elements.wrapper = CreateNewElement('div', [ ['class','row divItemRow'] ]);
+            this.elements.wrapper = CreateNewElement('div', [ ['id',listItemId], ['class','row divItemRow'] ]);
 
             //Add the List Item Name to the DOM
-            this.elements.wrapper.appendChild(model.GetData().name.GetWrapper());
+            this.elements.wrapper.appendChild(nameWrapper);
 
             //Add the Modifier elements to the DOM
             for (var i = 0; i < model.GetData().modifiers.length; i++)
@@ -59,27 +61,31 @@ function ListItem(rowId, itemName, quantities)
 
             //Add the Settings panel to the DOM
             this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
-        },
-        Update : function(model) //TODO update this to use the Render method used by ListItemModifier, and pass the specific data values needed
-        {
-            //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
-            if (model.GetQuantityBalance() != 0)
-            {
-                //TODO The View shouldn't be telling the Model to update a color...
-                model.GetData().name.SetColor('peru'); //lightsalmon is also good
-            }
-            else if (model.GetQuantityNeeded() != 0)
-            {
-                model.GetData().name.SetColor('mediumseagreen');
-            }
-            else 
-            {
-                model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
-            }
-        },
+        }
+        // Update : function(model) //TODO update this to use the Render method used by ListItemModifier, and pass the specific data values needed
+        // {
+        //     //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
+        //     if (model.GetQuantityBalance() != 0)
+        //     {
+        //         //TODO The View shouldn't be telling the Model to update a color...
+        //         model.GetData().name.SetColor('peru'); //lightsalmon is also good
+        //     }
+        //     else if (model.GetQuantityNeeded() != 0)
+        //     {
+        //         model.GetData().name.SetColor('mediumseagreen');
+        //     }
+        //     else 
+        //     {
+        //         model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
+        //     }
+        // },
     };
 
     SetupElements();
+
+    //TODO these are temp
+    var nameToggle;
+    var nameWrapper;
 
     /** Private Functions **/
 
@@ -89,7 +95,13 @@ function ListItem(rowId, itemName, quantities)
          var data = new ListItemData();
 
         //Create the List Item Name elements
-        data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
+        //data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
+
+        //Create the name toggle that can be selected to open or close the settings view for the List Item
+        nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(rowId), 'buttonListItem buttonListItemName', itemName);
+        
+        //Create the div wrapper for the List Item Name 
+        nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
        
         //Create the modifier elements for the List Item
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
@@ -100,7 +112,7 @@ function ListItem(rowId, itemName, quantities)
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.wearing));
         data.modifiers.push(new ListItemModifier(ModifierValueChanged, quantities.backpack));
     
-        CreateRowSettingsView(rowId, data.settings, data.name.GetToggle(), SettingsViewExpanded);
+        CreateRowSettingsView(rowId, data.settings, nameToggle, SettingsViewExpanded);
 
         data.settings.buttonDelete.addEventListener('click', function()
         {   
@@ -108,21 +120,23 @@ function ListItem(rowId, itemName, quantities)
         });
 
         model.SetData(data);
-        //console.log(model.GetData().name.GetValue());
         view.AddElementsToDom(model);
-        view.Update(model); //TODO maybe don't force call this here. The modifiers could call it
     }
 
     function ModifierValueChanged()
     {
         console.log("A modifier value was changed");
-        view.Update(model);
+        
+        window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()})
+        //view.Update(model);
+
         window.GridManager.GridModified();
     }
 
     function SettingsViewExpanded()
     {
         console.log("A Settings View has been expanded.");
+
         view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     }
 
@@ -143,7 +157,7 @@ function ListItem(rowId, itemName, quantities)
         {
             return new ListItemStorageData({
                 id: rowId, 
-                name: model.GetData().name.GetValue(),
+                name: nameToggle.textContent,
                 quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
                 quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
                 quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
@@ -153,7 +167,9 @@ function ListItem(rowId, itemName, quantities)
         ClearQuantityValue : function(quantityIndex)
         {
             model.GetData().modifiers[quantityIndex].SetValue(0);
-            view.Update(model);
+
+            ModifierValueChanged();
+            //view.Update(model);
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
@@ -162,6 +178,10 @@ function ListItem(rowId, itemName, quantities)
 
             //Bring focus to the Text Area to edit the List Item name
             model.GetData().settings.editNameTextarea.focus();         
+        },
+        UpdateColor : function()
+        {
+            window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()});
         }
     };
 }
