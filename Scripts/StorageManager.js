@@ -74,6 +74,7 @@ window.StorageManager = (function () {
                 
                 //TODO Do Something with the Model here first. These interactions should go through the Model instead of directly to the View or Controller
 
+                //TODO Storage shouldn't be interacting with the View
                 //TODO Shouldn't be passing element data to the View. Thw View should take care of that. I think...
                 window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
 
@@ -91,7 +92,6 @@ window.StorageManager = (function () {
                             
                             //Add a row to current List, passing along the data parsed from storage
                             list.AddListItem({
-                                //listId: parsedData.lists[i].id, //TODO long term hopefully this won't have to be passed here
                                 id: parsedData.lists[i].listItems[j].id, 
                                 name: parsedData.lists[i].listItems[j].name, 
                                 quantities: parsedData.lists[i].listItems[j].quantities

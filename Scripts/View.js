@@ -24,7 +24,7 @@ window.View = (function() {
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
     }
 
-    //TODO change this. It should be part of Render, if it is even necessary
+    //TODO change this. Maybe it should be part of Render, if it is even necessary
     function addHeaderToDom(data)
     {
         elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section

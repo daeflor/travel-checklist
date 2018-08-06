@@ -12,8 +12,6 @@ function ListItemData()
 //TODO would prefer to take a data object as a parameter
 function ListItem(listItemId, itemName, quantities)
 {
-    //var listItemId = new Date().getTime();
-
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
     var model = {
         data: new ListItemData(), //TODO would it be better if this were just null?
@@ -63,23 +61,6 @@ function ListItem(listItemId, itemName, quantities)
             //Add the Settings panel to the DOM
             this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
         }
-        // Update : function(model) //TODO update this to use the Render method used by ListItemModifier, and pass the specific data values needed
-        // {
-        //     //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
-        //     if (model.GetQuantityBalance() != 0)
-        //     {
-        //         //TODO The View shouldn't be telling the Model to update a color...
-        //         model.GetData().name.SetColor('peru'); //lightsalmon is also good
-        //     }
-        //     else if (model.GetQuantityNeeded() != 0)
-        //     {
-        //         model.GetData().name.SetColor('mediumseagreen');
-        //     }
-        //     else 
-        //     {
-        //         model.GetData().name.SetColor('rgb(77, 77, 77)'); //"darkgrey";
-        //     }
-        // },
     };
 
     SetupElements();
@@ -95,9 +76,7 @@ function ListItem(listItemId, itemName, quantities)
         //TODO Is it better to edit properties of the model data directly?
          var data = new ListItemData();
 
-        //Create the List Item Name elements
-        //data.name = new ListItemName(rowId, itemName) //TODO is it necessary to pass rowId as a parameter?
-
+        //TODO is it necessary to pass listItemId as a parameter?
         //Create the name toggle that can be selected to open or close the settings view for the List Item
         nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(listItemId), 'buttonListItem buttonListItemName', itemName);
         

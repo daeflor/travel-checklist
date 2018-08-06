@@ -7,8 +7,8 @@ window.GridManager = (function()
     var activeSettingsView = null; //TODO could this be moved into the View? 
     var lists = [];
     var activeList;
-    var rowCounter = -1;
-    var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc. or instead could use GetDateTime().
+    // var rowCounter = -1;
+    // var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc. or instead could use GetDateTime().
 
     /** Storage - TEMP **/ //TODO This is temp
 
@@ -49,32 +49,32 @@ window.GridManager = (function()
         window.StorageManager.LoadDataFromStorage();
 
         //TODO This is a hack
-        if (lists.length > 0)
-        {
-            listCounter = lists[lists.length-1].GetId(); 
+        // if (lists.length > 0)
+        // {
+        //     listCounter = lists[lists.length-1].GetId(); 
 
-            for (var i = lists.length-1; i >= 0; i--)
-            {
-                rowCounter = lists[i].GetHighestListItemId(); 
+        //     for (var i = lists.length-1; i >= 0; i--)
+        //     {
+        //         rowCounter = lists[i].GetHighestListItemId(); 
 
-                if (rowCounter != null)
-                {
-                    console.log("The current highest row ID is: " + rowCounter);
-                    break;
-                }
-            }
-        }
+        //         if (rowCounter != null)
+        //         {
+        //             console.log("The current highest row ID is: " + rowCounter);
+        //             break;
+        //         }
+        //     }
+        // }
     }
 
     /** List Management **/
 
-    function GetNextListId()
-    {
-        //return (lists[lists.length-1].GetId()+1);
+    // function GetNextListId()
+    // {
+    //     //return (lists[lists.length-1].GetId()+1);
 
-        listCounter++;
-        return listCounter;
-    }
+    //     listCounter++;
+    //     return listCounter;
+    // }
 
     function AddNewListItem()
     {
@@ -98,7 +98,7 @@ window.GridManager = (function()
 
     function AddNewList()
     {
-        var list = new List({name:'', type:ListType.Travel, id:GetNextListId()});
+        var list = new List({name:'', type:ListType.Travel, id:new Date().getTime()});
         
         lists.push(list);
 
@@ -251,17 +251,6 @@ window.GridManager = (function()
         {
             SaveDataToStorage();
         },
-        // GetNextRowId : function()
-        // {
-        //     rowCounter++;
-        //     return rowCounter;
-        // },
-        // GetNextListId : function()
-        // {
-        //     //return (lists[lists.length-1].GetId()+1)
-        //     listCounter++;
-        //     return listCounter;
-        // },
         ClearButtonPressed : function(columnIndex)
         {
             if (activeList != null)
