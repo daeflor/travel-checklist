@@ -46,52 +46,13 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         },
     };
 
-    // var view = {
-    //     elements: {
-    //         wrapper : null,
-    //     }, 
-    //     GetWrapper : function()
-    //     {
-    //         return this.elements.wrapper;
-    //     },
-    //     // AddElementsToDom : function(model)
-    //     // {
-    //     //     //Create the wrapper for the entire List Item
-    //     //     this.elements.wrapper = CreateNewElement('div', [ ['id',listItemId], ['class','row divItemRow'] ]);
-
-    //     //     //Add the List Item Name to the DOM
-    //     //     this.elements.wrapper.appendChild(nameWrapper);
-
-    //     //     //Add the Modifier elements to the DOM
-    //     //     for (var i = 0; i < model.GetData().modifiers.length; i++)
-    //     //     {
-    //     //         this.elements.wrapper.appendChild(model.GetData().modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
-    //     //     }
-
-    //     //     //Add the Settings panel to the DOM
-    //     //     this.elements.wrapper.appendChild(model.GetData().settings.wrapper);
-    //     // }
-    // };
-
     SetupElements();
-
-    //TODO these are temp
-    var nameToggle;
-    var nameWrapper;
 
     /** Private Functions **/
 
     function SetupElements()
     {
-        //TODO Is it better to edit properties of the model data directly?
-        //var data = new ListItemData();
-
-        // //Create the name toggle that can be selected to open or close the settings view for the List Item
-        // nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(listItemId), 'buttonListItem buttonListItemName', itemName);
-        
-        // //Create the div wrapper for the List Item Name 
-        // nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
-       
+        //TODO Is it good to edit properties of the model data directly?
         //Create the modifier elements for the List Item
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
@@ -104,25 +65,13 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
 
         window.View.Render(
-            'addNewListItem', {
+            'addListItem', {
                 listItemId: listItemId, 
                 listItemName: listItemName,
                 settings: model.GetSettings(), //TODO This is weird and should be temp
                 modifiers: model.GetModifiers(), //TODO This is weird and should be temp
                 listId: listId, //TODO This is weird and should be temp
             });
-
-
-
-        //CreateRowSettingsView(listItemId, data.settings, nameToggle, SettingsViewExpanded);
-
-        // data.settings.buttonDelete.addEventListener('click', function()
-        // {   
-        //     window.GridManager.RemoveRow(view.GetWrapper());
-        // });
-
-        //model.SetData(data);
-        //view.AddElementsToDom(model);
     }
 
     function ModifierValueChanged()
@@ -139,13 +88,6 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         window.GridManager.GridModified();
     }
 
-    // function SettingsViewExpanded()
-    // {
-    //     console.log("A Settings View has been expanded.");
-
-    //     view.GetWrapper().scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-    // }
-
     /** Experimental & In Progress **/
   
     /** Public Functions **/
@@ -155,17 +97,11 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         {
             return listItemId;
         },
-        // GetWrapper : function()
-        // {
-        //     console.log("Request to get Wrapper for List Item with ID: " + listItemId + ". Found List Item Element: " + document.getElementById(listItemId));
-        //     return document.getElementById(listItemId);
-        //     //return view.GetWrapper();
-        // },
         GetDataForStorage : function()
         {
             return new ListItemStorageData({
                 id: listItemId, 
-                name: window.View.GetListItemNameButton(listItemId), //TODO this is a bad hack
+                name: window.View.GetListItemNameButton(listItemId).textContent, //TODO this is a bad hack
                 quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
                 quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
                 quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 

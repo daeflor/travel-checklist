@@ -1,5 +1,5 @@
-window.StorageManager = (function () {
-
+window.StorageManager = (function () 
+{
     //function Storage() {}
 
     /** Utility Methods **/

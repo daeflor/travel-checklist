@@ -1,11 +1,13 @@
-window.View = (function() {
-
+window.View = (function() 
+{
     var elements = {  
-        listHeader : null,
         homeHeader : null,
         homeScreen : null,
-        listsWrapper : null,
+        homeScreenListElements : null,
+        listHeader : null,
         listTitle : null,
+        listScreen : null,
+        listScreenListElements : null
     };
 
     function init()
@@ -134,45 +136,47 @@ window.View = (function() {
                 //Remove the List Toggle element from the Lists of Lists wrapper
                 elements.homeScreenListElements.removeChild(parameter.listToggleElement);
             },
-            addNewListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
+            addListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
             {
-                //Create the div wrapper for the entire List Item
-                var wrapper = CreateNewElement('div', [ ['id',parameter.listItemId], ['class','row divItemRow'] ]);
+                // //TODO Could all these calls below be moved to a Template file, this being the new List Item template?
 
-                //Create the name toggle that can be selected to open or close the Settings View for the List Item
-                var nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(parameter.listItemId), 'buttonListItem buttonListItemName', parameter.listItemName);
+                // //Create the div wrapper for the entire List Item
+                // var wrapper = CreateNewElement('div', [ ['id',parameter.listItemId], ['class','row divItemRow'] ]);
+
+                // //Create the name toggle that can be selected to open or close the Settings View for the List Item
+                // var nameToggle = CreateToggleForCollapsibleView('edit-row-'.concat(parameter.listItemId), 'buttonListItem buttonListItemName', parameter.listItemName);
                 
-                //Create the div wrapper for the List Item Name, with the name toggle as a child 
-                var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
+                // //Create the div wrapper for the List Item Name, with the name toggle as a child 
+                // var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
 
-                //Add the List Item Name to the DOM as a child of the List Item div wrapper
-                wrapper.appendChild(nameWrapper);
+                // //Add the List Item Name to the DOM as a child of the List Item div wrapper
+                // wrapper.appendChild(nameWrapper);
 
-                //Add the Modifier elements to the DOM as children of the List Item div wrapper
-                for (var i = 0; i < parameter.modifiers.length; i++)
-                {
-                    console.log("Added a modifier with index " + i + " to ListItem with ID: " + parameter.listItemId);
-                    wrapper.appendChild(parameter.modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
-                }  
+                // //Add the Modifier elements to the DOM as children of the List Item div wrapper
+                // for (var i = 0; i < parameter.modifiers.length; i++)
+                // {
+                //     console.log("Added a modifier with index " + i + " to ListItem with ID: " + parameter.listItemId);
+                //     wrapper.appendChild(parameter.modifiers[i].GetWrapper()); //TODO see if this is really necessary or if it can be done a better way
+                // }  
 
-                //Create the Settings View for the List Item
-                CreateRowSettingsView(parameter.listItemId, parameter.settings, nameToggle, function() {
-                    wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-                });
+                // //Create the Settings View for the List Item
+                // CreateRowSettingsView(parameter.listItemId, parameter.settings, nameToggle, function() {
+                //     wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+                // });
 
-                //TODO After the list item gets created, the controller should call to bind the new buttons to events
+                // //TODO After the list item gets created, the controller should call to bind the new buttons to events
 
-                //Add the Settings View to the DOM as a child of the List Item div wrapper
-                wrapper.appendChild(parameter.settings.wrapper);   
+                // //Add the Settings View to the DOM as a child of the List Item div wrapper
+                // wrapper.appendChild(parameter.settings.wrapper);   
 
-                //TODO a BIND call should be used for this instead
-                //Add an event listener to the Delete Button to remove the List Item
-                parameter.settings.buttonDelete.addEventListener('click', function() {   
-                    window.GridManager.RemoveRow(wrapper);
-                });
+                // //TODO a BIND call should be used for this instead
+                // //Add an event listener to the Delete Button to remove the List Item
+                // parameter.settings.buttonDelete.addEventListener('click', function() {   
+                //     window.GridManager.RemoveRow(wrapper);
+                // });
 
                 //TODO this is a temporary hack to add the List Item as a child of the List in the DOM
-                document.getElementById(parameter.listId).appendChild(wrapper);
+                document.getElementById(parameter.listId).appendChild(window.TemplateManager.CreateListItemFromTemplate(parameter));
             },
             updateListItemColor: function() 
             {
