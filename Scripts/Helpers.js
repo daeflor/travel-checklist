@@ -168,7 +168,7 @@ function CreateSettingsView(id, elements, nameButton, parentType, toggleViewFunc
     /* Create Delete Button */
     elements.buttonDelete = CreateNewElement(
         'button', 
-        [ ['type','button'] ], 
+        [ ['id','Delete-'.concat(id)], ['type','button'] ], 
         CreateNewElement('i', [['class','fa fa-trash']])
     );
 

@@ -6,6 +6,21 @@ function List(data)
     var type = data.type; //TODO is it necessary to save these variables? (Maybe just store them in storage instead)
     var toggle = new ListToggle(data.name, data.id);
 
+    function RemoveListItem(listItemId)
+    {
+        for (var i = rows.length-1; i >= 0; i--)
+        {
+            if (rows[i].GetId() == listItemId)
+            {
+                rows.splice(i, 1);
+                window.View.Render('removeListItem', {listItemId:listItemId});
+                break;
+            }
+        } 
+
+        window.GridManager.GridModified();
+    }
+
     return { 
         GetId : function()
         {
@@ -65,23 +80,23 @@ function List(data)
                 listItems: listItemData
             });
         },
-        RemoveRow : function(rowElementToRemove)
-        {
-            var index = $(rowElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
-            //rowElementToRemove.GetIndex();
-            console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
+        // RemoveRow : function(rowElementToRemove)
+        // {
+        //     var index = $(rowElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
+        //     //rowElementToRemove.GetIndex();
+        //     console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
             
-            if(index > -1) 
-            {
-                rows.splice(index, 1);
-                element.removeChild(rowElementToRemove);
-                console.log("Removed row at index " + index + ". Number of Row Items in List's list is now: " + rows.length);
-            }
-            else
-            {
-                console.log("Failed to remove row from grid. Row index returned invalid value.");
-            }
-        },
+        //     if(index > -1) 
+        //     {
+        //         rows.splice(index, 1);
+        //         element.removeChild(rowElementToRemove);
+        //         console.log("Removed row at index " + index + ". Number of Row Items in List's list is now: " + rows.length);
+        //     }
+        //     else
+        //     {
+        //         console.log("Failed to remove row from grid. Row index returned invalid value.");
+        //     }
+        // },
         AddListItem : function(listItemData)
         {
             var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
@@ -89,16 +104,23 @@ function List(data)
             rows.push(itemRow);
             
             //element.appendChild(itemRow.GetWrapper());
+
+            //Add an event listener to the Delete Button to remove the List Item
+            window.View.Bind('DeleteButtonPressed', function() {RemoveListItem(listItemData.id)}, {id:listItemData.id});
             
             itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
         },
-        AddNewRow : function()
+        AddNewListItem : function()
         {
-            var itemRow = new ListItem(new Date().getTime(), "", {needed:0, luggage:0, wearing:0, backpack:0}, data.id);
+            var listItemId = new Date().getTime();
+            var itemRow = new ListItem(listItemId, "", {needed:0, luggage:0, wearing:0, backpack:0}, data.id);
 
             rows.push(itemRow);
             
             //element.appendChild(itemRow.GetWrapper());
+
+            //Add an event listener to the Delete Button to remove the List Item
+            window.View.Bind('DeleteButtonPressed', function() {RemoveListItem(listItemId)}, {id:listItemId});
 
             itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
             

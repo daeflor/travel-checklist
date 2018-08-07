@@ -56,16 +56,22 @@ window.View = (function()
                 // }
                 // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); }
             }
-            else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + parameter.listItemId); }
+            else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
         }
-        else { console.log("ERROR: Could not find List Item wrapper element with ID: " + parameter.listItemId); }
+        else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
+    //TODO How can you have the parameters param before the callback param but still have the former be optional?
     //TODO There are still a lot more things in GridManager that can be bound here
-    function bind(event, callback)
+    //TODO standardize between parameters, parameter, options, data, etc.
+    /**
+     * 
+     * @param {string} event The name used to identify the event being bound
+     * @param {*} callback The function to call when the corresponding event has been triggered 
+     * @param {object} parameters An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id.
+     */
+    function bind(event, callback, parameters)
     {
-        // var self = this;
-
         if (event === 'NavigateHome') 
         {
             //Set the behavior for when the Home button is pressed
@@ -78,8 +84,23 @@ window.View = (function()
         }
         else if (event === 'AddListItem') 
         {
-            //Set the behavior for when the Add Row button is pressed
+            //Set the behavior for when the Add List Item button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
+        }
+        else if (event === 'DeleteButtonPressed') 
+        {
+            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
+
+            var buttonDelete = document.getElementById('Delete-'.concat(parameters.id));
+
+            if (buttonDelete != null)
+            {
+                buttonDelete.addEventListener('click', callback);         
+            }
+            else
+            {
+                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+            }
         }
     }
 
@@ -140,6 +161,12 @@ window.View = (function()
             {
                 //TODO this is a temporary hack to add the List Item as a child of the List in the DOM
                 document.getElementById(parameter.listId).appendChild(window.TemplateManager.CreateListItemFromTemplate(parameter));
+            
+                console.log("Added a List Item to the DOM. ListItem ID: " + parameter.listItemId);
+            },
+            removeListItem: function() 
+            {
+                document.getElementById(parameter.listItemId).remove();
             },
             updateListItemColor: function() 
             {

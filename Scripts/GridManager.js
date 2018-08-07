@@ -81,7 +81,7 @@ window.GridManager = (function()
         //TODO is there a better mechanism for doing error handling?
         if (activeList != null)
         {
-            activeList.AddNewRow(); 
+            activeList.AddNewListItem(); 
             
             //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
             //Model.CreateListItem(activeList.GetId());
@@ -179,18 +179,18 @@ window.GridManager = (function()
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        RemoveRow : function(rowElementToRemove)
-        {        
-            if (activeList != null)
-            {
-                activeList.RemoveRow(rowElementToRemove);
-                SaveDataToStorage(); 
-            }
-            else
-            {
-                console.log("ERROR: Tried to remove a row from the Active List, which doesn't exist");
-            }
-        },
+        // RemoveRow : function(rowElementToRemove)
+        // {        
+        //     if (activeList != null)
+        //     {
+        //         activeList.RemoveRow(rowElementToRemove);
+        //         SaveDataToStorage(); 
+        //     }
+        //     else
+        //     {
+        //         console.log("ERROR: Tried to remove a row from the Active List, which doesn't exist");
+        //     }
+        // },
         RemoveList : function(listElementToRemove)
         {        
             var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
@@ -200,6 +200,7 @@ window.GridManager = (function()
             if(index > -1) 
             {
                 //TODO Do something with the Model here, no?
+                //TODO Should probably send IDs instead of actual elements
                 window.View.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
 
                 lists.splice(index, 1);

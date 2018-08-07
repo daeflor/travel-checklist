@@ -33,12 +33,6 @@ window.TemplateManager = (function ()
         //Add the Settings View to the DOM as a child of the List Item div wrapper
         wrapper.appendChild(data.settings.wrapper);   
 
-        //TODO a BIND call should be used for this instead
-        //Add an event listener to the Delete Button to remove the List Item
-        data.settings.buttonDelete.addEventListener('click', function() {   
-            window.GridManager.RemoveRow(wrapper);
-        });
-
         return wrapper;
     }
         
@@ -61,7 +55,7 @@ window.TemplateManager = (function ()
         /* Create Delete Button */
         elements.buttonDelete = CreateNewElement(
             'button', 
-            [ ['type','button'] ], 
+            [ ['id','Delete-'.concat(id)], ['type','button'] ], 
             CreateNewElement('i', [['class','fa fa-trash']])
         );
 
