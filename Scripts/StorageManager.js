@@ -4,12 +4,12 @@ window.StorageManager = (function ()
 
     /** Utility Methods **/
 
-    function saveNameValuePairToLocalStorage(name, value)
+    function loadValueFromLocalStorage(name)
     {
         if (typeof(Storage) !== "undefined") 
         {
-            localStorage.setItem(name, value);
-            console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
+            console.log('Request to load value for "' + name +'" from localstorage.');        
+            return localStorage.getItem(name);
         } 
         else 
         {
@@ -17,12 +17,12 @@ window.StorageManager = (function ()
         }
     }
 
-    function loadValueFromLocalStorage(name)
+    function saveNameValuePairToLocalStorage(name, value)
     {
         if (typeof(Storage) !== "undefined") 
         {
-            console.log('Request to load value for "' + name +'" from localstorage.');        
-            return localStorage.getItem(name);
+            localStorage.setItem(name, value);
+            console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
         } 
         else 
         {
@@ -37,39 +37,59 @@ window.StorageManager = (function ()
         saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
     }
 
-    //TODO Could be renamed for clarity (to note that this is more specifically about getting and parsing all the list data and recreating it, not just generally loading something from storage)
-        //TODO Though I guess long term it should be simplified so that the lists aren't 'recreated'
-    function loadDataFromStorage()
+    function getParsedDataFromStorage()
     {
-        var storageDataString = loadValueFromLocalStorage('TraveList-Data');
-    
-        //If the data string loaded from storage is not null or empty, parse the string to JSON and load the list data from that
-        if (storageDataString != null && storageDataString.length>0)
-        {
-            //console.log("Loaded from Local Storage: " + storageDataString);
+        //Try to load the raw data from storage. If there is none, create new template data.
+        var rawStorageData = loadValueFromLocalStorage('TraveList-Data') || '{"lists":[]}';
 
-            //Load all list data based on the parsed storage data
-            loadAllListData(JSON.parse(storageDataString));  
-        }    
-        else
-        {
-            console.log("Could not find any data for this app saved in local storage.");
-        }
+        return JSON.parse(rawStorageData);
+
+        // //If the raw data string loaded from storage is not null or empty, parse the string to JSON
+        // if (rawStorageData != null && rawStorageData.length>0)
+        // {
+        //     return JSON.parse(rawStorageData); //TODO is it necessary to have error handling around this? Probably overkill...
+        // }
+        // else
+        // {
+        //     console.log("Could not find any data for this app saved in local storage. Creating a new, empty data storage object.");
+        //     return {};
+        // }
     }
 
-    function loadAllListData(parsedData)
+    // function getListDataFromStorage()
+    // {
+    //     var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+
+    //     //If the raw data string loaded from storage is not null or empty, parse the string to JSON
+    //     if (rawStorageData != null && rawStorageData.length>0)
+    //     {
+    //         var parsedStorageData = JSON.parse(rawStorageData);
+
+    //         return parsedStorageData.lists;
+    //     }
+    //     else
+    //     {
+    //         console.log("Could not find any data for this app saved in local storage.");
+    //         return null;
+    //     }
+    // }
+
+    //TODO Long term it should be simplified so that the lists aren't 'recreated'
+    function loadListData()
     {
+        var lists = getParsedDataFromStorage().lists;
+
         //Check if there is a 'lists' object in the parsed storage data
-        if (parsedData.lists != null)
-        {
+        //if (lists != null)
+        //{
             //Traverse all the Lists saved in local storage
-            for (var i = 0; i < parsedData.lists.length; i++) 
+            for (var i = 0; i < lists.length; i++) 
             {
                 //Create a new List based on the parsed data
                 var list = new List({
-                    id: parsedData.lists[i].id, 
-                    name: parsedData.lists[i].name, 
-                    type: parsedData.lists[i].type
+                    id: lists[i].id, 
+                    name: lists[i].name, 
+                    type: lists[i].type
                 });
                 
                 //TODO Do Something with the Model here first. These interactions should go through the Model instead of directly to the View or Controller
@@ -81,20 +101,20 @@ window.StorageManager = (function ()
                 console.log("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
                 
                 //Check if there is a 'listItems' object in the parsed storage data for the current list
-                if (parsedData.lists != null)
+                if (lists[i].listItems !== null)
                 {
                     //Traverse all the List Items belonging to the current list, in local storage
-                    for (var j = 0; j < parsedData.lists[i].listItems.length; j++) 
+                    for (var j = 0; j < lists[i].listItems.length; j++) 
                     {
                         if (list.GetType() == ListType.Travel)
                         {
-                            console.log("List: " + i + ". Row: " + j + ". Item: " + parsedData.lists[i].listItems[j].name);
+                            console.log("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
                             
                             //Add a row to current List, passing along the data parsed from storage
                             list.AddListItem({
-                                id: parsedData.lists[i].listItems[j].id, 
-                                name: parsedData.lists[i].listItems[j].name, 
-                                quantities: parsedData.lists[i].listItems[j].quantities
+                                id: lists[i].listItems[j].id, 
+                                name: lists[i].listItems[j].name, 
+                                quantities: lists[i].listItems[j].quantities
                             });
                         }
                         else if (list.GetType() == null)
@@ -110,52 +130,84 @@ window.StorageManager = (function ()
 
                 window.GridManager.AddListFromStorage(list);
             }
-        }
-        else
-        {
-            console.log("ERROR: Tried to load list data from storage but no lists object could be found");
-        }
+        // }
+        // else
+        // {
+        //     console.log("ERROR: Tried to load list data from storage but no lists object could be found");
+        // }
     }
 
     //TODO this isn't used yet
     function storeNewList(newList)
     {
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+        var parsedStorageData = getParsedDataFromStorage();
 
-        var parsedStorageData = JSON.parse(rawStorageData);
+        //If there is no data already in storage, create a new storage object containing a lists array
+        //var parsedStorageData = getParsedDataFromStorage() || {lists:[]};
 
-        var lists = parsedStorageData.lists;
+        //If there is no lists array already in storage, create a new one
+        // var lists = getListDataFromStorage() || [];
 
-        lists.push(newList);
-        
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+        parsedStorageData.lists.push(newList);
+
+        storeListData(parsedStorageData);
     }
 
-    //TODO Usage of this is In Progress
-    function storeNewListItem(listId, newListItem)
+    //TODO this isn't used yet
+    function removeList(id)
     {
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
 
-        var parsedStorageData = JSON.parse(rawStorageData);
-
-        var lists = parsedStorageData.lists;
-
-        for (var i = 0; i < lists.length; i++)  
-        {
-            if (lists[i].id == listId)
+        //Check that the storage data contains a lists object
+        //if (parsedStorageData.lists != null) 
+        //{
+            //Traverse the stored list data for one that matches the given ID
+            for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
             {
-                lists[i].listItems.push(newListItem);
-            }
-        }
-        
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+                if (parsedStorageData.lists[i].id == id)
+                {
+                    //Remove the matching list object from the lists array
+                    parsedStorageData.lists.splice(i, 1);
+                    break;
+                }
+            } 
+        // }
+        // else
+        // {
+        //     console.log("ERROR: Tried to load list data from storage but no lists object could be found");
+        // }
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
     }
+
+    //TODO STILL IN PROGRESS and also this isn't used yet
+    // function storeNewListItem(listId, newListItem)
+    // {
+    //     var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+
+    //     var parsedStorageData = JSON.parse(rawStorageData);
+
+    //     var lists = parsedStorageData.lists;
+
+    //     for (var i = 0; i < lists.length; i++)  
+    //     {
+    //         if (lists[i].id == listId)
+    //         {
+    //             lists[i].listItems.push(newListItem);
+    //         }
+    //     }
+        
+    //     saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+    // }
 
     return {
         StoreListData : storeListData,
-        LoadDataFromStorage : loadDataFromStorage,
+        LoadListData : loadListData,
         StoreNewList : storeNewList,
-        StoreNewListItem : storeNewListItem
+        RemoveList : removeList,
+        // StoreNewListItem : storeNewListItem
     };
 })();  
 
@@ -180,3 +232,12 @@ function ListItemStorageData(data)
         backpack: data.quantityBackpack
     };
 }
+
+//TODO Storage Cases Needed:
+//Create New List
+//Edit List Name
+//Delete List
+//Create New List Item
+//Edit List Item Name
+//Edit List Item Quantity / Modifier Value
+//Delete List Item

@@ -1,9 +1,9 @@
 window.Model = (function() {
 
-    function createListItem(listId)
+    function createList(listId)
     {
         var newListItem = {
-			id : window.GridManager.GetNextRowId(), //TODO this won't work anymore 
+			id : new Date().getTime(), 
             name : '',
             quantities : {
                 needed: 0,
@@ -14,6 +14,18 @@ window.Model = (function() {
         };
         
         window.StorageManager.StoreNewListItem(listId, newListItem);
+    }
+
+    function createListItem()
+    {
+        var newList = {
+			id : new Date().getTime(), 
+            name : '',
+            type: '0',
+            listItems : []
+        };
+        
+        window.StorageManager.StoreNewList(newList);
     }
 
     return {

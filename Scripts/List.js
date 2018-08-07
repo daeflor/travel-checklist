@@ -80,23 +80,6 @@ function List(data)
                 listItems: listItemData
             });
         },
-        // RemoveRow : function(rowElementToRemove)
-        // {
-        //     var index = $(rowElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
-        //     //rowElementToRemove.GetIndex();
-        //     console.log("Index of row to be removed: " + index + ". Class name of row to be removed: " + rowElementToRemove.className);  
-            
-        //     if(index > -1) 
-        //     {
-        //         rows.splice(index, 1);
-        //         element.removeChild(rowElementToRemove);
-        //         console.log("Removed row at index " + index + ". Number of Row Items in List's list is now: " + rows.length);
-        //     }
-        //     else
-        //     {
-        //         console.log("Failed to remove row from grid. Row index returned invalid value.");
-        //     }
-        // },
         AddListItem : function(listItemData)
         {
             var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);

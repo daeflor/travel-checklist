@@ -46,35 +46,10 @@ window.GridManager = (function()
         window.View.Bind('AddList', AddNewList);
         window.View.Bind('AddListItem', AddNewListItem);
 
-        window.StorageManager.LoadDataFromStorage();
-
-        //TODO This is a hack
-        // if (lists.length > 0)
-        // {
-        //     listCounter = lists[lists.length-1].GetId(); 
-
-        //     for (var i = lists.length-1; i >= 0; i--)
-        //     {
-        //         rowCounter = lists[i].GetHighestListItemId(); 
-
-        //         if (rowCounter != null)
-        //         {
-        //             console.log("The current highest row ID is: " + rowCounter);
-        //             break;
-        //         }
-        //     }
-        // }
+        window.StorageManager.LoadListData();
     }
 
     /** List Management **/
-
-    // function GetNextListId()
-    // {
-    //     //return (lists[lists.length-1].GetId()+1);
-
-    //     listCounter++;
-    //     return listCounter;
-    // }
 
     function AddNewListItem()
     {
@@ -107,6 +82,7 @@ window.GridManager = (function()
         
         list.GetToggle().ExpandSettings(); 
   
+        //Model.CreateListItem();
         SaveDataToStorage(); 
     }
 
@@ -179,18 +155,6 @@ window.GridManager = (function()
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        // RemoveRow : function(rowElementToRemove)
-        // {        
-        //     if (activeList != null)
-        //     {
-        //         activeList.RemoveRow(rowElementToRemove);
-        //         SaveDataToStorage(); 
-        //     }
-        //     else
-        //     {
-        //         console.log("ERROR: Tried to remove a row from the Active List, which doesn't exist");
-        //     }
-        // },
         RemoveList : function(listElementToRemove)
         {        
             var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
