@@ -139,25 +139,25 @@ function CreateCollapsibleView(data)
 
 //TODO I think these should move back to the ListItem (possibly part of the 'vewcontroller')
 
-function CreateRowSettingsView(index, elements, nameButton, viewExpandedCallback)
+function CreateRowSettingsView(id, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'row', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
+    CreateSettingsView(id, elements, nameButton, 'row', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
-function CreateListSettingsView(index, elements, nameButton, viewExpandedCallback)
+function CreateListSettingsView(id, elements, nameButton, viewExpandedCallback)
 {
-    CreateSettingsView(index, elements, nameButton, 'list', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
+    CreateSettingsView(id, elements, nameButton, 'list', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
 }
 
 /**
  * Creates a Settings View
- * @param {number} index The Index
+ * @param {number} id The ID of the List or List Item to which the Settings View belongs
  * @param {array} elements The elements that are part of the Settings View
  * @param {*} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
  * @param {string} parentType The type of parent ('row' or 'list')
  * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
  */
-function CreateSettingsView(index, elements, nameButton, parentType, toggleViewFunction, viewExpandedCallback)
+function CreateSettingsView(id, elements, nameButton, parentType, toggleViewFunction, viewExpandedCallback)
 {
     //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 
@@ -179,7 +179,7 @@ function CreateSettingsView(index, elements, nameButton, parentType, toggleViewF
     var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
 
     //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-    elements.wrapper  = CreateCollapsibleView({collapsibleId:'edit-'.concat(parentType).concat('-').concat(index), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
+    elements.wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
     /* Setup Listeners */
 

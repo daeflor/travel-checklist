@@ -45,7 +45,7 @@ function ListToggle(listName, listId)
     function CreateNameWrapper()
     {
        //Create the name toggle that can be selected to open or close the settings view for the List Item
-        toggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'buttonListItem buttonListToggle', listName);
+        toggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listId), 'buttonListItem buttonListToggle', listName);
         
         //Create the div wrapper for the List Item Name 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], toggle);
