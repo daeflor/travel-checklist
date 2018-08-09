@@ -1,6 +1,30 @@
 window.Model = (function() {
 
-    function createList(listId)
+    //TODO Is there a better naming convention that could be used for all these?
+
+    function createList()
+    {
+        var newList = {
+			id : new Date().getTime(), 
+            name : '',
+            type: '0',
+            listItems : []
+        };
+        
+        window.StorageManager.AddListToStorage(newList);
+    }
+
+    function editListName(listId, updatedName)
+    {
+        window.StorageManager.EditListNameInStorage(listId, updatedName);
+    }
+
+    function removeList(listId)
+    {
+        window.StorageManager.RemoveListFromStorage(listId);
+    }
+
+    function createListItem(listId)
     {
         var newListItem = {
 			id : new Date().getTime(), 
@@ -13,22 +37,32 @@ window.Model = (function() {
             }
         };
         
-        window.StorageManager.StoreNewListItem(listId, newListItem);
+        window.StorageManager.AddListItemToStorage(listId, newListItem);
     }
 
-    function createListItem()
+    function editListItemName(listId, listItemId, updatedName)
     {
-        var newList = {
-			id : new Date().getTime(), 
-            name : '',
-            type: '0',
-            listItems : []
-        };
-        
-        window.StorageManager.StoreNewList(newList);
+        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedName);
+    }
+
+    //TODO It might not be possible to know the quantity type
+    function editListItemQuantity(listId, listItemId, quantityType, updatedValue)
+    {
+        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, updatedValue);
+    }
+
+    function removeListItem(listId, listItemId)
+    {
+        window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
     }
 
     return {
-        CreateListItem : createListItem
+        CreateList : createList,
+        EditListName : editListName,
+        RemoveList : removeList,
+        CreateListItem : createListItem,
+        EditListItemName : editListItemName,
+        EditListItemQuantity : editListItemQuantity,
+        RemoveListItem : removeListItem
     };
 })();

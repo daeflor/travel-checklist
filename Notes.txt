@@ -11,13 +11,16 @@ TO-DOs:
 	- style_new.css       : 2
 
 Upcoming To-Do List:
+- To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
+    View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
-- At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
 
 Thoughts:
+- It might be nice if List Item IDs were prefixed by the List ID, so only one param would need to be passed when editing the model
 - It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions
 - Is it possible to make the Android Back button work in the app (e.g. to go back to the Home Screen from the List Screen)?
+    Might require having the different screens (e.g. Home vs List) actually use different pages hashes (e.g. travel-checklist/#/List)
 - When focus is brought to a text area, it would be nice to scroll to it. (i.e. when tapping in a text area in Settings View, it doesn't always scroll into view above the keyboard, currently)
 - May want to change back the Add New Item Row to being left-aligned with a light background again
 - May want to change back to having the List Toggle open a List, and a settings button to open the Settings View

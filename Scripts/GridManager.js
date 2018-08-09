@@ -47,6 +47,9 @@ window.GridManager = (function()
         window.View.Bind('AddListItem', AddNewListItem);
 
         window.StorageManager.LoadListData();
+
+
+        document.body.style.backgroundColor = 'pink';
     }
 
     /** List Management **/

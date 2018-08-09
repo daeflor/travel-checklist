@@ -100,7 +100,7 @@ window.StorageManager = (function ()
     }
 
     //TODO this isn't used yet
-    function storeNewList(newList)
+    function addListToStorage(newList)
     {
         var parsedStorageData = getParsedDataFromStorage();
 
@@ -110,7 +110,7 @@ window.StorageManager = (function ()
     }
 
     //TODO this isn't used yet
-    function removeList(id)
+    function editListNameInStorage(listId, updatedName)
     {
         //Get the parsed data from storage
         var parsedStorageData = getParsedDataFromStorage();
@@ -118,9 +118,30 @@ window.StorageManager = (function ()
         //Traverse the stored list data for one that matches the given ID
         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
         {
-            if (parsedStorageData.lists[i].id == id)
+            if (parsedStorageData.lists[i].id == listId)
             {
-                //Remove the matching list object from the lists array
+                //Update the name of the matching list object
+                parsedStorageData.lists[i].name = updatedName;
+                break;
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
+
+    //TODO this isn't used yet
+    function removeListFromStorage(listId)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored list data for one that matches the given ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //Remove the matching List object from the lists array
                 parsedStorageData.lists.splice(i, 1);
                 break;
             }
@@ -130,36 +151,126 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
-    //TODO STILL IN PROGRESS and also this isn't used yet
-    // function storeNewListItem(listId, newListItem)
-    // {
-    //     var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+    //TODO this isn't used yet
+    function addListItemToStorage(listId, newListItem)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
 
-    //     var parsedStorageData = JSON.parse(rawStorageData);
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //Add the new List Item to the matching List object
+                parsedStorageData.lists[i].listItems.push(newListItem);
+                break;
+            }
+        } 
 
-    //     var lists = parsedStorageData.lists;
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
 
-    //     for (var i = 0; i < lists.length; i++)  
-    //     {
-    //         if (lists[i].id == listId)
-    //         {
-    //             lists[i].listItems.push(newListItem);
-    //         }
-    //     }
-        
-    //     saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
-    // }
+     //TODO this isn't used yet
+     function editListItemNameInStorage(listId, listItemId, updatedName)
+     {
+         //Get the parsed data from storage
+         var parsedStorageData = getParsedDataFromStorage();
+ 
+         //Traverse the stored List data for one that matches the given List ID
+         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+         {
+             if (parsedStorageData.lists[i].id == listId)
+             {
+                 //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                 for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                 {
+                     if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                     {
+                         //Update the name of the matching ListItem object
+                         parsedStorageData.lists[i].listItems[j].name = updatedName;
+                         break;
+                     }
+                 } 
+             }
+         } 
+ 
+         //Store the updated storage data object
+         storeListData(parsedStorageData);
+     }
+
+     function editListItemQuantityInStorage(listId, listItemId, quantityType, updatedValue)
+     {
+         //Get the parsed data from storage
+         var parsedStorageData = getParsedDataFromStorage();
+ 
+         //Traverse the stored List data for one that matches the given List ID
+         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+         {
+             if (parsedStorageData.lists[i].id == listId)
+             {
+                 //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                 for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                 {
+                     if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                     {
+                         //Update the quantity value for the given quantity type within the matching ListItem object
+                         parsedStorageData.lists[i].listItems[j].quantities[quantityType] = updatedValue;
+                         break;
+                     }
+                 } 
+             }
+         } 
+ 
+         //Store the updated storage data object
+         storeListData(parsedStorageData);
+     }
+
+    function removeListItemFromStorage(listId, listItemId)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //Remove the matching List Item object from the List's items array
+                        parsedStorageData.lists[i].listItems.splice(j, 1);
+                        break;
+                    }
+                }
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
 
     return {
         StoreListData : storeListData,
         LoadListData : loadListData,
-        StoreNewList : storeNewList,
-        RemoveList : removeList,
-        // StoreNewListItem : storeNewListItem
+        AddListToStorage : addListToStorage,
+        EditListNameInStorage : editListNameInStorage,
+        RemoveListFromStorage : removeListFromStorage,
+        AddListItemToStorage : addListItemToStorage,
+        EditListItemNameInStorage : editListItemNameInStorage,
+        EditListItemQuantityInStorage : editListItemQuantityInStorage,
+        RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  
 
 //Data Model:
+
+//TODO should be possible to get rid of these
+
 
 function ListStorageData(data)
 {
