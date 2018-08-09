@@ -268,9 +268,7 @@ window.StorageManager = (function ()
 })();  
 
 //Data Model:
-
 //TODO should be possible to get rid of these
-
 
 function ListStorageData(data)
 {
@@ -291,12 +289,3 @@ function ListItemStorageData(data)
         backpack: data.quantityBackpack
     };
 }
-
-//TODO Storage Cases Needed:
-//Create New List
-//Edit List Name
-//Delete List
-//Create New List Item
-//Edit List Item Name
-//Edit List Item Quantity / Modifier Value
-//Delete List Item

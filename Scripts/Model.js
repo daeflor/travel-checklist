@@ -1,8 +1,6 @@
-window.Model = (function() {
-
-    //TODO Is there a better naming convention that could be used for all these?
-
-    function createList()
+window.Model = (function() 
+{
+    function addList()
     {
         var newList = {
 			id : new Date().getTime(), 
@@ -24,7 +22,7 @@ window.Model = (function() {
         window.StorageManager.RemoveListFromStorage(listId);
     }
 
-    function createListItem(listId)
+    function addListItem(listId)
     {
         var newListItem = {
 			id : new Date().getTime(), 
@@ -57,10 +55,10 @@ window.Model = (function() {
     }
 
     return {
-        CreateList : createList,
+        AddList : addList,
         EditListName : editListName,
         RemoveList : removeList,
-        CreateListItem : createListItem,
+        AddListItem : addListItem,
         EditListItemName : editListItemName,
         EditListItemQuantity : editListItemQuantity,
         RemoveListItem : removeListItem

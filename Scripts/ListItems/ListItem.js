@@ -85,6 +85,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                 quantityNeeded: model.GetQuantityNeeded()
             });
 
+        //Model.EditListItemQuantity(listId, listItemId, <quantityTyep>, <updatedValue>);
         window.GridManager.GridModified();
     }
 

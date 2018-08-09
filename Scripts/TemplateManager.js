@@ -93,6 +93,8 @@ window.TemplateManager = (function ()
         elements.editNameTextarea.addEventListener('change', function() 
         {
             nameButton.textContent = elements.editNameTextarea.value;
+
+            //Model.Edit ListName or ListItem Name...
             window.GridManager.GridModified();
         });
     }

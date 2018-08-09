@@ -62,7 +62,7 @@ window.GridManager = (function()
             activeList.AddNewListItem(); 
             
             //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
-            //Model.CreateListItem(activeList.GetId());
+            //Model.AddListItem(activeList.GetId());
             SaveDataToStorage(); 
 
             //TODO need to update View somehow.. Use templates? Not sure...
@@ -85,7 +85,7 @@ window.GridManager = (function()
         
         list.GetToggle().ExpandSettings(); 
   
-        //Model.CreateListItem();
+        //Model.AddList();
         SaveDataToStorage(); 
     }
 
@@ -158,7 +158,7 @@ window.GridManager = (function()
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        RemoveList : function(listElementToRemove)
+        RemoveList : function(listElementToRemove) //TODO change this whole thing to use list IDs
         {        
             var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
 
@@ -179,6 +179,7 @@ window.GridManager = (function()
                 console.log("Failed to remove list. List index returned invalid value.");
             }
 
+            //Model.RemoveList(<list id>);
             SaveDataToStorage();
         },
         GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
@@ -225,7 +226,6 @@ window.GridManager = (function()
             {
                 console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
                 activeList.ClearQuantityColumnValues(columnIndex);
-                //SaveDataToStorage();
             }
             else
             {

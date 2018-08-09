@@ -13,12 +13,13 @@ function List(data)
             if (rows[i].GetId() == listItemId)
             {
                 rows.splice(i, 1);
-                window.View.Render('removeListItem', {listItemId:listItemId});
                 break;
             }
         } 
 
-        window.GridManager.GridModified();
+        Model.RemoveListItem(data.id, listItemId);
+        window.View.Render('removeListItem', {listItemId:listItemId});
+        //window.GridManager.GridModified();
     }
 
     return { 
