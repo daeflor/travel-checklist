@@ -23,14 +23,16 @@ function Header(listType)
         var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
         var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle(data.toggleClass, iconToggle, [buttonClear], 'focus');
+        var popoverToggle = CreatePopoverToggle({class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+        // var popoverToggle = CreatePopoverToggle(data.toggleClass, iconToggle, [buttonClear], 'focus');
         
         $(popoverToggle).on('shown.bs.popover', function() 
         {
-            console.log("A Header Popover was shown");
+            console.log("A Header Popover was shown for quantity type: " + data.type);
             document.getElementById('buttonClear').addEventListener('click', function()
             {
-                window.GridManager.ClearButtonPressed(data.index);
+                console.log("Clear button was clicked for quantity type: " + data.type);
+                window.GridManager.ClearButtonPressed(data.type);
             });
         });
 

@@ -72,26 +72,26 @@ window.View = (function()
      */
     function bind(event, callback, parameters)
     {
-        if (event === 'NavigateHome') 
+        if (event === 'navigateHome') 
         {
             //Set the behavior for when the Home button is pressed
             document.getElementById('buttonHome').addEventListener('click', callback);         
         }
-        else if (event === 'AddList') 
+        else if (event === 'addList') 
         {
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
-        else if (event === 'AddListItem') 
+        else if (event === 'addListItem') 
         {
             //Set the behavior for when the Add List Item button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
         }
-        else if (event === 'DeleteButtonPressed') 
+        else if (event === 'deleteButtonPressed') 
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
-            var buttonDelete = document.getElementById('Delete-'.concat(parameters.id));
+            var buttonDelete = document.getElementById('Delete-'.concat(parameters.listItemId));
 
             if (buttonDelete != null)
             {
@@ -99,8 +99,41 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.listItemId));
             }
+        }
+        else if (event === 'showPopover') 
+        {
+            console.log("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+
+            //TODO doesn't work because the element hasn't been added to DOM yet
+
+            //TODO could come up with a better ID than this
+            //Get the popover toggle element based on the given quantity type and List Item ID
+            var toggle = document.getElementById('EditQuantity-'.concat(parameters.quantityType).concat('-').concat(parameters.listItemId));
+
+            //console.log("Binding popover toggle: " + toggle);
+
+            //Set the behavior for when the popover is made visible
+            $(toggle).on('shown.bs.popover', function() 
+            {
+                console.log("A Popover was shown");
+                callback(toggle, parameters.quantityType); //TODO should not pass back an element
+            });    
+        }
+        else if (event === 'decrementQuantity') 
+        {
+            document.getElementById('buttonMinus').addEventListener('click', function() 
+            {
+                callback(false);
+            });         
+        }
+        else if (event === 'incrementQuantity') 
+        {
+            document.getElementById('buttonPlus').addEventListener('click', function() 
+            {
+                callback(true);
+            });      
         }
     }
 
@@ -108,7 +141,8 @@ window.View = (function()
     {
         // var self = this;
 
-        var viewCommands = {
+        var viewCommands = 
+        {
             showHomeScreen: function() 
             {
                 //Hide the List Header
@@ -168,9 +202,55 @@ window.View = (function()
             {
                 document.getElementById(parameter.listItemId).remove();
             },
-            updateListItemColor: function() 
+            // updateListItemColor: function() 
+            // {
+            //     console.log("Request to update color of list item with id: " + parameter.listItemId);
+
+            //     //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
+            //         //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
+                
+            //     var listNameButton = getListItemNameButton(parameter.listItemId);
+
+            //     if (listNameButton != null)
+            //     {
+            //         //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
+            //         if (parameter.quantityBalance != 0)
+            //         {
+            //             listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
+            //         }
+            //         else if (parameter.quantityNeeded != 0)
+            //         {
+            //             listNameButton.style.borderColor = 'mediumseagreen';
+            //         }
+            //         else 
+            //         {
+            //             listNameButton.style.borderColor = 'rgb(77, 77, 77)'; //"darkgrey";
+            //         }  
+            //     }
+            //     else 
+            //     { 
+            //         console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); 
+            //     }  
+            // },
+            // updateModifierValue: function() 
+            // {
+            //     //TODO can we save references to the list item quantity modifiers to not always have to search for them
+            //     //Get the popover toggle element based on the given quantity type and List Item ID
+            //     var toggle = document.getElementById('EditQuantity-'.concat(parameters.quantityType).concat('-').concat(parameters.listItemId));
+
+            //     toggle.text = parameter.updatedValue;
+            // },
+            updateListItemQuantityValue: function() 
             {
+                //TODO it would be nice to somehow distinguish between a quanityt value being changed by the user, and the initial setting of all the quantity values when loaded from storage. For the latter, the color doesn't need to get updated until all the values are set for a particular ListItem
+
                 console.log("Request to update color of list item with id: " + parameter.listItemId);
+
+                //TODO can we save references to the list item quantity modifiers to not always have to search for them
+                //Get the popover toggle element based on the given quantity type and List Item ID
+                var toggle = document.getElementById('EditQuantity-'.concat(parameter.quantityType).concat('-').concat(parameter.listItemId));
+
+                toggle.text = parameter.updatedValue;
 
                 //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
                     //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
@@ -196,7 +276,7 @@ window.View = (function()
                 else 
                 { 
                     console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); 
-                }  
+                } 
             }
         };
 

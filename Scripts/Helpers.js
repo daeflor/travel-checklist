@@ -54,25 +54,26 @@ function CreateButtonWithIcon(data)
     return buttonElement;
 }
 
-function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popoverTrigger)
+//TODO is it possible to always reuse the same popover for editing quantity values? Is that even desired?
+function CreatePopoverToggle(data)
 {    
     /* Setup Popover Elements */
     var divPopover = document.createElement('div');
-    for (var i = 0; i < popoverChildren.length; i++)
+    for (var i = 0; i < data.children.length; i++)
     {
-        divPopover.appendChild(popoverChildren[i]);
+        divPopover.appendChild(data.children[i]);
     } 
 
     /* Create Popover Toggle */
-    var popoverToggle = CreateNewElement('a', [ ['class',toggleClass], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
+    var popoverToggle = CreateNewElement('a', [ ['id',data.id], ['class',data.class], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
     
-    if (toggleDisplay != null && (typeof(toggleDisplay) == 'string') || typeof(toggleDisplay) == 'number')
+    if (data.display != null && (typeof(data.display) == 'string') || typeof(data.display) == 'number')
     {
-        popoverToggle.text = toggleDisplay;  
+        popoverToggle.text = data.display;  
     }
-    else if (toggleDisplay != null && typeof(toggleDisplay) == 'object')
+    else if (data.display != null && typeof(data.display) == 'object')
     {
-        popoverToggle.appendChild(toggleDisplay);        
+        popoverToggle.appendChild(data.display);        
     }
 
     $(popoverToggle).popover({
@@ -80,7 +81,7 @@ function CreatePopoverToggle(toggleClass, toggleDisplay, popoverChildren, popove
         animation: false,
         delay: { "hide": 50 },
         html: true,
-        trigger: popoverTrigger,
+        trigger: data.trigger,
         content: divPopover.outerHTML
     }); 
 

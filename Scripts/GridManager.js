@@ -42,9 +42,9 @@ window.GridManager = (function()
         window.View.Init();
         window.View.AddHeaderToDom({headerElement: header.GetElement()})
 
-        window.View.Bind('NavigateHome', NavigateHome);
-        window.View.Bind('AddList', AddNewList);
-        window.View.Bind('AddListItem', AddNewListItem);
+        window.View.Bind('navigateHome', NavigateHome);
+        window.View.Bind('addList', AddNewList);
+        window.View.Bind('addListItem', AddNewListItem);
 
         window.StorageManager.LoadListData();
 
@@ -220,12 +220,12 @@ window.GridManager = (function()
         {
             SaveDataToStorage();
         },
-        ClearButtonPressed : function(columnIndex)
+        ClearButtonPressed : function(quantityType)
         {
             if (activeList != null)
             {
-                console.log("Button pressed to clear column " + columnIndex + " for grid " + activeList);
-                activeList.ClearQuantityColumnValues(columnIndex);
+                console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
+                activeList.ClearQuantityColumnValues(quantityType);
             }
             else
             {
@@ -265,24 +265,28 @@ window.GridManager = (function()
 //TODO Consider moving this to a separate file?
 var QuantityType = {
     Needed: {
+        type: 'needed', //TODO this is temp
         index: 0,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-pie-chart fa-lg iconHeader'
     },
     Luggage: {
+        type: 'luggage',
         index: 1,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-suitcase fa-lg iconHeader'
     },
     Wearing: {
+        type: 'wearing',
         index: 2,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-male fa-lg iconHeader'
     },
     Backpack: {
+        type: 'backpack',
         index: 3,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader toggleSmallIcon',

@@ -1,6 +1,11 @@
 function ListItemData()
 {
-    this.modifiers = [];
+    this.modifiers = {
+        needed: null,
+        luggage: null,
+        wearing: null,
+        backpack: null
+    };
     this.settings = { //TODO this should not be in the Model
          wrapper: null, 
          editNameTextarea: null,
@@ -26,23 +31,18 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         {
             return this.data.settings;
         },
-        SetData : function(d)
-        {
-            this.data.modifiers = d.modifiers;
-            this.data.settings = d.settings;
-        },
-        AddModifier : function(modifier)
-        {
-            this.data.modifiers.push(modifier); 
-        },
+        // AddModifier : function(modifier)
+        // {
+        //     this.data.modifiers.push(modifier); 
+        // },
         GetQuantityNeeded : function()
         {
-            console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed.index].GetValue());
-            return this.data.modifiers[QuantityType.Needed.index].GetValue();
+            //console.log("ListItem requesting Quantity Needed value from ListItemModifier. Value returned: " + this.data.modifiers[QuantityType.Needed.index].GetValue());
+            return this.data.modifiers.needed.GetValue();
         },
         GetQuantityBalance : function()
         {
-            return (this.data.modifiers[QuantityType.Needed.index].GetValue() - this.data.modifiers[QuantityType.Luggage.index].GetValue() - this.data.modifiers[QuantityType.Wearing.index].GetValue() - this.data.modifiers[QuantityType.Backpack.index].GetValue());
+            return (this.data.modifiers.needed.GetValue() - this.data.modifiers.luggage.GetValue() - this.data.modifiers.wearing.GetValue() - this.data.modifiers.backpack.GetValue());
         },
     };
 
@@ -57,12 +57,10 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
         //TODO why pass an initial value as a parameter if we can use SetValue instead?
         //TODO could some sort of binding be done here instead of passing the ModifierValueChanged function?
-        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.needed));
-        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.luggage));
-        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.wearing));
-        model.AddModifier(new ListItemModifier(ModifierValueChanged, quantities.backpack));
-
-
+        model.GetModifiers().needed = new ListItemModifier(ModifierValueChanged, quantities.needed, 'needed', listItemId);
+        model.GetModifiers().luggage = new ListItemModifier(ModifierValueChanged, quantities.luggage, 'luggage', listItemId);
+        model.GetModifiers().wearing = new ListItemModifier(ModifierValueChanged, quantities.wearing, 'wearing', listItemId);
+        model.GetModifiers().backpack = new ListItemModifier(ModifierValueChanged, quantities.backpack, 'backpack', listItemId);
 
         window.View.Render(
             'addListItem', {
@@ -72,24 +70,78 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                 modifiers: model.GetModifiers(), //TODO This is weird and should be temp
                 listId: listId, //TODO This is weird and should be temp
             });
+
+        for (var key in model.GetModifiers())
+        {
+            window.View.Bind('showPopover', 
+                function(popoverToggle, quantityType)
+                {
+                    window.GridManager.SetActivePopover(popoverToggle);
+        
+                    window.View.Bind('decrementQuantity', function(increase)
+                    {   
+                        model.GetModifiers()[quantityType].DecrementValue();
+                        ModifierValueChanged(quantityType, model.GetModifiers()[quantityType].GetValue());
+                    });
+        
+                    window.View.Bind('incrementQuantity', function(increase)
+                    {
+                        model.GetModifiers()[quantityType].IncrementValue();
+                        ModifierValueChanged(quantityType, model.GetModifiers()[quantityType].GetValue());
+                    });
+        
+                    //TODO could move this to a Bind as well, assuming this all even works
+                    document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
+                    console.log("An onclick listener was added to the whole document");
+                },
+                {listItemId:listItemId, quantityType:key}
+            );
+        }
     }
 
-    function ModifierValueChanged()
+    function ModifierValueChanged(type, updatedValue)
     {
         console.log("A modifier value was changed");
-        
+
+        Model.EditListItemQuantity(listId, listItemId, type, updatedValue);
+        //window.GridManager.GridModified();
+
+        //TODO eventually Updating modifier value and list item color should be handle as one, in the View
+
         window.View.Render(
-            'updateListItemColor', {
+            'updateListItemQuantityValue', 
+            {
                 listItemId: listItemId, 
                 quantityBalance: model.GetQuantityBalance(), 
-                quantityNeeded: model.GetQuantityNeeded()
-            });
+                quantityNeeded: model.GetQuantityNeeded(),
+                updatedValue: updatedValue,
+                quantityType: type
+            }
+        );
 
-        //Model.EditListItemQuantity(listId, listItemId, <quantityTyep>, <updatedValue>);
-        window.GridManager.GridModified();
+        //window.View.Render('updateModifierValue', {updatedValue:model.GetValue()});
+
+        // window.View.Render(
+        //     'updateListItemColor', {
+        //         listItemId: listItemId, 
+        //         quantityBalance: model.GetQuantityBalance(), 
+        //         quantityNeeded: model.GetQuantityNeeded()
+        //     });
     }
 
     /** Experimental & In Progress **/
+
+    // function Init(expandSettings)
+    // {
+    //     if (expandSettings == true)
+    //     {
+    //         //Manually trigger the Settings View to begin expanding
+    //         $(model.GetData().settings.wrapper).collapse('show');
+
+    //         //Bring focus to the Text Area to edit the List Item name
+    //         model.GetData().settings.editNameTextarea.focus();     
+    //     }
+    // }
   
     /** Public Functions **/
 
@@ -103,17 +155,17 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             return new ListItemStorageData({
                 id: listItemId, 
                 name: window.View.GetListItemNameButton(listItemId).textContent, //TODO this is a bad hack
-                quantityNeeded: model.GetData().modifiers[QuantityType.Needed.index].GetValue(), 
-                quantityLuggage: model.GetData().modifiers[QuantityType.Luggage.index].GetValue(), 
-                quantityWearing: model.GetData().modifiers[QuantityType.Wearing.index].GetValue(), 
-                quantityBackpack: model.GetData().modifiers[QuantityType.Backpack.index].GetValue()
+                quantityNeeded: model.GetData().modifiers.needed.GetValue(), 
+                quantityLuggage: model.GetData().modifiers.luggage.GetValue(), 
+                quantityWearing: model.GetData().modifiers.wearing.GetValue(), 
+                quantityBackpack: model.GetData().modifiers.backpack.GetValue()
             });
         },
-        ClearQuantityValue : function(quantityIndex)
+        ClearQuantityValue : function(quantityType)
         {
-            model.GetData().modifiers[quantityIndex].SetValue(0);
+            model.GetData().modifiers[quantityType].SetValue(0);
 
-            ModifierValueChanged();
+            //ModifierValueChanged();
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
@@ -122,11 +174,12 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
             //Bring focus to the Text Area to edit the List Item name
             model.GetData().settings.editNameTextarea.focus();         
-        },
-        UpdateColor : function()
-        {
-            window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()});
         }
+        // UpdateColor : function()
+        // {
+        //     window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()});
+        // },
+        //Init : init
     };
 }
 

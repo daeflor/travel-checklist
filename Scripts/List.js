@@ -90,9 +90,11 @@ function List(data)
             //element.appendChild(itemRow.GetWrapper());
 
             //Add an event listener to the Delete Button to remove the List Item
-            window.View.Bind('DeleteButtonPressed', function() {RemoveListItem(listItemData.id)}, {id:listItemData.id});
+            window.View.Bind('deleteButtonPressed', function() {RemoveListItem(listItemData.id)}, {listItemId:listItemData.id});
             
-            itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
+            //itemRow.Init(false);
+
+            //itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
         },
         AddNewListItem : function()
         {
@@ -104,17 +106,19 @@ function List(data)
             //element.appendChild(itemRow.GetWrapper());
 
             //Add an event listener to the Delete Button to remove the List Item
-            window.View.Bind('DeleteButtonPressed', function() {RemoveListItem(listItemId)}, {id:listItemId});
+            window.View.Bind('deleteButtonPressed', function() {RemoveListItem(listItemId)}, {listItemId:listItemId});
 
-            itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
+            //itemRow.Init(true);
+
+            // itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
             
             itemRow.ExpandSettings();
         },
-        ClearQuantityColumnValues : function(columnIndex)
+        ClearQuantityColumnValues : function(quantityType)
         {
             for (var i = 0; i < rows.length; i++)
             {
-                rows[i].ClearQuantityValue(columnIndex);
+                rows[i].ClearQuantityValue(quantityType);
             } 
         }
     };
