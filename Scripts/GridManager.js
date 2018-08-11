@@ -46,7 +46,11 @@ window.GridManager = (function()
         window.View.Bind('addList', AddNewList);
         window.View.Bind('addListItem', AddNewListItem);
 
-        window.StorageManager.LoadListData();
+        //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
+            //TODO Also the elements shouldn't be passed here. Should use IDs
+        window.Model.LoadListData(function(listElement, listToggleElement) {
+            window.View.Render('addList', {listElement:listElement, listToggleElement:listToggleElement});
+        });
 
 
         //document.body.style.backgroundColor = 'pink';

@@ -45,58 +45,9 @@ window.StorageManager = (function ()
         return JSON.parse(rawStorageData);
     }
 
-    //TODO Long term it should be simplified so that the lists aren't 'recreated'
-    function loadListData()
+    function getListStorageData()
     {
-        var lists = getParsedDataFromStorage().lists;
-
-        //Traverse all the Lists saved in local storage
-        for (var i = 0; i < lists.length; i++) 
-        {
-            //Create a new List based on the parsed data
-            var list = new List({
-                id: lists[i].id, 
-                name: lists[i].name, 
-                type: lists[i].type
-            });
-            
-            //TODO Do Something with the Model here first. These interactions should go through the Model instead of directly to the View or Controller
-            //TODO Storage shouldn't be interacting with the View
-            //TODO Shouldn't be passing element data to the View. Thw View should take care of that. I think...
-            window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-
-            console.log("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
-            
-            //Check if there is a 'listItems' object in the parsed storage data for the current list
-            if (lists[i].listItems !== null)
-            {
-                //Traverse all the List Items belonging to the current list, in local storage
-                for (var j = 0; j < lists[i].listItems.length; j++) 
-                {
-                    if (list.GetType() == ListType.Travel)
-                    {
-                        console.log("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
-                        
-                        //Add a row to current List, passing along the data parsed from storage
-                        list.AddListItem({
-                            id: lists[i].listItems[j].id, 
-                            name: lists[i].listItems[j].name, 
-                            quantities: lists[i].listItems[j].quantities
-                        });
-                    }
-                    else if (list.GetType() == null)
-                    {
-                        console.log("ERROR: Tried to load a List with a ListType of null from storage");
-                    }
-                }
-            }
-            else
-            {
-                console.log("ERROR: Tried to load list item data from storage but no listItems object could be found for the current list");
-            }
-
-            window.GridManager.AddListFromStorage(list);
-        }
+        return getParsedDataFromStorage().lists;
     }
 
     //TODO this isn't used yet
@@ -256,7 +207,7 @@ window.StorageManager = (function ()
 
     return {
         StoreListData : storeListData,
-        LoadListData : loadListData,
+        GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
         EditListNameInStorage : editListNameInStorage,
         RemoveListFromStorage : removeListFromStorage,
