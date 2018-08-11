@@ -15,15 +15,9 @@ window.TemplateManager = (function ()
         wrapper.appendChild(nameWrapper);
 
         //Add the Modifier elements to the DOM as children of the List Item div wrapper
-        // for (var i = 0; i < data.modifiers.length; i++)
-        // {
-        //     //console.log("Added a modifier with index " + i + " to ListItem with ID: " + data.listItemId);
-        //     //TODO see if this is really necessary or if it can be done a better way
-        //     wrapper.appendChild(data.modifiers[i].GetWrapper()); 
-        // }  
-
         for (var key in data.modifiers)
         {
+            //TODO see if this is really necessary or if it can be done a better way
             wrapper.appendChild(data.modifiers[key].GetWrapper()); 
         }
 

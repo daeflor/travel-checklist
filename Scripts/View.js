@@ -54,7 +54,7 @@ window.View = (function()
                 // {
                 //     return listNameButton; 
                 // }
-                // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); }
+                // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); }
             }
             else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
         }
@@ -63,7 +63,7 @@ window.View = (function()
 
     //TODO How can you have the parameters param before the callback param but still have the former be optional?
     //TODO There are still a lot more things in GridManager that can be bound here
-    //TODO standardize between parameters, parameter, options, data, etc.
+    //TODO standardize between parameters, parameters, options, data, etc.
     /**
      * 
      * @param {string} event The name used to identify the event being bound
@@ -108,11 +108,9 @@ window.View = (function()
 
             //TODO doesn't work because the element hasn't been added to DOM yet
 
-            //TODO could come up with a better ID than this
             //Get the popover toggle element based on the given quantity type and List Item ID
-            var toggle = document.getElementById('EditQuantity-'.concat(parameters.quantityType).concat('-').concat(parameters.listItemId));
+            var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
-            //console.log("Binding popover toggle: " + toggle);
 
             //Set the behavior for when the popover is made visible
             $(toggle).on('shown.bs.popover', function() 
@@ -137,7 +135,7 @@ window.View = (function()
         }
     }
 
-    function render(command, parameter)
+    function render(command, parameters)
     {
         // var self = this;
 
@@ -166,7 +164,7 @@ window.View = (function()
                 elements.homeScreen.hidden = true;
 
                 //Set the List title
-                elements.listTitle.textContent = parameter.listName;
+                elements.listTitle.textContent = parameters.listName;
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -177,48 +175,48 @@ window.View = (function()
             addList: function() 
             {
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(parameter.listToggleElement);
+                elements.homeScreenListElements.appendChild(parameters.listToggleElement);
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Add the List element to the DOM, under the List Screen List Elements div
-                elements.listScreenListElements.appendChild(parameter.listElement);
+                elements.listScreenListElements.appendChild(parameters.listElement);
             },
             removeList: function() 
             {
                 //Remove the List element from the Lists wrapper
-                elements.listScreenListElements.removeChild(parameter.listElement);
+                elements.listScreenListElements.removeChild(parameters.listElement);
 
                 //Remove the List Toggle element from the Lists of Lists wrapper
-                elements.homeScreenListElements.removeChild(parameter.listToggleElement);
+                elements.homeScreenListElements.removeChild(parameters.listToggleElement);
             },
             addListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
             {
                 //TODO this is a temporary hack to add the List Item as a child of the List in the DOM
-                document.getElementById(parameter.listId).appendChild(window.TemplateManager.CreateListItemFromTemplate(parameter));
+                document.getElementById(parameters.listId).appendChild(window.TemplateManager.CreateListItemFromTemplate(parameters));
             
-                console.log("Added a List Item to the DOM. ListItem ID: " + parameter.listItemId);
+                console.log("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
             },
             removeListItem: function() 
             {
-                document.getElementById(parameter.listItemId).remove();
+                document.getElementById(parameters.listItemId).remove();
             },
             // updateListItemColor: function() 
             // {
-            //     console.log("Request to update color of list item with id: " + parameter.listItemId);
+            //     console.log("Request to update color of list item with id: " + parameters.listItemId);
 
             //     //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
             //         //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
                 
-            //     var listNameButton = getListItemNameButton(parameter.listItemId);
+            //     var listNameButton = getListItemNameButton(parameters.listItemId);
 
             //     if (listNameButton != null)
             //     {
             //         //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
-            //         if (parameter.quantityBalance != 0)
+            //         if (parameters.quantityBalance != 0)
             //         {
             //             listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
             //         }
-            //         else if (parameter.quantityNeeded != 0)
+            //         else if (parameters.quantityNeeded != 0)
             //         {
             //             listNameButton.style.borderColor = 'mediumseagreen';
             //         }
@@ -229,7 +227,7 @@ window.View = (function()
             //     }
             //     else 
             //     { 
-            //         console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); 
+            //         console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
             //     }  
             // },
             // updateModifierValue: function() 
@@ -238,33 +236,33 @@ window.View = (function()
             //     //Get the popover toggle element based on the given quantity type and List Item ID
             //     var toggle = document.getElementById('EditQuantity-'.concat(parameters.quantityType).concat('-').concat(parameters.listItemId));
 
-            //     toggle.text = parameter.updatedValue;
+            //     toggle.text = parameters.updatedValue;
             // },
             updateListItemQuantityValue: function() 
             {
                 //TODO it would be nice to somehow distinguish between a quanityt value being changed by the user, and the initial setting of all the quantity values when loaded from storage. For the latter, the color doesn't need to get updated until all the values are set for a particular ListItem
 
-                console.log("Request to update color of list item with id: " + parameter.listItemId);
+                console.log("Request to update color of list item with id: " + parameters.listItemId);
 
-                //TODO can we save references to the list item quantity modifiers to not always have to search for them
+                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                 //Get the popover toggle element based on the given quantity type and List Item ID
-                var toggle = document.getElementById('EditQuantity-'.concat(parameter.quantityType).concat('-').concat(parameter.listItemId));
+                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
-                toggle.text = parameter.updatedValue;
+                toggle.text = parameters.updatedValue;
 
                 //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
                     //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
                 
-                var listNameButton = getListItemNameButton(parameter.listItemId);
+                var listNameButton = getListItemNameButton(parameters.listItemId);
 
                 if (listNameButton != null)
                 {
                     //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
-                    if (parameter.quantityBalance != 0)
+                    if (parameters.quantityBalance != 0)
                     {
                         listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
                     }
-                    else if (parameter.quantityNeeded != 0)
+                    else if (parameters.quantityNeeded != 0)
                     {
                         listNameButton.style.borderColor = 'mediumseagreen';
                     }
@@ -275,7 +273,7 @@ window.View = (function()
                 }
                 else 
                 { 
-                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameter.listItemId); 
+                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
                 } 
             }
         };

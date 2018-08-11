@@ -104,9 +104,6 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         console.log("A modifier value was changed");
 
         Model.EditListItemQuantity(listId, listItemId, type, updatedValue);
-        //window.GridManager.GridModified();
-
-        //TODO eventually Updating modifier value and list item color should be handle as one, in the View
 
         window.View.Render(
             'updateListItemQuantityValue', 
@@ -118,15 +115,6 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                 quantityType: type
             }
         );
-
-        //window.View.Render('updateModifierValue', {updatedValue:model.GetValue()});
-
-        // window.View.Render(
-        //     'updateListItemColor', {
-        //         listItemId: listItemId, 
-        //         quantityBalance: model.GetQuantityBalance(), 
-        //         quantityNeeded: model.GetQuantityNeeded()
-        //     });
     }
 
     /** Experimental & In Progress **/

@@ -19,6 +19,7 @@ Upcoming To-Do List:
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
+- In the future, calls to the View may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
 - It might be nice if List Item IDs were prefixed by the List ID, so only one param would need to be passed when editing the model
 - It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions
 - Is it possible to make the Android Back button work in the app (e.g. to go back to the Home Screen from the List Screen)?

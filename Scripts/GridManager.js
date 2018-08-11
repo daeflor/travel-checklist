@@ -49,7 +49,7 @@ window.GridManager = (function()
         window.StorageManager.LoadListData();
 
 
-        document.body.style.backgroundColor = 'pink';
+        //document.body.style.backgroundColor = 'pink';
     }
 
     /** List Management **/
@@ -80,6 +80,7 @@ window.GridManager = (function()
         
         lists.push(list);
 
+        //TODO Whenever the model is updated, also update the view and the parent
         //TODO do something with the Model here, first
         window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
         
