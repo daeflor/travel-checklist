@@ -19,7 +19,6 @@ function List(data)
 
         Model.RemoveListItem(data.id, listItemId);
         window.View.Render('removeListItem', {listItemId:listItemId});
-        //window.GridManager.GridModified();
     }
 
     return { 

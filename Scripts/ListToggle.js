@@ -1,20 +1,5 @@
 function ListToggle(listName, listId) 
-{
-    // var model = {
-    //     data : {
-    //         name : null,
-    //     },
-    //     GetName : function()
-    //     {
-    //         return this.data.name;
-    //     },
-    //     // SetName : function(name)
-    //     // {
-    //     //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
-    //     //     this.data.name = name;
-    //     // },
-    // };
-    
+{   
     var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
     //var nameButton;
     var toggle; //TODO this is hacky and TEMP, just to replace nameButton above, until a better solution is implemented
@@ -91,17 +76,6 @@ function ListToggle(listName, listId)
         GetElement : function() //TODO standardize these
         {
             return wrapper;
-        },
-        ToggleElementVisibility : function()
-        {
-            if (element.hidden == true)
-            {
-                element.hidden = false;
-            }
-            else
-            {
-                element.hidden = true;
-            }
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {

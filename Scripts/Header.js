@@ -1,16 +1,13 @@
 function Header(listType)
 {
-    var element = CreateNewElement('div', [ ['class', 'col container-flud'] ]);
-    var row = CreateNewElement('div', [ ['class', 'row'] ]); //TODO this is TEMP and dumb (why?)
-
-    element.appendChild(row);
+    var element = CreateNewElement('div', [ ['class', 'col container-fluid row'] ]);
 
     if (listType == ListType.Travel)
     {
-        CreatePopoverForQuantityHeader(QuantityType.Needed);
-        CreatePopoverForQuantityHeader(QuantityType.Luggage);
-        CreatePopoverForQuantityHeader(QuantityType.Wearing);
-        CreatePopoverForQuantityHeader(QuantityType.Backpack);
+        CreatePopoverForQuantityHeader(QuantityType.needed);
+        CreatePopoverForQuantityHeader(QuantityType.luggage);
+        CreatePopoverForQuantityHeader(QuantityType.wearing);
+        CreatePopoverForQuantityHeader(QuantityType.backpack);
     }
     // else if (listType == ListType.Checklist)
     // {
@@ -24,7 +21,6 @@ function Header(listType)
 
         var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
         var popoverToggle = CreatePopoverToggle({class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
-        // var popoverToggle = CreatePopoverToggle(data.toggleClass, iconToggle, [buttonClear], 'focus');
         
         $(popoverToggle).on('shown.bs.popover', function() 
         {
@@ -37,25 +33,14 @@ function Header(listType)
         });
 
         var divWrapper = CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
-        // document.getElementById('headerRow').appendChild(divWrapper);
-        row.appendChild(divWrapper);
+
+        element.appendChild(divWrapper);
     }
 
     return { 
         GetElement : function()
         {
             return element;
-        },
-        ToggleElementVisibility : function()
-        {
-            if (element.hidden == true)
-            {
-                element.hidden = false;
-            }
-            else
-            {
-                element.hidden = true;
-            }
         }
     };
 }

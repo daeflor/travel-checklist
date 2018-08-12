@@ -16,11 +16,13 @@ window.Model = (function()
                 name: lists[i].name, 
                 type: lists[i].type
             });
+
+            //TODO really should probably just pass along all the list data to the View to recreate it in the DOM
             
             //TODO The Model shouldn't interact directly with the View
             //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
             //window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-            callback(list.GetElement(), list.GetToggle().GetElement());
+            callback(list);
 
             console.log("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
             
@@ -55,9 +57,15 @@ window.Model = (function()
             }
 
             //TODO this is bad. Should be a callback if it's really necessary
-            window.GridManager.AddListFromStorage(list);
+            //window.GridManager.AddListFromStorage(list);
         }
     }
+
+    //TODO Maybe getting the quantity data is too specific. Could just get all the ListItem data and then parse it later
+    // function getListItemQuantityData(listId, listItemId)
+    // {
+    //     return window.StorageManager.GetListItemDataFromStorage(listId, listItemId).quantities;
+    // } //TODO use this to then get the balance, rather than getting it from soon-to-be-deprecated 'ListItemModifier' or the DOM
     
     function addList()
     {
@@ -103,9 +111,9 @@ window.Model = (function()
     }
 
     //TODO It might not be possible to know the quantity type
-    function editListItemQuantity(listId, listItemId, quantityType, updatedValue)
+    function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
-        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, updatedValue);
+        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
     function removeListItem(listId, listItemId)

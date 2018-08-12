@@ -151,31 +151,75 @@ window.StorageManager = (function ()
          storeListData(parsedStorageData);
      }
 
-     function editListItemQuantityInStorage(listId, listItemId, quantityType, updatedValue)
+     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignment, callback)
      {
-         //Get the parsed data from storage
-         var parsedStorageData = getParsedDataFromStorage();
- 
-         //Traverse the stored List data for one that matches the given List ID
-         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-         {
-             if (parsedStorageData.lists[i].id == listId)
-             {
-                 //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                 for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                 {
-                     if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                     {
-                         //Update the quantity value for the given quantity type within the matching ListItem object
-                         parsedStorageData.lists[i].listItems[j].quantities[quantityType] = updatedValue;
-                         break;
-                     }
-                 } 
-             }
-         } 
- 
-         //Store the updated storage data object
-         storeListData(parsedStorageData);
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //TODO Error handling here wouldn't hurt
+
+                        var dataModified = false;
+                        var quantities = parsedStorageData.lists[i].listItems[j].quantities;
+                        //var quantityValue = parsedStorageData.lists[i].listItems[j].quantities[quantityType];
+
+                        //Set, increment, or decrement the specified List Item's quantity value as applicable
+                        if (assignment.type == 'set')
+                        {
+                            if (quantities[quantityType] != assignment.value)
+                            {
+                                quantities[quantityType] = assignment.value;
+                                dataModified = true;
+                            }
+                            
+                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] = assignment.value;
+                        }
+                        else if (assignment.type == 'decrement')
+                        {
+                            if (quantities[quantityType] > 0)
+                            {
+                                quantities[quantityType]--;
+                                dataModified = true;
+                            }
+
+                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] =  parsedStorageData.lists[i].listItems[j].quantities[quantityType] - 1;
+                        }
+                        else if (assignment.type == 'increment')
+                        {
+                            quantities[quantityType]++;
+                            dataModified = true;
+
+                            console.log("Incremented the '" + quantityType + "' quantity value by 1 for List Item with ID: " + listItemId);
+                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] = parsedStorageData.lists[i].listItems[j].quantities[quantityType] + 1;
+                        }
+                        else 
+                        {
+                            console.log("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
+                        }
+            
+                        //If the quantity value was actually changed, store the updated data and perform the callback
+                        if (dataModified == true)
+                        {
+                            storeListData(parsedStorageData);
+                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?
+                        }
+                        
+                        //callback(dataModified, quantities);
+                        
+                        break;
+                    }
+                }
+            }
+        } 
      }
 
     function removeListItemFromStorage(listId, listItemId)
@@ -205,9 +249,85 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
+    // function findListInStorage(listId)
+    // {
+    //     //Get the parsed data from storage
+    //     var parsedStorageData = getParsedDataFromStorage();
+
+    //     //Traverse the stored List data for one that matches the given List ID
+    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    //     {
+    //         if (parsedStorageData.lists[i].id == listId)
+    //         {
+    //             //If the List IDs match, return the list object 
+    //             return parsedStorageData.lists[i]
+    //         }
+    //     } 
+
+    //     console.log('ERROR: Unable to find requested List in Storage');
+    // }
+
+    //TODO This ended up complicating things even more. A simple solution could be to have this return an object with both a ListItem and parsedStorage sub-object, but this seems like an incorrect way of handling this
+    // function findListItemInStorage(listId, listItemId, callback)
+    // {
+    //     var list = findListInStorage(listId);
+
+    //     if (list != null)
+    //     {
+    //         //Traverse the list's items array, searching for one that matches the given ListItem ID
+    //         for (var i = list.listItems.length-1; i >= 0; i--)
+    //         {
+    //             if (list.listItems[i].id == listItemId)
+    //             {
+    //                 //If the ListItem IDs match, return the list item object 
+    //                 //return list.listItems[i];
+    //                 callback(list.listItems[i]);
+    //             }
+    //         } 
+    //     }
+
+    //     console.log('ERROR: Unable to find requested ListItem in Storage');
+    // }
+
+    //TODO Could re-use the traversing code with callbacks, rather than always repeating code in this file
+        //This is the attempt to see if this idea works
+        //TODO see if this method can be utilized by the methods above, in some form. Could also create a similar one for finding just a List
+    // function findListItemInStorage(listId, listItemId)
+    // {
+    //     //Get the parsed data from storage
+    //     var parsedStorageData = getParsedDataFromStorage();
+
+    //     //Traverse the stored List data for one that matches the given List ID
+    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    //     {
+    //         if (parsedStorageData.lists[i].id == listId)
+    //         {
+    //             //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+    //             for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+    //             {
+    //                 if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+    //                 {
+    //                     return parsedStorageData.lists[i].listItems[j];
+    //                     // callback();
+    //                     // break;
+    //                 }
+    //             } 
+    //         }
+    //     } 
+
+    //     console.log('ERROR: Unable to find requested ListItem in Storage');
+    // }
+
+
+    // function getListItemDataFromStorage(listId, listItemId)
+    // {
+    //     return findListItemInStorage(listId, listItemId);
+    // }
+
     return {
         StoreListData : storeListData,
         GetListStorageData : getListStorageData,
+        //GetListItemDataFromStorage : getListItemDataFromStorage,
         AddListToStorage : addListToStorage,
         EditListNameInStorage : editListNameInStorage,
         RemoveListFromStorage : removeListFromStorage,

@@ -14,12 +14,20 @@ window.TemplateManager = (function ()
         //Add the List Item Name to the DOM as a child of the List Item div wrapper
         wrapper.appendChild(nameWrapper);
 
-        //Add the Modifier elements to the DOM as children of the List Item div wrapper
-        for (var key in data.modifiers)
+        //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
+
+        for (var key in data.quantityValues)
         {
             //TODO see if this is really necessary or if it can be done a better way
-            wrapper.appendChild(data.modifiers[key].GetWrapper()); 
+            wrapper.appendChild(createListItemModifierFromTemplate(data.listItemId, key, data.quantityValues[key])); 
         }
+
+        //Add the Modifier elements to the DOM as children of the List Item div wrapper
+        // for (var key in data.modifiers)
+        // {
+        //     //TODO see if this is really necessary or if it can be done a better way
+        //     wrapper.appendChild(data.modifiers[key].GetWrapper()); 
+        // }
 
         //Create the Settings View for the List Item
         //The behavior here should be set with a BIND
@@ -33,6 +41,50 @@ window.TemplateManager = (function ()
         wrapper.appendChild(data.settings.wrapper);   
 
         return wrapper;
+    }
+
+    function createListItemModifierFromTemplate(listItemId, type, initialValue)
+    {
+        //var self = this;
+
+        //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
+        var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
+        var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
+
+        //TODO is it necessary to pass a default/initial value for what the toggle displays? 
+        //Create the element that toggles the visibility of the modifier's popover
+        var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:initialValue, children:[buttonMinus, buttonPlus], trigger:'manual'});
+
+        //TODO this binding should be handled between the controller and the View. The View should just bind to a callback without knowing the details
+            //TODO Maybe/also really what it is is that GetActivePopover should be part of the same view
+        //Add a listener to the toggle 
+        popoverToggle.addEventListener('click', function(e) 
+        {
+            console.log("A Popover toggle was pressed");
+
+            //If there is no popover currently active, show the popover for the selected toggle
+            if(window.GridManager.GetActivePopover() == null)
+            {
+                //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
+                if(e.target == popoverToggle)
+                {
+                    console.log("Prevented click event from bubbling up");
+                    e.stopPropagation();
+                }
+
+                $(popoverToggle).popover('show');
+            }
+        });
+
+        //TODO this binding should be handled between the controller and the View.
+        //Set the behavior for when the popover is hidden
+        $(popoverToggle).on('hidden.bs.popover', function()
+        {
+            console.log("A Popover was hidden");
+            window.GridManager.SetActivePopover(null);
+        });
+
+        return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }
         
     /**

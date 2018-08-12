@@ -82,7 +82,7 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
-        else if (event === 'addListItem') 
+        else if (event === 'addListItem') //TODO Bind and Render events should probably have distinct names
         {
             //Set the behavior for when the Add List Item button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
@@ -200,9 +200,64 @@ window.View = (function()
             {
                 document.getElementById(parameters.listItemId).remove();
             },
-            // updateListItemColor: function() 
+            updateModifierValue: function() //Expected parameters: listItemId, quantityType, updatedValue
+            {
+                console.log("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
+
+                //TODO can we save references to the list item quantity modifiers to not always have to search for them
+                //TODO Would it help to use data-id instead of element ID?
+
+                //Get the popover toggle element based on the given quantity type and List Item ID
+                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+
+                //Update the text content of the quanity toggle to the new value
+                if (toggle != null)
+                {
+                    toggle.text = parameters.updatedValue;
+                }
+                else
+                {
+                    console.log("ERROR: Tried to update the value of a quantity toggle that could not be found");
+                }
+            },
+            updateListItemNameColor: function() //Expected parameters: listItemId, quantityNeeded, quantityBalance
+            {
+                console.log("Request to update color of list item with id: " + parameters.listItemId);
+
+                var listNameButton = getListItemNameButton(parameters.listItemId);
+
+                if (listNameButton != null)
+                {
+                    //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
+                    if (parameters.quantityBalance != 0)
+                    {
+                        listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
+                    }
+                    else if (parameters.quantityNeeded != 0)
+                    {
+                        listNameButton.style.borderColor = 'mediumseagreen';
+                    }
+                    else 
+                    {
+                        listNameButton.style.borderColor = 'rgb(77, 77, 77)'; //"darkgrey";
+                    }  
+                }
+                else 
+                { 
+                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
+                }  
+            }
+            // updateListItemQuantityValue: function() 
             // {
+            //     //TODO it would be nice to somehow distinguish between a quantity value being changed by the user, and the initial setting of all the quantity values when loaded from storage. For the latter, the color doesn't need to get updated until all the values are set for a particular ListItem
+
             //     console.log("Request to update color of list item with id: " + parameters.listItemId);
+
+            //     //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
+            //     //Get the popover toggle element based on the given quantity type and List Item ID
+            //     var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+
+            //     toggle.text = parameters.updatedValue;
 
             //     //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
             //         //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
@@ -228,54 +283,8 @@ window.View = (function()
             //     else 
             //     { 
             //         console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
-            //     }  
-            // },
-            // updateModifierValue: function() 
-            // {
-            //     //TODO can we save references to the list item quantity modifiers to not always have to search for them
-            //     //Get the popover toggle element based on the given quantity type and List Item ID
-            //     var toggle = document.getElementById('EditQuantity-'.concat(parameters.quantityType).concat('-').concat(parameters.listItemId));
-
-            //     toggle.text = parameters.updatedValue;
-            // },
-            updateListItemQuantityValue: function() 
-            {
-                //TODO it would be nice to somehow distinguish between a quanityt value being changed by the user, and the initial setting of all the quantity values when loaded from storage. For the latter, the color doesn't need to get updated until all the values are set for a particular ListItem
-
-                console.log("Request to update color of list item with id: " + parameters.listItemId);
-
-                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-                //Get the popover toggle element based on the given quantity type and List Item ID
-                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
-
-                toggle.text = parameters.updatedValue;
-
-                //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
-                    //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemName-745382490375' )
-                
-                var listNameButton = getListItemNameButton(parameters.listItemId);
-
-                if (listNameButton != null)
-                {
-                    //TODO is there a cleaner way to keep track of this? (e.g. any time a modifier is adjusted, update a counter, then compare the 'needed' counter with the 'packed' counter)
-                    if (parameters.quantityBalance != 0)
-                    {
-                        listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
-                    }
-                    else if (parameters.quantityNeeded != 0)
-                    {
-                        listNameButton.style.borderColor = 'mediumseagreen';
-                    }
-                    else 
-                    {
-                        listNameButton.style.borderColor = 'rgb(77, 77, 77)'; //"darkgrey";
-                    }  
-                }
-                else 
-                { 
-                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
-                } 
-            }
+            //     } 
+            // }
         };
 
         viewCommands[command]();

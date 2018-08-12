@@ -48,8 +48,9 @@ window.GridManager = (function()
 
         //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
             //TODO Also the elements shouldn't be passed here. Should use IDs
-        window.Model.LoadListData(function(listElement, listToggleElement) {
-            window.View.Render('addList', {listElement:listElement, listToggleElement:listToggleElement});
+        window.Model.LoadListData(function(list) {
+            window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+            lists.push(list);
         });
 
 
@@ -260,39 +261,39 @@ window.GridManager = (function()
                 }
             }
         },
-        AddListFromStorage : function(list) //TODO this should be temporary during storage refactor
-        {
-            lists.push(list);
-        }
+        // AddListFromStorage : function(list) //TODO this should be temporary during storage refactor
+        // {
+        //     lists.push(list);
+        // }
     };
 })();
 
 //TODO Consider moving this to a separate file?
 var QuantityType = {
-    Needed: {
-        type: 'needed', //TODO this is temp
-        index: 0,
+    needed: {
+        type: 'needed', //TODO this should be temp. Can the same be accomplished using 'key'?
+        //index: 0,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-pie-chart fa-lg iconHeader'
     },
-    Luggage: {
+    luggage: {
         type: 'luggage',
-        index: 1,
+        //index: 1,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-suitcase fa-lg iconHeader'
     },
-    Wearing: {
+    wearing: {
         type: 'wearing',
-        index: 2,
+        //index: 2,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-male fa-lg iconHeader'
     },
-    Backpack: {
+    backpack: {
         type: 'backpack',
-        index: 3,
+        //index: 3,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader toggleSmallIcon',
         iconClass: 'fa fa-briefcase iconHeader'
