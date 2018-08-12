@@ -15,38 +15,31 @@ window.TemplateManager = (function ()
         wrapper.appendChild(nameWrapper);
 
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
-
         for (var key in data.quantityValues)
         {
-            //TODO see if this is really necessary or if it can be done a better way
             wrapper.appendChild(createListItemModifierFromTemplate(data.listItemId, key, data.quantityValues[key])); 
         }
 
-        //Add the Modifier elements to the DOM as children of the List Item div wrapper
-        // for (var key in data.modifiers)
-        // {
-        //     //TODO see if this is really necessary or if it can be done a better way
-        //     wrapper.appendChild(data.modifiers[key].GetWrapper()); 
-        // }
-
         //Create the Settings View for the List Item
-        //The behavior here should be set with a BIND
-        createSettingsViewFromTemplate(data.listItemId, data.settings, nameToggle, 'row', window.GridManager.ToggleActiveSettingsView, function() {
-            wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-        });
+        //The behavior here should be set with a BIND. Actually, since this is purely DOM related, it may be fine to leave here
+        var settingsWrapper = createSettingsViewFromTemplate(
+            data.listItemId, 
+            nameToggle, 
+            'row', 
+            window.GridManager.ToggleActiveSettingsView, 
+            function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
+        );
 
         //TODO After the list item gets created, the controller should call to bind the new buttons to events
 
         //Add the Settings View to the DOM as a child of the List Item div wrapper
-        wrapper.appendChild(data.settings.wrapper);   
+        wrapper.appendChild(settingsWrapper);   
 
         return wrapper;
     }
 
     function createListItemModifierFromTemplate(listItemId, type, initialValue)
     {
-        //var self = this;
-
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
         var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
         var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
@@ -87,67 +80,68 @@ window.TemplateManager = (function ()
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }
         
+    //TODO remove toggleViewFunction param
     /**
      * Creates a Settings View
      * @param {number} id The ID of the List or List Item to which the Settings View belongs
-     * @param {array} elements The elements that are part of the Settings View
-     * @param {*} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
+     * @param {element} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
      * @param {string} parentType The type of parent ('row' or 'list')
-     * @param {*} toggleViewFunction The function that should be called when the settings view is toggled
+     * @param {function} toggleViewFunction The function that should be called when the settings view is toggled
+     * @param {function} settingsViewExpandedCallback The function that should be called when the settings view has finished expanding
      */
-    function createSettingsViewFromTemplate(id, elements, nameButton, parentType, toggleViewFunction, viewExpandedCallback)
+    function createSettingsViewFromTemplate(id, nameButton, parentType, toggleViewFunction, settingsViewExpandedCallback)
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 
         /* Create Text Area */
-        elements.editNameTextarea = CreateNewElement('textarea', [ ['class',''] ]);
-        elements.editNameTextarea.textContent = nameButton.textContent; 
+        var editNameTextarea = CreateNewElement('textarea', [ ['id','EditName-'.concat(id)] ]);
+        editNameTextarea.textContent = nameButton.textContent; 
 
         /* Create Delete Button */
-        elements.buttonDelete = CreateNewElement(
+        var buttonDelete = CreateNewElement(
             'button', 
             [ ['id','Delete-'.concat(id)], ['type','button'] ], 
             CreateNewElement('i', [['class','fa fa-trash']])
         );
 
         /* Create Element Wrappers */
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], elements.editNameTextarea);
-        var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], elements.buttonDelete);
+        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], editNameTextarea);
+        var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], buttonDelete);
         
         var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
 
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        elements.wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
+        var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
         /* Setup Listeners */
 
-        //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
-        $(elements.wrapper).on('show.bs.collapse', function() 
-        {
-            toggleViewFunction(elements.wrapper);
-        });
+        // //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
+        // $(wrapper).on('show.bs.collapse', function() 
+        // {
+        //     toggleViewFunction(wrapper);
+        // });
 
         //When the animation to expand the Settings View ends, scroll the Settings View into view
-        $(elements.wrapper).on('shown.bs.collapse', function() 
-        {
-            viewExpandedCallback();
-        });
+        $(wrapper).on('shown.bs.collapse', function() { settingsViewExpandedCallback(); });
 
-        elements.editNameTextarea.addEventListener('keypress', function(e) 
+        editNameTextarea.addEventListener('keypress', function(e) 
         {
             if(e.keyCode==13)
             {
-                elements.editNameTextarea.blur();
+                editNameTextarea.blur();
             }
         });
 
-        elements.editNameTextarea.addEventListener('change', function() 
+        //TODO Bind this in controller
+        editNameTextarea.addEventListener('change', function() 
         {
-            nameButton.textContent = elements.editNameTextarea.value;
+            nameButton.textContent = editNameTextarea.value;
 
             //Model.Edit ListName or ListItem Name...
             window.GridManager.GridModified();
         });
+
+        return wrapper;
     }
 
     return {

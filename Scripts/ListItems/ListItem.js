@@ -1,29 +1,23 @@
-function ListItemData()
-{
-    // this.modifiers = {
-    //     needed: null,
-    //     luggage: null,
-    //     wearing: null,
-    //     backpack: null
-    // };
-    this.settings = { //TODO this should not be in the Model
-         wrapper: null, 
-         editNameTextarea: null,
-         buttonDelete: null,
-    };
-}
+// function ListItemData()
+// {
+//     this.settings = { //TODO this should not be in the Model
+//          wrapper: null, 
+//          editNameTextarea: null,
+//          buttonDelete: null,
+//     };
+// }
 
 //TODO would prefer to take a data object as a parameter
 function ListItem(listItemId, listItemName, quantities, listId) //TODO passing listId should be temporary for a hack
 {
     //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
-    var model = {
-        data: new ListItemData(), //TODO would it be better if this were just null?
-        GetSettings : function()
-        {
-            return this.data.settings;
-        },
-    };
+    // var model = {
+    //     data: new ListItemData(), //TODO would it be better if this were just null?
+    //     GetSettings : function()
+    //     {
+    //         return this.data.settings;
+    //     },
+    // };
 
     SetupElements();
 
@@ -32,26 +26,20 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
     function SetupElements()
     {
         //TODO Is it good to edit properties of the model data directly?
-        //Create the modifier elements for the List Item
-        //TODO should be less hard coded (e.g. loop instead) and include the type of modifier (e.g. quantity/travel vs checkbox) (KVPs)
-        //TODO why pass an initial value as a parameter if we can use SetValue instead?
-        //TODO could some sort of binding be done here instead of passing the ModifierValueChanged function?
-        // model.GetModifiers().needed = new ListItemModifier(ModifierValueChanged, quantities.needed, 'needed', listItemId);
-        // model.GetModifiers().luggage = new ListItemModifier(ModifierValueChanged, quantities.luggage, 'luggage', listItemId);
-        // model.GetModifiers().wearing = new ListItemModifier(ModifierValueChanged, quantities.wearing, 'wearing', listItemId);
-        // model.GetModifiers().backpack = new ListItemModifier(ModifierValueChanged, quantities.backpack, 'backpack', listItemId);
+
+        //TODO why pass initial quantity values as parameters if we can use SetValue instead? Well why not?
 
         window.View.Render('addListItem', {
             listItemId: listItemId, 
             listItemName: listItemName,
             quantityValues: quantities,
-            settings: model.GetSettings(), //TODO This is weird and should be temp
-            //modifiers: model.GetModifiers(), //TODO This is weird and should be temp
+            //settings: model.GetSettings(), //TODO This is weird and should be temp
             listId: listId, //TODO This is weird and should be temp
         });
 
         UpdateListItemNameColor(quantities);
 
+        //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in quantities)
         {
             window.View.Bind('showPopover', 
@@ -61,30 +49,37 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         
                     window.View.Bind('decrementQuantity', function(increase)
                     {   
-                        //model.GetModifiers()[quantityType].DecrementValue();
-                        //ModifierValueChanged(quantityType, model.GetModifiers()[quantityType].GetValue());
                         DecrementQuantityValue(quantityType);
                     });
         
                     window.View.Bind('incrementQuantity', function(increase)
                     {
-                        //model.GetModifiers()[quantityType].IncrementValue();
-                        //ModifierValueChanged(quantityType, model.GetModifiers()[quantityType].GetValue());
                         IncrementQuantityValue(quantityType);
                     });
         
-                    //TODO could move this to a Bind as well, assuming this all even works
+                    //TODO could/should move this to a Bind as well, assuming this all even works / is needed
                     document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
                     console.log("An onclick listener was added to the whole document");
                 },
                 {listItemId:listItemId, quantityType:key}
             );
         }
+
+        //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
+        window.View.Bind('SettingsViewExpansionStarted', function(element) {
+            window.GridManager.ToggleActiveSettingsView(element);},
+            {id:listItemId}
+        );
+
+        // //When the animation to expand the Settings View ends, scroll the Settings View into view
+        // window.View.Bind('SettingsViewExpansionEnded', function() {
+        //     window.GridManager.ToggleActiveSettingsView();},
+        //     {id:listItemId}
+        // );
     }
 
     function UpdateListItemQuantityValue(updatedQuantities, type)
     {
-        //console.log("Updated Quantities: " + updatedQuantities);
         window.View.Render('updateModifierValue', {
             listItemId:listItemId, 
             quantityType:type, 
@@ -103,100 +98,27 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
     function SetQuantityValue(type, newValue)
     {
-        //TODO Using the same 'quantities' variable name seems prone to error and confusion
         Model.EditListItemQuantity(listId, listItemId, type, {type:'set', value:newValue}, function(updatedQuantities) {
-            // if (dataModified == true)
-            // {
-                UpdateListItemQuantityValue(updatedQuantities, type);
-                // window.View.Render('updateModifierValue', {
-                //     listItemId:listItemId, 
-                //     quantityType:type, 
-                //     updatedValue:quantities[type]
-                // });
-                UpdateListItemNameColor(updatedQuantities);
-                // window.View.Render('updateListItemNameColor', {
-                //     listItemId:listItemId, 
-                //     quantityNeeded:quantities.needed, 
-                //     quantityBalance:(quantities.needed-quantities.luggage-quantities.wearing-quantities.backpack)
-                // });
-            //}
+            UpdateListItemQuantityValue(updatedQuantities, type);
+            UpdateListItemNameColor(updatedQuantities);
         });
     }
 
     function DecrementQuantityValue(type)
     {
         Model.EditListItemQuantity(listId, listItemId, type, {type:'decrement'}, function(updatedQuantities) {
-            // if (dataModified == true)
-            // {
-                UpdateListItemQuantityValue(updatedQuantities, type);
-                // window.View.Render('updateModifierValue', {
-                //     listItemId:listItemId, 
-                //     quantityType:type, 
-                //     updatedValue:quantities[type]
-                // });
-                UpdateListItemNameColor(updatedQuantities);
-                // window.View.Render('updateListItemNameColor', {
-                //     listItemId:listItemId, 
-                //     quantityNeeded:quantities.needed, 
-                //     quantityBalance:(quantities.needed-quantities.luggage-quantities.wearing-quantities.backpack)
-                // });
-            //}
+            UpdateListItemQuantityValue(updatedQuantities, type);
+            UpdateListItemNameColor(updatedQuantities);
         });
     }
 
     function IncrementQuantityValue(type)
     {
         Model.EditListItemQuantity(listId, listItemId, type, {type:'increment'}, function(updatedQuantities) {
-            // if (dataModified == true)
-            // {
-                    UpdateListItemQuantityValue(updatedQuantities, type);
-                // window.View.Render('updateModifierValue', {
-                //     listItemId:listItemId, 
-                //     quantityType:type, 
-                //     updatedValue:quantities[type]
-                // });
-                UpdateListItemNameColor(updatedQuantities);
-                // window.View.Render('updateListItemNameColor', {
-                //     listItemId:listItemId, 
-                //     quantityNeeded:quantities.needed, 
-                //     quantityBalance:(quantities.needed-quantities.luggage-quantities.wearing-quantities.backpack)
-                // });
-            // }
+            UpdateListItemQuantityValue(updatedQuantities, type);
+            UpdateListItemNameColor(updatedQuantities);
         });
     }
-
-    // function ModifierValueChanged(type, updatedValue)
-    // {
-    //     //console.log("A modifier value was changed");
-
-    //     Model.EditListItemQuantity(listId, listItemId, type, updatedValue, function(quantities) {
-    //         window.View.Render('updateModifierValue', {
-    //             listItemId:listItemId, 
-    //             quantityType:type, 
-    //             updatedValue:updatedValue
-    //         });
-    //         window.View.Render('updateListItemNameColor', {
-    //             listItemId:listItemId, 
-    //             quantityNeeded:quantities.needed, 
-    //             quantityBalance:(quantities.needed-quantities.luggage-quantities.wearing-quantities.backpack)
-    //         });
-    //     });
-
-    //     //////
-
-    //     // Model.EditListItemQuantity(listId, listItemId, type, updatedValue);
-
-    //     // window.View.Render(
-    //     //     'updateListItemQuantityValue', 
-    //     //     {
-    //     //         listItemId: listItemId, 
-    //     //         quantityBalance: model.GetQuantityBalance(), 
-    //     //         quantityNeeded: model.GetQuantityNeeded(),
-    //     //         updatedValue: updatedValue,
-    //     //         quantityType: type
-    //     //     }
-    //     // );
-    // }
 
     /** Experimental & In Progress **/
 
@@ -234,23 +156,17 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         ClearQuantityValue : function(quantityType)
         {
             SetQuantityValue(quantityType, 0);
-
-            //model.GetData().modifiers[quantityType].SetValue(0);
-
-            //ModifierValueChanged();
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {
-            //Manually trigger the Settings View to begin expanding
-            $(model.GetSettings().wrapper).collapse('show');
+            window.View.Render('ExpandSettingsView', {id:listItemId});
 
-            //Bring focus to the Text Area to edit the List Item name
-            model.GetSettings().editNameTextarea.focus();         
+            // //Manually trigger the Settings View to begin expanding
+            // $(model.GetSettings().wrapper).collapse('show');
+
+            // //Bring focus to the Text Area to edit the List Item name
+            // model.GetSettings().editNameTextarea.focus();         
         }
-        // UpdateColor : function()
-        // {
-        //     window.View.Render('updateListItemColor', {listItemId:listItemId, quantityBalance:model.GetQuantityBalance(), quantityNeeded:model.GetQuantityNeeded()});
-        // },
         //Init : init
     };
 }

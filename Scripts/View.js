@@ -61,6 +61,9 @@ window.View = (function()
         else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
+    //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
+        //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
+
     //TODO How can you have the parameters param before the callback param but still have the former be optional?
     //TODO There are still a lot more things in GridManager that can be bound here
     //TODO standardize between parameters, parameters, options, data, etc.
@@ -133,12 +136,28 @@ window.View = (function()
                 callback(true);
             });      
         }
+        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
+        {
+            var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
+
+            $(settingsView).on('show.bs.collapse', function() 
+            {
+                callback(settingsView);
+            });  
+        }
+        // else if (event === 'SettingsViewExpansionEnded') //Expected parameters: id
+        // {
+        //     var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
+
+        //     $(settingsView).on('shown.bs.collapse', function() 
+        //     {
+        //         callback();
+        //     });  
+        // }
     }
 
     function render(command, parameters)
     {
-        // var self = this;
-
         var viewCommands = 
         {
             showHomeScreen: function() 
@@ -246,6 +265,18 @@ window.View = (function()
                 { 
                     console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
                 }  
+            },
+            ExpandSettingsView: function() 
+            {
+                //TODO could use error handling
+
+                var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
+
+                $(settingsView).collapse('show');
+
+                var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
+                
+                editNameTextarea.focus(); 
             }
             // updateListItemQuantityValue: function() 
             // {
