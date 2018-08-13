@@ -1,5 +1,7 @@
 window.View = (function() 
 {
+    //var self = this;
+
     var elements = {  
         homeHeader : null,
         homeScreen : null,
@@ -7,7 +9,8 @@ window.View = (function()
         listHeader : null,
         listTitle : null,
         listScreen : null,
-        listScreenListElements : null
+        listScreenListElements : null,
+        activeSettingsView : null
     };
 
     function init()
@@ -138,12 +141,19 @@ window.View = (function()
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
-            var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
+            var newSettingsView = document.getElementById('SettingsView-'.concat(parameters.id));
 
-            $(settingsView).on('show.bs.collapse', function() 
+            $(newSettingsView).on('show.bs.collapse', function() 
             {
-                callback(settingsView);
+                //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
+                    //then maybe this doesn't make sense for a BIND...?
+                //self.render('HideActiveSettingsView');
+                callback(); //TODO don't really like the idea of having a callback and THEN still doing something... It implies the View does actually have knowledge of what is going on, and doesn't really seem correct
+                elements.activeSettingsView = newSettingsView;
+                // callback(newSettingsView); 
             });  
+
+            //TODO would it make sense to keep track of the Active Settings View here (in the View) and in this method handle toggling it as needed
         }
         // else if (event === 'SettingsViewExpansionEnded') //Expected parameters: id
         // {
@@ -277,6 +287,14 @@ window.View = (function()
                 var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
                 
                 editNameTextarea.focus(); 
+            },
+            HideActiveSettingsView: function() 
+            {
+                if (elements.activeSettingsView != null)
+                {
+                    $(elements.activeSettingsView).collapse('hide');
+                    elements.activeSettingsView = null;
+                }
             }
             // updateListItemQuantityValue: function() 
             // {

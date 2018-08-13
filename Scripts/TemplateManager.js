@@ -26,7 +26,7 @@ window.TemplateManager = (function ()
             data.listItemId, 
             nameToggle, 
             'row', 
-            window.GridManager.ToggleActiveSettingsView, 
+            // window.GridManager.ToggleActiveSettingsView, 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );
 
@@ -86,10 +86,9 @@ window.TemplateManager = (function ()
      * @param {number} id The ID of the List or List Item to which the Settings View belongs
      * @param {element} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
      * @param {string} parentType The type of parent ('row' or 'list')
-     * @param {function} toggleViewFunction The function that should be called when the settings view is toggled
      * @param {function} settingsViewExpandedCallback The function that should be called when the settings view has finished expanding
      */
-    function createSettingsViewFromTemplate(id, nameButton, parentType, toggleViewFunction, settingsViewExpandedCallback)
+    function createSettingsViewFromTemplate(id, nameButton, parentType, settingsViewExpandedCallback)
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 

@@ -126,7 +126,8 @@ window.GridManager = (function()
             }
 
             //If there is any active settings view, close it
-            window.GridManager.ToggleActiveSettingsView(null);
+            window.View.Render('HideActiveSettingsView');
+            //window.GridManager.ToggleActiveSettingsView(null);
 
             //Display the List Screen
             if (activeList != null)
@@ -152,7 +153,8 @@ window.GridManager = (function()
         //TODO move some of this to the View
 
         //If there is any active settings view, close it
-        window.GridManager.ToggleActiveSettingsView(null);
+        window.View.Render('HideActiveSettingsView');
+        //window.GridManager.ToggleActiveSettingsView(null);
 
         //TODO Do something with the Model here (e.g. update it)
         window.View.Render('showHomeScreen'); 

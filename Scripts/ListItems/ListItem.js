@@ -1,24 +1,6 @@
-// function ListItemData()
-// {
-//     this.settings = { //TODO this should not be in the Model
-//          wrapper: null, 
-//          editNameTextarea: null,
-//          buttonDelete: null,
-//     };
-// }
-
-//TODO would prefer to take a data object as a parameter
+//TODO might prefer to take a data object as a parameter
 function ListItem(listItemId, listItemName, quantities, listId) //TODO passing listId should be temporary for a hack
 {
-    //TODO split actual data (e.g. the 'name' string) from elements (e.g. the 'name' child element / object)
-    // var model = {
-    //     data: new ListItemData(), //TODO would it be better if this were just null?
-    //     GetSettings : function()
-    //     {
-    //         return this.data.settings;
-    //     },
-    // };
-
     SetupElements();
 
     /** Private Functions **/
@@ -67,15 +49,10 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
         //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
         window.View.Bind('SettingsViewExpansionStarted', function(element) {
-            window.GridManager.ToggleActiveSettingsView(element);},
+            window.View.Render('HideActiveSettingsView'); },
+            //window.GridManager.ToggleActiveSettingsView(element);},
             {id:listItemId}
         );
-
-        // //When the animation to expand the Settings View ends, scroll the Settings View into view
-        // window.View.Bind('SettingsViewExpansionEnded', function() {
-        //     window.GridManager.ToggleActiveSettingsView();},
-        //     {id:listItemId}
-        // );
     }
 
     function UpdateListItemQuantityValue(updatedQuantities, type)
@@ -156,17 +133,12 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         ClearQuantityValue : function(quantityType)
         {
             SetQuantityValue(quantityType, 0);
-        },
-        ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
-        {
-            window.View.Render('ExpandSettingsView', {id:listItemId});
-
-            // //Manually trigger the Settings View to begin expanding
-            // $(model.GetSettings().wrapper).collapse('show');
-
-            // //Bring focus to the Text Area to edit the List Item name
-            // model.GetSettings().editNameTextarea.focus();         
         }
+        // ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
+        // {
+        //     //Manually trigger the Settings View to begin expanding and bring focus to the Text Area to edit the List Item name
+        //     window.View.Render('ExpandSettingsView', {id:listItemId});       
+        // }
         //Init : init
     };
 }

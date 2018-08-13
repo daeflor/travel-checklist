@@ -93,7 +93,6 @@ function List(data)
             
             //itemRow.Init(false);
 
-            //itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
         },
         AddNewListItem : function()
         {
@@ -108,10 +107,10 @@ function List(data)
             window.View.Bind('deleteButtonPressed', function() {RemoveListItem(listItemId)}, {listItemId:listItemId});
 
             //itemRow.Init(true);
-
-            // itemRow.UpdateColor(); //TODO shouldn't have to force call this here.
             
-            itemRow.ExpandSettings();
+            //Manually trigger the Settings View to begin expanding and bring focus to the Text Area to edit the List Item name
+            window.View.Render('ExpandSettingsView', {id:listItemId});
+            //itemRow.ExpandSettings();
         },
         ClearQuantityColumnValues : function(quantityType)
         {
