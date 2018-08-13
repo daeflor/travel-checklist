@@ -53,6 +53,15 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             //window.GridManager.ToggleActiveSettingsView(element);},
             {id:listItemId}
         );
+
+        window.View.Bind(
+            'NameEdited', 
+            function(updatedValue) {
+                window.Model.EditListItemName(listId, listItemId, updatedValue);
+                window.View.Render('UpdateName', {id:listItemId, updatedValue:updatedValue}); 
+            },
+            {id:listItemId}
+        );
     }
 
     function UpdateListItemQuantityValue(updatedQuantities, type)

@@ -6,7 +6,7 @@ window.TemplateManager = (function ()
         var wrapper = CreateNewElement('div', [ ['id',data.listItemId], ['class','row divItemRow'] ]);
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(data.listItemId), 'buttonListItem buttonListItemName', data.listItemName);
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(data.listItemId), 'buttonListItem buttonListItemName', data.listItemName, 'NameButton-'.concat(data.listItemId));
         
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
@@ -132,13 +132,13 @@ window.TemplateManager = (function ()
         });
 
         //TODO Bind this in controller
-        editNameTextarea.addEventListener('change', function() 
-        {
-            nameButton.textContent = editNameTextarea.value;
+        // editNameTextarea.addEventListener('change', function() 
+        // {
+        //     nameButton.textContent = editNameTextarea.value;
 
-            //Model.Edit ListName or ListItem Name...
-            window.GridManager.GridModified();
-        });
+        //     //Model.Edit ListName or ListItem Name...
+        //     window.GridManager.GridModified();
+        // });
 
         return wrapper;
     }

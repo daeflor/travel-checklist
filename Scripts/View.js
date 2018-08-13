@@ -2,6 +2,8 @@ window.View = (function()
 {
     //var self = this;
 
+    //TODO The Bind and Render calls could all use error handling
+
     var elements = {  
         homeHeader : null,
         homeScreen : null,
@@ -155,6 +157,17 @@ window.View = (function()
 
             //TODO would it make sense to keep track of the Active Settings View here (in the View) and in this method handle toggling it as needed
         }
+        else if (event === 'NameEdited') //Expected parameters: id
+        {
+            var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
+
+            editNameTextarea.addEventListener(
+                'change', 
+                function() {
+                    callback(editNameTextarea.value);
+                }
+            ); 
+        }
         // else if (event === 'SettingsViewExpansionEnded') //Expected parameters: id
         // {
         //     var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
@@ -295,7 +308,13 @@ window.View = (function()
                     $(elements.activeSettingsView).collapse('hide');
                     elements.activeSettingsView = null;
                 }
-            }
+            },
+            UpdateName: function() 
+            {
+                var nameButton = document.getElementById('NameButton-'.concat(parameters.id));
+                
+                nameButton.textContent = parameters.updatedValue;
+            }         
             // updateListItemQuantityValue: function() 
             // {
             //     //TODO it would be nice to somehow distinguish between a quantity value being changed by the user, and the initial setting of all the quantity values when loaded from storage. For the latter, the color doesn't need to get updated until all the values are set for a particular ListItem

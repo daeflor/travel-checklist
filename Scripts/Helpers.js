@@ -94,10 +94,10 @@ function CreatePopoverToggle(data)
  * @param {string} toggleClass The class for the toggle element
  * @param {*} toggleDisplay The string or object (element) that will be displayed in the toggle
  */
-function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay)
+function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDisplay, toggleId)
 {
     var idReference = '#'.concat(collapsibleId);
-    var toggle = CreateNewElement('button', [ ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
+    var toggle = CreateNewElement('button', [ ['id',toggleId], ['class',toggleClass], ['type','button'], ['aria-expanded','false'], ['aria-controls', collapsibleId], ['data-toggle','collapse'], ['data-target',idReference] ]);
     
     if (toggleDisplay != null && (typeof(toggleDisplay) == 'string'))
     {

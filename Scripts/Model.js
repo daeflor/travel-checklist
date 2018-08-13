@@ -79,9 +79,9 @@ window.Model = (function()
         window.StorageManager.AddListToStorage(newList);
     }
 
-    function editListName(listId, updatedName)
+    function editListName(listId, updatedValue)
     {
-        window.StorageManager.EditListNameInStorage(listId, updatedName);
+        window.StorageManager.EditListNameInStorage(listId, updatedValue);
     }
 
     function removeList(listId)
@@ -105,12 +105,11 @@ window.Model = (function()
         window.StorageManager.AddListItemToStorage(listId, newListItem);
     }
 
-    function editListItemName(listId, listItemId, updatedName)
+    function editListItemName(listId, listItemId, updatedValue)
     {
-        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedName);
+        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
     }
 
-    //TODO It might not be possible to know the quantity type
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
         window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
