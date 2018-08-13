@@ -68,6 +68,7 @@ window.View = (function()
 
     //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
         //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
+        //TODO Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
 
     //TODO How can you have the parameters param before the callback param but still have the former be optional?
     //TODO There are still a lot more things in GridManager that can be bound here

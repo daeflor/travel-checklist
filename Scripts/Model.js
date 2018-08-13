@@ -17,7 +17,7 @@ window.Model = (function()
                 type: lists[i].type
             });
 
-            //TODO really should probably just pass along all the list data to the View to recreate it in the DOM
+            //TODO really should probably just pass along all the list data to the Controller and then View to recreate it in the DOM
             
             //TODO The Model shouldn't interact directly with the View
             //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
@@ -43,7 +43,7 @@ window.Model = (function()
                             quantities: lists[i].listItems[j].quantities
                         });
 
-                        //TODO maybe ListItems should get added to the View here...?
+                        //TODO maybe ListItems should get added to the View here...? hmm no the model shouldn't talk to the View
                     }
                     else if (list.GetType() == null)
                     {
@@ -55,9 +55,6 @@ window.Model = (function()
             {
                 console.log("ERROR: Tried to load list item data from storage but no listItems object could be found for the current list");
             }
-
-            //TODO this is bad. Should be a callback if it's really necessary
-            //window.GridManager.AddListFromStorage(list);
         }
     }
 

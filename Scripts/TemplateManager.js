@@ -21,16 +21,12 @@ window.TemplateManager = (function ()
         }
 
         //Create the Settings View for the List Item
-        //The behavior here should be set with a BIND. Actually, since this is purely DOM related, it may be fine to leave here
         var settingsWrapper = createSettingsViewFromTemplate(
             data.listItemId, 
-            nameToggle, 
+            data.listItemName, 
             'row', 
-            // window.GridManager.ToggleActiveSettingsView, 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );
-
-        //TODO After the list item gets created, the controller should call to bind the new buttons to events
 
         //Add the Settings View to the DOM as a child of the List Item div wrapper
         wrapper.appendChild(settingsWrapper);   
@@ -79,22 +75,22 @@ window.TemplateManager = (function ()
 
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }
-        
-    //TODO remove toggleViewFunction param
+       
+    //TODO Would like to get rid of or change the 'parentType' param. Could pass an optional class param and Add it as an Attribute
     /**
      * Creates a Settings View
      * @param {number} id The ID of the List or List Item to which the Settings View belongs
-     * @param {element} nameButton The object (element) that contains/displays the name of the list item (and which may also toggle the settings view)
+     * @param {string} name The initial name value assigned to the List or ListItem when it is created, to be passed along as the default text value for the Edit Name Text Area
      * @param {string} parentType The type of parent ('row' or 'list')
      * @param {function} settingsViewExpandedCallback The function that should be called when the settings view has finished expanding
      */
-    function createSettingsViewFromTemplate(id, nameButton, parentType, settingsViewExpandedCallback)
+    function createSettingsViewFromTemplate(id, name, parentType, settingsViewExpandedCallback)
     {
         //TODO ideally we'd have a good method of re-arranging the rows list and updating all IDs which rely on index as needed
 
         /* Create Text Area */
         var editNameTextarea = CreateNewElement('textarea', [ ['id','EditName-'.concat(id)] ]);
-        editNameTextarea.textContent = nameButton.textContent; 
+        editNameTextarea.textContent = name; 
 
         /* Create Delete Button */
         var buttonDelete = CreateNewElement(
@@ -113,16 +109,10 @@ window.TemplateManager = (function ()
         var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
 
         /* Setup Listeners */
-
-        // //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
-        // $(wrapper).on('show.bs.collapse', function() 
-        // {
-        //     toggleViewFunction(wrapper);
-        // });
-
         //When the animation to expand the Settings View ends, scroll the Settings View into view
         $(wrapper).on('shown.bs.collapse', function() { settingsViewExpandedCallback(); });
 
+        //When the ENTER key is pressed, blur the text area
         editNameTextarea.addEventListener('keypress', function(e) 
         {
             if(e.keyCode==13)
@@ -130,15 +120,6 @@ window.TemplateManager = (function ()
                 editNameTextarea.blur();
             }
         });
-
-        //TODO Bind this in controller
-        // editNameTextarea.addEventListener('change', function() 
-        // {
-        //     nameButton.textContent = editNameTextarea.value;
-
-        //     //Model.Edit ListName or ListItem Name...
-        //     window.GridManager.GridModified();
-        // });
 
         return wrapper;
     }

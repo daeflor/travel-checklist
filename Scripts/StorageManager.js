@@ -123,7 +123,6 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
-     //TODO this isn't used yet
      function editListItemNameInStorage(listId, listItemId, updatedName)
      {
          //Get the parsed data from storage
