@@ -37,7 +37,7 @@ window.Model = (function()
                         console.log("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
                         
                         //Add a row to current List, passing along the data parsed from storage
-                        list.AddListItem({
+                        list.LoadListItem({
                             id: lists[i].listItems[j].id, 
                             name: lists[i].listItems[j].name, 
                             quantities: lists[i].listItems[j].quantities
@@ -64,16 +64,16 @@ window.Model = (function()
     //     return window.StorageManager.GetListItemDataFromStorage(listId, listItemId).quantities;
     // } //TODO use this to then get the balance, rather than getting it from soon-to-be-deprecated 'ListItemModifier' or the DOM
     
-    function addList()
+    function createList(callback)
     {
         var newList = {
 			id : new Date().getTime(), 
             name : '',
-            type: '0',
+            type: ListType.Travel,
             listItems : []
         };
         
-        window.StorageManager.AddListToStorage(newList);
+        window.StorageManager.AddListToStorage(newList, callback);
     }
 
     function editListName(listId, updatedValue)
@@ -86,7 +86,7 @@ window.Model = (function()
         window.StorageManager.RemoveListFromStorage(listId);
     }
 
-    function addListItem(listId)
+    function createListItem(listId, callback)
     {
         var newListItem = {
 			id : new Date().getTime(), 
@@ -99,7 +99,7 @@ window.Model = (function()
             }
         };
         
-        window.StorageManager.AddListItemToStorage(listId, newListItem);
+        window.StorageManager.AddListItemToStorage(listId, newListItem, callback);
     }
 
     function editListItemName(listId, listItemId, updatedValue)
@@ -119,10 +119,10 @@ window.Model = (function()
 
     return {
         LoadListData : loadListData,
-        AddList : addList,
+        CreateList : createList,
         EditListName : editListName,
         RemoveList : removeList,
-        AddListItem : addListItem,
+        CreateListItem : createListItem,
         EditListItemName : editListItemName,
         EditListItemQuantity : editListItemQuantity,
         RemoveListItem : removeListItem

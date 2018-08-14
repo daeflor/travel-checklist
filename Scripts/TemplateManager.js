@@ -34,6 +34,64 @@ window.TemplateManager = (function ()
         return wrapper;
     }
 
+    function createListWrapperFromTemplate(listId)
+    {
+        return CreateNewElement('div', [ ['id',listId], ['class','container-fluid'], ['hidden', 'true'] ]);
+    }
+
+    function createListToggleFromTemplate(data)
+    {
+        console.log("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
+
+        var wrapper = CreateNewElement('div', [ ['id','ListToggle-'.concat(data.listId)], ['class','row divItemRow divListToggleWrapper'] ]);
+
+        /* Name Toggle/Button */
+
+        //Create the name button/toggle that can be selected to open or close the settings view for the List
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(data.listId), 'buttonListItem buttonListToggle', data.listName, 'NameButton-'.concat(data.listId));
+        
+        //Create the div wrapper for the List Name button/toggle
+        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
+
+        /* Navigation Button */
+
+        var navButton = CreateButtonWithIcon({buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
+
+        navButton.addEventListener('click', function() 
+        {
+            window.GridManager.ListSelected(wrapper);
+        });    
+
+        var navButtonWrapper = CreateNewElement('div', [ ['class','col-2'] ], navButton);
+
+        /* Settings View */
+
+        //var settingsWrapper = CreateListSettingsView(listId, Settings, toggle, SettingsViewExpanded);
+
+        //Create the Settings View for the List
+        var settingsWrapper = createSettingsViewFromTemplate(
+            data.listId, 
+            data.listName, 
+            'list', 
+            function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
+        );
+
+        // Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
+        // {   
+        //     console.log("Received request to delete a list, but this isn't supported yet");
+        //     window.GridManager.RemoveList(wrapper);
+        // });
+
+        /* Append all the individual div wrappers to the overall wrapper */
+    
+        wrapper.appendChild(nameWrapper);
+        wrapper.appendChild(navButtonWrapper);
+        wrapper.appendChild(settingsWrapper);
+
+        return wrapper;
+    }
+
+    //TODO Lots of things that can probably be moved out of this method (e.g. Binds)
     function createListItemModifierFromTemplate(listItemId, type, initialValue)
     {
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
@@ -125,6 +183,8 @@ window.TemplateManager = (function ()
     }
 
     return {
+        CreateListWrapperFromTemplate : createListWrapperFromTemplate,
+        CreateListToggleFromTemplate : createListToggleFromTemplate,
         CreateListItemFromTemplate : createListItemFromTemplate
     };
 })();  

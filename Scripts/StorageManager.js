@@ -50,17 +50,17 @@ window.StorageManager = (function ()
         return getParsedDataFromStorage().lists;
     }
 
-    //TODO this isn't used yet
-    function addListToStorage(newList)
+    function addListToStorage(newList, callback)
     {
         var parsedStorageData = getParsedDataFromStorage();
 
         parsedStorageData.lists.push(newList);
 
         storeListData(parsedStorageData);
+
+        callback(newList);
     }
 
-    //TODO this isn't used yet
     function editListNameInStorage(listId, updatedName)
     {
         //Get the parsed data from storage
@@ -81,7 +81,6 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
-    //TODO this isn't used yet
     function removeListFromStorage(listId)
     {
         //Get the parsed data from storage
@@ -92,6 +91,7 @@ window.StorageManager = (function ()
         {
             if (parsedStorageData.lists[i].id == listId)
             {
+                console.log("Removing List from Storage. List ID: " + listId);
                 //Remove the matching List object from the lists array
                 parsedStorageData.lists.splice(i, 1);
                 break;
@@ -102,8 +102,7 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
-    //TODO this isn't used yet
-    function addListItemToStorage(listId, newListItem)
+    function addListItemToStorage(listId, newListItem, callback)
     {
         //Get the parsed data from storage
         var parsedStorageData = getParsedDataFromStorage();
@@ -121,6 +120,8 @@ window.StorageManager = (function ()
 
         //Store the updated storage data object
         storeListData(parsedStorageData);
+
+        callback(newListItem);
     }
 
      function editListItemNameInStorage(listId, listItemId, updatedName)
@@ -326,7 +327,6 @@ window.StorageManager = (function ()
     return {
         StoreListData : storeListData,
         GetListStorageData : getListStorageData,
-        //GetListItemDataFromStorage : getListItemDataFromStorage,
         AddListToStorage : addListToStorage,
         EditListNameInStorage : editListNameInStorage,
         RemoveListFromStorage : removeListFromStorage,

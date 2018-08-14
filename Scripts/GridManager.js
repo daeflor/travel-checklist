@@ -12,24 +12,24 @@ window.GridManager = (function()
 
     /** Storage - TEMP **/ //TODO This is temp
 
-    function SaveDataToStorage()
-    {
-        //console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
+    // function SaveDataToStorage()
+    // {
+    //     //console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
 
-        var listData = [];     
+    //     var listData = [];     
 
-        for (var i = 0; i < lists.length; i++)
-        {
-            listData.push(lists[i].GetDataForStorage());
-        }
+    //     for (var i = 0; i < lists.length; i++)
+    //     {
+    //         listData.push(lists[i].GetDataForStorage());
+    //     }
 
-        var storageData = {
-			//formatVersion : CurrentStorageDataFormat.Version,
-            lists : listData
-        };
+    //     var storageData = {
+	// 		//formatVersion : CurrentStorageDataFormat.Version,
+    //         lists : listData
+    //     };
 
-        window.StorageManager.StoreListData(storageData);
-    }
+    //     window.StorageManager.StoreListData(storageData);
+    // }
 
     /** List & Button Setup **/
 
@@ -43,13 +43,13 @@ window.GridManager = (function()
         window.View.AddHeaderToDom({headerElement: header.GetElement()})
 
         window.View.Bind('navigateHome', NavigateHome);
-        window.View.Bind('addList', AddNewList);
-        window.View.Bind('addListItem', AddNewListItem);
+        window.View.Bind('NewListButtonPressed', AddNewList);
+        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
         //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
             //TODO Also the elements shouldn't be passed here. Should use IDs
         window.Model.LoadListData(function(list) {
-            window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+            // window.View.Render('AddList', {listId:list.GetId(), listName:list.GetName()});
             lists.push(list);
         });
 
@@ -59,6 +59,30 @@ window.GridManager = (function()
 
     /** List Management **/
 
+    function AddNewList()
+    {
+        window.Model.CreateList(
+            function(newList) {
+                lists.push(new List(newList));
+                window.View.Render('ExpandSettingsView', {id:newList.id});
+            }
+        );
+
+        // var list = new List({name:'', type:ListType.Travel, id:new Date().getTime()});
+        
+        // lists.push(list);
+
+        // Model.AddList();
+
+        // //window.View.Render('AddListElements', {listId:list.GetId(), listName:''});
+        // //window.View.Render('AddList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+        
+        // window.View.Render('ExpandSettingsView', {id:list.GetId()});
+        // //list.GetToggle().ExpandSettings(); 
+  
+        // //SaveDataToStorage(); 
+    }
+
     function AddNewListItem()
     {
         //TODO is there a better mechanism for doing error handling?
@@ -67,8 +91,8 @@ window.GridManager = (function()
             activeList.AddNewListItem(); 
             
             //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
-            //Model.AddListItem(activeList.GetId());
-            SaveDataToStorage(); 
+            //window.Model.AddListItem(activeList.GetId());
+            //SaveDataToStorage(); 
 
             //TODO need to update View somehow.. Use templates? Not sure...
             // View.Render('addNewListItem', );
@@ -77,22 +101,6 @@ window.GridManager = (function()
         {
             console.log("ERROR: Tried to add a new List Item to the Active List, which doesn't exist");
         }
-    }
-
-    function AddNewList()
-    {
-        var list = new List({name:'', type:ListType.Travel, id:new Date().getTime()});
-        
-        lists.push(list);
-
-        //TODO Whenever the model is updated, also update the view and the parent
-        //TODO do something with the Model here, first
-        window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-        
-        list.GetToggle().ExpandSettings(); 
-  
-        //Model.AddList();
-        SaveDataToStorage(); 
     }
 
     //TODO Eventually use ID instead of index and get rid of the concept of Active List?
@@ -109,16 +117,16 @@ window.GridManager = (function()
             if (listToDisplay != activeList)
             {
                 //If there was a previous Active List, hide it
-                if (activeList != null)
-                {
-                    activeList.ToggleElementVisibility();
-                }
+                // if (activeList != null)
+                // {
+                //     activeList.ToggleElementVisibility();
+                // }
 
                 //Set the selected List as Active
                 activeList = listToDisplay;
 
                 //Display the selected List
-                activeList.ToggleElementVisibility();  
+                //activeList.ToggleElementVisibility();  
             }
             else
             {
@@ -132,10 +140,8 @@ window.GridManager = (function()
             //Display the List Screen
             if (activeList != null)
             {
-                //TODO do something with the Model here
-
                 //Show the List Screen and udate the List Title text
-                window.View.Render('showListScreen', {listName:activeList.GetName()}); 
+                window.View.Render('DisplayList', {listId:activeList.GetId()});
             }
             else
             {
@@ -166,29 +172,44 @@ window.GridManager = (function()
     /** Public Functions **/
 
     return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        RemoveList : function(listElementToRemove) //TODO change this whole thing to use list IDs
-        {        
-            var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
+        // RemoveList : function(listElementToRemove) //TODO change this whole thing to use list IDs
+        // {        
+        //     var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
 
-            console.log("Index of list to be removed: " + index + ". Class name of list to be removed: " + listElementToRemove.className);  
+        //     console.log("Index of list to be removed: " + index + ". Class name of list to be removed: " + listElementToRemove.className);  
             
-            if(index > -1) 
-            {
-                //TODO Do something with the Model here, no?
-                //TODO Should probably send IDs instead of actual elements
-                window.View.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
+        //     if(index > -1) 
+        //     {
+        //         //TODO Do something with the Model here, no?
+        //         //TODO Should probably send IDs instead of actual elements
+        //         window.View.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
 
-                lists.splice(index, 1);
+        //         lists.splice(index, 1);
                 
-                console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
-            }
-            else
-            {
-                console.log("Failed to remove list. List index returned invalid value.");
-            }
+        //         console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
+        //     }
+        //     else
+        //     {
+        //         console.log("Failed to remove list. List index returned invalid value.");
+        //     }
 
-            //Model.RemoveList(<list id>);
-            SaveDataToStorage();
+        //     //Model.RemoveList(<list id>);
+        //     SaveDataToStorage();
+        // },
+        RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
+        {
+            for (var i = lists.length-1; i >= 0; i--)
+            {
+                if (lists[i].GetId() == listId)
+                {
+                    console.log("(Temp) Removing list with ID: " + listId);
+                    lists.splice(i, 1);
+                    break;
+                }
+            } 
+    
+            Model.RemoveList(listId);
+            window.View.Render('removeList', {listId:listId});
         },
         GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
         {
@@ -224,10 +245,10 @@ window.GridManager = (function()
                 activeSettingsView = newSettingsView;
             }
         },
-        GridModified : function()
-        {
-            SaveDataToStorage();
-        },
+        // GridModified : function()
+        // {
+        //     SaveDataToStorage();
+        // },
         ClearButtonPressed : function(quantityType)
         {
             if (activeList != null)
@@ -259,14 +280,9 @@ window.GridManager = (function()
                 else
                 {
                     NavigateToList(index);
-                    //CloseHomeScreen();
                 }
             }
         },
-        // AddListFromStorage : function(list) //TODO this should be temporary during storage refactor
-        // {
-        //     lists.push(list);
-        // }
     };
 })();
 

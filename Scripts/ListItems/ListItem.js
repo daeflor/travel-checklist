@@ -11,30 +11,34 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
         //TODO why pass initial quantity values as parameters if we can use SetValue instead? Well why not?
 
-        window.View.Render('addListItem', {
-            listItemId: listItemId, 
-            listItemName: listItemName,
-            quantityValues: quantities,
-            //settings: model.GetSettings(), //TODO This is weird and should be temp
-            listId: listId, //TODO This is weird and should be temp
-        });
+        window.View.Render(
+            'AddListItem', 
+            {
+                listItemId: listItemId, 
+                listItemName: listItemName,
+                quantityValues: quantities,
+                listId: listId, //TODO This is weird and should be temp
+            }
+        );
 
         UpdateListItemNameColor(quantities);
 
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in quantities)
         {
-            window.View.Bind('showPopover', 
-                function(popoverToggle, quantityType)
-                {
+            window.View.Bind(
+                'showPopover', 
+                function(popoverToggle, quantityType) {
                     window.GridManager.SetActivePopover(popoverToggle);
+
+                    //TODO I think there's a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
         
-                    window.View.Bind('decrementQuantity', function(increase)
+                    window.View.Bind('DecrementQuantityButtonPressed', function(increase)
                     {   
                         DecrementQuantityValue(quantityType);
                     });
         
-                    window.View.Bind('incrementQuantity', function(increase)
+                    window.View.Bind('IncrementQuantityButtonPressed', function(increase)
                     {
                         IncrementQuantityValue(quantityType);
                     });
@@ -54,6 +58,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             {id:listItemId}
         );
 
+        //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind(
             'NameEdited', 
             function(updatedValue) {
@@ -61,7 +66,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                 window.View.Render('UpdateName', {id:listItemId, updatedValue:updatedValue}); 
             },
             {id:listItemId}
-        );
+        );  
     }
 
     function UpdateListItemQuantityValue(updatedQuantities, type)
@@ -127,18 +132,18 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         {
             return listItemId;
         },
-        GetDataForStorage : function()
-        {
-            //TODO Getting info from the DOM is all a TEMP hack while the storage refactor is in progress
-            return new ListItemStorageData({
-                id: listItemId, 
-                name: window.View.GetListItemNameButton(listItemId).textContent, 
-                quantityNeeded: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-                quantityLuggage: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-                quantityWearing: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-                quantityBackpack: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text)
-            });
-        },
+        // GetDataForStorage : function()
+        // {
+        //     //TODO Getting info from the DOM is all a TEMP hack while the storage refactor is in progress
+        //     return new ListItemStorageData({
+        //         id: listItemId, 
+        //         name: window.View.GetListItemNameButton(listItemId).textContent, 
+        //         quantityNeeded: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
+        //         quantityLuggage: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
+        //         quantityWearing: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
+        //         quantityBackpack: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text)
+        //     });
+        // },
         ClearQuantityValue : function(quantityType)
         {
             SetQuantityValue(quantityType, 0);

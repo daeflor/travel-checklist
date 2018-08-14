@@ -11,8 +11,7 @@ TO-DOs:
 	- style_new.css       : 2
 
 Upcoming To-Do List:
-- COMMIT these messy changes and then fix the mess. Including the bug that ListItem name color does not get set initially. 
- --  Then could look into IIFEs vs ActivePopover and ActiveSettings, etc.
+- Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
     View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 

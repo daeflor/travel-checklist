@@ -37,6 +37,7 @@ window.View = (function()
         elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
     }
 
+    //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
     function getListItemNameButton(listItemId)
     {
         console.log("Request to get name button of List Item with id: " + listItemId);
@@ -86,12 +87,12 @@ window.View = (function()
             //Set the behavior for when the Home button is pressed
             document.getElementById('buttonHome').addEventListener('click', callback);         
         }
-        else if (event === 'addList') 
+        else if (event === 'NewListButtonPressed') 
         {
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
-        else if (event === 'addListItem') //TODO Bind and Render events should probably have distinct names
+        else if (event === 'NewListItemButtonPressed') //TODO Bind and Render events should probably have distinct names
         {
             //Set the behavior for when the Add List Item button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
@@ -100,7 +101,7 @@ window.View = (function()
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
-            var buttonDelete = document.getElementById('Delete-'.concat(parameters.listItemId));
+            var buttonDelete = document.getElementById('Delete-'.concat(parameters.id));
 
             if (buttonDelete != null)
             {
@@ -108,7 +109,7 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.listItemId));
+                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
             }
         }
         else if (event === 'showPopover') 
@@ -128,14 +129,14 @@ window.View = (function()
                 callback(toggle, parameters.quantityType); //TODO should not pass back an element
             });    
         }
-        else if (event === 'decrementQuantity') 
+        else if (event === 'DecrementQuantityButtonPressed') 
         {
             document.getElementById('buttonMinus').addEventListener('click', function() 
             {
                 callback(false);
             });         
         }
-        else if (event === 'incrementQuantity') 
+        else if (event === 'IncrementQuantityButtonPressed') 
         {
             document.getElementById('buttonPlus').addEventListener('click', function() 
             {
@@ -162,12 +163,20 @@ window.View = (function()
         {
             var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
 
-            editNameTextarea.addEventListener(
-                'change', 
-                function() {
-                    callback(editNameTextarea.value);
-                }
-            ); 
+            if (editNameTextarea != null)
+            {
+                editNameTextarea.addEventListener(
+                    'change', 
+                    function() {
+                        callback(editNameTextarea.value);
+                    }
+                ); 
+            }
+            else
+            {
+                console.log("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
+            }
+            
         }
         // else if (event === 'SettingsViewExpansionEnded') //Expected parameters: id
         // {
@@ -198,7 +207,7 @@ window.View = (function()
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
             },
-            showListScreen: function() 
+            DisplayList: function() //Expected parameters: listId
             {
                 //Hide the Home Header when an individual List is displayed
                 elements.homeHeader.hidden = true;
@@ -207,7 +216,22 @@ window.View = (function()
                 elements.homeScreen.hidden = true;
 
                 //Set the List title
-                elements.listTitle.textContent = parameters.listName;
+                elements.listTitle.textContent = document.getElementById('NameButton-'.concat(parameters.listId)).textContent;
+
+                //Traverse all the List elements
+                for (var i = 0; i < elements.listScreenListElements.children.length; i++)
+                {
+                    if (elements.listScreenListElements.children[i].id == parameters.listId)
+                    {
+                        //If the List element matches the given listId, display that element
+                        elements.listScreenListElements.children[i].hidden = false;
+                    } 
+                    else if (elements.listScreenListElements.children[i].hidden == false)
+                    {
+                        //Else, for any other element, if it is currently displayed, hide it 
+                        elements.listScreenListElements.children[i].hidden = true;
+                    }
+                }
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -215,29 +239,43 @@ window.View = (function()
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
             },
-            addList: function() 
+            AddListElements: function() //Expected parameters: listId, listName
             {
+                console.log("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
+
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(parameters.listToggleElement);
+                elements.homeScreenListElements.appendChild(window.TemplateManager.CreateListToggleFromTemplate(parameters));
+                //elements.homeScreenListElements.appendChild(parameters.listToggleElement);
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Add the List element to the DOM, under the List Screen List Elements div
-                elements.listScreenListElements.appendChild(parameters.listElement);
+                elements.listScreenListElements.appendChild(window.TemplateManager.CreateListWrapperFromTemplate(parameters.listId));
+
             },
-            removeList: function() 
+            removeList: function() //Expected parameters: listId
             {
                 //Remove the List element from the Lists wrapper
-                elements.listScreenListElements.removeChild(parameters.listElement);
+                document.getElementById(parameters.listId).remove();
+                //elements.listScreenListElements.removeChild(parameters.listElement);
 
                 //Remove the List Toggle element from the Lists of Lists wrapper
-                elements.homeScreenListElements.removeChild(parameters.listToggleElement);
+                document.getElementById('ListToggle-'.concat(parameters.listId)).remove();
+                //elements.homeScreenListElements.removeChild(parameters.listToggleElement);
             },
-            addListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
+            AddListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
             {
-                //TODO this is a temporary hack to add the List Item as a child of the List in the DOM
-                document.getElementById(parameters.listId).appendChild(window.TemplateManager.CreateListItemFromTemplate(parameters));
-            
-                console.log("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
+                //TODO this is a temporary hack to add the List Item as a child of the List in the DOM.. Maybe not temporary actually..
+                var listWrapper = document.getElementById(parameters.listId);
+                
+                if (listWrapper != null)
+                {
+                    listWrapper.appendChild(window.TemplateManager.CreateListItemFromTemplate(parameters));
+                    console.log("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
+                }
+                else
+                {
+                    console.log("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
+                }      
             },
             removeListItem: function() 
             {
@@ -302,7 +340,7 @@ window.View = (function()
                 
                 editNameTextarea.focus(); 
             },
-            HideActiveSettingsView: function() 
+            HideActiveSettingsView: function() //TODO consider having this be its own private method in the View, instead of accessible through Render
             {
                 if (elements.activeSettingsView != null)
                 {
