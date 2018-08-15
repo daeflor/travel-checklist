@@ -15,9 +15,10 @@ window.GridManager = (function()
         //Once the DOM content has loaded and Setup initiated, remove the event listener
         document.removeEventListener('DOMContentLoaded', Setup);
 
-        var header = new Header(ListType.Travel);
+        //var header = new Header(ListType.Travel);
         window.View.Init();
-        window.View.AddHeaderToDom({headerElement: header.GetElement()})
+        //window.View.AddHeaderToDom({headerElement: header.GetElement()});
+        window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
         window.View.Bind('navigateHome', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);

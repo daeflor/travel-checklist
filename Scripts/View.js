@@ -32,10 +32,10 @@ window.View = (function()
     }
 
     //TODO change this. Maybe it should be part of Render, if it is even necessary
-    function addHeaderToDom(data)
-    {
-        elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
-    }
+    // function addHeaderToDom(data)
+    // {
+    //     elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
+    // }
 
     //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
     function getListItemNameButton(listItemId)
@@ -353,6 +353,10 @@ window.View = (function()
                 var nameButton = document.getElementById('NameButton-'.concat(parameters.id));
                 
                 nameButton.textContent = parameters.updatedValue;
+            },
+            ShowQuantityHeader: function() 
+            {
+                elements.listHeader.appendChild(window.TemplateManager.CreateTravelHeader()); 
             }         
             // updateListItemQuantityValue: function() 
             // {
@@ -399,9 +403,8 @@ window.View = (function()
 
     return {
         Init : init,
-        AddHeaderToDom : addHeaderToDom,
+        // AddHeaderToDom : addHeaderToDom,
         Bind: bind,
         Render: render,
-        GetListItemNameButton : getListItemNameButton //TODO this should not be exposed publicly. Done Temporarily as a hack
     };
 })();

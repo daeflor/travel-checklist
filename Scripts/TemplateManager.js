@@ -174,9 +174,43 @@ window.TemplateManager = (function ()
         return wrapper;
     }
 
+    function createTravelHeader()
+    {
+        var headerWrapper = CreateNewElement('div', [ ['class', 'col container-fluid row'] ]);
+
+        for (var key in QuantityType)
+        {
+            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key])); 
+        }
+
+        return headerWrapper;
+    }
+
+    function createQuantityHeaderToggle(data)
+    {
+        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
+
+        var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle({class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+        
+        //TODO Move this BIND elsewhere
+        $(popoverToggle).on('shown.bs.popover', function() 
+        {
+            console.log("A Header Popover was shown for quantity type: " + data.type);
+            document.getElementById('buttonClear').addEventListener('click', function()
+            {
+                console.log("Clear button was clicked for quantity type: " + data.type);
+                window.GridManager.ClearButtonPressed(data.type);
+            });
+        });
+
+        return CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
+    }
+
     return {
         CreateListWrapperFromTemplate : createListWrapperFromTemplate,
         CreateListToggleFromTemplate : createListToggleFromTemplate,
-        CreateListItemFromTemplate : createListItemFromTemplate
+        CreateListItemFromTemplate : createListItemFromTemplate,
+        CreateTravelHeader : createTravelHeader
     };
 })();  

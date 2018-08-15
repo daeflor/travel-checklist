@@ -134,18 +134,6 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         {
             return listItemId;
         },
-        // GetDataForStorage : function()
-        // {
-        //     //TODO Getting info from the DOM is all a TEMP hack while the storage refactor is in progress
-        //     return new ListItemStorageData({
-        //         id: listItemId, 
-        //         name: window.View.GetListItemNameButton(listItemId).textContent, 
-        //         quantityNeeded: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-        //         quantityLuggage: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-        //         quantityWearing: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text), 
-        //         quantityBackpack: parseInt(document.getElementById('neededQuantityToggle-'.concat(listItemId)).text)
-        //     });
-        // },
         ClearQuantityValue : function(quantityType)
         {
             SetQuantityValue(quantityType, 0);
