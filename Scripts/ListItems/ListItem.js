@@ -52,9 +52,11 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         }
 
         //When the animation to expand the Settings View starts, inform the GridManager to change the Active Settings View
-        window.View.Bind('SettingsViewExpansionStarted', function(element) {
-            window.View.Render('HideActiveSettingsView'); },
-            //window.GridManager.ToggleActiveSettingsView(element);},
+        window.View.Bind(
+            'SettingsViewExpansionStarted', 
+            function(element) {
+                window.View.Render('HideActiveSettingsView'); 
+            },
             {id:listItemId}
         );
 

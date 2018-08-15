@@ -4,32 +4,9 @@ window.GridManager = (function()
     document.addEventListener('DOMContentLoaded', Setup);
 
     var activePopover = null; //TODO should there be a separate popover manager? 
-    var activeSettingsView = null; //TODO could this be moved into the View? 
+    //var activeSettingsView = null; //TODO could this be moved into the View? 
     var lists = [];
     var activeList;
-    // var rowCounter = -1;
-    // var listCounter = -1; //TODO this is super hacky and TEMP. Is it really?... Other idea for IDs: List0Item0, List1Item4, List2Item12, etc. or instead could use GetDateTime().
-
-    /** Storage - TEMP **/ //TODO This is temp
-
-    // function SaveDataToStorage()
-    // {
-    //     //console.log("Current Format Version is: " + CurrentStorageDataFormat.Version);
-
-    //     var listData = [];     
-
-    //     for (var i = 0; i < lists.length; i++)
-    //     {
-    //         listData.push(lists[i].GetDataForStorage());
-    //     }
-
-    //     var storageData = {
-	// 		//formatVersion : CurrentStorageDataFormat.Version,
-    //         lists : listData
-    //     };
-
-    //     window.StorageManager.StoreListData(storageData);
-    // }
 
     /** List & Button Setup **/
 
@@ -47,7 +24,6 @@ window.GridManager = (function()
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
         //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
-            //TODO Also the elements shouldn't be passed here. Should use IDs
         window.Model.LoadListData(function(list) {
             // window.View.Render('AddList', {listId:list.GetId(), listName:list.GetName()});
             lists.push(list);
@@ -67,20 +43,6 @@ window.GridManager = (function()
                 window.View.Render('ExpandSettingsView', {id:newList.id});
             }
         );
-
-        // var list = new List({name:'', type:ListType.Travel, id:new Date().getTime()});
-        
-        // lists.push(list);
-
-        // Model.AddList();
-
-        // //window.View.Render('AddListElements', {listId:list.GetId(), listName:''});
-        // //window.View.Render('AddList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-        
-        // window.View.Render('ExpandSettingsView', {id:list.GetId()});
-        // //list.GetToggle().ExpandSettings(); 
-  
-        // //SaveDataToStorage(); 
     }
 
     function AddNewListItem()
@@ -89,13 +51,6 @@ window.GridManager = (function()
         if (activeList != null)
         {
             activeList.AddNewListItem(); 
-            
-            //TODO It's not really necessary to save to storage when adding a new list item (row) because there is no data, but it does make it easier for testing.
-            //window.Model.AddListItem(activeList.GetId());
-            //SaveDataToStorage(); 
-
-            //TODO need to update View somehow.. Use templates? Not sure...
-            // View.Render('addNewListItem', );
         }
         else
         {
@@ -116,17 +71,8 @@ window.GridManager = (function()
 
             if (listToDisplay != activeList)
             {
-                //If there was a previous Active List, hide it
-                // if (activeList != null)
-                // {
-                //     activeList.ToggleElementVisibility();
-                // }
-
                 //Set the selected List as Active
                 activeList = listToDisplay;
-
-                //Display the selected List
-                //activeList.ToggleElementVisibility();  
             }
             else
             {
@@ -135,7 +81,6 @@ window.GridManager = (function()
 
             //If there is any active settings view, close it
             window.View.Render('HideActiveSettingsView');
-            //window.GridManager.ToggleActiveSettingsView(null);
 
             //Display the List Screen
             if (activeList != null)
@@ -160,7 +105,6 @@ window.GridManager = (function()
 
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView');
-        //window.GridManager.ToggleActiveSettingsView(null);
 
         //TODO Do something with the Model here (e.g. update it)
         window.View.Render('showHomeScreen'); 
@@ -171,31 +115,7 @@ window.GridManager = (function()
 
     /** Public Functions **/
 
-    return { //TODO maybe only calls should be made here (e.g. getters/setters), not actual changes
-        // RemoveList : function(listElementToRemove) //TODO change this whole thing to use list IDs
-        // {        
-        //     var index = $(listElementToRemove).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
-
-        //     console.log("Index of list to be removed: " + index + ". Class name of list to be removed: " + listElementToRemove.className);  
-            
-        //     if(index > -1) 
-        //     {
-        //         //TODO Do something with the Model here, no?
-        //         //TODO Should probably send IDs instead of actual elements
-        //         window.View.Render('removeList', {listElement:lists[index].GetElement(), listToggleElement:listElementToRemove});
-
-        //         lists.splice(index, 1);
-                
-        //         console.log("Removed list at index " + index + ". Number of Lists is now: " + lists.length);
-        //     }
-        //     else
-        //     {
-        //         console.log("Failed to remove list. List index returned invalid value.");
-        //     }
-
-        //     //Model.RemoveList(<list id>);
-        //     SaveDataToStorage();
-        // },
+    return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
         RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
         {
             for (var i = lists.length-1; i >= 0; i--)
@@ -231,24 +151,6 @@ window.GridManager = (function()
                 console.log("The active popover was told to hide");
             }
         },
-        ToggleActiveSettingsView : function(newSettingsView) //TODO Part of this should be moved to View
-        {     
-            //If there is a Settings View currently active, hide it
-            if (activeSettingsView != null)
-            {
-                $(activeSettingsView).collapse('hide');
-            }
-
-            //If the new Settings View is defined (e.g. could be an actual Settings View or deliberately null), set it as the Active Settings View
-            if (newSettingsView !== undefined)
-            {
-                activeSettingsView = newSettingsView;
-            }
-        },
-        // GridModified : function()
-        // {
-        //     SaveDataToStorage();
-        // },
         ClearButtonPressed : function(quantityType)
         {
             if (activeList != null)

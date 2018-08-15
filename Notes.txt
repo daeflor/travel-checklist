@@ -11,6 +11,7 @@ TO-DOs:
 	- style_new.css       : 2
 
 Upcoming To-Do List:
+- Move remaining logic out of Helper.js, unless applicable, in which case clean up that file and split it up as needed. 
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
     View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));

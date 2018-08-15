@@ -66,8 +66,6 @@ window.TemplateManager = (function ()
 
         /* Settings View */
 
-        //var settingsWrapper = CreateListSettingsView(listId, Settings, toggle, SettingsViewExpanded);
-
         //Create the Settings View for the List
         var settingsWrapper = createSettingsViewFromTemplate(
             data.listId, 
@@ -75,12 +73,6 @@ window.TemplateManager = (function ()
             'list', 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );
-
-        // Settings.buttonDelete.addEventListener('click', function() //TODO standardize events?
-        // {   
-        //     console.log("Received request to delete a list, but this isn't supported yet");
-        //     window.GridManager.RemoveList(wrapper);
-        // });
 
         /* Append all the individual div wrappers to the overall wrapper */
     

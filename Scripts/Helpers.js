@@ -138,8 +138,6 @@ function CreateCollapsibleView(data)
 
 /** Experimental & In Progress **/
 
-//TODO I think these should move back to the ListItem (possibly part of the 'vewcontroller')
-
 function CreateRowSettingsView(id, elements, nameButton, viewExpandedCallback)
 {
     CreateSettingsView(id, elements, nameButton, 'row', window.GridManager.ToggleActiveSettingsView, viewExpandedCallback);
