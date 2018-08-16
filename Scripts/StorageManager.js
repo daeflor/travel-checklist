@@ -170,7 +170,6 @@ window.StorageManager = (function ()
 
                         var dataModified = false;
                         var quantities = parsedStorageData.lists[i].listItems[j].quantities;
-                        //var quantityValue = parsedStorageData.lists[i].listItems[j].quantities[quantityType];
 
                         //Set, increment, or decrement the specified List Item's quantity value as applicable
                         // if (assignmentType == 'set')

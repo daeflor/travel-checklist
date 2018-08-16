@@ -246,5 +246,3 @@ var ListType = {
     Travel: 0,
     Checklist: 1,
 };
-
-//AssignmentType object? 

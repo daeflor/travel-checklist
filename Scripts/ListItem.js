@@ -1,16 +1,13 @@
 //TODO might prefer to take a data object as a parameter
 function ListItem(listItemId, listItemName, quantities, listId) //TODO passing listId should be temporary for a hack
 {
-    SetupElements();
+    setupElements();
 
     /** Private Functions **/
 
-    function SetupElements()
+    //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
+    function setupElements()
     {
-        //TODO Is it good to edit properties of the model data directly?
-
-        //TODO why pass initial quantity values as parameters if we can use SetValue instead? Well why not?
-
         window.View.Render(
             'AddListItem', 
             {
@@ -32,20 +29,15 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                     window.GridManager.SetActivePopover(popoverToggle);
 
                     //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
-        
-                    // window.View.Bind('ModifyQuantityButtonPressed', function(increase)
-                    // {   
-                    //     modifyQuantityValue(quantityType, increase);
-                    // });
 
                     window.View.Bind('DecrementQuantityButtonPressed', function()
                     {   
-                        modifyQuantityValue(quantityType, 'decrement');
+                        updateQuantityValue(quantityType, 'decrement');
                     });
         
                     window.View.Bind('IncrementQuantityButtonPressed', function()
                     {
-                        modifyQuantityValue(quantityType, 'increment');
+                        updateQuantityValue(quantityType, 'increment');
                     });
         
                     //TODO could/should move this to a Bind as well, assuming this all even works / is needed
@@ -65,6 +57,8 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             {id:listItemId}
         );
 
+        //TODO might be nice to move the anonymous functions within the bindings above and below into named functions that are just reference by the bind, for potentially better readability
+
         //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind(
             'NameEdited', 
@@ -76,6 +70,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         );  
     }
 
+    //TODO this method name is too similar to the one below. Should consolidate, or rename to explicitly call out View, or something
     function updateListItemQuantityValue(updatedQuantities, type)
     {
         window.View.Render('updateModifierValue', {
@@ -94,38 +89,13 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         });
     }
 
-    // function SetQuantityValue(type, newValue)
-    // {
-    //     //TODO could consider changing 'set' to 'clear' (which sets to 0). Then don't need newValue. 
-    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'set', value:newValue}, function(updatedQuantities) {
-    //         UpdateListItemQuantityValue(updatedQuantities, type);
-    //         UpdateListItemNameColor(updatedQuantities);
-    //     });
-    // }
-
-    function modifyQuantityValue(quantityType, assignmentType)
+    function updateQuantityValue(quantityType, assignmentType)
     {
         Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
             updateListItemQuantityValue(updatedQuantities, quantityType);
             updateListItemNameColor(updatedQuantities);
         });
     }
-
-    // function DecrementQuantityValue(type)
-    // {
-    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'decrement'}, function(updatedQuantities) {
-    //         UpdateListItemQuantityValue(updatedQuantities, type);
-    //         UpdateListItemNameColor(updatedQuantities);
-    //     });
-    // }
-
-    // function IncrementQuantityValue(type)
-    // {
-    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'increment'}, function(updatedQuantities) {
-    //         UpdateListItemQuantityValue(updatedQuantities, type);
-    //         UpdateListItemNameColor(updatedQuantities);
-    //     });
-    // }
 
     /** Experimental & In Progress **/
 
@@ -150,7 +120,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         },
         ClearQuantityValue : function(quantityType)
         {
-            modifyQuantityValue(quantityType, 'clear');
+            updateQuantityValue(quantityType, 'clear');
         }
         // ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         // {
