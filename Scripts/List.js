@@ -18,6 +18,7 @@ function List(data)
         {id:data.id}
     );
 
+    //When the Text Area to edit a list name gets modified, update the text in the List name toggle
     window.View.Bind(
         'NameEdited', 
         function(updatedValue) {

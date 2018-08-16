@@ -20,6 +20,29 @@ window.GridManager = (function()
         //window.View.AddHeaderToDom({headerElement: header.GetElement()});
         window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
+        for (var key in QuantityType)
+        {
+            (function(lockedKey) //TODO there is probably a simpler way to do this
+            {
+                window.View.Bind(
+                    'QuantityHeaderPopoverShown', 
+                    function() {
+                        document.getElementById('buttonClear').addEventListener(
+                            'click', 
+                            function()
+                            {
+                                console.log("Clear button was clicked for quantity type: " + lockedKey);
+                                clearButtonPressed(lockedKey);
+                            }
+                        );
+                    },
+                    {quantityType:lockedKey}
+                );
+            })(key);
+        }
+
+
         window.View.Bind('navigateHome', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
@@ -114,6 +137,19 @@ window.GridManager = (function()
 
     /** Experimental & In Progress **/
 
+    function clearButtonPressed(quantityType)
+    {
+        if (activeList != null)
+        {
+            console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
+            activeList.ClearQuantityColumnValues(quantityType);
+        }
+        else
+        {
+            console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
+        }
+    }
+
     /** Public Functions **/
 
     return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
@@ -150,18 +186,6 @@ window.GridManager = (function()
                 document.removeEventListener('click', window.GridManager.HideActiveQuantityPopover);
                 $(activePopover).popover('hide');
                 console.log("The active popover was told to hide");
-            }
-        },
-        ClearButtonPressed : function(quantityType)
-        {
-            if (activeList != null)
-            {
-                console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
-                activeList.ClearQuantityColumnValues(quantityType);
-            }
-            else
-            {
-                console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
             }
         },
         ListSelected : function(elementListToggle)

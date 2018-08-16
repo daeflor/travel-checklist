@@ -191,18 +191,18 @@ window.TemplateManager = (function ()
         var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
         var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle({class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+        var popoverToggle = CreatePopoverToggle({id:((data.type).concat('QuantityHeaderToggle')), class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
         
         //TODO Move this BIND elsewhere
-        $(popoverToggle).on('shown.bs.popover', function() 
-        {
-            console.log("A Header Popover was shown for quantity type: " + data.type);
-            document.getElementById('buttonClear').addEventListener('click', function()
-            {
-                console.log("Clear button was clicked for quantity type: " + data.type);
-                window.GridManager.ClearButtonPressed(data.type);
-            });
-        });
+        // $(popoverToggle).on('shown.bs.popover', function() 
+        // {
+        //     console.log("A Header Popover was shown for quantity type: " + data.type);
+        //     document.getElementById('buttonClear').addEventListener('click', function()
+        //     {
+        //         console.log("Clear button was clicked for quantity type: " + data.type);
+        //         window.GridManager.ClearButtonPressed(data.type);
+        //     });
+        // });
 
         return CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
     }

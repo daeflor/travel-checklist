@@ -1,14 +1,16 @@
 TO-DOs:
 
-	- index.html          : 1
+	- index.html          : 2
+    - style_new.css       : 3
+    - StorageManager.js   : 6
+    - Model.js            : 7
 	- GridManager.js      : 17
-    - Grid.js             : 3
-    - Header.js           : 4
-    - ListToggle.js       : 4
-    - ListItem.js         : 11
-    - ListItemModifier.js : 12
-    - Helpers.js          : 7
-	- style_new.css       : 2
+    - View.js             : 31
+    - TemplateManager.js  : 9
+    - List.js             : 6
+    - ListItem.js         : 8
+    - Helpers.js          : 6
+
 
 Upcoming To-Do List:
 - Move remaining logic out of Helper.js, unless applicable, in which case clean up that file and split it up as needed. 
@@ -19,6 +21,7 @@ Upcoming To-Do List:
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
+- Consider removing reliance on Popovers (popper.js) and re-create this functionality myself in JavaScript and CSS
 - There are probably some GetElementByID calls that could be called on other elements instead of the document
 - Standardize bracket/spacing/parameter/callback usage
 - In the future, calls to the View may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary

@@ -112,21 +112,52 @@ window.View = (function()
                 console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
             }
         }
-        else if (event === 'showPopover') 
+        // else if (event === 'PopoverShown') 
+        // {
+        //     var toggle;
+
+        //     //TODO it's kind of weird assuming that the Header was being bound simply because ID wasn't defined. That could also mean an error occurred. 
+        //     if (parameters.id == null)
+        //     {
+        //         //If no ID was given, then find the Quantity Header Toggle for the given type
+        //         toggle = document.getElementById(parameters.quantityType.concat('QuantityHeaderToggle'));
+        //     }
+        //     else 
+        //     {
+        //         //Else, find the popover toggle element based on the given quantity type and List Item ID
+        //         console.log("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+        //         toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+        //     }
+
+        //     //Set the behavior for when the popover is made visible
+        //     $(toggle).on('shown.bs.popover', function() 
+        //     {
+        //         console.log("A Popover was shown");
+        //         callback(toggle, parameters.quantityType); //TODO should not pass back an element
+        //     });    
+        // }
+        else if (event === 'QuantityPopoverShown') 
         {
+            //Find the popover toggle element based on the given quantity type and List Item ID
             console.log("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
-
-            //TODO doesn't work because the element hasn't been added to DOM yet
-
-            //Get the popover toggle element based on the given quantity type and List Item ID
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
-
 
             //Set the behavior for when the popover is made visible
             $(toggle).on('shown.bs.popover', function() 
             {
                 console.log("A Popover was shown");
                 callback(toggle, parameters.quantityType); //TODO should not pass back an element
+            });    
+        }
+        else if (event === 'QuantityHeaderPopoverShown') 
+        {
+            //Find the Quantity Header Toggle based on the given quantity type
+            var toggle = document.getElementById(parameters.quantityType.concat('QuantityHeaderToggle'));
+
+            //Set the behavior for when the popover is made visible
+            $(toggle).on('shown.bs.popover', function() 
+            {
+                callback();
             });    
         }
         else if (event === 'DecrementQuantityButtonPressed') 

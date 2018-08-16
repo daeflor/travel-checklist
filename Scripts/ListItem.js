@@ -27,7 +27,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         for (var key in quantities)
         {
             window.View.Bind(
-                'showPopover', 
+                'QuantityPopoverShown', 
                 function(popoverToggle, quantityType) {
                     window.GridManager.SetActivePopover(popoverToggle);
 
