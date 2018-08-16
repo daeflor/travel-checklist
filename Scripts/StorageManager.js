@@ -8,7 +8,7 @@ window.StorageManager = (function ()
     {
         if (typeof(Storage) !== "undefined") 
         {
-            console.log('Request to load value for "' + name +'" from localstorage.');        
+            //console.log('Request to load value for "' + name +'" from localstorage.');        
             return localStorage.getItem(name);
         } 
         else 
@@ -151,7 +151,7 @@ window.StorageManager = (function ()
          storeListData(parsedStorageData);
      }
 
-     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignment, callback)
+     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
      {
         //Get the parsed data from storage
         var parsedStorageData = getParsedDataFromStorage();
@@ -173,33 +173,34 @@ window.StorageManager = (function ()
                         //var quantityValue = parsedStorageData.lists[i].listItems[j].quantities[quantityType];
 
                         //Set, increment, or decrement the specified List Item's quantity value as applicable
-                        if (assignment.type == 'set')
+                        // if (assignmentType == 'set')
+                        // {
+                        //     if (quantities[quantityType] != assignment.value)
+                        //     {
+                        //         quantities[quantityType] = assignment.value;
+                        //         dataModified = true;
+                        //     }                            
+                        // }
+                        if (assignmentType == 'clear')
                         {
-                            if (quantities[quantityType] != assignment.value)
+                            if (quantities[quantityType] != 0)
                             {
-                                quantities[quantityType] = assignment.value;
+                                quantities[quantityType] = 0;
                                 dataModified = true;
-                            }
-                            
-                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] = assignment.value;
+                            }                            
                         }
-                        else if (assignment.type == 'decrement')
+                        else if (assignmentType == 'decrement')
                         {
                             if (quantities[quantityType] > 0)
                             {
                                 quantities[quantityType]--;
                                 dataModified = true;
                             }
-
-                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] =  parsedStorageData.lists[i].listItems[j].quantities[quantityType] - 1;
                         }
-                        else if (assignment.type == 'increment')
+                        else if (assignmentType == 'increment')
                         {
                             quantities[quantityType]++;
                             dataModified = true;
-
-                            console.log("Incremented the '" + quantityType + "' quantity value by 1 for List Item with ID: " + listItemId);
-                            //parsedStorageData.lists[i].listItems[j].quantities[quantityType] = parsedStorageData.lists[i].listItems[j].quantities[quantityType] + 1;
                         }
                         else 
                         {
@@ -210,11 +211,9 @@ window.StorageManager = (function ()
                         if (dataModified == true)
                         {
                             storeListData(parsedStorageData);
-                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?
+                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?... I think it's fine if the alternative is an ERROR message
                         }
-                        
-                        //callback(dataModified, quantities);
-                        
+                                                
                         break;
                     }
                 }

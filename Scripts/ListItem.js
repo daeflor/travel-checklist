@@ -21,7 +21,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             }
         );
 
-        UpdateListItemNameColor(quantities);
+        updateListItemNameColor(quantities);
 
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in quantities)
@@ -33,21 +33,20 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
                     //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
         
-                    window.View.Bind('ModifyQuantityButtonPressed', function(increase)
-                    {   
-                        modifyQuantityValue(quantityType, increase);
-                    });
-
-                    // //TODO the 'increase' parameter is not being used anymore
-                    // window.View.Bind('DecrementQuantityButtonPressed', function(increase)
+                    // window.View.Bind('ModifyQuantityButtonPressed', function(increase)
                     // {   
-                    //     DecrementQuantityValue(quantityType);
+                    //     modifyQuantityValue(quantityType, increase);
                     // });
+
+                    window.View.Bind('DecrementQuantityButtonPressed', function()
+                    {   
+                        modifyQuantityValue(quantityType, 'decrement');
+                    });
         
-                    // window.View.Bind('IncrementQuantityButtonPressed', function(increase)
-                    // {
-                    //     IncrementQuantityValue(quantityType);
-                    // });
+                    window.View.Bind('IncrementQuantityButtonPressed', function()
+                    {
+                        modifyQuantityValue(quantityType, 'increment');
+                    });
         
                     //TODO could/should move this to a Bind as well, assuming this all even works / is needed
                     document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
@@ -77,7 +76,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         );  
     }
 
-    function UpdateListItemQuantityValue(updatedQuantities, type)
+    function updateListItemQuantityValue(updatedQuantities, type)
     {
         window.View.Render('updateModifierValue', {
             listItemId:listItemId, 
@@ -86,7 +85,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         });
     }
 
-    function UpdateListItemNameColor(updatedQuantities)
+    function updateListItemNameColor(updatedQuantities)
     {
         window.View.Render('updateListItemNameColor', {
             listItemId:listItemId, 
@@ -95,23 +94,20 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         });
     }
 
-    function SetQuantityValue(type, newValue)
-    {
-        //TODO could consider changing 'set' to 'clear' (which sets to 0). Then don't need newValue. 
-        Model.EditListItemQuantity(listId, listItemId, type, {type:'set', value:newValue}, function(updatedQuantities) {
-            UpdateListItemQuantityValue(updatedQuantities, type);
-            UpdateListItemNameColor(updatedQuantities);
-        });
-    }
+    // function SetQuantityValue(type, newValue)
+    // {
+    //     //TODO could consider changing 'set' to 'clear' (which sets to 0). Then don't need newValue. 
+    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'set', value:newValue}, function(updatedQuantities) {
+    //         UpdateListItemQuantityValue(updatedQuantities, type);
+    //         UpdateListItemNameColor(updatedQuantities);
+    //     });
+    // }
 
-    function modifyQuantityValue(type, increase)
+    function modifyQuantityValue(quantityType, assignmentType)
     {
-        var assignment = {};
-        assignment.type = (increase == true) ? 'increment' : 'decrement';
-
-        Model.EditListItemQuantity(listId, listItemId, type, assignment, function(updatedQuantities) {
-            UpdateListItemQuantityValue(updatedQuantities, type);
-            UpdateListItemNameColor(updatedQuantities);
+        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
+            updateListItemQuantityValue(updatedQuantities, quantityType);
+            updateListItemNameColor(updatedQuantities);
         });
     }
 
@@ -154,7 +150,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         },
         ClearQuantityValue : function(quantityType)
         {
-            SetQuantityValue(quantityType, 0);
+            modifyQuantityValue(quantityType, 'clear');
         }
         // ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         // {
