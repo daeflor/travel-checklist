@@ -1,5 +1,7 @@
 window.TemplateManager = (function () 
-{
+{   
+    //TODO re-order these methods for better readability
+
     function createListItemFromTemplate(data)
     {
         //Create the div wrapper for the entire List Item
@@ -174,7 +176,7 @@ window.TemplateManager = (function ()
         return wrapper;
     }
 
-    function createTravelHeader()
+    function createTravelHeaderFromTemplate()
     {
         var headerWrapper = CreateNewElement('div', [ ['class', 'col container-fluid row'] ]);
 
@@ -192,17 +194,6 @@ window.TemplateManager = (function ()
 
         var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
         var popoverToggle = CreatePopoverToggle({id:((data.type).concat('QuantityHeaderToggle')), class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
-        
-        //TODO Move this BIND elsewhere
-        // $(popoverToggle).on('shown.bs.popover', function() 
-        // {
-        //     console.log("A Header Popover was shown for quantity type: " + data.type);
-        //     document.getElementById('buttonClear').addEventListener('click', function()
-        //     {
-        //         console.log("Clear button was clicked for quantity type: " + data.type);
-        //         window.GridManager.ClearButtonPressed(data.type);
-        //     });
-        // });
 
         return CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
     }
@@ -211,6 +202,6 @@ window.TemplateManager = (function ()
         CreateListWrapperFromTemplate : createListWrapperFromTemplate,
         CreateListToggleFromTemplate : createListToggleFromTemplate,
         CreateListItemFromTemplate : createListItemFromTemplate,
-        CreateTravelHeader : createTravelHeader
+        CreateTravelHeaderFromTemplate : createTravelHeaderFromTemplate
     };
 })();  

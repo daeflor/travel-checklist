@@ -387,7 +387,7 @@ window.View = (function()
             },
             ShowQuantityHeader: function() 
             {
-                elements.listHeader.appendChild(window.TemplateManager.CreateTravelHeader()); 
+                elements.listHeader.appendChild(window.TemplateManager.CreateTravelHeaderFromTemplate()); 
             }         
             // updateListItemQuantityValue: function() 
             // {

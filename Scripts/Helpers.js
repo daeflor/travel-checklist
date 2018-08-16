@@ -1,6 +1,7 @@
 /** Element Creation **/
 
-//TODO could change child parameter to a list of children instead. Rather, change to a single data param, and one of the properties is a list of children
+//TODO could change child parameter to a list of children instead. 
+    //Or better, change to a single object param, and one of the properties is a list of children
 function CreateNewElement(elementName, attributes, child)
 {
     var element;
@@ -54,6 +55,7 @@ function CreateButtonWithIcon(data)
     return buttonElement;
 }
 
+//TODO maybe this SHOULD actually be in a 'helper' or util file... Maybe 'CustomTemplates' (this) vs 'StandardTemplates' (helpers)...?
 //TODO is it possible to always reuse the same popover for editing quantity values? Is that even desired?
 function CreatePopoverToggle(data)
 {    
