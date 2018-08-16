@@ -275,12 +275,12 @@ window.View = (function()
                 console.log("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(window.TemplateManager.CreateListToggleFromTemplate(parameters));
+                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
                 //elements.homeScreenListElements.appendChild(parameters.listToggleElement);
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Add the List element to the DOM, under the List Screen List Elements div
-                elements.listScreenListElements.appendChild(window.TemplateManager.CreateListWrapperFromTemplate(parameters.listId));
+                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
             },
             removeList: function() //Expected parameters: listId
@@ -300,7 +300,7 @@ window.View = (function()
                 
                 if (listWrapper != null)
                 {
-                    listWrapper.appendChild(window.TemplateManager.CreateListItemFromTemplate(parameters));
+                    listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
                     console.log("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
                 }
                 else
@@ -387,7 +387,7 @@ window.View = (function()
             },
             ShowQuantityHeader: function() 
             {
-                elements.listHeader.appendChild(window.TemplateManager.CreateTravelHeaderFromTemplate()); 
+                elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             }         
             // updateListItemQuantityValue: function() 
             // {

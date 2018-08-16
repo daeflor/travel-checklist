@@ -1,4 +1,4 @@
-window.TemplateManager = (function () 
+window.CustomTemplates = (function () 
 {   
     //TODO re-order these methods for better readability
 
