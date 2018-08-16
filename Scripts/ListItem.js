@@ -33,6 +33,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
                     //TODO I think there's a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
         
+                    //TODO the 'increase' parameter is not being used anymore
                     window.View.Bind('DecrementQuantityButtonPressed', function(increase)
                     {   
                         DecrementQuantityValue(quantityType);

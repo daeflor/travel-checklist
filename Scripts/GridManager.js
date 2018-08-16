@@ -23,25 +23,8 @@ window.GridManager = (function()
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
         for (var key in QuantityType)
         {
-            (function(lockedKey) //TODO there is probably a simpler way to do this
-            {
-                window.View.Bind(
-                    'QuantityHeaderPopoverShown', 
-                    function() {
-                        document.getElementById('buttonClear').addEventListener(
-                            'click', 
-                            function()
-                            {
-                                console.log("Clear button was clicked for quantity type: " + lockedKey);
-                                clearButtonPressed(lockedKey);
-                            }
-                        );
-                    },
-                    {quantityType:lockedKey}
-                );
-            })(key);
+            bindQuantityHeaderToggleEvents(key);
         }
-
 
         window.View.Bind('navigateHome', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
@@ -58,6 +41,33 @@ window.GridManager = (function()
     }
 
     /** List Management **/
+
+    function bindQuantityHeaderToggleEvents(quantityType)
+    {
+        window.View.Bind(
+            'QuantityHeaderPopoverShown', 
+            function() {
+                window.View.Bind(
+                    'ClearButtonPressed', 
+                    function()
+                    {
+                        console.log("Clear button was clicked for quantity type: " + quantityType);
+
+                        if (activeList != null)
+                        {
+                            console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
+                            activeList.ClearQuantityColumnValues(quantityType);
+                        }
+                        else
+                        {
+                            console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
+                        }
+                    }
+                );
+            },
+            {quantityType:quantityType}
+        );
+    }
 
     function AddNewList()
     {
@@ -125,36 +135,23 @@ window.GridManager = (function()
 
     function NavigateHome()
     {
-        //TODO move some of this to the View
-
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView');
 
-        //TODO Do something with the Model here (e.g. update it)
+        //Display the Home Screen
         window.View.Render('showHomeScreen'); 
+
         //TODO can hiding the Active settings view be part of showing the home screen?
     }
 
     /** Experimental & In Progress **/
-
-    function clearButtonPressed(quantityType)
-    {
-        if (activeList != null)
-        {
-            console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
-            activeList.ClearQuantityColumnValues(quantityType);
-        }
-        else
-        {
-            console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
-        }
-    }
 
     /** Public Functions **/
 
     return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
         RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
         {
+            //TODO could make a 'getListIndex' helper method that does this and returns 'i'
             for (var i = lists.length-1; i >= 0; i--)
             {
                 if (lists[i].GetId() == listId)

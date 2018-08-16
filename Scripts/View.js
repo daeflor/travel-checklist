@@ -97,7 +97,7 @@ window.View = (function()
             //Set the behavior for when the Add List Item button is pressed
             document.getElementById('buttonAddRow').addEventListener('click', callback);         
         }
-        else if (event === 'deleteButtonPressed') 
+        else if (event === 'DeleteButtonPressed') 
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
@@ -149,16 +149,17 @@ window.View = (function()
                 callback(toggle, parameters.quantityType); //TODO should not pass back an element
             });    
         }
-        else if (event === 'QuantityHeaderPopoverShown') 
+        else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
             //Find the Quantity Header Toggle based on the given quantity type
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityHeaderToggle'));
 
             //Set the behavior for when the popover is made visible
-            $(toggle).on('shown.bs.popover', function() 
-            {
-                callback();
-            });    
+            $(toggle).on('shown.bs.popover', callback);  
+        }
+        else if (event === 'ClearButtonPressed') 
+        {
+            document.getElementById('buttonClear').addEventListener('click', callback); 
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -167,7 +168,7 @@ window.View = (function()
                 callback(false);
             });         
         }
-        else if (event === 'IncrementQuantityButtonPressed') 
+        else if (event === 'IncrementQuantityButtonPressed') //TODO should be simple to merge this with the event above
         {
             document.getElementById('buttonPlus').addEventListener('click', function() 
             {
@@ -209,15 +210,6 @@ window.View = (function()
             }
             
         }
-        // else if (event === 'SettingsViewExpansionEnded') //Expected parameters: id
-        // {
-        //     var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
-
-        //     $(settingsView).on('shown.bs.collapse', function() 
-        //     {
-        //         callback();
-        //     });  
-        // }
     }
 
     function render(command, parameters)

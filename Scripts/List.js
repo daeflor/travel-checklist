@@ -30,7 +30,7 @@ function List(data)
 
     //Add an event listener to the Delete Button to remove the List Item
     window.View.Bind(
-        'deleteButtonPressed', 
+        'DeleteButtonPressed', 
         function() {
             window.GridManager.RemoveList(data.id);
         }, 
@@ -123,13 +123,12 @@ function List(data)
 
             //Add an event listener to the Delete Button to remove the List Item
             window.View.Bind(
-                'deleteButtonPressed', 
+                'DeleteButtonPressed', 
                 function() {
                     RemoveListItem(listItemData.id);
                 }, 
                 {id:listItemData.id}
             );
-            //window.View.Bind('deleteButtonPressed', function() {RemoveListItem(listItemData.id)}, {listItemId:listItemData.id});
         },
         AddNewListItem : function()
         {
@@ -139,7 +138,7 @@ function List(data)
                     rows.push(new ListItem(newListItem.id, newListItem.name, newListItem.quantities, data.id));
                     
                     window.View.Bind(
-                        'deleteButtonPressed', 
+                        'DeleteButtonPressed', 
                         function() {
                             RemoveListItem(newListItem.id);
                         }, 
@@ -152,31 +151,6 @@ function List(data)
                     );
                 }
             );
-
-            ///
-
-            // var listItemId = new Date().getTime();
-            // var itemRow = new ListItem(listItemId, "", {needed:0, luggage:0, wearing:0, backpack:0}, data.id);
-
-            // rows.push(itemRow);
-            
-            // //element.appendChild(itemRow.GetWrapper());
-
-            // window.Model.AddListItem(data.id);
-
-            // //Add an event listener to the Delete Button to remove the List Item
-            // window.View.Bind(
-            //     'deleteButtonPressed', 
-            //     function() {
-            //         RemoveListItem(listItemId);
-            //     }, 
-            //     {id:listItemId}
-            // );
-            // //window.View.Bind('deleteButtonPressed', function() {RemoveListItem(listItemId)}, {listItemId:listItemId});
-            
-            // //Manually trigger the Settings View to begin expanding and bring focus to the Text Area to edit the List Item name
-            // window.View.Render('ExpandSettingsView', {id:listItemId});
-            // //itemRow.ExpandSettings();
         },
         ClearQuantityColumnValues : function(quantityType)
         {
