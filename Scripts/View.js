@@ -161,20 +161,32 @@ window.View = (function()
         {
             document.getElementById('buttonClear').addEventListener('click', callback); 
         }
-        else if (event === 'DecrementQuantityButtonPressed') 
+        else if (event === 'ModifyQuantityButtonPressed') 
         {
             document.getElementById('buttonMinus').addEventListener('click', function() 
             {
-                callback(false);
+                callback(false); //TODO not sure that it's correct for the View to know whether to return true or false as a param
             });         
-        }
-        else if (event === 'IncrementQuantityButtonPressed') //TODO should be simple to merge this with the event above
-        {
+
             document.getElementById('buttonPlus').addEventListener('click', function() 
             {
                 callback(true);
-            });      
+            });  
         }
+        // else if (event === 'DecrementQuantityButtonPressed') 
+        // {
+        //     document.getElementById('buttonMinus').addEventListener('click', function() 
+        //     {
+        //         callback(false);
+        //     });         
+        // }
+        // else if (event === 'IncrementQuantityButtonPressed') //TODO should be simple to merge this with the event above
+        // {
+        //     document.getElementById('buttonPlus').addEventListener('click', function() 
+        //     {
+        //         callback(true);
+        //     });      
+        // }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
             var newSettingsView = document.getElementById('SettingsView-'.concat(parameters.id));

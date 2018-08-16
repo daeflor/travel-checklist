@@ -247,3 +247,4 @@ var ListType = {
     Checklist: 1,
 };
 
+//AssignmentType object? 

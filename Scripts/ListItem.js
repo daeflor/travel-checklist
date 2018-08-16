@@ -31,18 +31,23 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                 function(popoverToggle, quantityType) {
                     window.GridManager.SetActivePopover(popoverToggle);
 
-                    //TODO I think there's a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
+                    //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
         
-                    //TODO the 'increase' parameter is not being used anymore
-                    window.View.Bind('DecrementQuantityButtonPressed', function(increase)
+                    window.View.Bind('ModifyQuantityButtonPressed', function(increase)
                     {   
-                        DecrementQuantityValue(quantityType);
+                        modifyQuantityValue(quantityType, increase);
                     });
+
+                    // //TODO the 'increase' parameter is not being used anymore
+                    // window.View.Bind('DecrementQuantityButtonPressed', function(increase)
+                    // {   
+                    //     DecrementQuantityValue(quantityType);
+                    // });
         
-                    window.View.Bind('IncrementQuantityButtonPressed', function(increase)
-                    {
-                        IncrementQuantityValue(quantityType);
-                    });
+                    // window.View.Bind('IncrementQuantityButtonPressed', function(increase)
+                    // {
+                    //     IncrementQuantityValue(quantityType);
+                    // });
         
                     //TODO could/should move this to a Bind as well, assuming this all even works / is needed
                     document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
@@ -92,27 +97,39 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
 
     function SetQuantityValue(type, newValue)
     {
+        //TODO could consider changing 'set' to 'clear' (which sets to 0). Then don't need newValue. 
         Model.EditListItemQuantity(listId, listItemId, type, {type:'set', value:newValue}, function(updatedQuantities) {
             UpdateListItemQuantityValue(updatedQuantities, type);
             UpdateListItemNameColor(updatedQuantities);
         });
     }
 
-    function DecrementQuantityValue(type)
+    function modifyQuantityValue(type, increase)
     {
-        Model.EditListItemQuantity(listId, listItemId, type, {type:'decrement'}, function(updatedQuantities) {
+        var assignment = {};
+        assignment.type = (increase == true) ? 'increment' : 'decrement';
+
+        Model.EditListItemQuantity(listId, listItemId, type, assignment, function(updatedQuantities) {
             UpdateListItemQuantityValue(updatedQuantities, type);
             UpdateListItemNameColor(updatedQuantities);
         });
     }
 
-    function IncrementQuantityValue(type)
-    {
-        Model.EditListItemQuantity(listId, listItemId, type, {type:'increment'}, function(updatedQuantities) {
-            UpdateListItemQuantityValue(updatedQuantities, type);
-            UpdateListItemNameColor(updatedQuantities);
-        });
-    }
+    // function DecrementQuantityValue(type)
+    // {
+    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'decrement'}, function(updatedQuantities) {
+    //         UpdateListItemQuantityValue(updatedQuantities, type);
+    //         UpdateListItemNameColor(updatedQuantities);
+    //     });
+    // }
+
+    // function IncrementQuantityValue(type)
+    // {
+    //     Model.EditListItemQuantity(listId, listItemId, type, {type:'increment'}, function(updatedQuantities) {
+    //         UpdateListItemQuantityValue(updatedQuantities, type);
+    //         UpdateListItemNameColor(updatedQuantities);
+    //     });
+    // }
 
     /** Experimental & In Progress **/
 
