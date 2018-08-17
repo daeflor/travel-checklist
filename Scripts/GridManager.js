@@ -56,7 +56,8 @@ window.GridManager = (function()
                         if (activeList != null)
                         {
                             Print("Button pressed to clear " + quantityType + " column for grid " + activeList);
-                            activeList.ClearQuantityColumnValues(quantityType);
+                            //TODO temporarily commented out
+                            //activeList.ClearQuantityColumnValues(quantityType);
                         }
                         else
                         {
@@ -146,21 +147,36 @@ window.GridManager = (function()
 
     /** Experimental & In Progress **/
 
+    function getListIndex(listId)
+    {
+        for (var i = lists.length-1; i >= 0; i--)
+        {
+            if (lists[i].GetId() == listId)
+            {
+                return i;
+            }
+        } 
+
+        console.log("ERROR: Tried to return the index of a List that could not be found.");
+    }
+
     /** Public Functions **/
 
     return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
         RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
         {
-            //TODO could make a 'getListIndex' helper method that does this and returns 'i'
-            for (var i = lists.length-1; i >= 0; i--)
-            {
-                if (lists[i].GetId() == listId)
-                {
-                    Print("(Temp) Removing list with ID: " + listId);
-                    lists.splice(i, 1);
-                    break;
-                }
-            } 
+            lists.splice(getListIndex(listId), 1);
+
+            // //TODO could make a 'getListIndex' helper method that does this and returns 'i'
+            // for (var i = lists.length-1; i >= 0; i--)
+            // {
+            //     if (lists[i].GetId() == listId)
+            //     {
+            //         Print("(Temp) Removing list with ID: " + listId);
+            //         lists.splice(i, 1);
+            //         break;
+            //     }
+            // } 
     
             Model.RemoveList(listId);
             window.View.Render('removeList', {listId:listId});

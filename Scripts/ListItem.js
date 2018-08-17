@@ -40,9 +40,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
                         updateQuantityValue(quantityType, 'increment');
                     });
         
-                    //TODO could/should move this to a Bind as well, assuming this all even works / is needed
-                    document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
-                    Print("An onclick listener was added to the whole document");
+                    window.View.Bind('ClickDetected', window.GridManager.HideActiveQuantityPopover);
                 },
                 {listItemId:listItemId, quantityType:key}
             );

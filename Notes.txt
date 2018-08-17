@@ -13,7 +13,9 @@ TO-DOs:
 
 
 Upcoming To-Do List:
-- Would be nice to add a toggle to enable or disable debug log strings to console
+- BUG: If you zoom out, there is a margin on the right. :( Might be from removing the 'superfluous' row div some time ago
+- Need a better design for when the Clear button is pressed. How to know which List has the column cleared? Should the clear happen on a List basis instead of per ListItem?
+- Would be nice to add a toggle to enable or disable debug log strings to console, or at least a visual that shows if it's enabled or not.
 - All EventListeners should be moved to View
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...

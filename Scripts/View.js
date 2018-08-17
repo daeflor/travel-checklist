@@ -201,8 +201,12 @@ window.View = (function()
             else
             {
                 console.log("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
-            }
-            
+            }  
+        }
+        else if (event === 'ClickDetected')
+        {
+            document.addEventListener('click', callback);
+            Print("An onclick listener was added to the whole document");
         }
     }
 
@@ -279,9 +283,8 @@ window.View = (function()
                 document.getElementById('ListToggle-'.concat(parameters.listId)).remove();
                 //elements.homeScreenListElements.removeChild(parameters.listToggleElement);
             },
-            AddListItem: function() //TODO New vs Existing? Should they be distinguished? Probably not...
+            AddListItem: function() 
             {
-                //TODO this is a temporary hack to add the List Item as a child of the List in the DOM.. Maybe not temporary actually..
                 var listWrapper = document.getElementById(parameters.listId);
                 
                 if (listWrapper != null)

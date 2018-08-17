@@ -247,6 +247,7 @@ window.StorageManager = (function ()
         storeListData(parsedStorageData);
     }
 
+    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
     // function findListInStorage(listId)
     // {
     //     //Get the parsed data from storage
