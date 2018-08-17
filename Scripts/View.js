@@ -40,7 +40,7 @@ window.View = (function()
     //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
     function getListItemNameButton(listItemId)
     {
-        console.log("Request to get name button of List Item with id: " + listItemId);
+        Print("Request to get name button of List Item with id: " + listItemId);
 
         //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
             //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemNameButton-745382490375' )
@@ -139,13 +139,13 @@ window.View = (function()
         else if (event === 'QuantityPopoverShown') 
         {
             //Find the popover toggle element based on the given quantity type and List Item ID
-            console.log("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
             //Set the behavior for when the popover is made visible
             $(toggle).on('shown.bs.popover', function() 
             {
-                console.log("A Popover was shown");
+                Print("A Popover was shown");
                 callback(toggle, parameters.quantityType); //TODO should not pass back an element
             });    
         }
@@ -258,7 +258,7 @@ window.View = (function()
             },
             AddListElements: function() //Expected parameters: listId, listName
             {
-                console.log("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
+                Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
@@ -287,7 +287,7 @@ window.View = (function()
                 if (listWrapper != null)
                 {
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
-                    console.log("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
+                    Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
                 }
                 else
                 {
@@ -298,17 +298,16 @@ window.View = (function()
             {
                 document.getElementById(parameters.listItemId).remove();
             },
-            updateModifierValue: function() //Expected parameters: listItemId, quantityType, updatedValue
+            updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
-                console.log("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
+                Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can we save references to the list item quantity modifiers to not always have to search for them
-                //TODO Would it help to use data-id instead of element ID?
 
                 //Get the popover toggle element based on the given quantity type and List Item ID
                 var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
-                //Update the text content of the quanity toggle to the new value
+                //If the quantity toggle element was found, update the text content of the toggle to the new value
                 if (toggle != null)
                 {
                     toggle.text = parameters.updatedValue;
@@ -320,7 +319,7 @@ window.View = (function()
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityNeeded, quantityBalance
             {
-                console.log("Request to update color of list item with id: " + parameters.listItemId);
+                Print("Request to update color of list item with id: " + parameters.listItemId);
 
                 var listNameButton = getListItemNameButton(parameters.listItemId);
 

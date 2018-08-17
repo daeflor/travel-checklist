@@ -22,7 +22,7 @@ window.StorageManager = (function ()
         if (typeof(Storage) !== "undefined") 
         {
             localStorage.setItem(name, value);
-            console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
+            Print('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
         } 
         else 
         {
@@ -91,7 +91,7 @@ window.StorageManager = (function ()
         {
             if (parsedStorageData.lists[i].id == listId)
             {
-                console.log("Removing List from Storage. List ID: " + listId);
+                Print("Removing List from Storage. List ID: " + listId);
                 //Remove the matching List object from the lists array
                 parsedStorageData.lists.splice(i, 1);
                 break;

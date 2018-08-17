@@ -51,11 +51,11 @@ window.GridManager = (function()
                     'ClearButtonPressed', 
                     function()
                     {
-                        console.log("Clear button was clicked for quantity type: " + quantityType);
+                        Print("Clear button was clicked for quantity type: " + quantityType);
 
                         if (activeList != null)
                         {
-                            console.log("Button pressed to clear " + quantityType + " column for grid " + activeList);
+                            Print("Button pressed to clear " + quantityType + " column for grid " + activeList);
                             activeList.ClearQuantityColumnValues(quantityType);
                         }
                         else
@@ -95,7 +95,7 @@ window.GridManager = (function()
     //TODO Eventually use ID instead of index and get rid of the concept of Active List?
     function NavigateToList(indexToDisplay)
     {   
-        console.log("Request received to switch lists to grid index: " + indexToDisplay);
+        Print("Request received to switch lists to grid index: " + indexToDisplay);
         
         if (indexToDisplay < lists.length)
         {
@@ -110,7 +110,7 @@ window.GridManager = (function()
             }
             else
             {
-                console.log("Navigating to the list which was already Active");
+                Print("Navigating to the list which was already Active");
             }
 
             //If there is any active settings view, close it
@@ -156,7 +156,7 @@ window.GridManager = (function()
             {
                 if (lists[i].GetId() == listId)
                 {
-                    console.log("(Temp) Removing list with ID: " + listId);
+                    Print("(Temp) Removing list with ID: " + listId);
                     lists.splice(i, 1);
                     break;
                 }
@@ -172,7 +172,7 @@ window.GridManager = (function()
         SetActivePopover : function(popover)
         {
             activePopover = popover;
-            console.log("The Active Popover changed");
+            Print("The Active Popover changed");
         },
         HideActiveQuantityPopover : function(e)
         {     
@@ -182,7 +182,7 @@ window.GridManager = (function()
             {
                 document.removeEventListener('click', window.GridManager.HideActiveQuantityPopover);
                 $(activePopover).popover('hide');
-                console.log("The active popover was told to hide");
+                Print("The active popover was told to hide");
             }
         },
         ListSelected : function(elementListToggle)
@@ -195,7 +195,7 @@ window.GridManager = (function()
             {
                 var index = $(elementListToggle).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
                 
-                console.log("List Toggle Element selected: " + elementListToggle + ". index: " + index);
+                Print("List Toggle Element selected: " + elementListToggle + ". index: " + index);
                 
                 if (typeof(index) == "undefined")
                 {

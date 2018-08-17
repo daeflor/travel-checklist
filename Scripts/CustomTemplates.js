@@ -43,7 +43,7 @@ window.CustomTemplates = (function ()
 
     function createListToggleFromTemplate(data)
     {
-        console.log("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
+        Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
 
         var wrapper = CreateNewElement('div', [ ['id','ListToggle-'.concat(data.listId)], ['class','row divItemRow divListToggleWrapper'] ]);
 
@@ -101,7 +101,7 @@ window.CustomTemplates = (function ()
         //Add a listener to the toggle 
         popoverToggle.addEventListener('click', function(e) 
         {
-            console.log("A Popover toggle was pressed");
+            Print("A Popover toggle was pressed");
 
             //If there is no popover currently active, show the popover for the selected toggle
             if(window.GridManager.GetActivePopover() == null)
@@ -109,7 +109,7 @@ window.CustomTemplates = (function ()
                 //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
                 if(e.target == popoverToggle)
                 {
-                    console.log("Prevented click event from bubbling up");
+                    Print("Prevented click event from bubbling up");
                     e.stopPropagation();
                 }
 
@@ -121,7 +121,7 @@ window.CustomTemplates = (function ()
         //Set the behavior for when the popover is hidden
         $(popoverToggle).on('hidden.bs.popover', function()
         {
-            console.log("A Popover was hidden");
+            Print("A Popover was hidden");
             window.GridManager.SetActivePopover(null);
         });
 

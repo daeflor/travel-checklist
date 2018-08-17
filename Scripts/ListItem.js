@@ -42,7 +42,7 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         
                     //TODO could/should move this to a Bind as well, assuming this all even works / is needed
                     document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
-                    console.log("An onclick listener was added to the whole document");
+                    Print("An onclick listener was added to the whole document");
                 },
                 {listItemId:listItemId, quantityType:key}
             );
@@ -70,10 +70,17 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
         );  
     }
 
-    //TODO this method name is too similar to the one below. Should consolidate, or rename to explicitly call out View, or something
-    function updateListItemQuantityValue(updatedQuantities, type)
+    function updateQuantityValue(quantityType, assignmentType)
     {
-        window.View.Render('updateModifierValue', {
+        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
+            updateListItemQuantityText(updatedQuantities, quantityType);
+            updateListItemNameColor(updatedQuantities);
+        });
+    }
+
+    function updateListItemQuantityText(updatedQuantities, type)
+    {
+        window.View.Render('updateListItemQuantityText', {
             listItemId:listItemId, 
             quantityType:type, 
             updatedValue:updatedQuantities[type]
@@ -86,14 +93,6 @@ function ListItem(listItemId, listItemName, quantities, listId) //TODO passing l
             listItemId:listItemId, 
             quantityNeeded:updatedQuantities.needed, 
             quantityBalance:(updatedQuantities.needed - updatedQuantities.luggage - updatedQuantities.wearing - updatedQuantities.backpack)
-        });
-    }
-
-    function updateQuantityValue(quantityType, assignmentType)
-    {
-        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
-            updateListItemQuantityValue(updatedQuantities, quantityType);
-            updateListItemNameColor(updatedQuantities);
         });
     }
 

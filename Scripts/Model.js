@@ -24,7 +24,7 @@ window.Model = (function()
             //window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
             callback(list);
 
-            console.log("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
+            Print("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
             
             //Check if there is a 'listItems' object in the parsed storage data for the current list
             if (lists[i].listItems !== null)
@@ -34,7 +34,7 @@ window.Model = (function()
                 {
                     if (list.GetType() == ListType.Travel)
                     {
-                        console.log("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
+                        Print("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
                         
                         //Add a row to current List, passing along the data parsed from storage
                         list.LoadListItem({

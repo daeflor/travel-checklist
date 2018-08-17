@@ -29,7 +29,7 @@ function CreateNewElement(elementName, attributes, child)
     }
     else
     {
-        console.log("Failed to create new element. No name provided.");
+        console.log("ERROR: Failed to create new element. No name provided.");
     }
 }
 

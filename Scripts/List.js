@@ -1,11 +1,11 @@
 function List(data)
 {
     //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
-    //var element = CreateNewElement('div', [ ['id',data.id], ['class','container-fluid'], ['hidden', 'true'] ]);
     var rows = [];
-    //var toggle = new ListToggle(data.name, data.id);
 
-    console.log("List created, with ID: " + data.id);
+    Print("List created, with ID: " + data.id);
+
+    //console.log("List created, with ID: " + data.id);
 
     window.View.Render('AddListElements', {listId:data.id, listName:data.name});
 
@@ -64,16 +64,11 @@ function List(data)
         GetName : function()
         {
             return data.name; //TODO this will only ever return the original name for the list during a particular session, but this is good enough for its current usage, and will be deprecated soon anyway.
-            //return toggle.GetName(); //TODO this is pretty janky
         },
         GetType : function()
         {
             return data.type;
         },
-        // GetToggle : function()
-        // {
-        //     return toggle;
-        // },
         GetHighestListItemId : function() //TODO this is temp and hacky
         {
             if (rows.length == 0)
@@ -85,34 +80,6 @@ function List(data)
                 return rows[rows.length-1].GetId();
             }
         },
-        // ToggleElementVisibility : function() //TODO this needs to be addressed
-        // {
-        //     if (element.hidden == true)
-        //     {
-        //         element.hidden = false;
-        //     }
-        //     else
-        //     {
-        //         element.hidden = true;
-        //     }
-        // },
-        // GetDataForStorage : function()
-        // {
-        //     var listItemData = [];     
-
-        //     for (var i = 0; i < rows.length; i++)
-        //     {
-        //         listItemData.push(rows[i].GetDataForStorage());
-        //     }
-
-        //     //TODO Getting info from the DOM is all a TEMP hack while the storage refactor is in progress
-        //     return new ListStorageData({
-        //         id: data.id, 
-        //         name: document.getElementById('NameButton-'.concat(data.id)).textContent, 
-        //         type: data.type, 
-        //         listItems: listItemData
-        //     });
-        // },
         LoadListItem : function(listItemData)
         {
             var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
