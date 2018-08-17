@@ -178,14 +178,14 @@ window.CustomTemplates = (function ()
 
     function createTravelHeaderFromTemplate()
     {
-        var headerWrapper = CreateNewElement('div', [ ['class', 'col container-fluid row'] ]);
+        var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
 
         for (var key in QuantityType)
         {
             headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key])); 
         }
 
-        return headerWrapper;
+        return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;
     }
 
     function createQuantityHeaderToggle(data)

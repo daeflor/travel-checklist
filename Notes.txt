@@ -13,6 +13,7 @@ TO-DOs:
 
 
 Upcoming To-Do List:
+- Known Issue: Clear Button currently does not work
 - BUG: If you zoom out, there is a margin on the right. :( Might be from removing the 'superfluous' row div some time ago
 - Need a better design for when the Clear button is pressed. How to know which List has the column cleared? Should the clear happen on a List basis instead of per ListItem?
 - Would be nice to add a toggle to enable or disable debug log strings to console, or at least a visual that shows if it's enabled or not.
