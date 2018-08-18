@@ -2,8 +2,6 @@ function List(data)
 {
     //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
 
-    //var rows = [];
-
     Print("List created, with ID: " + data.id);
 
     window.View.Render('AddListElements', {listId:data.id, listName:data.name});
@@ -38,15 +36,6 @@ function List(data)
 
     function RemoveListItem(listItemId)
     {
-        // for (var i = rows.length-1; i >= 0; i--)
-        // {
-        //     if (rows[i].GetId() == listItemId)
-        //     {
-        //         rows.splice(i, 1);
-        //         break;
-        //     }
-        // } 
-
         Model.RemoveListItem(data.id, listItemId);
         window.View.Render('removeListItem', {listItemId:listItemId});
     }
@@ -168,32 +157,9 @@ function List(data)
         {
             return data.type;
         },
-        // GetHighestListItemId : function() //TODO this is temp and hacky
-        // {
-        //     if (rows.length == 0)
-        //     {
-        //         return null;
-        //     }
-        //     else 
-        //     {
-        //         return rows[rows.length-1].GetId();
-        //     }
-        // },
         LoadListItem : function(listItemData)
         {
             loadListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
-            //var itemRow = new ListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
-
-            //rows.push(itemRow);
-            
-            // //Add an event listener to the Delete Button to remove the List Item
-            // window.View.Bind(
-            //     'DeleteButtonPressed', 
-            //     function() {
-            //         RemoveListItem(listItemData.id);
-            //     }, 
-            //     {id:listItemData.id}
-            // );
         },
         AddNewListItem : function()
         {
@@ -201,15 +167,6 @@ function List(data)
                 data.id,
                 function(newListItem) {
                     loadListItem(newListItem.id, newListItem.name, newListItem.quantities, data.id);
-                    //rows.push(new ListItem(newListItem.id, newListItem.name, newListItem.quantities, data.id));
-                    
-                    // window.View.Bind(
-                    //     'DeleteButtonPressed', 
-                    //     function() {
-                    //         RemoveListItem(newListItem.id);
-                    //     }, 
-                    //     {id:newListItem.id}
-                    // );
 
                     window.View.Render(
                         'ExpandSettingsView', 

@@ -26,6 +26,7 @@ window.GridManager = (function()
             bindQuantityHeaderToggleEvents(key);
         }
 
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here).
         window.View.Bind('navigateHome', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
