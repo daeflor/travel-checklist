@@ -45,10 +45,9 @@ window.GridManager = (function()
         });
 
 
+        //TODO could add a small element to the UI that randomizes the color everytime the page loads
         //document.body.style.backgroundColor = 'pink';
     }
-
-    /** List Management **/
 
     //TODO this is hard to read
     function bindQuantityHeaderToggleEvents(quantityType)
@@ -62,31 +61,120 @@ window.GridManager = (function()
                     {
                         Print("Clear button was clicked for quantity type: " + quantityType);
 
-                        //if (activeList != null)
-                        //{
-                        //    Print("Button pressed to clear " + quantityType + " column for grid " + activeList);
-                            //TODO temporarily commented out
-                            //activeList.ClearQuantityColumnValues(quantityType);
-                            window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) {
-                                //Traverse the array of all List Items that had a quantity value cleared 
-                                for (var i = 0; i < modifiedListItems.length; i++)
-                                {
-                                    //Update the List Item's quantity value for the given type
-                                    updateListItemQuantityText(modifiedListItems[i].id, quantityType, modifiedListItems[i].quantities);
-                                    
-                                    //Update the List Item name's color
-                                    updateListItemNameColor(modifiedListItems[i].id, modifiedListItems[i].quantities);
-                                }
-                            });
-                        // }
-                        // else
-                        // {
-                        //     console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
-                        // }
+                        window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) 
+                        {
+                            //Traverse the array of all List Items that had a quantity value cleared 
+                            for (var i = 0; i < modifiedListItems.length; i++)
+                            {
+                                //Update the List Item's quantity value for the given type
+                                updateListItemQuantityText(modifiedListItems[i].id, quantityType, modifiedListItems[i].quantities);
+                                
+                                //Update the List Item name's color
+                                updateListItemNameColor(modifiedListItems[i].id, modifiedListItems[i].quantities);
+                            }
+                        });
                     }
                 );
             },
             {quantityType:quantityType}
+        );
+    }
+
+    /** List Management **/
+
+    function AddNewList()
+    {
+        //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
+
+        window.Model.CreateList(function(data)
+        {
+            addListToView(data);
+
+            //After the List is added to the DOM, expand its Settings View
+            expandSettingsView(data.id);
+        });
+    }
+
+    function addListToView(data) //TODO don't really like using 'data' here
+    {
+        window.View.Render('AddListElements', {listId:data.id, listName:data.name});
+
+        //TODO this method can be standardized and re-used for list item
+        //When the animation to expand the Settings View starts, change the Active Settings View
+        window.View.Bind(
+            'SettingsViewExpansionStarted', 
+            function() 
+            {
+                window.View.Render('HideActiveSettingsView'); 
+            },
+            {id:data.id}
+        );
+    
+        //TODO this method can be standardized and re-used for list item
+        //When the Text Area to edit a list name gets modified, update the text in the List name toggle
+        window.View.Bind(
+            'NameEdited', 
+            function(updatedValue) 
+            {
+                window.Model.EditListName(data.id, updatedValue);
+                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
+            },
+            {id:data.id}
+        );
+    
+        //Add an event listener to the Delete Button to remove the List Item
+        window.View.Bind(
+            'DeleteButtonPressed', 
+            function() 
+            {
+                //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
+
+                window.Model.RemoveList(data.id);
+                window.View.Render('removeList', {listId:data.id});
+            }, 
+            {id:data.id}
+        );
+
+        //When the Go To List button is selected, navigate to that list
+        window.View.Bind(
+            'GoToListButtonPressed', 
+            function() 
+            {
+                navigateToList(data.id);
+            },
+            {listId:data.id}
+        );
+    }
+
+    function navigateToList(listId)
+    {   
+        //If there is any active settings view, close it
+        window.View.Render('HideActiveSettingsView');
+
+        //Display the specified List Screen
+        window.View.Render('DisplayList', {listId:listId});
+    }
+
+    function NavigateHome()
+    {
+        //If there is any active settings view, close it
+        window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
+
+        //Display the Home Screen
+        window.View.Render('showHomeScreen'); 
+    }
+
+    function AddNewListItem(listId)
+    {
+        window.Model.CreateListItem(
+            listId,
+            function(newListItem) 
+            {
+                addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
+                
+                //After the List Item is added to the DOM, expand its Settings View
+                expandSettingsView(newListItem.id);
+            }
         );
     }
 
@@ -170,12 +258,9 @@ window.GridManager = (function()
             }, 
             {id:listItemId}
         );
-
-        // window.View.Render(
-        //     'ExpandSettingsView', 
-        //     {id:listItemId}
-        // );
     }
+
+    //TODO I think there can probably be a ListController and a ListItemController. Except then it might not be possible to share functions across both in a logical way...
 
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
     {
@@ -209,112 +294,6 @@ window.GridManager = (function()
         window.View.Render('removeListItem', {listItemId:listItemId});
     }
 
-
-    //
-
-    function addListToView(data) //TODO don't really like using 'data' here
-    {
-        window.View.Render('AddListElements', {listId:data.id, listName:data.name});
-
-        //TODO this method can be standardized and re-used for list item
-        //When the animation to expand the Settings View starts, change the Active Settings View
-        window.View.Bind(
-            'SettingsViewExpansionStarted', 
-            function() 
-            {
-                window.View.Render('HideActiveSettingsView'); 
-            },
-            {id:data.id}
-        );
-    
-        //TODO this method can be standardized and re-used for list item
-        //When the Text Area to edit a list name gets modified, update the text in the List name toggle
-        window.View.Bind(
-            'NameEdited', 
-            function(updatedValue) 
-            {
-                window.Model.EditListName(data.id, updatedValue);
-                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
-            },
-            {id:data.id}
-        );
-    
-        //Add an event listener to the Delete Button to remove the List Item
-        window.View.Bind(
-            'DeleteButtonPressed', 
-            function() 
-            {
-                //window.GridManager.RemoveList(data.id);
-
-                //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
-
-                //lists.splice(getListIndex(listId), 1);
-
-                window.Model.RemoveList(data.id);
-                window.View.Render('removeList', {listId:data.id});
-            }, 
-            {id:data.id}
-        );
-
-        //When the Go To List button is selected, navigate to that list
-        window.View.Bind(
-            'GoToListButtonPressed', 
-            function() 
-            {
-                navigateToList(data.id);
-            },
-            {listId:data.id}
-        );
-    }
-
-    function AddNewList()
-    {
-        //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
-
-        window.Model.CreateList(function(data)
-        {
-            addListToView(data);
-
-            //TODO this method can be standardized and re-used for list item
-            //After the List is added to the DOM, expand its Settings View
-            window.View.Render('ExpandSettingsView', {id:data.id});
-        });
-    }
-
-    function AddNewListItem(listId)
-    {
-        window.Model.CreateListItem(
-            listId,
-            function(newListItem) 
-            {
-                addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
-                
-                window.View.Render(
-                    'ExpandSettingsView', 
-                    {id:newListItem.id}
-                );
-            }
-        );
-    }
-
-    function navigateToList(listId)
-    {   
-        //If there is any active settings view, close it
-        window.View.Render('HideActiveSettingsView');
-
-        //Display the specified List Screen
-        window.View.Render('DisplayList', {listId:listId});
-    }
-
-    function NavigateHome()
-    {
-        //If there is any active settings view, close it
-        window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
-
-        //Display the Home Screen
-        window.View.Render('showHomeScreen'); 
-    }
-
     /** Experimental & In Progress **/
     
     function hideActiveQuantityPopover(e) 
@@ -327,6 +306,11 @@ window.GridManager = (function()
             $(activePopover).popover('hide');
             Print("The active popover was told to hide");
         }
+    }
+
+    function expandSettingsView(id)
+    {
+        window.View.Render('ExpandSettingsView', {id:id});
     }
 
     /** Public Functions **/
