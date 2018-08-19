@@ -63,6 +63,12 @@ window.View = (function()
         else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
+    //TODO do something with this or remove it
+    // function hideActiveSettingsView()
+    // {
+        
+    // }
+
     //TODO Bind and Render events should probably have distinct names
     //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
         //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)

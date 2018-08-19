@@ -91,16 +91,21 @@ window.GridManager = (function()
             addListToView(data);
 
             //After the List is added to the DOM, expand its Settings View
-            expandSettingsView(data.id);
+            window.View.Render('ExpandSettingsView', {id:data.id});
+            //expandSettingsView(data.id);
         });
     }
 
     function addListToView(data) //TODO don't really like using 'data' here
     {
-        window.View.Render('AddListElements', {listId:data.id, listName:data.name});
+        window.View.Render(
+            'AddListElements', 
+            {listId:data.id, listName:data.name}
+        );
 
         //TODO this method can be standardized and re-used for list item
         //When the animation to expand the Settings View starts, change the Active Settings View
+        //bindSettingsViewExpansion(data.id);
         window.View.Bind(
             'SettingsViewExpansionStarted', 
             function() 
@@ -110,7 +115,6 @@ window.GridManager = (function()
             {id:data.id}
         );
     
-        //TODO this method can be standardized and re-used for list item
         //When the Text Area to edit a list name gets modified, update the text in the List name toggle
         window.View.Bind(
             'NameEdited', 
@@ -173,7 +177,8 @@ window.GridManager = (function()
                 addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
                 
                 //After the List Item is added to the DOM, expand its Settings View
-                expandSettingsView(newListItem.id);
+                window.View.Render('ExpandSettingsView', {id:newListItem.id});
+                //expandSettingsView(newListItem.id);
             }
         );
     }
@@ -229,9 +234,10 @@ window.GridManager = (function()
         }
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
+        //bindSettingsViewExpansion(listItemId);
         window.View.Bind(
             'SettingsViewExpansionStarted', 
-            function(element) {
+            function() {
                 window.View.Render('HideActiveSettingsView'); 
             },
             {id:listItemId}
@@ -269,6 +275,8 @@ window.GridManager = (function()
             updateListItemNameColor(listItemId, updatedQuantities);
         });
     }
+
+    //TODO would it be better if View commands always received consistent paramters (e.g. a list object)
 
     function updateListItemQuantityText(listItemId, quantityType, updatedQuantities)
     {
@@ -308,10 +316,23 @@ window.GridManager = (function()
         }
     }
 
-    function expandSettingsView(id)
-    {
-        window.View.Render('ExpandSettingsView', {id:id});
-    }
+    // function expandSettingsView(id)
+    // {
+    //     window.View.Render('ExpandSettingsView', {id:id});
+    // }
+
+    // function bindSettingsViewExpansion(id)
+    // {
+    //     //When the animation to expand a Settings View starts, hide the previously Active Settings View
+    //     window.View.Bind(
+    //         'SettingsViewExpansionStarted', 
+    //         function() 
+    //         {
+    //             window.View.Render('HideActiveSettingsView'); 
+    //         },
+    //         {id:id}
+    //     );
+    // }
 
     /** Public Functions **/
 
