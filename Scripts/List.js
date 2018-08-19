@@ -161,20 +161,20 @@ function List(data)
         {
             loadListItem(listItemData.id, listItemData.name, listItemData.quantities, data.id);
         },
-        AddNewListItem : function()
-        {
-            window.Model.CreateListItem(
-                data.id,
-                function(newListItem) {
-                    loadListItem(newListItem.id, newListItem.name, newListItem.quantities, data.id);
+        // AddNewListItem : function()
+        // {
+        //     window.Model.CreateListItem(
+        //         data.id,
+        //         function(newListItem) {
+        //             loadListItem(newListItem.id, newListItem.name, newListItem.quantities, data.id);
 
-                    window.View.Render(
-                        'ExpandSettingsView', 
-                        {id:newListItem.id}
-                    );
-                }
-            );
-        },
+        //             window.View.Render(
+        //                 'ExpandSettingsView', 
+        //                 {id:newListItem.id}
+        //             );
+        //         }
+        //     );
+        // },
         // ClearQuantityColumnValues : function(quantityType)
         // {
         //     for (var i = 0; i < rows.length; i++)

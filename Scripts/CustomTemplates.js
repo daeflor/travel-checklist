@@ -59,9 +59,11 @@ window.CustomTemplates = (function ()
 
         var navButton = CreateButtonWithIcon({buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
 
+        //TODO move this to a BIND
         navButton.addEventListener('click', function() 
         {
-            window.GridManager.ListSelected(wrapper);
+            //window.GridManager.ListSelected(wrapper);
+            window.GridManager.ListSelected(data.listId);
         });    
 
         var navButtonWrapper = CreateNewElement('div', [ ['class','col-2'] ], navButton);

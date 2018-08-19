@@ -6,7 +6,7 @@ window.GridManager = (function()
     var activePopover = null; //TODO should there be a separate popover manager? 
     //var activeSettingsView = null; //TODO could this be moved into the View? 
     var lists = [];
-    var activeList;
+    //var activeList;
 
     /** List & Button Setup **/
 
@@ -43,6 +43,7 @@ window.GridManager = (function()
 
     /** List Management **/
 
+    //TODO this is hard to read
     function bindQuantityHeaderToggleEvents(quantityType)
     {
         window.View.Bind(
@@ -50,26 +51,58 @@ window.GridManager = (function()
             function() {
                 window.View.Bind(
                     'ClearButtonPressed', 
-                    function()
+                    function(listId)
                     {
                         Print("Clear button was clicked for quantity type: " + quantityType);
 
-                        if (activeList != null)
-                        {
-                            Print("Button pressed to clear " + quantityType + " column for grid " + activeList);
+                        //if (activeList != null)
+                        //{
+                        //    Print("Button pressed to clear " + quantityType + " column for grid " + activeList);
                             //TODO temporarily commented out
                             //activeList.ClearQuantityColumnValues(quantityType);
-                        }
-                        else
-                        {
-                            console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
-                        }
+                            window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) {
+                                //Traverse the array of all List Items that had a quantity value cleared 
+                                for (var i = 0; i < modifiedListItems.length; i++)
+                                {
+                                    //Update the List Item's quantity value for the given type
+                                    updateListItemQuantityText(modifiedListItems[i].id, quantityType, modifiedListItems[i].quantities);
+                                    
+                                    //Update the List Item name's color
+                                    updateListItemNameColor(modifiedListItems[i].id, modifiedListItems[i].quantities);
+                                }
+                            });
+                        // }
+                        // else
+                        // {
+                        //     console.log("ERROR: Tried to clear a column in the Active List, which doesn't exist");
+                        // }
                     }
                 );
             },
             {quantityType:quantityType}
         );
     }
+
+    function updateListItemQuantityText(listItemId, quantityType, updatedQuantities)
+    {
+        window.View.Render('updateListItemQuantityText', {
+            listItemId:listItemId, 
+            quantityType:quantityType, 
+            updatedValue:updatedQuantities[quantityType]
+        });
+    }
+
+    function updateListItemNameColor(listItemId, updatedQuantities)
+    {
+        window.View.Render('updateListItemNameColor', {
+            listItemId:listItemId, 
+            quantityNeeded:updatedQuantities.needed, 
+            quantityBalance:(updatedQuantities.needed - updatedQuantities.luggage - updatedQuantities.wearing - updatedQuantities.backpack)
+        });
+    }
+
+
+    //
 
     function AddNewList()
     {
@@ -81,58 +114,76 @@ window.GridManager = (function()
         );
     }
 
-    function AddNewListItem()
+    function AddNewListItem(listId)
     {
-        //TODO is there a better mechanism for doing error handling?
-        if (activeList != null)
-        {
-            activeList.AddNewListItem(); 
-        }
-        else
-        {
-            console.log("ERROR: Tried to add a new List Item to the Active List, which doesn't exist");
-        }
+        //TODO temporarily commented out
+        // window.Model.CreateListItem(
+        //     listId,
+        //     function(newListItem) {
+        //         loadListItem(newListItem.id, newListItem.name, newListItem.quantities, listId);
+
+        //         window.View.Render(
+        //             'ExpandSettingsView', 
+        //             {id:newListItem.id}
+        //         );
+        //     }
+        // );
+
+        // //TODO is there a better mechanism for doing error handling?
+        // if (activeList != null)
+        // {
+        //     activeList.AddNewListItem(); 
+        // }
+        // else
+        // {
+        //     console.log("ERROR: Tried to add a new List Item to the Active List, which doesn't exist");
+        // }
     }
 
     //TODO Eventually use ID instead of index and get rid of the concept of Active List?
-    function NavigateToList(indexToDisplay)
+    //function NavigateToList(indexToDisplay)
+    function NavigateToList(listId)
     {   
-        Print("Request received to switch lists to grid index: " + indexToDisplay);
+        window.View.Render('HideActiveSettingsView');
+        window.View.Render('DisplayList', {listId:listId});
+
+        //Print("Request received to switch lists to grid index: " + indexToDisplay);
         
-        if (indexToDisplay < lists.length)
-        {
-            var listToDisplay = lists[indexToDisplay];
+        // if (indexToDisplay < lists.length)
+        // {
+        //     var listToDisplay = lists[indexToDisplay];
 
-            //TODO move some (much) of this to the View
+        //     //TODO move some (much) of this to the View
 
-            if (listToDisplay != activeList)
-            {
-                //Set the selected List as Active
-                activeList = listToDisplay;
-            }
-            else
-            {
-                Print("Navigating to the list which was already Active");
-            }
+        //     if (listToDisplay != activeList)
+        //     {
+        //         //Set the selected List as Active
+        //         activeList = listToDisplay;
+        //     }
+        //     else
+        //     {
+        //         Print("Navigating to the list which was already Active");
+        //     }
 
-            //If there is any active settings view, close it
-            window.View.Render('HideActiveSettingsView');
+        //     //If there is any active settings view, close it
+        //     window.View.Render('HideActiveSettingsView');
 
-            //Display the List Screen
-            if (activeList != null)
-            {
-                //Show the List Screen and udate the List Title text
-                window.View.Render('DisplayList', {listId:activeList.GetId()});
-            }
-            else
-            {
-                console.log("ERROR: Tried to display the Active List but it's null");
-            }
-        }
-        else
-        {
-            console.log("ERROR: Tried to switch to a list which doesn't exist");
-        }
+        //     //Display the List Screen
+        //     if (activeList != null)
+        //     {
+        //         //Show the List Screen and udate the List Title text
+        //         //window.View.Render('DisplayList', {listId:activeList.GetId()});
+        //         window.View.Render('DisplayList', {listId:listId});
+        //     }
+        //     else
+        //     {
+        //         console.log("ERROR: Tried to display the Active List but it's null");
+        //     }
+        // }
+        // else
+        // {
+        //     console.log("ERROR: Tried to switch to a list which doesn't exist");
+        // }
     }
 
     function NavigateHome()
@@ -167,17 +218,6 @@ window.GridManager = (function()
         RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
         {
             lists.splice(getListIndex(listId), 1);
-
-            // //TODO could make a 'getListIndex' helper method that does this and returns 'i'
-            // for (var i = lists.length-1; i >= 0; i--)
-            // {
-            //     if (lists[i].GetId() == listId)
-            //     {
-            //         Print("(Temp) Removing list with ID: " + listId);
-            //         lists.splice(i, 1);
-            //         break;
-            //     }
-            // } 
     
             Model.RemoveList(listId);
             window.View.Render('removeList', {listId:listId});
@@ -202,28 +242,29 @@ window.GridManager = (function()
                 Print("The active popover was told to hide");
             }
         },
-        ListSelected : function(elementListToggle)
-        {   
-            if (this == "undefined")
-            {
-                console.log("ERROR: no element selected");
-            }
-            else
-            {
-                var index = $(elementListToggle).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
+        ListSelected : NavigateToList
+        // ListSelected : function(listId)
+        // {   
+        //     if (this == "undefined")
+        //     {
+        //         console.log("ERROR: no element selected");
+        //     }
+        //     else
+        //     {
+        //         var index = $(elementListToggle).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
                 
-                Print("List Toggle Element selected: " + elementListToggle + ". index: " + index);
+        //         Print("List Toggle Element selected: " + elementListToggle + ". index: " + index);
                 
-                if (typeof(index) == "undefined")
-                {
-                    console.log("ERROR: the index of the selected element is undefined");
-                }
-                else
-                {
-                    NavigateToList(index);
-                }
-            }
-        },
+        //         if (typeof(index) == "undefined")
+        //         {
+        //             console.log("ERROR: the index of the selected element is undefined");
+        //         }
+        //         else
+        //         {
+        //             NavigateToList(index);
+        //         }
+        //     }
+        // },
     };
 })();
 

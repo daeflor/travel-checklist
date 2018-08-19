@@ -124,37 +124,37 @@ window.StorageManager = (function ()
         callback(newListItem);
     }
 
-     function editListItemNameInStorage(listId, listItemId, updatedName)
-     {
-         //Get the parsed data from storage
-         var parsedStorageData = getParsedDataFromStorage();
- 
-         //Traverse the stored List data for one that matches the given List ID
-         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-         {
-             if (parsedStorageData.lists[i].id == listId)
-             {
-                 //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                 for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                 {
-                     if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                     {
-                         //Update the name of the matching ListItem object
-                         parsedStorageData.lists[i].listItems[j].name = updatedName;
-                         break;
-                     }
-                 } 
-             }
-         } 
- 
-         //Store the updated storage data object
-         storeListData(parsedStorageData);
-     }
-
-     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
-     {
+    function editListItemNameInStorage(listId, listItemId, updatedName)
+    {
         //Get the parsed data from storage
         var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //Update the name of the matching ListItem object
+                        parsedStorageData.lists[i].listItems[j].name = updatedName;
+                        break;
+                    }
+                } 
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
+
+    function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
+    {
+    //Get the parsed data from storage
+    var parsedStorageData = getParsedDataFromStorage();
 
         //Traverse the stored List data for one that matches the given List ID
         for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
@@ -218,7 +218,48 @@ window.StorageManager = (function ()
                 }
             }
         } 
-     }
+    }
+
+    function clearListQuantityColumnInStorage(listId, quantityType, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //var dataModified = false;
+                var modifiedListItems = [];
+
+                //If the List IDs match, traverse the list's items array
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {      
+                    //If the List Item's quantity value for the given type is not 0, set it to 0              
+                    if (parsedStorageData.lists[i].listItems[j].quantities[quantityType] != 0)
+                    {
+                        parsedStorageData.lists[i].listItems[j].quantities[quantityType] = 0;
+                        modifiedListItems.push(parsedStorageData.lists[i].listItems[j]);
+                        //dataModified = true;
+
+                        //TODO could do individual callbacks per quantity changed, but that seems a bit odd
+                        //callback(parsedStorageData.lists[i].listItems.id, parsedStorageData.lists[i].listItems[j].quantities);
+                    }  
+                }
+
+                //If any quantity value was actually changed, store the updated data and perform the callback
+                //if (dataModified == true)
+                if (modifiedListItems.length > 0)
+                {
+                    storeListData(parsedStorageData);
+                    callback(modifiedListItems); //TODO is it correct to only call the callback under certain circumstances?... In this case the alternative isn't an error.. But if the view doesn't need to get updated, it seems right to not call back
+                }
+
+                break;
+            }
+        } 
+    }
 
     function removeListItemFromStorage(listId, listItemId)
     {
@@ -332,7 +373,8 @@ window.StorageManager = (function ()
         AddListItemToStorage : addListItemToStorage,
         EditListItemNameInStorage : editListItemNameInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
-        RemoveListItemFromStorage : removeListItemFromStorage
+        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
+        RemoveListItemFromStorage : removeListItemFromStorages
     };
 })();  
 

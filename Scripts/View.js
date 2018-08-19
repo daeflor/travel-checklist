@@ -12,7 +12,8 @@ window.View = (function()
         listTitle : null,
         listScreen : null,
         listScreenListElements : null,
-        activeSettingsView : null
+        activeSettingsView : null,
+        activeListId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
     };
 
     function init()
@@ -30,12 +31,6 @@ window.View = (function()
         elements.listScreen = document.getElementById('divListScreen'); 
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
     }
-
-    //TODO change this. Maybe it should be part of Render, if it is even necessary
-    // function addHeaderToDom(data)
-    // {
-    //     elements.listHeader.appendChild(data.headerElement); //TODO This is weird. Also, these should be renamed because it isn't very clear. The headerElement is for the Quantity Header section
-    // }
 
     //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
     function getListItemNameButton(listItemId)
@@ -67,6 +62,7 @@ window.View = (function()
         else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
+    //TODO Bind and Render events should probably have distinct names
     //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
         //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //TODO Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
@@ -92,10 +88,16 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
-        else if (event === 'NewListItemButtonPressed') //TODO Bind and Render events should probably have distinct names
+        else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
-            document.getElementById('buttonAddRow').addEventListener('click', callback);         
+            document.getElementById('buttonAddRow').addEventListener(
+                'click', 
+                function()
+                {
+                    callback(activeListId);
+                }  
+            );         
         }
         else if (event === 'DeleteButtonPressed') 
         {
@@ -159,7 +161,13 @@ window.View = (function()
         }
         else if (event === 'ClearButtonPressed') 
         {
-            document.getElementById('buttonClear').addEventListener('click', callback); 
+            document.getElementById('buttonClear').addEventListener(
+                'click', 
+                function()
+                {
+                    callback(activeListId);
+                }  
+            ); 
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -246,6 +254,9 @@ window.View = (function()
                     {
                         //If the List element matches the given listId, display that element
                         elements.listScreenListElements.children[i].hidden = false;
+
+                        //Set the Active List ID
+                        activeListId = parameters.listId;
                     } 
                     else if (elements.listScreenListElements.children[i].hidden == false)
                     {

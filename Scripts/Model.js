@@ -112,6 +112,11 @@ window.Model = (function()
         window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
+    function clearListQuantityColumn(listId, quantityType, callback)
+    {
+        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
+    }
+
     function removeListItem(listId, listItemId)
     {
         window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
@@ -125,6 +130,7 @@ window.Model = (function()
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
         EditListItemQuantity : editListItemQuantity,
+        ClearListQuantityColumn : clearListQuantityColumn,
         RemoveListItem : removeListItem
     };
 })();
