@@ -1,61 +1,62 @@
 window.Model = (function() 
 {
-    function loadListData(callback)
+    function loadData(callback)
     {
-        var lists = window.StorageManager.GetListStorageData();
+        callback(window.StorageManager.GetListStorageData());
 
-        //Traverse all the Lists in the object returned from storage
-        for (var i = 0; i < lists.length; i++) 
-        {
-            //TODO Long term it should be simplified so that the lists aren't 'recreated'
+        // //Traverse all the Lists in the object returned from storage
+        // for (var i = 0; i < storedLists.length; i++) 
+        // {
+        //     //TODO Long term it should be simplified so that the lists aren't 'recreated'
 
+        //     //window.GridManager.LoadList(storedLists[i]);
 
-            //Create a new List based on the parsed data
-            var list = new List({
-                id: lists[i].id, 
-                name: lists[i].name, 
-                type: lists[i].type
-            });
+        //     //Create a new List based on the parsed data
+        //     // var list = new List({
+        //     //     id: lists[i].id, 
+        //     //     name: lists[i].name, 
+        //     //     type: lists[i].type
+        //     // });
 
-            //TODO really should probably just pass along all the list data to the Controller and then View to recreate it in the DOM
+        //     //TODO really should probably just pass along all the list data to the Controller and then View to recreate it in the DOM
             
-            //TODO The Model shouldn't interact directly with the View
-            //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
-            //window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
-            callback(list);
+        //     //TODO The Model shouldn't interact directly with the View
+        //     //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
+        //     //window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+        //     callback(storedLists[i]);
 
-            Print("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
+        //     //Print("Regenerating List. Index: " + i + " Name: " + lists[i].name + " Type: " + lists[i].type + " ----------");
             
-            //Check if there is a 'listItems' object in the parsed storage data for the current list
-            if (lists[i].listItems !== null)
-            {
-                //Traverse all the List Items belonging to the current list, in local storage
-                for (var j = 0; j < lists[i].listItems.length; j++) 
-                {
-                    if (list.GetType() == ListType.Travel)
-                    {
-                        Print("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
+        //     //Check if there is a 'listItems' object in the parsed storage data for the current list
+        //     if (lists[i].listItems !== null)
+        //     {
+        //         //Traverse all the List Items belonging to the current list, in local storage
+        //         for (var j = 0; j < lists[i].listItems.length; j++) 
+        //         {
+        //             if (lists[i].type == ListType.Travel)
+        //             {
+        //                 Print("List: " + i + ". Row: " + j + ". Item: " + lists[i].listItems[j].name);
                         
-                        //Add a row to current List, passing along the data parsed from storage
-                        list.LoadListItem({
-                            id: lists[i].listItems[j].id, 
-                            name: lists[i].listItems[j].name, 
-                            quantities: lists[i].listItems[j].quantities
-                        });
+        //                 //Add a row to current List, passing along the data parsed from storage
+        //                 list.LoadListItem({
+        //                     id: lists[i].listItems[j].id, 
+        //                     name: lists[i].listItems[j].name, 
+        //                     quantities: lists[i].listItems[j].quantities
+        //                 });
 
-                        //TODO maybe ListItems should get added to the View here...? hmm no the model shouldn't talk to the View
-                    }
-                    else if (list.GetType() == null)
-                    {
-                        console.log("ERROR: Tried to load a List with a ListType of null from storage");
-                    }
-                }
-            }
-            else
-            {
-                console.log("ERROR: Tried to load list item data from storage but no listItems object could be found for the current list");
-            }
-        }
+        //                 //TODO maybe ListItems should get added to the View here...? hmm no the model shouldn't talk to the View
+        //             }
+        //             else if (lists[i].type == null)
+        //             {
+        //                 console.log("ERROR: Tried to load a List with a ListType of null from storage");
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         console.log("ERROR: Tried to load list item data from storage but no listItems object could be found for the current list");
+        //     }
+        // }
     }
 
     //TODO Maybe getting the quantity data is too specific. Could just get all the ListItem data and then parse it later
@@ -123,7 +124,7 @@ window.Model = (function()
     }
 
     return {
-        LoadListData : loadListData,
+        LoadData : loadData,
         CreateList : createList,
         EditListName : editListName,
         RemoveList : removeList,

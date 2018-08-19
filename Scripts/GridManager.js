@@ -4,9 +4,6 @@ window.GridManager = (function()
     document.addEventListener('DOMContentLoaded', Setup);
 
     var activePopover = null; //TODO should there be a separate popover manager? 
-    //var activeSettingsView = null; //TODO could this be moved into the View? 
-    var lists = [];
-    //var activeList;
 
     /** List & Button Setup **/
 
@@ -32,9 +29,19 @@ window.GridManager = (function()
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
         //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
-        window.Model.LoadListData(function(list) {
-            // window.View.Render('AddList', {listId:list.GetId(), listName:list.GetName()});
-            lists.push(list);
+        window.Model.LoadData(function(lists) 
+        {
+            Print("Number of Lists retrieved from Storage: " + lists.length);
+
+            for (var i = 0; i < lists.length; i++) 
+            {
+                addListToView(lists[i]);
+
+                for (var j = 0; j < lists[i].listItems.length; j++) 
+                {
+                    addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
+                }
+            }
         });
 
 
@@ -83,7 +90,7 @@ window.GridManager = (function()
         );
     }
 
-    function loadListItem(listId, listItemId, listItemName, quantities)
+    function addListItemToView(listId, listItemId, listItemName, quantities)
     {
         //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
 
@@ -127,7 +134,7 @@ window.GridManager = (function()
                         }
                     );
         
-                    window.View.Bind('ClickDetected', window.GridManager.HideActiveQuantityPopover);
+                    window.View.Bind('ClickDetected', hideActiveQuantityPopover);
                 },
                 {listItemId:listItemId, quantityType:key}
             );
@@ -164,10 +171,10 @@ window.GridManager = (function()
             {id:listItemId}
         );
 
-        window.View.Render(
-            'ExpandSettingsView', 
-            {id:listItemId}
-        );
+        // window.View.Render(
+        //     'ExpandSettingsView', 
+        //     {id:listItemId}
+        // );
     }
 
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
@@ -205,13 +212,114 @@ window.GridManager = (function()
 
     //
 
+    function addListToView(data) //TODO don't really like using 'data' here
+    {
+        window.View.Render('AddListElements', {listId:data.id, listName:data.name});
+
+        //TODO this method can be standardized and re-used for list item
+        //When the animation to expand the Settings View starts, change the Active Settings View
+        window.View.Bind(
+            'SettingsViewExpansionStarted', 
+            function() 
+            {
+                window.View.Render('HideActiveSettingsView'); 
+            },
+            {id:data.id}
+        );
+    
+        //TODO this method can be standardized and re-used for list item
+        //When the Text Area to edit a list name gets modified, update the text in the List name toggle
+        window.View.Bind(
+            'NameEdited', 
+            function(updatedValue) 
+            {
+                window.Model.EditListName(data.id, updatedValue);
+                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
+            },
+            {id:data.id}
+        );
+    
+        //Add an event listener to the Delete Button to remove the List Item
+        window.View.Bind(
+            'DeleteButtonPressed', 
+            function() 
+            {
+                //window.GridManager.RemoveList(data.id);
+
+                //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
+
+                //lists.splice(getListIndex(listId), 1);
+
+                window.Model.RemoveList(data.id);
+                window.View.Render('removeList', {listId:data.id});
+            }, 
+            {id:data.id}
+        );
+
+        // //TODO this method can be standardized and re-used for list item
+        // //After the List is added to the DOM, expand its Settings View
+        // window.View.Render('ExpandSettingsView', {id:data.id});
+    }
+
     function AddNewList()
     {
-        window.Model.CreateList(
-            function(newList) {
-                lists.push(new List(newList));
-                window.View.Render('ExpandSettingsView', {id:newList.id});
-            }
+        //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
+
+        window.Model.CreateList(function(data)
+        {
+            addListToView(data);
+
+            //TODO this method can be standardized and re-used for list item
+            //After the List is added to the DOM, expand its Settings View
+            window.View.Render('ExpandSettingsView', {id:data.id});
+        }
+            
+            // function(data) {
+            //     //lists.push(new List(newList));
+
+            //     window.View.Render('AddListElements', {listId:data.id, listName:data.name});
+
+            //     //When the animation to expand the Settings View starts, change the Active Settings View
+            //     window.View.Bind(
+            //         'SettingsViewExpansionStarted', 
+            //         function() 
+            //         {
+            //             window.View.Render('HideActiveSettingsView'); 
+            //         },
+            //         {id:data.id}
+            //     );
+            
+            //     //When the Text Area to edit a list name gets modified, update the text in the List name toggle
+            //     window.View.Bind(
+            //         'NameEdited', 
+            //         function(updatedValue) 
+            //         {
+            //             window.Model.EditListName(data.id, updatedValue);
+            //             window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
+            //         },
+            //         {id:data.id}
+            //     );
+            
+            //     //Add an event listener to the Delete Button to remove the List Item
+            //     window.View.Bind(
+            //         'DeleteButtonPressed', 
+            //         function() 
+            //         {
+            //             //window.GridManager.RemoveList(data.id);
+
+            //             //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
+
+            //             //lists.splice(getListIndex(listId), 1);
+    
+            //             window.Model.RemoveList(data.id);
+            //             window.View.Render('removeList', {listId:data.id});
+            //         }, 
+            //         {id:data.id}
+            //     );
+
+            //     //After the List is added to the DOM, expand its Settings View
+            //     window.View.Render('ExpandSettingsView', {id:data.id});
+            // }
         );
     }
 
@@ -221,70 +329,20 @@ window.GridManager = (function()
             listId,
             function(newListItem) 
             {
-                loadListItem(listId, newListItem.id, newListItem.name, newListItem.quantities);
-
-                // window.View.Render(
-                //     'ExpandSettingsView', 
-                //     {id:newListItem.id}
-                // );
+                addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
+                
+                window.View.Render(
+                    'ExpandSettingsView', 
+                    {id:newListItem.id}
+                );
             }
         );
-
-        // //TODO is there a better mechanism for doing error handling?
-        // if (activeList != null)
-        // {
-        //     activeList.AddNewListItem(); 
-        // }
-        // else
-        // {
-        //     console.log("ERROR: Tried to add a new List Item to the Active List, which doesn't exist");
-        // }
     }
 
-    //TODO Eventually use ID instead of index and get rid of the concept of Active List?
-    //function NavigateToList(indexToDisplay)
-    function NavigateToList(listId)
+    function navigateToList(listId)
     {   
         window.View.Render('HideActiveSettingsView');
         window.View.Render('DisplayList', {listId:listId});
-
-        //Print("Request received to switch lists to grid index: " + indexToDisplay);
-        
-        // if (indexToDisplay < lists.length)
-        // {
-        //     var listToDisplay = lists[indexToDisplay];
-
-        //     //TODO move some (much) of this to the View
-
-        //     if (listToDisplay != activeList)
-        //     {
-        //         //Set the selected List as Active
-        //         activeList = listToDisplay;
-        //     }
-        //     else
-        //     {
-        //         Print("Navigating to the list which was already Active");
-        //     }
-
-        //     //If there is any active settings view, close it
-        //     window.View.Render('HideActiveSettingsView');
-
-        //     //Display the List Screen
-        //     if (activeList != null)
-        //     {
-        //         //Show the List Screen and udate the List Title text
-        //         //window.View.Render('DisplayList', {listId:activeList.GetId()});
-        //         window.View.Render('DisplayList', {listId:listId});
-        //     }
-        //     else
-        //     {
-        //         console.log("ERROR: Tried to display the Active List but it's null");
-        //     }
-        // }
-        // else
-        // {
-        //     console.log("ERROR: Tried to switch to a list which doesn't exist");
-        // }
     }
 
     function NavigateHome()
@@ -299,30 +357,22 @@ window.GridManager = (function()
     }
 
     /** Experimental & In Progress **/
-
-    function getListIndex(listId)
-    {
-        for (var i = lists.length-1; i >= 0; i--)
+    
+    function hideActiveQuantityPopover(e) 
+    {     
+        //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
+            //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
+        if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
         {
-            if (lists[i].GetId() == listId)
-            {
-                return i;
-            }
-        } 
-
-        console.log("ERROR: Tried to return the index of a List that could not be found.");
+            document.removeEventListener('click', hideActiveQuantityPopover);
+            $(activePopover).popover('hide');
+            Print("The active popover was told to hide");
+        }
     }
 
     /** Public Functions **/
 
     return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
-        RemoveList : function(listId) //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
-        {
-            lists.splice(getListIndex(listId), 1);
-    
-            Model.RemoveList(listId);
-            window.View.Render('removeList', {listId:listId});
-        },
         GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
         {
             return activePopover;
@@ -332,40 +382,7 @@ window.GridManager = (function()
             activePopover = popover;
             Print("The Active Popover changed");
         },
-        HideActiveQuantityPopover : function(e) //TODO this no longer needs to be public
-        {     
-            //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
-                //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
-            if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
-            {
-                document.removeEventListener('click', window.GridManager.HideActiveQuantityPopover);
-                $(activePopover).popover('hide');
-                Print("The active popover was told to hide");
-            }
-        },
-        ListSelected : NavigateToList
-        // ListSelected : function(listId)
-        // {   
-        //     if (this == "undefined")
-        //     {
-        //         console.log("ERROR: no element selected");
-        //     }
-        //     else
-        //     {
-        //         var index = $(elementListToggle).index(); //TODO could use a custom index to avoid jquery, but doesn't seem necessary
-                
-        //         Print("List Toggle Element selected: " + elementListToggle + ". index: " + index);
-                
-        //         if (typeof(index) == "undefined")
-        //         {
-        //             console.log("ERROR: the index of the selected element is undefined");
-        //         }
-        //         else
-        //         {
-        //             NavigateToList(index);
-        //         }
-        //     }
-        // },
+        ListSelected : navigateToList
     };
 })();
 
