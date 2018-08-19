@@ -89,6 +89,11 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             document.getElementById('buttonAddList').addEventListener('click', callback);         
         }
+        else if (event === 'GoToListButtonPressed') //Expected parameters: listId
+        {
+            //Set the behavior for when the Add List button is pressed
+            document.getElementById('GoToList-'.concat(parameters.listId)).addEventListener('click', callback);         
+        }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed

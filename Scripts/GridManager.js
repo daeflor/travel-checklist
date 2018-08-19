@@ -256,9 +256,15 @@ window.GridManager = (function()
             {id:data.id}
         );
 
-        // //TODO this method can be standardized and re-used for list item
-        // //After the List is added to the DOM, expand its Settings View
-        // window.View.Render('ExpandSettingsView', {id:data.id});
+        //When the Go To List button is selected, navigate to that list
+        window.View.Bind(
+            'GoToListButtonPressed', 
+            function() 
+            {
+                navigateToList(data.id);
+            },
+            {listId:data.id}
+        );
     }
 
     function AddNewList()
@@ -272,55 +278,7 @@ window.GridManager = (function()
             //TODO this method can be standardized and re-used for list item
             //After the List is added to the DOM, expand its Settings View
             window.View.Render('ExpandSettingsView', {id:data.id});
-        }
-            
-            // function(data) {
-            //     //lists.push(new List(newList));
-
-            //     window.View.Render('AddListElements', {listId:data.id, listName:data.name});
-
-            //     //When the animation to expand the Settings View starts, change the Active Settings View
-            //     window.View.Bind(
-            //         'SettingsViewExpansionStarted', 
-            //         function() 
-            //         {
-            //             window.View.Render('HideActiveSettingsView'); 
-            //         },
-            //         {id:data.id}
-            //     );
-            
-            //     //When the Text Area to edit a list name gets modified, update the text in the List name toggle
-            //     window.View.Bind(
-            //         'NameEdited', 
-            //         function(updatedValue) 
-            //         {
-            //             window.Model.EditListName(data.id, updatedValue);
-            //             window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
-            //         },
-            //         {id:data.id}
-            //     );
-            
-            //     //Add an event listener to the Delete Button to remove the List Item
-            //     window.View.Bind(
-            //         'DeleteButtonPressed', 
-            //         function() 
-            //         {
-            //             //window.GridManager.RemoveList(data.id);
-
-            //             //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
-
-            //             //lists.splice(getListIndex(listId), 1);
-    
-            //             window.Model.RemoveList(data.id);
-            //             window.View.Render('removeList', {listId:data.id});
-            //         }, 
-            //         {id:data.id}
-            //     );
-
-            //     //After the List is added to the DOM, expand its Settings View
-            //     window.View.Render('ExpandSettingsView', {id:data.id});
-            // }
-        );
+        });
     }
 
     function AddNewListItem(listId)
@@ -341,19 +299,20 @@ window.GridManager = (function()
 
     function navigateToList(listId)
     {   
+        //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView');
+
+        //Display the specified List Screen
         window.View.Render('DisplayList', {listId:listId});
     }
 
     function NavigateHome()
     {
         //If there is any active settings view, close it
-        window.View.Render('HideActiveSettingsView');
+        window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
 
         //Display the Home Screen
         window.View.Render('showHomeScreen'); 
-
-        //TODO can hiding the Active settings view be part of showing the home screen?
     }
 
     /** Experimental & In Progress **/
@@ -381,8 +340,7 @@ window.GridManager = (function()
         {
             activePopover = popover;
             Print("The Active Popover changed");
-        },
-        ListSelected : navigateToList
+        }
     };
 })();
 

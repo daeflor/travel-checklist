@@ -1,15 +1,14 @@
 TO-DOs:
 
-	- index.html          : 2
-    - style_new.css       : 3
-    - StorageManager.js   : 6
-    - Model.js            : 7
-	- GridManager.js      : 17
-    - View.js             : 31
-    - TemplateManager.js  : 9
-    - List.js             : 6
-    - ListItem.js         : 8
-    - Helpers.js          : 6
+	- index.html            : 2
+    - style_new.css         : 3
+    - StorageManager.js     : 7
+    - Model.js              : 7
+	- GridManager.js        : 26
+    - View.js               : 29
+    - CustomTemplates.js    : 11
+    - StandardTemplates.js  : 3
+    - Utilities.js          : 1
 
 
 Upcoming To-Do List:
