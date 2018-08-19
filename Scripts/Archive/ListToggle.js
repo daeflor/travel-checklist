@@ -1,20 +1,5 @@
 function ListToggle(listName, listId) 
-{
-    // var model = {
-    //     data : {
-    //         name : null,
-    //     },
-    //     GetName : function()
-    //     {
-    //         return this.data.name;
-    //     },
-    //     // SetName : function(name)
-    //     // {
-    //     //     //console.log("The modifier value was requested. Current value is: " + this.data.value);
-    //     //     this.data.name = name;
-    //     // },
-    // };
-    
+{   
     var wrapper = CreateNewElement('div', [ ['class','row divItemRow divListToggleWrapper'] ]);
     //var nameButton;
     var toggle; //TODO this is hacky and TEMP, just to replace nameButton above, until a better solution is implemented
@@ -45,7 +30,7 @@ function ListToggle(listName, listId)
     function CreateNameWrapper()
     {
        //Create the name toggle that can be selected to open or close the settings view for the List Item
-        toggle = CreateToggleForCollapsibleView('edit-list-'.concat(listId), 'buttonListItem buttonListToggle', listName);
+        toggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listId), 'buttonListItem buttonListToggle', listName, 'NameButton-'.concat(listId));
         
         //Create the div wrapper for the List Item Name 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], toggle);
@@ -91,17 +76,6 @@ function ListToggle(listName, listId)
         GetElement : function() //TODO standardize these
         {
             return wrapper;
-        },
-        ToggleElementVisibility : function()
-        {
-            if (element.hidden == true)
-            {
-                element.hidden = false;
-            }
-            else
-            {
-                element.hidden = true;
-            }
         },
         ExpandSettings : function() //TODO this only is used when a new row is added, which isn't very obvious. Could it take a param about whether or not it should focus, and this this could be used in all cases?
         {

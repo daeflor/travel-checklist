@@ -1,9 +1,36 @@
-window.Model = (function() {
+window.Model = (function() 
+{
+    function loadData(callback)
+    {
+        callback(window.StorageManager.GetListStorageData());
+    }
 
-    function createListItem(listId)
+    function createList(callback)
+    {
+        var newList = {
+			id : new Date().getTime(), 
+            name : '',
+            type: ListType.Travel,
+            listItems : []
+        };
+        
+        window.StorageManager.AddListToStorage(newList, callback);
+    }
+
+    function editListName(listId, updatedValue)
+    {
+        window.StorageManager.EditListNameInStorage(listId, updatedValue);
+    }
+
+    function removeList(listId)
+    {
+        window.StorageManager.RemoveListFromStorage(listId);
+    }
+
+    function createListItem(listId, callback)
     {
         var newListItem = {
-			id : window.GridManager.GetNextRowId(),
+			id : new Date().getTime(), 
             name : '',
             quantities : {
                 needed: 0,
@@ -13,10 +40,40 @@ window.Model = (function() {
             }
         };
         
-        window.StorageManager.StoreNewListItem(listId, newListItem);
+        window.StorageManager.AddListItemToStorage(listId, newListItem, callback);
     }
 
+    function editListItemName(listId, listItemId, updatedValue)
+    {
+        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
+    }
+
+    function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
+    {
+        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
+    }
+
+    function clearListQuantityColumn(listId, quantityType, callback)
+    {
+        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
+    }
+
+    function removeListItem(listId, listItemId)
+    {
+        window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
+    }
+
+    //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
+
     return {
-        CreateListItem : createListItem
+        LoadData : loadData,
+        CreateList : createList,
+        EditListName : editListName,
+        RemoveList : removeList,
+        CreateListItem : createListItem,
+        EditListItemName : editListItemName,
+        EditListItemQuantity : editListItemQuantity,
+        ClearListQuantityColumn : clearListQuantityColumn,
+        RemoveListItem : removeListItem
     };
 })();

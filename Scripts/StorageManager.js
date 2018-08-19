@@ -1,15 +1,15 @@
-window.StorageManager = (function () {
-
+window.StorageManager = (function () 
+{
     //function Storage() {}
 
     /** Utility Methods **/
 
-    function saveNameValuePairToLocalStorage(name, value)
+    function loadValueFromLocalStorage(name)
     {
         if (typeof(Storage) !== "undefined") 
         {
-            localStorage.setItem(name, value);
-            console.log('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
+            //console.log('Request to load value for "' + name +'" from localstorage.');        
+            return localStorage.getItem(name);
         } 
         else 
         {
@@ -17,12 +17,12 @@ window.StorageManager = (function () {
         }
     }
 
-    function loadValueFromLocalStorage(name)
+    function saveNameValuePairToLocalStorage(name, value)
     {
         if (typeof(Storage) !== "undefined") 
         {
-            console.log('Request to load value for "' + name +'" from localstorage.');        
-            return localStorage.getItem(name);
+            localStorage.setItem(name, value);
+            Print('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
         } 
         else 
         {
@@ -37,145 +37,339 @@ window.StorageManager = (function () {
         saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
     }
 
-    //TODO Could be renamed for clarity (to note that this is more specifically about getting and parsing all the list data and recreating it, not just generally loading something from storage)
-        //TODO Though I guess long term it should be simplified so that the lists aren't 'recreated'
-    function loadDataFromStorage()
+    function getParsedDataFromStorage()
     {
-        var storageDataString = loadValueFromLocalStorage('TraveList-Data');
-    
-        //If the data string loaded from storage is not null or empty, parse the string to JSON and load the list data from that
-        if (storageDataString != null && storageDataString.length>0)
-        {
-            //console.log("Loaded from Local Storage: " + storageDataString);
+        //Try to load the raw data from storage. If there is none, create new template data.
+        var rawStorageData = loadValueFromLocalStorage('TraveList-Data') || '{"lists":[]}';
 
-            //Load all list data based on the parsed storage data
-            loadAllListData(JSON.parse(storageDataString));  
-        }    
-        else
-        {
-            console.log("Could not find any data for this app saved in local storage.");
-        }
+        return JSON.parse(rawStorageData);
     }
 
-    function loadAllListData(parsedData)
+    function getListStorageData()
     {
-        //Check if there is a 'lists' object in the parsed storage data
-        if (parsedData.lists != null)
+        return getParsedDataFromStorage().lists;
+    }
+
+    function addListToStorage(newList, callback)
+    {
+        var parsedStorageData = getParsedDataFromStorage();
+
+        parsedStorageData.lists.push(newList);
+
+        storeListData(parsedStorageData);
+
+        callback(newList);
+    }
+
+    function editListNameInStorage(listId, updatedName)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored list data for one that matches the given ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
         {
-            //Traverse all the Lists saved in local storage
-            for (var i = 0; i < parsedData.lists.length; i++) 
+            if (parsedStorageData.lists[i].id == listId)
             {
-                //Create a new List based on the parsed data
-                var list = new List({
-                    id: parsedData.lists[i].id, 
-                    name: parsedData.lists[i].name, 
-                    type: parsedData.lists[i].type
-                });
-                
-                //TODO Do Something with the Model here first. These interactions should go through the Model instead of directly to the View or Controller
+                //Update the name of the matching list object
+                parsedStorageData.lists[i].name = updatedName;
+                break;
+            }
+        } 
 
-                //TODO Shouldn't be passing element data to the View. Thw View should take care of that. I think...
-                window.View.Render('addList', {listElement:list.GetElement(), listToggleElement:list.GetToggle().GetElement()});
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
 
-                console.log("Regenerating List. Index: " + i + " Name: " + list.GetName() + " Type: " + list.GetType() + " ----------");
-                
-                //Check if there is a 'listItems' object in the parsed storage data for the current list
-                if (parsedData.lists != null)
+    function removeListFromStorage(listId)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored list data for one that matches the given ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                Print("Removing List from Storage. List ID: " + listId);
+                //Remove the matching List object from the lists array
+                parsedStorageData.lists.splice(i, 1);
+                break;
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
+
+    function addListItemToStorage(listId, newListItem, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //Add the new List Item to the matching List object
+                parsedStorageData.lists[i].listItems.push(newListItem);
+                break;
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+
+        callback(newListItem);
+    }
+
+    function editListItemNameInStorage(listId, listItemId, updatedName)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
                 {
-                    //Traverse all the List Items belonging to the current list, in local storage
-                    for (var j = 0; j < parsedData.lists[i].listItems.length; j++) 
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
                     {
-                        if (list.GetType() == ListType.Travel)
+                        //Update the name of the matching ListItem object
+                        parsedStorageData.lists[i].listItems[j].name = updatedName;
+                        break;
+                    }
+                } 
+            }
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
+    }
+
+    function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
+    {
+    //Get the parsed data from storage
+    var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //TODO Error handling here wouldn't hurt
+
+                        var dataModified = false;
+                        var quantities = parsedStorageData.lists[i].listItems[j].quantities;
+
+                        //Increment or decrement the specified List Item's quantity value as applicable
+
+                        // if (assignmentType == 'set')
+                        // {
+                        //     if (quantities[quantityType] != assignment.value)
+                        //     {
+                        //         quantities[quantityType] = assignment.value;
+                        //         dataModified = true;
+                        //     }                            
+                        // }
+                        // if (assignmentType == 'clear')
+                        // {
+                        //     if (quantities[quantityType] != 0)
+                        //     {
+                        //         quantities[quantityType] = 0;
+                        //         dataModified = true;
+                        //     }                            
+                        // }
+                        if (assignmentType == 'decrement')
                         {
-                            console.log("List: " + i + ". Row: " + j + ". Item: " + parsedData.lists[i].listItems[j].name);
-                            
-                            //Add a row to current List, passing along the data parsed from storage
-                            list.AddListItem({
-                                id: parsedData.lists[i].listItems[j].id, 
-                                name: parsedData.lists[i].listItems[j].name, 
-                                quantities: parsedData.lists[i].listItems[j].quantities
-                            });
+                            if (quantities[quantityType] > 0)
+                            {
+                                quantities[quantityType]--;
+                                dataModified = true;
+                            }
                         }
-                        else if (list.GetType() == null)
+                        else if (assignmentType == 'increment')
                         {
-                            console.log("ERROR: Tried to load a List with a ListType of null from storage");
+                            quantities[quantityType]++;
+                            dataModified = true;
                         }
+                        else 
+                        {
+                            console.log("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
+                        }
+            
+                        //If the quantity value was actually changed, store the updated data and perform the callback
+                        if (dataModified == true)
+                        {
+                            storeListData(parsedStorageData);
+                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?... I think it's fine if the alternative is an ERROR message
+                        }
+                                                
+                        break;
                     }
                 }
-                else
-                {
-                    console.log("ERROR: Tried to load list item data from storage but no listItems object could be found for the current list");
+            }
+        } 
+    }
+
+    function clearListQuantityColumnInStorage(listId, quantityType, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //var dataModified = false;
+                var modifiedListItems = [];
+
+                //If the List IDs match, traverse the list's items array
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {      
+                    //If the List Item's quantity value for the given type is not 0, set it to 0              
+                    if (parsedStorageData.lists[i].listItems[j].quantities[quantityType] != 0)
+                    {
+                        parsedStorageData.lists[i].listItems[j].quantities[quantityType] = 0;
+                        modifiedListItems.push(parsedStorageData.lists[i].listItems[j]);
+                    }  
                 }
 
-                window.GridManager.AddListFromStorage(list);
+                //If any quantity value was actually changed, store the updated data and perform the callback
+                if (modifiedListItems.length > 0)
+                {
+                    storeListData(parsedStorageData);
+                    callback(modifiedListItems); //TODO is it correct to only call the callback under certain circumstances?... In this case the alternative isn't an error.. But if the view doesn't need to get updated, it seems right to not call back
+                }
+
+                break;
             }
-        }
-        else
-        {
-            console.log("ERROR: Tried to load list data from storage but no lists object could be found");
-        }
+        } 
     }
 
-    //TODO this isn't used yet
-    function storeNewList(newList)
+    function removeListItemFromStorage(listId, listItemId)
     {
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
 
-        var parsedStorageData = JSON.parse(rawStorageData);
-
-        var lists = parsedStorageData.lists;
-
-        lists.push(newList);
-        
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
-    }
-
-    //TODO Usage of this is In Progress
-    function storeNewListItem(listId, newListItem)
-    {
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data');
-
-        var parsedStorageData = JSON.parse(rawStorageData);
-
-        var lists = parsedStorageData.lists;
-
-        for (var i = 0; i < lists.length; i++)  
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
         {
-            if (lists[i].id == listId)
+            if (parsedStorageData.lists[i].id == listId)
             {
-                lists[i].listItems.push(newListItem);
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //Remove the matching List Item object from the List's items array
+                        parsedStorageData.lists[i].listItems.splice(j, 1);
+                        break;
+                    }
+                }
             }
-        }
-        
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(parsedStorageData));
+        } 
+
+        //Store the updated storage data object
+        storeListData(parsedStorageData);
     }
+
+    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
+    // function findListInStorage(listId)
+    // {
+    //     //Get the parsed data from storage
+    //     var parsedStorageData = getParsedDataFromStorage();
+
+    //     //Traverse the stored List data for one that matches the given List ID
+    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    //     {
+    //         if (parsedStorageData.lists[i].id == listId)
+    //         {
+    //             //If the List IDs match, return the list object 
+    //             return parsedStorageData.lists[i]
+    //         }
+    //     } 
+
+    //     console.log('ERROR: Unable to find requested List in Storage');
+    // }
+
+    //TODO This ended up complicating things even more. A simple solution could be to have this return an object with both a ListItem and parsedStorage sub-object, but this seems like an incorrect way of handling this
+    // function findListItemInStorage(listId, listItemId, callback)
+    // {
+    //     var list = findListInStorage(listId);
+
+    //     if (list != null)
+    //     {
+    //         //Traverse the list's items array, searching for one that matches the given ListItem ID
+    //         for (var i = list.listItems.length-1; i >= 0; i--)
+    //         {
+    //             if (list.listItems[i].id == listItemId)
+    //             {
+    //                 //If the ListItem IDs match, return the list item object 
+    //                 //return list.listItems[i];
+    //                 callback(list.listItems[i]);
+    //             }
+    //         } 
+    //     }
+
+    //     console.log('ERROR: Unable to find requested ListItem in Storage');
+    // }
+
+    //TODO Could re-use the traversing code with callbacks, rather than always repeating code in this file
+        //This is the attempt to see if this idea works
+        //TODO see if this method can be utilized by the methods above, in some form. Could also create a similar one for finding just a List
+    // function findListItemInStorage(listId, listItemId)
+    // {
+    //     //Get the parsed data from storage
+    //     var parsedStorageData = getParsedDataFromStorage();
+
+    //     //Traverse the stored List data for one that matches the given List ID
+    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    //     {
+    //         if (parsedStorageData.lists[i].id == listId)
+    //         {
+    //             //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+    //             for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+    //             {
+    //                 if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+    //                 {
+    //                     return parsedStorageData.lists[i].listItems[j];
+    //                     // callback();
+    //                     // break;
+    //                 }
+    //             } 
+    //         }
+    //     } 
+
+    //     console.log('ERROR: Unable to find requested ListItem in Storage');
+    // }
+
+
+    // function getListItemDataFromStorage(listId, listItemId)
+    // {
+    //     return findListItemInStorage(listId, listItemId);
+    // }
 
     return {
         StoreListData : storeListData,
-        LoadDataFromStorage : loadDataFromStorage,
-        StoreNewList : storeNewList,
-        StoreNewListItem : storeNewListItem
+        GetListStorageData : getListStorageData,
+        AddListToStorage : addListToStorage,
+        EditListNameInStorage : editListNameInStorage,
+        RemoveListFromStorage : removeListFromStorage,
+        AddListItemToStorage : addListItemToStorage,
+        EditListItemNameInStorage : editListItemNameInStorage,
+        EditListItemQuantityInStorage : editListItemQuantityInStorage,
+        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
+        RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  
-
-//Data Model:
-
-function ListStorageData(data)
-{
-    this.id = data.id;
-    this.name = data.name;
-    this.type = data.type;
-    this.listItems = data.listItems;
-}
-
-function ListItemStorageData(data)
-{
-    this.id = data.id;
-    this.name = data.name;
-    this.quantities = {
-        needed: data.quantityNeeded,
-        luggage: data.quantityLuggage,
-        wearing: data.quantityWearing,
-        backpack: data.quantityBackpack
-    };
-}

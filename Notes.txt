@@ -1,23 +1,39 @@
 TO-DOs:
 
-	- index.html          : 1
-	- GridManager.js      : 17
-    - Grid.js             : 3
-    - Header.js           : 4
-    - ListToggle.js       : 4
-    - ListItem.js         : 11
-    - ListItemModifier.js : 12
-    - Helpers.js          : 7
-	- style_new.css       : 2
+	- index.html            : 2
+    - style_new.css         : 3
+    - StorageManager.js     : 7
+    - Model.js              : 7
+	- GridManager.js        : 26
+    - View.js               : 29
+    - CustomTemplates.js    : 11
+    - StandardTemplates.js  : 3
+    - Utilities.js          : 1
+
 
 Upcoming To-Do List:
+- Known Issue: Clear Button currently does not work
+- BUG: If you zoom out, there is a margin on the right. :( Might be from removing the 'superfluous' row div some time ago
+- Need a better design for when the Clear button is pressed. How to know which List has the column cleared? Should the clear happen on a List basis instead of per ListItem?
+- Would be nice to add a toggle to enable or disable debug log strings to console, or at least a visual that shows if it's enabled or not.
+    If there is ever an ERROR, it would be nice to make that visible in the UI for when on mobile without the debug console visible
+- All EventListeners should be moved to View
+- Look into IIFEs vs ActivePopover and ActiveSettings, etc.
+- To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
+    View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
-- At some point, need to handle the case when there are no existing lists. What does the list of lists looks like? Is there an Add Row button?
 
 Thoughts:
+- Would it help to use data-* attributes instead of Element IDs?
+- Consider removing reliance on Popovers (popper.js) and re-create this functionality myself in JavaScript and CSS
+- There are probably some GetElementByID calls that could be called on other elements instead of the document
+- Standardize bracket/spacing/parameter/callback usage
+- In the future, calls to the View may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
+- It might be nice if List Item IDs were prefixed by the List ID, so only one param would need to be passed when editing the model
 - It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions
 - Is it possible to make the Android Back button work in the app (e.g. to go back to the Home Screen from the List Screen)?
+    Might require having the different screens (e.g. Home vs List) actually use different pages hashes (e.g. travel-checklist/#/List)
 - When focus is brought to a text area, it would be nice to scroll to it. (i.e. when tapping in a text area in Settings View, it doesn't always scroll into view above the keyboard, currently)
 - May want to change back the Add New Item Row to being left-aligned with a light background again
 - May want to change back to having the List Toggle open a List, and a settings button to open the Settings View

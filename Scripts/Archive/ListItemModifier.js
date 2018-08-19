@@ -3,7 +3,7 @@
  * @param {function} modifierChangedCallback A reference to the function to call when the modifer value has been changed
  * @param {array} modifierValue The initial value of the Modifier to display when it is created
  */
-function ListItemModifier(modifierChangedCallback, modifierValue)
+function ListItemModifier(modifierChangedCallback, modifierValue, type, listItemId)
 {
 //TODO I think it might be possible to accidentally reference the wrong view or model, from a different file
 
@@ -26,12 +26,15 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
         }, //TODO ultimately this kind of functionality should probably be handled partially in the controller, with data only/simply getting set (and maybe stored) in the model
         DecrementValue : function()
         {
-            this.data.value--;
+            this.SetValue(this.GetValue()-1);
+            //this.data.value--;
             console.log("The modifier was decremented by 1");
         },
         IncrementValue : function()
         {
-            this.data.value++;
+            console.log(this);
+            this.SetValue(this.GetValue()+1);
+            //data.value++;
             console.log("The modifier was incremented by 1");
         },
     };
@@ -55,7 +58,7 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
 
             //TODO is it necessary to pass a default/initial value for what the toggle displays? 
             //Create the element that toggles the visibility of the modifier's popover
-            self.elements.popoverToggle = CreatePopoverToggle('btn-sm buttonQuantity', initialValue, [buttonMinus, buttonPlus], 'manual');
+            self.elements.popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:initialValue, children:[buttonMinus, buttonPlus], trigger:'manual'});
 
             //Add a listener to the toggle 
             self.elements.popoverToggle.addEventListener('click', function(e) 
@@ -88,101 +91,15 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
 
             self.elements.wrapper = CreateNewElement('div', [ ['class','col divListItemModifier'] ], self.elements.popoverToggle);
         },
-        Render : function(command, parameter)
-        {
-            var self = this;
-
-            var viewCommands = {
-                updateModifierText: function() 
-                {
-                    self.elements.popoverToggle.text = parameter;
-                },
-            };
-
-            viewCommands[command]();
-        },
-        Bind : function(event, callback)
-        {
-            var self = this;
-
-            if (event === 'showPopover') 
-            {
-                //Set the behavior for when the popover is made visible
-                $(self.elements.popoverToggle).on('shown.bs.popover', function() 
-                {
-                    console.log("A Popover was shown");
-                    callback(self.elements.popoverToggle);
-                });    
-            }
-            else if (event === 'decrementQuantity') 
-            {
-                document.getElementById('buttonMinus').addEventListener('click', function() 
-                {
-                    callback(false);
-                });         
-            }
-            else if (event === 'incrementQuantity') 
-            {
-                document.getElementById('buttonPlus').addEventListener('click', function() 
-                {
-                    callback(true);
-                });      
-            }
-        },
     };
 
     SetupModelAndView();
 
     function SetupModelAndView()
     {
-        // var data;
-        // data.value = modifierValue;
-        // model.SetData(data);
         model.SetValue(modifierValue);
 
         view.AddElementsToDom(model.GetValue());
-
-        view.Bind('showPopover', function(popoverElement)
-        {
-            window.GridManager.SetActivePopover(popoverElement);
-
-            view.Bind('decrementQuantity', function(increase)
-            {
-                ModifyQuantityValue(increase);
-            });
-
-            view.Bind('incrementQuantity', function(increase)
-            {
-                ModifyQuantityValue(increase);
-            });
-
-            //TODO could move this to a Bind as well, assuming this all even works
-            document.addEventListener('click', window.GridManager.HideActiveQuantityPopover);
-            console.log("An onclick listener was added to the whole document");
-        });
-    }
-
-    //TODO changing the UI/DOM to display the modifier value maybe should be handled separately from informing the parent that a change has happened
-    function ModifyQuantityValue(increase)
-    {
-        console.log("Request called to modify a quantity value.");
-
-        //TODO the increase vs decrease could probably all be handled in the model (a single function with increase passed as a parameter). This current implementation may be a bit over-complicated. 
-        if (increase == true)
-        {
-            //TODO Whenever the model is updated, also update the view and the parent
-            model.IncrementValue();
-            view.Render('updateModifierText', model.GetValue()); //TODO in the future this may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
-            
-            modifierChangedCallback(); //TODO still seems like this should be handled more cleanly
-        }
-        else if (model.GetValue() > 0)
-        {
-            model.DecrementValue();
-            view.Render('updateModifierText', model.GetValue());
-            
-            modifierChangedCallback();
-        }
     }
 
     /** Public Functions **/
@@ -199,7 +116,12 @@ function ListItemModifier(modifierChangedCallback, modifierValue)
         SetValue : function(value) //Updates the value of the modifier in the Model and then updates the View accordingly
         {
             model.SetValue(value);
-            view.Render('updateModifierText', model.GetValue()); 
-        }
+
+            modifierChangedCallback(type, model.GetValue());
+
+            //window.View.Render('updateModifierValue', {updatedValue:model.GetValue()}); 
+        },
+        DecrementValue : model.DecrementValue,
+        IncrementValue : model.IncrementValue
     };
 }
