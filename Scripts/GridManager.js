@@ -83,6 +83,101 @@ window.GridManager = (function()
         );
     }
 
+    function loadListItem(listId, listItemId, listItemName, quantities)
+    {
+        //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
+
+        window.View.Render(
+            'AddListItem', 
+            { //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?
+                listItemId: listItemId, 
+                listItemName: listItemName,
+                quantityValues: quantities,
+                listId: listId, //TODO Don't really like calling this data.id... If List always requires exact params, maybe should just have them explicitly stated
+            }
+        );
+
+        updateListItemNameColor(listItemId, quantities);
+
+        //Bind user interaction with the quantity toggles to corresponding behavior
+        for (var key in quantities)
+        {
+            window.View.Bind(
+                'QuantityPopoverShown', 
+                function(popoverToggle, quantityType) 
+                {
+                    //TODO BAD
+                    window.GridManager.SetActivePopover(popoverToggle);
+
+                    //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
+
+                    window.View.Bind(
+                        'DecrementQuantityButtonPressed', 
+                        function()
+                        {   
+                            updateListItemQuantityValue(listId, listItemId, quantityType, 'decrement');
+                        }
+                    );
+        
+                    window.View.Bind(
+                        'IncrementQuantityButtonPressed', 
+                        function()
+                        {
+                            updateListItemQuantityValue(listId, listItemId, quantityType, 'increment');
+                        }
+                    );
+        
+                    window.View.Bind('ClickDetected', window.GridManager.HideActiveQuantityPopover);
+                },
+                {listItemId:listItemId, quantityType:key}
+            );
+        }
+
+        //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
+        window.View.Bind(
+            'SettingsViewExpansionStarted', 
+            function(element) {
+                window.View.Render('HideActiveSettingsView'); 
+            },
+            {id:listItemId}
+        );
+
+        //TODO might be nice to move the anonymous functions within the bindings above and below into named functions that are just reference by the bind, for potentially better readability
+            //yeah it would be good to make this section smaller and more readable
+
+        //Add an event listener for when the Text Area to edit the List Item name is modified
+        window.View.Bind(
+            'NameEdited', 
+            function(updatedValue) {
+                window.Model.EditListItemName(listId, listItemId, updatedValue);
+                window.View.Render('UpdateName', {id:listItemId, updatedValue:updatedValue}); 
+            },
+            {id:listItemId}
+        ); 
+
+        //Add an event listener to the Delete Button to remove the List Item
+        window.View.Bind(
+            'DeleteButtonPressed', 
+            function() {
+                removeListItem(listId, listItemId);
+            }, 
+            {id:listItemId}
+        );
+
+        window.View.Render(
+            'ExpandSettingsView', 
+            {id:listItemId}
+        );
+    }
+
+    function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
+    {
+        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
+            updateListItemQuantityText(listItemId, quantityType, updatedQuantities);
+            updateListItemNameColor(listItemId, updatedQuantities);
+        });
+    }
+
     function updateListItemQuantityText(listItemId, quantityType, updatedQuantities)
     {
         window.View.Render('updateListItemQuantityText', {
@@ -101,6 +196,12 @@ window.GridManager = (function()
         });
     }
 
+    function removeListItem(listId, listItemId)
+    {
+        Model.RemoveListItem(listId, listItemId);
+        window.View.Render('removeListItem', {listItemId:listItemId});
+    }
+
 
     //
 
@@ -116,18 +217,18 @@ window.GridManager = (function()
 
     function AddNewListItem(listId)
     {
-        //TODO temporarily commented out
-        // window.Model.CreateListItem(
-        //     listId,
-        //     function(newListItem) {
-        //         loadListItem(newListItem.id, newListItem.name, newListItem.quantities, listId);
+        window.Model.CreateListItem(
+            listId,
+            function(newListItem) 
+            {
+                loadListItem(listId, newListItem.id, newListItem.name, newListItem.quantities);
 
-        //         window.View.Render(
-        //             'ExpandSettingsView', 
-        //             {id:newListItem.id}
-        //         );
-        //     }
-        // );
+                // window.View.Render(
+                //     'ExpandSettingsView', 
+                //     {id:newListItem.id}
+                // );
+            }
+        );
 
         // //TODO is there a better mechanism for doing error handling?
         // if (activeList != null)
@@ -231,7 +332,7 @@ window.GridManager = (function()
             activePopover = popover;
             Print("The Active Popover changed");
         },
-        HideActiveQuantityPopover : function(e)
+        HideActiveQuantityPopover : function(e) //TODO this no longer needs to be public
         {     
             //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
                 //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled

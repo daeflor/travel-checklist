@@ -171,7 +171,8 @@ window.StorageManager = (function ()
                         var dataModified = false;
                         var quantities = parsedStorageData.lists[i].listItems[j].quantities;
 
-                        //Set, increment, or decrement the specified List Item's quantity value as applicable
+                        //Increment or decrement the specified List Item's quantity value as applicable
+
                         // if (assignmentType == 'set')
                         // {
                         //     if (quantities[quantityType] != assignment.value)
@@ -180,15 +181,15 @@ window.StorageManager = (function ()
                         //         dataModified = true;
                         //     }                            
                         // }
-                        if (assignmentType == 'clear')
-                        {
-                            if (quantities[quantityType] != 0)
-                            {
-                                quantities[quantityType] = 0;
-                                dataModified = true;
-                            }                            
-                        }
-                        else if (assignmentType == 'decrement')
+                        // if (assignmentType == 'clear')
+                        // {
+                        //     if (quantities[quantityType] != 0)
+                        //     {
+                        //         quantities[quantityType] = 0;
+                        //         dataModified = true;
+                        //     }                            
+                        // }
+                        if (assignmentType == 'decrement')
                         {
                             if (quantities[quantityType] > 0)
                             {
@@ -241,15 +242,10 @@ window.StorageManager = (function ()
                     {
                         parsedStorageData.lists[i].listItems[j].quantities[quantityType] = 0;
                         modifiedListItems.push(parsedStorageData.lists[i].listItems[j]);
-                        //dataModified = true;
-
-                        //TODO could do individual callbacks per quantity changed, but that seems a bit odd
-                        //callback(parsedStorageData.lists[i].listItems.id, parsedStorageData.lists[i].listItems[j].quantities);
                     }  
                 }
 
                 //If any quantity value was actually changed, store the updated data and perform the callback
-                //if (dataModified == true)
                 if (modifiedListItems.length > 0)
                 {
                     storeListData(parsedStorageData);
@@ -374,29 +370,6 @@ window.StorageManager = (function ()
         EditListItemNameInStorage : editListItemNameInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
-        RemoveListItemFromStorage : removeListItemFromStorages
+        RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  
-
-//Data Model:
-//TODO should be possible to get rid of these
-
-function ListStorageData(data)
-{
-    this.id = data.id;
-    this.name = data.name;
-    this.type = data.type;
-    this.listItems = data.listItems;
-}
-
-function ListItemStorageData(data)
-{
-    this.id = data.id;
-    this.name = data.name;
-    this.quantities = {
-        needed: data.quantityNeeded,
-        luggage: data.quantityLuggage,
-        wearing: data.quantityWearing,
-        backpack: data.quantityBackpack
-    };
-}
