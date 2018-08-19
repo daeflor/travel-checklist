@@ -63,7 +63,7 @@ window.Model = (function()
         window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
     }
 
-    //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controller/GridManager
+    //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     return {
         LoadData : loadData,

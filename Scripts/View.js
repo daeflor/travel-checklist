@@ -72,11 +72,11 @@ window.View = (function()
     //TODO Bind and Render events should probably have distinct names
     //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
         //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
-        //TODO Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
+        //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
 
     //TODO How can you have the parameters param before the callback param but still have the former be optional?
-    //TODO There are still a lot more things in GridManager that can be bound here
-    //TODO standardize between parameters, parameters, options, data, etc.
+    //TODO There are still some things that can be bound here. ALL event listeners should be bound here
+    //TODO standardize between parameter, parameters, options, data, etc.
     /**
      * 
      * @param {string} event The name used to identify the event being bound
@@ -85,7 +85,7 @@ window.View = (function()
      */
     function bind(event, callback, parameters)
     {
-        if (event === 'navigateHome') 
+        if (event === 'HomeButtonPressed') 
         {
             //Set the behavior for when the Home button is pressed
             document.getElementById('buttonHome').addEventListener('click', callback);         
@@ -445,7 +445,6 @@ window.View = (function()
 
     return {
         Init : init,
-        // AddHeaderToDom : addHeaderToDom,
         Bind: bind,
         Render: render,
     };

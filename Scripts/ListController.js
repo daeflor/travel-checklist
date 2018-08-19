@@ -1,4 +1,4 @@
-window.GridManager = (function()
+window.ListController = (function()
 {
     //Initiate Setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', Setup);
@@ -24,7 +24,7 @@ window.GridManager = (function()
         }
 
         //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here).
-        window.View.Bind('navigateHome', NavigateHome);
+        window.View.Bind('HomeButtonPressed', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
@@ -207,7 +207,7 @@ window.GridManager = (function()
                 function(popoverToggle, quantityType) 
                 {
                     //TODO BAD
-                    window.GridManager.SetActivePopover(popoverToggle);
+                    window.ListController.SetActivePopover(popoverToggle);
 
                     //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
 

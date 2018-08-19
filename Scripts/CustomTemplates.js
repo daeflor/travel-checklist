@@ -99,7 +99,7 @@ window.CustomTemplates = (function ()
             Print("A Popover toggle was pressed");
 
             //If there is no popover currently active, show the popover for the selected toggle
-            if(window.GridManager.GetActivePopover() == null)
+            if(window.ListController.GetActivePopover() == null)
             {
                 //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
                 if(e.target == popoverToggle)
@@ -117,7 +117,7 @@ window.CustomTemplates = (function ()
         $(popoverToggle).on('hidden.bs.popover', function()
         {
             Print("A Popover was hidden");
-            window.GridManager.SetActivePopover(null);
+            window.ListController.SetActivePopover(null);
         });
 
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
