@@ -43,11 +43,6 @@ window.ListController = (function()
                 }
             }
         });
-
-
-        //TODO could add a small element to the UI that randomizes the color everytime the page loads
-            //^ That won't actually help with anything 
-        //document.body.style.backgroundColor = 'pink';
     }
 
     //TODO this is hard to read

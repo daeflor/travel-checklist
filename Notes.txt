@@ -1,21 +1,19 @@
 TO-DOs:
 
-	- index.html            : 2
+	- index.html            : 3
     - style_new.css         : 3
     - StorageManager.js     : 7
     - Model.js              : 7
-	- GridManager.js        : 26
-    - View.js               : 29
-    - CustomTemplates.js    : 11
+	- ListController.js     : 23
+    - View.js               : 30
+    - CustomTemplates.js    : 10
     - StandardTemplates.js  : 3
-    - Utilities.js          : 1
+    - DebugUtilities.js     : 4
+    - Utilities.js          : 0
 
 
 Upcoming To-Do List:
-- Having to clear cache is annoying because then all local storage (i.e. list data) is lost
 - Every time an unreported error is hit, add error handling for it
-- Would be nice to add a toggle to enable or disable debug log strings to console, or at least a visual that shows if it's enabled or not.
-    If there is ever an ERROR, it would be nice to make that visible in the UI for when on mobile without the debug console visible
 - All EventListeners should be moved to View
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
