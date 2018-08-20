@@ -36,7 +36,7 @@ window.View = (function()
     //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
     function getListItemNameButton(listItemId)
     {
-        Print("Request to get name button of List Item with id: " + listItemId);
+        window.DebugController.Print("Request to get name button of List Item with id: " + listItemId);
 
         //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
             //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemNameButton-745382490375' )
@@ -58,9 +58,9 @@ window.View = (function()
                 // }
                 // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); }
             }
-            else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
+            else { window.DebugController.LogError("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
         }
-        else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
+        else { window.DebugController.LogError("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
     //TODO do something with this or remove it
@@ -78,7 +78,6 @@ window.View = (function()
     //TODO There are still some things that can be bound here. ALL event listeners should be bound here
     //TODO standardize between parameter, parameters, options, data, etc.
     /**
-     * 
      * @param {string} event The name used to identify the event being bound
      * @param {*} callback The function to call when the corresponding event has been triggered 
      * @param {object} parameters An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id.
@@ -123,7 +122,7 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+                window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
             }
         }
         // else if (event === 'PopoverShown') 
@@ -153,13 +152,13 @@ window.View = (function()
         else if (event === 'QuantityPopoverShown') 
         {
             //Find the popover toggle element based on the given quantity type and List Item ID
-            Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            window.DebugController.Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
             //Set the behavior for when the popover is made visible
             $(toggle).on('shown.bs.popover', function() 
             {
-                Print("A Popover was shown");
+                window.DebugController.Print("A Popover was shown");
                 callback(toggle, parameters.quantityType); //TODO should not pass back an element
             });    
         }
@@ -220,15 +219,17 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
+                window.DebugController.LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
             }  
         }
         else if (event === 'ClickDetected')
         {
             document.addEventListener('click', callback);
-            Print("An onclick listener was added to the whole document");
+            window.DebugController.Print("An onclick listener was added to the whole document");
         }
     }
+
+    //TODO why is the format in bind and render different? Seems like it could be the same
 
     function render(command, parameters)
     {
@@ -285,7 +286,7 @@ window.View = (function()
             },
             AddListElements: function() //Expected parameters: listId, listName
             {
-                Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
+                window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
@@ -313,11 +314,11 @@ window.View = (function()
                 if (listWrapper != null)
                 {
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
-                    Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
+                    window.DebugController.Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
                 }
                 else
                 {
-                    console.log("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
+                    window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
                 }      
             },
             removeListItem: function() 
@@ -326,7 +327,7 @@ window.View = (function()
             },
             updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
-                Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
+                window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can we save references to the list item quantity modifiers to not always have to search for them
 
@@ -340,12 +341,12 @@ window.View = (function()
                 }
                 else
                 {
-                    console.log("ERROR: Tried to update the value of a quantity toggle that could not be found");
+                    window.DebugController.LogError("ERROR: Tried to update the value of a quantity toggle that could not be found");
                 }
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityNeeded, quantityBalance
             {
-                Print("Request to update color of list item with id: " + parameters.listItemId);
+                window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
 
                 var listNameButton = getListItemNameButton(parameters.listItemId);
 
@@ -367,7 +368,7 @@ window.View = (function()
                 }
                 else 
                 { 
-                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
+                    window.DebugController.LogError("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
                 }  
             },
             ExpandSettingsView: function() 
@@ -446,6 +447,6 @@ window.View = (function()
     return {
         Init : init,
         Bind: bind,
-        Render: render,
+        Render: render
     };
 })();

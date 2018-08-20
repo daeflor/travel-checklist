@@ -1,16 +1,5 @@
 /** Experimental & In Progress **/
 
-//TODO This is temporary. It should not be located here. 
-var DEBUG_MODE = false;
-
-function Print(logString)
-{
-    if (DEBUG_MODE == true)
-    {
-        console.log(logString);
-    }
-}
-
 /** Unused Utilities **/
 
 function htmlEscape(str) 
