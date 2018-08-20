@@ -1,16 +1,16 @@
 window.ListController = (function()
 {
-    //Initiate Setup once the DOM content has loaded
-    document.addEventListener('DOMContentLoaded', Setup);
-
     var activePopover = null; //TODO should there be a separate popover manager? 
+
+    //Initiate setup once the DOM content has loaded
+    document.addEventListener('DOMContentLoaded', setup);
 
     /** List & Button Setup **/
 
-    function Setup()
+    function setup()
     {            
         //Once the DOM content has loaded and Setup initiated, remove the event listener
-        document.removeEventListener('DOMContentLoaded', Setup);
+        document.removeEventListener('DOMContentLoaded', setup);
 
         //var header = new Header(ListType.Travel);
         window.View.Init();
@@ -31,7 +31,7 @@ window.ListController = (function()
         //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
         window.Model.LoadData(function(lists) 
         {
-            Print("Number of Lists retrieved from Storage: " + lists.length);
+            window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
 
             for (var i = 0; i < lists.length; i++) 
             {
@@ -60,7 +60,7 @@ window.ListController = (function()
                     'ClearButtonPressed', 
                     function(listId)
                     {
-                        Print("Clear button was clicked for quantity type: " + quantityType);
+                        window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
 
                         window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) 
                         {
@@ -313,7 +313,7 @@ window.ListController = (function()
         {
             document.removeEventListener('click', hideActiveQuantityPopover);
             $(activePopover).popover('hide');
-            Print("The active popover was told to hide");
+            window.DebugController.Print("The active popover was told to hide");
         }
     }
 
@@ -345,7 +345,7 @@ window.ListController = (function()
         SetActivePopover : function(popover)
         {
             activePopover = popover;
-            Print("The Active Popover changed");
+            window.DebugController.Print("The Active Popover changed");
         }
     };
 })();

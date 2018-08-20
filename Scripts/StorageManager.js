@@ -22,7 +22,7 @@ window.StorageManager = (function ()
         if (typeof(Storage) !== "undefined") 
         {
             localStorage.setItem(name, value);
-            Print('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
+            window.DebugController.Print('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
         } 
         else 
         {
@@ -91,7 +91,7 @@ window.StorageManager = (function ()
         {
             if (parsedStorageData.lists[i].id == listId)
             {
-                Print("Removing List from Storage. List ID: " + listId);
+                window.DebugController.Print("Removing List from Storage. List ID: " + listId);
                 //Remove the matching List object from the lists array
                 parsedStorageData.lists.splice(i, 1);
                 break;
@@ -204,7 +204,7 @@ window.StorageManager = (function ()
                         }
                         else 
                         {
-                            LogError("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
+                            window.DebugController.LogError("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
                         }
             
                         //If the quantity value was actually changed, store the updated data and perform the callback

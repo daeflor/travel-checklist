@@ -1,26 +1,5 @@
 /** Experimental & In Progress **/
 
-//TODO This is temporary. It should not be located here. 
-    //Maybe create a debug utilities controller?
-var DEBUG_MODE = false;
-
-var VERSION = '0.0.1';
-
-function Print(logString)
-{
-    if (DEBUG_MODE == true)
-    {
-        console.log(logString);
-    }
-}
-
-function LogError(logString)
-{
-    document.getElementById('buttonDebug').style.color = 'red';
-
-    console.log(logString);
-}
-
 /** Unused Utilities **/
 
 function htmlEscape(str) 

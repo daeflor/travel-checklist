@@ -43,7 +43,7 @@ window.CustomTemplates = (function ()
 
     function createListToggleFromTemplate(data)
     {
-        Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
+        window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
 
         var wrapper = CreateNewElement('div', [ ['id','ListToggle-'.concat(data.listId)], ['class','row divItemRow divListToggleWrapper'] ]);
 
@@ -96,7 +96,7 @@ window.CustomTemplates = (function ()
         //Add a listener to the toggle 
         popoverToggle.addEventListener('click', function(e) 
         {
-            Print("A Popover toggle was pressed");
+            window.DebugController.Print("A Popover toggle was pressed");
 
             //If there is no popover currently active, show the popover for the selected toggle
             if(window.ListController.GetActivePopover() == null)
@@ -104,7 +104,7 @@ window.CustomTemplates = (function ()
                 //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
                 if(e.target == popoverToggle)
                 {
-                    Print("Prevented click event from bubbling up");
+                    window.DebugController.Print("Prevented click event from bubbling up");
                     e.stopPropagation();
                 }
 
@@ -116,7 +116,7 @@ window.CustomTemplates = (function ()
         //Set the behavior for when the popover is hidden
         $(popoverToggle).on('hidden.bs.popover', function()
         {
-            Print("A Popover was hidden");
+            window.DebugController.Print("A Popover was hidden");
             window.ListController.SetActivePopover(null);
         });
 
