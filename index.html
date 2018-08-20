@@ -11,7 +11,7 @@
 
   <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
-  <link rel='stylesheet' type='text/css' href='Styles/style_new.css'>
+  <link rel='stylesheet' type='text/css' href='Styles/style_new.css?version=0.0.4'>
 
   <script src='Libraries/jquery-3.2.1.slim.js'></script>
   <script src='Libraries/popper.min.js'></script>
@@ -60,7 +60,9 @@
     <div class='divListElements' id='divHomeScreenListElements'>
     </div>
     <div class='newRow' id='newListRow'>
-        <button class='buttonAddListItem' id='buttonAddList' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>                  
+      <button class='buttonNewRow' id='buttonAddList' type='button'>
+        <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
+      </button>                  
     </div>
   </div>
 
@@ -68,9 +70,22 @@
     <div class='divListElements' id='divListScreenListElements'>
     </div>
     <div class='newRow' id='newListItemRow'>
-        <button class='buttonAddListItem' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
+        <button class='buttonNewRow' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
     </div>
   </div>  
-  
+
+  <div id='divDebug' class='debug container-fluid'>
+    <div class='row'>
+      <div id='versionNumber' class='col-1'>
+        version #
+      </div>
+      <button id='buttonDebug' class='col-1' type='button'>
+        <i class='fa fa-genderless'></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- TODO is it really necessary to have the New List and New List Item rows be separate? -->
+    <!-- It is nice to keep them separate in case in the future they differ more -->
 </body>
 </html>

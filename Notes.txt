@@ -12,23 +12,26 @@ TO-DOs:
 
 
 Upcoming To-Do List:
-- Known Issue: Clear Button currently does not work
-- BUG: If you zoom out, there is a margin on the right. :( Might be from removing the 'superfluous' row div some time ago
-- Need a better design for when the Clear button is pressed. How to know which List has the column cleared? Should the clear happen on a List basis instead of per ListItem?
+- Having to clear cache is annoying because then all local storage (i.e. list data) is lost
+- Every time an unreported error is hit, add error handling for it
 - Would be nice to add a toggle to enable or disable debug log strings to console, or at least a visual that shows if it's enabled or not.
     If there is ever an ERROR, it would be nice to make that visible in the UI for when on mobile without the debug console visible
 - All EventListeners should be moved to View
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
     View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));
-- Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Thoughts:
+- Separate new features out of this section
+- It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list
+- Consider other options for Storage, such as IndexedDB or LocalForage
+- Make the Progressive Web App prettier with an icon and other things
+- Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Would it help to use data-* attributes instead of Element IDs?
 - Consider removing reliance on Popovers (popper.js) and re-create this functionality myself in JavaScript and CSS
 - There are probably some GetElementByID calls that could be called on other elements instead of the document
-- Standardize bracket/spacing/parameter/callback usage
+- Standardize bracket/spacing/parameter/callback usage and format
 - In the future, calls to the View may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
 - It might be nice if List Item IDs were prefixed by the List ID, so only one param would need to be passed when editing the model
 - It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions

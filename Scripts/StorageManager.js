@@ -204,7 +204,7 @@ window.StorageManager = (function ()
                         }
                         else 
                         {
-                            console.log("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
+                            LogError("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
                         }
             
                         //If the quantity value was actually changed, store the updated data and perform the callback

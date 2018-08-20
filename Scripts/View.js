@@ -31,6 +31,9 @@ window.View = (function()
         elements.listTitle = document.getElementById('headerCurrentListName');
         elements.listScreen = document.getElementById('divListScreen'); 
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
+
+        //TODO this is temp
+        document.getElementById('versionNumber').innerText = VERSION;
     }
 
     //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
@@ -58,9 +61,9 @@ window.View = (function()
                 // }
                 // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); }
             }
-            else { console.log("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
+            else { LogError("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
         }
-        else { console.log("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
+        else { LogError("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
     //TODO do something with this or remove it
@@ -123,7 +126,7 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+                LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
             }
         }
         // else if (event === 'PopoverShown') 
@@ -220,7 +223,7 @@ window.View = (function()
             }
             else
             {
-                console.log("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
+                LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
             }  
         }
         else if (event === 'ClickDetected')
@@ -317,7 +320,7 @@ window.View = (function()
                 }
                 else
                 {
-                    console.log("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
+                    LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
                 }      
             },
             removeListItem: function() 
@@ -340,7 +343,7 @@ window.View = (function()
                 }
                 else
                 {
-                    console.log("ERROR: Tried to update the value of a quantity toggle that could not be found");
+                    LogError("ERROR: Tried to update the value of a quantity toggle that could not be found");
                 }
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityNeeded, quantityBalance
@@ -367,7 +370,7 @@ window.View = (function()
                 }
                 else 
                 { 
-                    console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
+                    LogError("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
                 }  
             },
             ExpandSettingsView: function() 
