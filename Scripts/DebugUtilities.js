@@ -1,7 +1,7 @@
 window.DebugController = (function()
 {
-    var debugModeEnabled = false;
-    var VERSION = '0.0.2';
+    var debugModeEnabled = true;
+    var VERSION = '0.0.3';
 
     //Initiate setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', setup);

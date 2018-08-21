@@ -87,38 +87,37 @@ window.CustomTemplates = (function ()
         var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
         var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
 
-        //TODO is it necessary to pass a default/initial value for what the toggle displays? 
         //Create the element that toggles the visibility of the modifier's popover
         var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:initialValue, children:[buttonMinus, buttonPlus], trigger:'manual'});
 
         //TODO this binding should be handled between the controller and the View. The View should just bind to a callback without knowing the details
             //TODO Maybe/also really what it is is that GetActivePopover should be part of the same view
         //Add a listener to the toggle 
-        popoverToggle.addEventListener('click', function(e) 
-        {
-            window.DebugController.Print("A Popover toggle was pressed");
+        // popoverToggle.addEventListener('click', function(e) 
+        // {
+        //     window.DebugController.Print("A Popover toggle was pressed");
 
-            //If there is no popover currently active, show the popover for the selected toggle
-            if(window.ListController.GetActivePopover() == null)
-            {
-                //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
-                if(e.target == popoverToggle)
-                {
-                    window.DebugController.Print("Prevented click event from bubbling up");
-                    e.stopPropagation();
-                }
+        //     //If there is no popover currently active, show the popover for the selected toggle
+        //     if(window.ListController.GetActivePopover() == null)
+        //     {
+        //         //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
+        //         if(e.target == popoverToggle)
+        //         {
+        //             window.DebugController.Print("Prevented click event from bubbling up");
+        //             e.stopPropagation();
+        //         }
 
-                $(popoverToggle).popover('show');
-            }
-        });
+        //         $(popoverToggle).popover('show');
+        //     }
+        // });
 
         //TODO this binding should be handled between the controller and the View.
         //Set the behavior for when the popover is hidden
-        $(popoverToggle).on('hidden.bs.popover', function()
-        {
-            window.DebugController.Print("A Popover was hidden");
-            window.ListController.SetActivePopover(null);
-        });
+        // $(popoverToggle).on('hidden.bs.popover', function()
+        // {
+        //     window.DebugController.Print("A Popover was hidden");
+        //     window.ListController.SetActivePopover(null);
+        // });
 
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }

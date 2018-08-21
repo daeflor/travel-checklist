@@ -14,7 +14,8 @@ window.View = (function()
         listScreen : null,
         listScreenListElements : null,
         activeSettingsView : null,
-        activeListId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
+        activeListId : null, //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
+        activeQuantityPopoverId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
     };
 
     function init()
@@ -151,16 +152,28 @@ window.View = (function()
         // }
         else if (event === 'QuantityPopoverShown') 
         {
-            //Find the popover toggle element based on the given quantity type and List Item ID
             window.DebugController.Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            
+            //Find the popover toggle element based on the given quantity type and List Item ID
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
 
             //Set the behavior for when the popover is made visible
-            $(toggle).on('shown.bs.popover', function() 
-            {
-                window.DebugController.Print("A Popover was shown");
-                callback(toggle, parameters.quantityType); //TODO should not pass back an element
-            });    
+            $(toggle).on('shown.bs.popover', callback);
+            // function() 
+            // {
+            //     window.DebugController.Print("A Popover was shown");
+
+            //     callback(toggle, parameters.quantityType); //TODO should not pass back an element
+            // });    
+        }
+        else if (event === 'QuantityPopoverHidden') 
+        {            
+            //Find the popover toggle element based on the given quantity type and List Item ID
+            var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+
+            //Set the behavior for when the popover is made visible
+            $(toggle).on('hidden.bs.popover', callback);    
+            elements.activeQuantityPopoverId = null;
         }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
@@ -222,10 +235,67 @@ window.View = (function()
                 window.DebugController.LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
             }  
         }
-        else if (event === 'ClickDetected')
+        else if (event === 'ClickDetectedOutsidePopover')
         {
-            document.addEventListener('click', callback);
-            window.DebugController.Print("An onclick listener was added to the whole document");
+            if (parameters.bindEnabled == true)
+            {
+                var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
+                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+
+                document.getElementById('divChecklistBody').addEventListener('click', function(e) {
+                    window.DebugController.Print("Click detected in the checklist body. Active popover ID: " + elements.activeQuantityPopoverId + ". Selected Toggle ID: " + toggleId);
+
+                    callback();
+
+                    // //If the selected element is anything other than the specified toggle
+                    // if (e.target != toggle)
+                    // {
+                    //     window.DebugController.Print("Click detected outside the popover. Active ID: " + elements.activeQuantityPopoverId);
+
+                    //     callback();
+                    // }
+
+                    // //If the Active Quantity Popover ID is set to a non-null value other than the selected toggle's ID...
+                    // if (elements.activeQuantityPopoverId != null && elements.activeQuantityPopoverId != toggleId)
+                    // {
+                    //     window.DebugController.Print("Click detected outside the popover. Active ID: " + elements.activeQuantityPopoverId);
+                    //     callback();
+                    // }
+                });
+
+                window.DebugController.Print("An onclick listener was added to the checklist body");
+            }
+            else if (parameters.bindEnabled == false) //TODO should this be in a separate 'unbind' method?
+            {
+                document.getElementById('divChecklistBody').removeEventListener('click', callback);
+                
+                window.DebugController.Print("An onclick listener was removed from the checklist body");
+            }
+        }
+        else if (event === 'QuantityToggleSelected')
+        {
+            var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
+            
+            document.getElementById(toggleId).addEventListener('click', function(event) {
+                callback(event);
+            });
+
+            // var activePopover = 'none';
+
+            // //If the Active Quantity Popover ID matches the one selected...
+            // if (elements.activeQuantityPopoverId == toggleId)
+            // {
+            //     activePopover = 'selected';
+            // }
+            // //Else if the Active Quantity Popover ID does not match the one selected, but isn't null either...
+            // else if (elements.activeQuantityPopoverId != null)
+            // {
+            //     activePopover = 'other';
+            // }
+            
+            // document.getElementById(toggleId).addEventListener('click', function() {
+            //     callback(activePopover);
+            // });
         }
     }
 
@@ -400,6 +470,21 @@ window.View = (function()
             ShowQuantityHeader: function() 
             {
                 elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
+            },
+            ShowQuantityPopover: function() 
+            {
+                var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
+                var toggle = document.getElementById(toggleId);
+                $(toggle).popover('show');
+                elements.activeQuantityPopoverId = toggleId;
+            },
+            HideQuantityPopover: function() 
+            {
+                //TODO doesn't really seem right to remove event listener from checklist body here
+                //document.getElementById('divChecklistBody').removeEventListener('click', parameters.listenerCallbackToRemove);
+
+                var popoverToggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+                $(popoverToggle).popover('hide');
             }         
             // updateListItemQuantityValue: function() 
             // {

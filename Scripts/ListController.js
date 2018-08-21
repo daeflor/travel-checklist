@@ -2,6 +2,10 @@ window.ListController = (function()
 {
     var activePopover = null; //TODO should there be a separate popover manager? 
 
+    //TODO this var is temp
+    var quantityPopoverActive = false;
+    var quantityPopoverState = 'hidden';
+
     //Initiate setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', setup);
 
@@ -198,42 +202,138 @@ window.ListController = (function()
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in quantities)
         {
-            window.View.Bind(
-                'QuantityPopoverShown', 
-                function(popoverToggle, quantityType) 
-                {
-                    //TODO BAD
-                    window.ListController.SetActivePopover(popoverToggle);
+            (function(lockedKey) //TODO is there a simpler way to do this?
+            {
+                // var _quantityToggleSelected = function(activePopover) {
+                //     if (activePopover == 'none')
+                //     {
+                //         //TODO I don't like where this is going
+                //     }
+                // };
 
-                    //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
+                var _showQuantityPopover = function(event) {
+                    if (quantityPopoverActive == false)
+                    {
+                        window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 
-                    window.View.Bind(
-                        'DecrementQuantityButtonPressed', 
-                        function()
-                        {   
-                            updateListItemQuantityValue(listId, listItemId, quantityType, 'decrement');
-                        }
-                    );
-        
-                    window.View.Bind(
-                        'IncrementQuantityButtonPressed', 
-                        function()
-                        {
-                            updateListItemQuantityValue(listId, listItemId, quantityType, 'increment');
-                        }
-                    );
-        
-                    window.View.Bind('ClickDetected', hideActiveQuantityPopover);
-                },
-                {listItemId:listItemId, quantityType:key}
-            );
+                        event.stopPropagation();
+                        window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey});   
+                        quantityPopoverActive = true;
+                    }
+                };
+
+                // var _showQuantityPopover = function(event) { //TODO event?
+                //     //if (quantityPopoverState == 'hidden')
+                //     //{
+                //         window.DebugController.Print("A Quantity Popover will be shown.");
+
+                //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey}); 
+                //         //quantityPopoverState = 'displaying'; //showing
+                //     //}
+                // };
+
+                // var _showQuantityPopover = function(activePopover) {
+                //     //if (quantityPopoverActive == false)
+                //     if (activePopover == 'none')
+                //     {
+                //         window.DebugController.Print("A Quantity Popover will be shown.");
+
+                //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey});   
+                //         //quantityPopoverActive = true;
+                //     }
+                // };
+    
+                var _quantityPopoverShown = function() {
+                    window.DebugController.Print("A Quantity Popover was shown.");
+
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItemId, quantityType:lockedKey, bindEnabled:true});   
+                    window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
+                    window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
+
+                    //quantityPopoverState = 'displayed';
+                };
+    
+                var _decrementListItemQuantityValue = function() {   
+                    updateListItemQuantityValue(listId, listItemId, lockedKey, 'decrement');
+                };
+    
+                var _incrementListItemQuantityValue = function() {
+                    updateListItemQuantityValue(listId, listItemId, lockedKey, 'increment');
+                };
+                
+                var _hideQuantityPopover = function() {
+                    //if (quantityPopoverState == 'displayed')
+                    //{
+                        window.DebugController.Print("A Quantity Popover will be hidden.");
+
+                        window.View.Render('HideQuantityPopover', {listItemId:listItemId, quantityType:lockedKey} );
+                    //}
+                };
+    
+                var _quantityPopoverHidden = function() {
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {bindEnabled:false});
+                    //quantityPopoverState = 'hidden';
+                    quantityPopoverActive = false;
+                };
+    
+                window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});
+                    // function(e) 
+                    // {
+                    //     window.DebugController.Print("A Popover toggle was pressed");
+    
+                    //     if (quantityPopoverActive == false)
+                    //     {
+                    //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:key});   
+                            
+                    //         quantityPopoverActive = true;
+                    //     }
+    
+                    //     //If there is no popover currently active, show the popover for the selected toggle
+                    //     //TODO bad, doesn't need to be public
+                    //     // if(window.ListController.GetActivePopover() == null)
+                    //     // {
+                    //     //     //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
+                    //     //     if(e.target == popoverToggle)
+                    //     //     {
+                    //     //         window.DebugController.Print("Prevented click event from bubbling up");
+                    //     //         e.stopPropagation();
+                    //     //     }
+    
+                    //     //     $(popoverToggle).popover('show');
+                    //     // }
+                    // },
+                //     {listItemId:listItemId, quantityType:key}
+                // );
+    
+                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItemId, quantityType:lockedKey});
+                //     function(popoverToggle) 
+                //     {
+                //         window.View.Bind('ClickDetectedInChecklistBody', _hideQuantityPopover);
+                        
+                //         //TODO BAD
+                //         //window.ListController.SetActivePopover(popoverToggle);
+    
+                //         //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
+    
+                //         window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
+            
+                //         window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
+            
+                //         // window.View.Bind('ClickDetectedInChecklistBody', hideActiveQuantityPopover);
+                //     },
+                //     {listItemId:listItemId, quantityType:key}
+                // );
+    
+                window.View.Bind('QuantityPopoverHidden', _quantityPopoverHidden, {listItemId:listItemId, quantityType:lockedKey});
+            })(key);
         }
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
         //bindSettingsViewExpansion(listItemId);
         window.View.Bind(
             'SettingsViewExpansionStarted', 
-            function() {
+            function() 
+            {
                 window.View.Render('HideActiveSettingsView'); 
             },
             {id:listItemId}
@@ -245,7 +345,8 @@ window.ListController = (function()
         //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind(
             'NameEdited', 
-            function(updatedValue) {
+            function(updatedValue) 
+            {
                 window.Model.EditListItemName(listId, listItemId, updatedValue);
                 window.View.Render('UpdateName', {id:listItemId, updatedValue:updatedValue}); 
             },
@@ -255,7 +356,8 @@ window.ListController = (function()
         //Add an event listener to the Delete Button to remove the List Item
         window.View.Bind(
             'DeleteButtonPressed', 
-            function() {
+            function() 
+            {
                 removeListItem(listId, listItemId);
             }, 
             {id:listItemId}
@@ -300,17 +402,17 @@ window.ListController = (function()
 
     /** Experimental & In Progress **/
     
-    function hideActiveQuantityPopover(e) 
-    {     
-        //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
-            //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
-        if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
-        {
-            document.removeEventListener('click', hideActiveQuantityPopover);
-            $(activePopover).popover('hide');
-            window.DebugController.Print("The active popover was told to hide");
-        }
-    }
+    // function hideActiveQuantityPopover(e) 
+    // {     
+    //     //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
+    //         //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
+    //     if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
+    //     {
+    //         document.removeEventListener('click', hideActiveQuantityPopover);
+    //         $(activePopover).popover('hide');
+    //         window.DebugController.Print("The active popover was told to hide");
+    //     }
+    // }
 
     // function expandSettingsView(id)
     // {
@@ -333,15 +435,15 @@ window.ListController = (function()
     /** Public Functions **/
 
     return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
-        GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
-        {
-            return activePopover;
-        },
-        SetActivePopover : function(popover)
-        {
-            activePopover = popover;
-            window.DebugController.Print("The Active Popover changed");
-        }
+        // GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
+        // {
+        //     return activePopover;
+        // },
+        // SetActivePopover : function(popover)
+        // {
+        //     activePopover = popover;
+        //     window.DebugController.Print("The Active Popover changed");
+        // }
     };
 })();
 
