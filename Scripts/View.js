@@ -135,14 +135,6 @@ window.View = (function()
             //Set the behavior for when the popover is made visible
             $(toggle).on('shown.bs.popover', callback); 
         }
-        else if (event === 'QuantityPopoverHidden') 
-        {            
-            //Find the popover toggle element based on the given quantity type and List Item ID
-            var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
-
-            //Set the behavior for when the popover is made visible
-            $(toggle).on('hidden.bs.popover', callback);    
-        }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
             //Find the Quantity Header Toggle based on the given quantity type
@@ -205,35 +197,15 @@ window.View = (function()
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
-            if (parameters.bindEnabled == true)
-            {
-                var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
-                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+            document.getElementById('divChecklistBody').addEventListener('click', callback, {once:true});
 
-                //TODO fix callback
-                document.getElementById('divChecklistBody').addEventListener('click', function(e) {
-                    window.DebugController.Print("Click detected in the checklist body. Selected Toggle ID: " + toggleId);
-
-                    callback();
-                });
-
-                window.DebugController.Print("An onclick listener was added to the checklist body");
-            }
-            else if (parameters.bindEnabled == false) //TODO should this be in a separate 'unbind' method?
-            {
-                document.getElementById('divChecklistBody').removeEventListener('click', callback);
-                
-                window.DebugController.Print("An onclick listener was removed from the checklist body");
-            }
+            window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
         else if (event === 'QuantityToggleSelected')
         {
             var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
             
-            //TODO fix callback
-            document.getElementById(toggleId).addEventListener('click', function(event) {
-                callback(event);
-            });
+            document.getElementById(toggleId).addEventListener('click', callback);
         }
     }
 

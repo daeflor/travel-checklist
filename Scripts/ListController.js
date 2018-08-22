@@ -2,16 +2,13 @@ window.ListController = (function()
 {
     var quantityPopoverActive = false;
 
-    //Initiate setup once the DOM content has loaded
-    document.addEventListener('DOMContentLoaded', setup);
+    //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
+    document.addEventListener('DOMContentLoaded', setup, {once:true});
 
     /** List & Button Setup **/
 
     function setup()
     {            
-        //Once the DOM content has loaded and Setup initiated, remove the event listener
-        document.removeEventListener('DOMContentLoaded', setup);
-
         window.View.Init();
         window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
@@ -214,7 +211,7 @@ window.ListController = (function()
                     window.DebugController.Print("A Quantity Popover was shown.");
 
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItemId, quantityType:lockedKey, bindEnabled:true});   
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});   
                     window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
                     window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
                 };
@@ -231,19 +228,12 @@ window.ListController = (function()
                     window.DebugController.Print("A Quantity Popover will be hidden.");
 
                     window.View.Render('HideQuantityPopover', {listItemId:listItemId, quantityType:lockedKey} );
-                };
-    
-                var _quantityPopoverHidden = function() {
-                    //TODO this is a weird way to unbind something
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {bindEnabled:false}); 
                     quantityPopoverActive = false;
                 };
     
                 window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});
     
-                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItemId, quantityType:lockedKey});
-    
-                window.View.Bind('QuantityPopoverHidden', _quantityPopoverHidden, {listItemId:listItemId, quantityType:lockedKey});
+                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItemId, quantityType:lockedKey});    
             })(key);
         }
 
