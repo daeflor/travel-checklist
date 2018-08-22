@@ -1,10 +1,6 @@
 window.ListController = (function()
 {
-    var activePopover = null; //TODO should there be a separate popover manager? 
-
-    //TODO this var is temp
     var quantityPopoverActive = false;
-    var quantityPopoverState = 'hidden';
 
     //Initiate setup once the DOM content has loaded
     document.addEventListener('DOMContentLoaded', setup);
@@ -16,9 +12,7 @@ window.ListController = (function()
         //Once the DOM content has loaded and Setup initiated, remove the event listener
         document.removeEventListener('DOMContentLoaded', setup);
 
-        //var header = new Header(ListType.Travel);
         window.View.Init();
-        //window.View.AddHeaderToDom({headerElement: header.GetElement()});
         window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
@@ -27,7 +21,7 @@ window.ListController = (function()
             bindQuantityHeaderToggleEvents(key);
         }
 
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here).
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). ^
         window.View.Bind('HomeButtonPressed', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
@@ -103,7 +97,7 @@ window.ListController = (function()
             {listId:data.id, listName:data.name}
         );
 
-        //TODO this method can be standardized and re-used for list item
+        //TODO this method could possibly be standardized and re-used for list item
         //When the animation to expand the Settings View starts, change the Active Settings View
         //bindSettingsViewExpansion(data.id);
         window.View.Bind(
@@ -183,17 +177,18 @@ window.ListController = (function()
         );
     }
 
+    //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... I don't think so...
     function addListItemToView(listId, listItemId, listItemName, quantities)
     {
         //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
 
         window.View.Render(
             'AddListItem', 
-            { //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?
+            { 
                 listItemId: listItemId, 
                 listItemName: listItemName,
                 quantityValues: quantities,
-                listId: listId, //TODO Don't really like calling this data.id... If List always requires exact params, maybe should just have them explicitly stated
+                listId: listId, 
             }
         );
 
@@ -204,13 +199,6 @@ window.ListController = (function()
         {
             (function(lockedKey) //TODO is there a simpler way to do this?
             {
-                // var _quantityToggleSelected = function(activePopover) {
-                //     if (activePopover == 'none')
-                //     {
-                //         //TODO I don't like where this is going
-                //     }
-                // };
-
                 var _showQuantityPopover = function(event) {
                     if (quantityPopoverActive == false)
                     {
@@ -221,36 +209,14 @@ window.ListController = (function()
                         quantityPopoverActive = true;
                     }
                 };
-
-                // var _showQuantityPopover = function(event) { //TODO event?
-                //     //if (quantityPopoverState == 'hidden')
-                //     //{
-                //         window.DebugController.Print("A Quantity Popover will be shown.");
-
-                //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey}); 
-                //         //quantityPopoverState = 'displaying'; //showing
-                //     //}
-                // };
-
-                // var _showQuantityPopover = function(activePopover) {
-                //     //if (quantityPopoverActive == false)
-                //     if (activePopover == 'none')
-                //     {
-                //         window.DebugController.Print("A Quantity Popover will be shown.");
-
-                //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey});   
-                //         //quantityPopoverActive = true;
-                //     }
-                // };
     
                 var _quantityPopoverShown = function() {
                     window.DebugController.Print("A Quantity Popover was shown.");
 
+                    //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
                     window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItemId, quantityType:lockedKey, bindEnabled:true});   
                     window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
                     window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
-
-                    //quantityPopoverState = 'displayed';
                 };
     
                 var _decrementListItemQuantityValue = function() {   
@@ -262,67 +228,20 @@ window.ListController = (function()
                 };
                 
                 var _hideQuantityPopover = function() {
-                    //if (quantityPopoverState == 'displayed')
-                    //{
-                        window.DebugController.Print("A Quantity Popover will be hidden.");
+                    window.DebugController.Print("A Quantity Popover will be hidden.");
 
-                        window.View.Render('HideQuantityPopover', {listItemId:listItemId, quantityType:lockedKey} );
-                    //}
+                    window.View.Render('HideQuantityPopover', {listItemId:listItemId, quantityType:lockedKey} );
                 };
     
                 var _quantityPopoverHidden = function() {
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {bindEnabled:false});
-                    //quantityPopoverState = 'hidden';
+                    //TODO this is a weird way to unbind something
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {bindEnabled:false}); 
                     quantityPopoverActive = false;
                 };
     
                 window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});
-                    // function(e) 
-                    // {
-                    //     window.DebugController.Print("A Popover toggle was pressed");
-    
-                    //     if (quantityPopoverActive == false)
-                    //     {
-                    //         window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:key});   
-                            
-                    //         quantityPopoverActive = true;
-                    //     }
-    
-                    //     //If there is no popover currently active, show the popover for the selected toggle
-                    //     //TODO bad, doesn't need to be public
-                    //     // if(window.ListController.GetActivePopover() == null)
-                    //     // {
-                    //     //     //When there is no active popover and a toggle is selected, prevent further click events from closing the popover immediately
-                    //     //     if(e.target == popoverToggle)
-                    //     //     {
-                    //     //         window.DebugController.Print("Prevented click event from bubbling up");
-                    //     //         e.stopPropagation();
-                    //     //     }
-    
-                    //     //     $(popoverToggle).popover('show');
-                    //     // }
-                    // },
-                //     {listItemId:listItemId, quantityType:key}
-                // );
     
                 window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItemId, quantityType:lockedKey});
-                //     function(popoverToggle) 
-                //     {
-                //         window.View.Bind('ClickDetectedInChecklistBody', _hideQuantityPopover);
-                        
-                //         //TODO BAD
-                //         //window.ListController.SetActivePopover(popoverToggle);
-    
-                //         //TODO There might be a better way to do this, where the BIND can be done when the +/- buttons are created and not when the popover is shown.
-    
-                //         window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
-            
-                //         window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
-            
-                //         // window.View.Bind('ClickDetectedInChecklistBody', hideActiveQuantityPopover);
-                //     },
-                //     {listItemId:listItemId, quantityType:key}
-                // );
     
                 window.View.Bind('QuantityPopoverHidden', _quantityPopoverHidden, {listItemId:listItemId, quantityType:lockedKey});
             })(key);
@@ -401,18 +320,6 @@ window.ListController = (function()
     }
 
     /** Experimental & In Progress **/
-    
-    // function hideActiveQuantityPopover(e) 
-    // {     
-    //     //TODO this is very hacky, and relies not only on my own class names but Bootstrap's too.
-    //         //Does a quantity group function (object) make sense? (and maybe a list?) To have this more controlled
-    //     if (!e.target.className.includes('popover')) //ignore any clicks on any elements within a popover
-    //     {
-    //         document.removeEventListener('click', hideActiveQuantityPopover);
-    //         $(activePopover).popover('hide');
-    //         window.DebugController.Print("The active popover was told to hide");
-    //     }
-    // }
 
     // function expandSettingsView(id)
     // {
@@ -431,20 +338,6 @@ window.ListController = (function()
     //         {id:id}
     //     );
     // }
-
-    /** Public Functions **/
-
-    return { //TODO This should just expose private methods publicly, there shouldn't actually be logic here.
-        // GetActivePopover : function() //TODO Maybe should have an Interaction Manager (or popover manager) for these
-        // {
-        //     return activePopover;
-        // },
-        // SetActivePopover : function(popover)
-        // {
-        //     activePopover = popover;
-        //     window.DebugController.Print("The Active Popover changed");
-        // }
-    };
 })();
 
 //TODO Consider moving this to a separate file?
