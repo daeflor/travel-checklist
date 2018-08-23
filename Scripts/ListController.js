@@ -271,6 +271,18 @@ window.ListController = (function()
             }, 
             {id:listItemId}
         );
+
+        //Add an event listener to the Move Upwards Button to move the List Item upwards by one position in the List
+        window.View.Bind(
+            'MoveUpwardsButtonPressed', 
+            function() 
+            {
+                window.Model.MoveListItemUpwards(listId, listItemId, function() {
+                    window.View.Render('MoveUpwards', {id:listItemId});
+                });
+            }, 
+            {id:listItemId}
+        );
     }
 
     //TODO I think there can probably be a ListController and a ListItemController. Except then it might not be possible to share functions across both in a logical way...

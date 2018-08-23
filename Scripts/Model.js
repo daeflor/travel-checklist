@@ -53,6 +53,12 @@ window.Model = (function()
         window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
+    function moveListItemUpwards(listId, listItemId, callback)
+    {
+        //TODO don't like this name much
+        window.StorageManager.MoveListItemUpwardsInStorage(listId, listItemId, callback);
+    }
+
     function clearListQuantityColumn(listId, quantityType, callback)
     {
         window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
@@ -72,6 +78,7 @@ window.Model = (function()
         RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
+        MoveListItemUpwards : moveListItemUpwards,
         EditListItemQuantity : editListItemQuantity,
         ClearListQuantityColumn : clearListQuantityColumn,
         RemoveListItem : removeListItem

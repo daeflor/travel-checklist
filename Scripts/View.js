@@ -115,15 +115,30 @@ window.View = (function()
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
-            var buttonDelete = document.getElementById('Delete-'.concat(parameters.id));
+            var button = document.getElementById('Delete-'.concat(parameters.id));
 
-            if (buttonDelete != null)
+            if (button != null)
             {
-                buttonDelete.addEventListener('click', callback);         
+                button.addEventListener('click', callback);         
             }
             else
             {
                 window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+            }
+        }
+        else if (event === 'MoveUpwardsButtonPressed') 
+        {
+            //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
+
+            var button = document.getElementById('MoveUpwards-'.concat(parameters.id));
+
+            if (button != null)
+            {
+                button.addEventListener('click', callback);         
+            }
+            else
+            {
+                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
             }
         }
         else if (event === 'QuantityPopoverShown') 
@@ -389,7 +404,12 @@ window.View = (function()
                     //TODO Could at least create a helper method to find and return the toggle element
                 var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
                 $(toggle).popover('hide');
-            }         
+            },
+            MoveUpwards: function() 
+            {
+                var element = document.getElementById(parameters.id);
+                element.parentElement.insertBefore(element, element.previousSibling);
+            }       
         };
 
         viewCommands[command]();

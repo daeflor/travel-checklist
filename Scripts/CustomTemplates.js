@@ -116,14 +116,22 @@ window.CustomTemplates = (function ()
             CreateNewElement('i', [['class','fa fa-trash']])
         );
 
+        /* Create MoveUp Button */
+        var buttonMoveUpwards = CreateNewElement(
+            'button', 
+            [ ['id','MoveUpwards-'.concat(id)], ['type','button'] ], 
+            CreateNewElement('i', [['class','fa fa-arrow-up']])
+        );
+
         /* Create Element Wrappers */
         var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], editNameTextarea);
         var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], buttonDelete);
+        var divButtonMoveUpwards = CreateNewElement('div', [ ['class','col-2'] ], buttonMoveUpwards);
         
         var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
 
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
+        var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete, divButtonMoveUpwards], rowClass:settingsRowClass});
 
         /* Setup Listeners */
         //When the animation to expand the Settings View ends, scroll the Settings View into view

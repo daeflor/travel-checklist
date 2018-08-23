@@ -147,8 +147,45 @@ window.StorageManager = (function ()
             }
         } 
 
+        //TODO does it make sense for this to be outside of the for loops?
         //Store the updated storage data object
         storeListData(parsedStorageData);
+    }
+
+    function moveListItemUpwardsInStorage(listId, listItemId, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        //If the List Item is not the first in the List...
+                        //TODO the button should be greyed out if it can't be used, which means that the controller would already know if this isn't possible...?...
+                        if (j > 0)
+                        {
+                            //Swap the positions of the List Item and the previous List Item
+                            var prevListItem = parsedStorageData.lists[i].listItems[j-1];
+                            parsedStorageData.lists[i].listItems[j-1] = parsedStorageData.lists[i].listItems[j];
+                            parsedStorageData.lists[i].listItems[j] = prevListItem;
+
+                            //Store the updated storage data object and call the provided callback method
+                            storeListData(parsedStorageData);
+                            callback();
+                        }
+
+                        break;
+                    }
+                } 
+            }
+        } 
     }
 
     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
@@ -368,6 +405,7 @@ window.StorageManager = (function ()
         RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
         EditListItemNameInStorage : editListItemNameInStorage,
+        MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         RemoveListItemFromStorage : removeListItemFromStorage
