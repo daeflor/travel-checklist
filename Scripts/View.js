@@ -4,6 +4,7 @@ window.View = (function()
 
     //TODO The Bind and Render calls could all use error handling
     //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
+        //I don't think this is a problem anymore
 
     var elements = {  
         homeHeader : null,

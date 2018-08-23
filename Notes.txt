@@ -2,10 +2,10 @@ TO-DOs:
 	- index.html            : 3
     - style_new.css         : 3
     - StorageManager.js     : 7
-    - Model.js              : 7
-	- ListController.js     : 23
-    - View.js               : 30
-    - CustomTemplates.js    : 10
+    - Model.js              : 1
+	- ListController.js     : 18
+    - View.js               : 23
+    - CustomTemplates.js    : 6
     - StandardTemplates.js  : 3
     - DebugUtilities.js     : 4
     - Utilities.js          : 0
