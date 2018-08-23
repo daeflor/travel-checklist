@@ -38,53 +38,55 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>  
 -->
 </head>
-<body>      
-  <div class='container-fluid'>  <!--TODO Does this still need to be fluid and is it still necessary to use rows?-->
-    
-    <div class='row divHeader' id='divHomeHeader'>
-      TraveLists
-    </div>
-
-    <!--TODO Perhaps move the headers into the screen sections, below-->
-    <div class='row divHeader' id='divListHeader' hidden='true'>
-      <div class='col-1 divSmallPadding'>
-        <button id='buttonHome' type='button'> 
-              <i class='fa fa-home'></i>
-        </button>  
+<body>   
+  <div id='divChecklistBody'>
+    <div class='container-fluid'>  <!--TODO Does this still need to be fluid and is it still necessary to use rows?-->
+      
+      <div class='row divHeader' id='divHomeHeader'>
+        TraveLists
       </div>
-      <div class='col-4' id='headerCurrentListName'></div>
-    </div>
 
-  </div>
-
-  <div id='divHomeScreen'>
-    <div class='divListElements' id='divHomeScreenListElements'>
-    </div>
-    <div class='newRow' id='newListRow'>
-      <button class='buttonNewRow' id='buttonAddList' type='button'>
-        <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
-      </button>                  
-    </div>
-  </div>
-
-  <div id='divListScreen' hidden='true'>
-    <div class='divListElements' id='divListScreenListElements'>
-    </div>
-    <div class='newRow' id='newListItemRow'>
-        <button class='buttonNewRow' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
-    </div>
-  </div>  
-
-  <div id='divDebug' class='debug container-fluid'>
-    <div class='row'>
-      <div id='versionNumber' class='col-1' hidden='true'>
-        version #
+      <!--TODO Perhaps move the headers into the screen sections, below-->
+      <div class='row divHeader' id='divListHeader' hidden='true'>
+        <div class='col-1 divSmallPadding'>
+          <button id='buttonHome' type='button'> 
+                <i class='fa fa-home'></i>
+          </button>  
+        </div>
+        <div class='col-4' id='headerCurrentListName'></div>
       </div>
-      <button id='buttonDebug' class='col-1' type='button'>
-        <i class='fa fa-genderless'></i>
-      </button>
+
     </div>
-  </div>
+
+    <div id='divHomeScreen'>
+      <div class='divListElements' id='divHomeScreenListElements'>
+      </div>
+      <div class='newRow' id='newListRow'>
+        <button class='buttonNewRow' id='buttonAddList' type='button'>
+          <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
+        </button>                  
+      </div>
+    </div>
+
+    <div id='divListScreen' hidden='true'>
+      <div class='divListElements' id='divListScreenListElements'>
+      </div>
+      <div class='newRow' id='newListItemRow'>
+          <button class='buttonNewRow' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
+      </div>
+    </div>  
+
+    <div id='divDebug' class='debug container-fluid'>
+      <div class='row'>
+        <div id='versionNumber' class='col-1' hidden='true'>
+          version #
+        </div>
+        <button id='buttonDebug' class='col-1' type='button'>
+          <i class='fa fa-genderless'></i>
+        </button>
+      </div>
+    </div>
+  </div>   
 
   <!-- TODO is it really necessary to have the New List and New List Item rows be separate? -->
     <!-- It is nice to keep them separate in case in the future they differ more -->

@@ -1,10 +1,10 @@
 window.DebugController = (function()
 {
     var debugModeEnabled = false;
-    var VERSION = '0.0.2';
+    var VERSION = '0.0.4';
 
-    //Initiate setup once the DOM content has loaded
-    document.addEventListener('DOMContentLoaded', setup);
+    //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
+    document.addEventListener('DOMContentLoaded', setup, {once:true});
 
     //TODO it's pretty silly having multiple 'DOMContentLoaded' event listeners. This kind of thing should probably be consolidated.
     function setup()

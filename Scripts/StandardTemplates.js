@@ -82,7 +82,7 @@ function CreatePopoverToggle(data)
     $(popoverToggle).popover({
         placement: 'bottom',
         animation: false,
-        delay: { "hide": 50 },
+        delay: { "show": 50, "hide": 50 },
         html: true,
         trigger: data.trigger,
         content: divPopover.outerHTML
