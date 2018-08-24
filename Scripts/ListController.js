@@ -272,13 +272,29 @@ window.ListController = (function()
             {id:listItemId}
         );
 
+        //TODO would rather move the two calls below into one method that takes a direction (up or down)
+
         //Add an event listener to the Move Upwards Button to move the List Item upwards by one position in the List
         window.View.Bind(
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListItemUpwards(listId, listItemId, function() {
-                    window.View.Render('MoveUpwards', {id:listItemId});
+                window.Model.MoveListItemUpwards(listId, listItemId, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:listItemId, moveDownwardsId:swapId});
+                });
+            }, 
+            {id:listItemId}
+        );
+
+        //Add an event listener to the Move Downwards Button to move the List Item downwards by one position in the List
+        window.View.Bind(
+            'MoveDownwardsButtonPressed', 
+            function() 
+            {
+                window.DebugController.Print("Button pressed to swap List Item positions");
+
+                window.Model.MoveListItemDownwards(listId, listItemId, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItemId});
                 });
             }, 
             {id:listItemId}

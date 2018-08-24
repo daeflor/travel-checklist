@@ -178,7 +178,47 @@ window.StorageManager = (function ()
 
                             //Store the updated storage data object and call the provided callback method
                             storeListData(parsedStorageData);
-                            callback();
+                            callback(prevListItem.id);
+                        }
+
+                        break;
+                    }
+                } 
+            }
+        } 
+    }
+
+    function moveListItemDownwardsInStorage(listId, listItemId, callback)
+    {
+
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
+                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                {
+                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
+                    {
+                        window.DebugController.Print("Received request to swap List Item positions in Storage");
+
+                        //If the List Item is not the last in the List...
+                        if (j < parsedStorageData.lists[i].listItems.length-1)
+                        {
+                            //Swap the positions of the List Item and the next List Item
+                            var nextListItem = parsedStorageData.lists[i].listItems[j+1];
+                            parsedStorageData.lists[i].listItems[j+1] = parsedStorageData.lists[i].listItems[j];
+                            parsedStorageData.lists[i].listItems[j] = nextListItem;
+
+                            window.DebugController.Print("Swapped List Item positions in Storage");
+
+                            //Store the updated storage data object and call the provided callback method
+                            storeListData(parsedStorageData);
+                            callback(nextListItem.id);
                         }
 
                         break;
@@ -397,6 +437,7 @@ window.StorageManager = (function ()
     //     return findListItemInStorage(listId, listItemId);
     // }
 
+    //TODO Update this file to use methods similar to Render or Bind in the View
     return {
         StoreListData : storeListData,
         GetListStorageData : getListStorageData,
@@ -406,6 +447,7 @@ window.StorageManager = (function ()
         AddListItemToStorage : addListItemToStorage,
         EditListItemNameInStorage : editListItemNameInStorage,
         MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
+        MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         RemoveListItemFromStorage : removeListItemFromStorage

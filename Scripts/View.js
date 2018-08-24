@@ -141,6 +141,22 @@ window.View = (function()
                 window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
             }
         }
+        //TODO Look into merging the two clauses above and below
+        else if (event === 'MoveDownwardsButtonPressed') 
+        {
+            //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
+
+            var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
+
+            if (button != null)
+            {
+                button.addEventListener('click', callback);         
+            }
+            else
+            {
+                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Downwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveDownwards-'.concat(parameters.id));
+            }
+        }
         else if (event === 'QuantityPopoverShown') 
         {
             window.DebugController.Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
@@ -306,13 +322,36 @@ window.View = (function()
                 
                 if (listWrapper != null)
                 {
+                    //var listItemElement = window.CustomTemplates.CreateListItemFromTemplate(parameters);
+                    var lastListItemElement = listWrapper.lastChild;
+
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
+
+                    //If the new List Item is the first one in the List, set both reorder buttons to be gray
+                    if (lastListItemElement == null)
+                    {
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).style.color = '#606060';
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).style.color = '#606060';
+                    }
+                    //Else, if the new List Item is not the first one in the List...
+                    else
+                    {
+                        //Set the previous List Item's 'Move Downwards' button to be black
+                        document.getElementById('MoveDownwards-'.concat(lastListItemElement.id)).style.color = 'black';
+
+                        //Set the new List Item's 'Move Upwards' button to be black
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).style.color = 'black';
+
+                        //Set the new List Item's 'Move Downwards' button to be gray
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).style.color = '#606060';
+                    }
+
                     window.DebugController.Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
                 }
                 else
                 {
                     window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
-                }      
+                }    
             },
             removeListItem: function() 
             {
@@ -405,11 +444,40 @@ window.View = (function()
                 var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
                 $(toggle).popover('hide');
             },
-            MoveUpwards: function() 
+            SwapListObjects: function() 
             {
-                var element = document.getElementById(parameters.id);
-                element.parentElement.insertBefore(element, element.previousSibling);
-            }       
+                var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
+                var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
+                elementToMoveUpwards.parentElement.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
+
+                var buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveUpwards.id));
+                var buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveUpwards.id));
+                
+                if (elementToMoveUpwards.previousElementSibling == null)
+                {
+                    buttonMoveUpwards.firstChild.style.color = '#606060';
+                }
+                else
+                {
+                    buttonMoveUpwards.firstChild.style.color = 'black';
+                }
+
+                buttonMoveDownwards.firstChild.style.color = 'black';
+
+                buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveDownwards.id));
+                buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveDownwards.id));
+                
+                if (elementToMoveDownwards.nextElementSibling == null)
+                {
+                    buttonMoveDownwards.firstChild.style.color = '#606060';
+                }
+                else
+                {
+                    buttonMoveDownwards.firstChild.style.color = 'black';
+                }
+
+                buttonMoveUpwards.firstChild.style.color = 'black';
+            },
         };
 
         viewCommands[command]();
