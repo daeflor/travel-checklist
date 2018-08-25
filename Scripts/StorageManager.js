@@ -185,6 +185,46 @@ window.StorageManager = (function ()
         findListInStorage(listId, addListItem);
     }
 
+    function clearListQuantityColumnInStorage(listId, quantityType, callback)
+    {
+        //Set up the callback method to execute when a List matching the given ID is found
+        var clearQuantityColumn = function(data, listIndex)
+        {
+            //TODO would it make any sense to use editListItemQuantityInStorage for this? Probably not because it would be a lot of extra unnecessary writes to storage
+                //TODO...BUT, what might make more sense is having an abstracted helper/util method for just the part about performing the operation on the quantity value and tracking whether or not the value was changed, but not including actually retrieving or storing data
+
+            //Initialize an array to keep track of any List Items that will have a quantity value be modified
+            var modifiedListItems = [];
+
+            //Traverse the List Items array of the returned List Object
+            for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
+            {      
+                //If the List Item's quantity value for the given quantity type is not already zero...            
+                if (data.lists[listIndex].listItems[i].quantities[quantityType] != 0)
+                {
+                    //Set the List Item's quantity value for the given quantity type to zero
+                    data.lists[listIndex].listItems[i].quantities[quantityType] = 0;
+
+                    //Add the List Item to the array of modified List Items
+                    modifiedListItems.push(data.lists[listIndex].listItems[i]);
+                }  
+            }
+
+            //If any quantity value was actually changed...
+            if (modifiedListItems.length > 0)
+            {
+                //Store the updated data object
+                storeListData(data);
+
+                //Execute the provided callback method
+                callback(modifiedListItems);
+            }
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListInStorage(listId, clearQuantityColumn);
+    }
+
     /** Modify List Items **/
 
     function editListItemNameInStorage(listId, listItemId, updatedName)
@@ -284,52 +324,19 @@ window.StorageManager = (function ()
                 window.DebugController.LogError("ERROR: Tried to perform an invalid operation on a quantity value in storage. List Item ID: " + listItemId);
             }
 
-            //If the quantity value was actually changed, store the updated data object and execute the provided callback method
+            //If the quantity value was actually changed...
             if (dataModified == true)
             {
+                //Store the updated data object
                 storeListData(data);
-                callback(quantities); 
+
+                //Execute the provided callback method
+                callback(quantities);
             }
         };
         
         //Search for the List Item in storage and, if it's found, execute the callback method
         findListItemInStorage(listId, listItemId, editQuantity);
-    }
-
-    function clearListQuantityColumnInStorage(listId, quantityType, callback)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //var dataModified = false;
-                var modifiedListItems = [];
-
-                //If the List IDs match, traverse the list's items array
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {      
-                    //If the List Item's quantity value for the given type is not 0, set it to 0              
-                    if (parsedStorageData.lists[i].listItems[j].quantities[quantityType] != 0)
-                    {
-                        parsedStorageData.lists[i].listItems[j].quantities[quantityType] = 0;
-                        modifiedListItems.push(parsedStorageData.lists[i].listItems[j]);
-                    }  
-                }
-
-                //If any quantity value was actually changed, store the updated data and perform the callback
-                if (modifiedListItems.length > 0)
-                {
-                    storeListData(parsedStorageData);
-                    callback(modifiedListItems); //TODO is it correct to only call the callback under certain circumstances?... In this case the alternative isn't an error.. But if the view doesn't need to get updated, it seems right to not call back
-                }
-
-                break;
-            }
-        } 
     }
 
     function removeListItemFromStorage(listId, listItemId)
@@ -358,58 +365,6 @@ window.StorageManager = (function ()
         //Store the updated storage data object
         storeListData(parsedStorageData);
     }
-
-    //TODO This ended up complicating things even more. A simple solution could be to have this return an object with both a ListItem and parsedStorage sub-object, but this seems like an incorrect way of handling this
-    // function findListItemInStorage(listId, listItemId, callback)
-    // {
-    //     var list = findListInStorage(listId);
-
-    //     if (list != null)
-    //     {
-    //         //Traverse the list's items array, searching for one that matches the given ListItem ID
-    //         for (var i = list.listItems.length-1; i >= 0; i--)
-    //         {
-    //             if (list.listItems[i].id == listItemId)
-    //             {
-    //                 //If the ListItem IDs match, return the list item object 
-    //                 //return list.listItems[i];
-    //                 callback(list.listItems[i]);
-    //             }
-    //         } 
-    //     }
-
-    //     console.log('ERROR: Unable to find requested ListItem in Storage');
-    // }
-
-    //TODO Could re-use the traversing code with callbacks, rather than always repeating code in this file
-        //This is the attempt to see if this idea works
-        //TODO see if this method can be utilized by the methods above, in some form. Could also create a similar one for finding just a List
-    // function findListItemInStorage(listId, listItemId)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
-
-    //     //Traverse the stored List data for one that matches the given List ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-    //             for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-    //             {
-    //                 if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-    //                 {
-    //                     return parsedStorageData.lists[i].listItems[j];
-    //                     // callback();
-    //                     // break;
-    //                 }
-    //             } 
-    //         }
-    //     } 
-
-    //     console.log('ERROR: Unable to find requested ListItem in Storage');
-    // }
-
 
     // function getListItemDataFromStorage(listId, listItemId)
     // {
