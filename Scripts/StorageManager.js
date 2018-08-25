@@ -107,7 +107,7 @@ window.StorageManager = (function ()
 
     function editListNameInStorage(listId, updatedName)
     {
-        //Set up he callback method to call when a List matching the given ID is found
+        //Set up he callback method to execute when a List matching the given ID is found
         var updateListName = function(data, index)
         {
             //Update the name of the returned List object
@@ -121,9 +121,9 @@ window.StorageManager = (function ()
         findListInStorage(listId, updateListName);
     }
 
-    function removeListFromStorage(listId, updatedName)
+    function removeListFromStorage(listId)
     {
-        //Set up he callback method to call when a List matching the given ID is found
+        //Set up he callback method to execute when a List matching the given ID is found
         var removeList = function(data, index)
         {
             //Remove the returned List object from the lists array
@@ -139,24 +139,21 @@ window.StorageManager = (function ()
 
     function addListItemToStorage(listId, newListItem, callback)
     {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up he callback method to execute when a List matching the given ID is found
+        var addListItem = function(data, index)
         {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //Add the new List Item to the matching List object
-                parsedStorageData.lists[i].listItems.push(newListItem);
-                break;
-            }
-        } 
+            //Add the new List Item to the returned List object
+            data.lists[index].listItems.push(newListItem);
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+            //Store the updated data object
+            storeListData(data);
 
-        callback(newListItem);
+            //Execute the provided callback method
+            callback(newListItem);
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListInStorage(listId, addListItem);
     }
 
     function editListItemNameInStorage(listId, listItemId, updatedName)
