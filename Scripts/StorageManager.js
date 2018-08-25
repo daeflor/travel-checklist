@@ -341,37 +341,21 @@ window.StorageManager = (function ()
 
     function removeListItemFromStorage(listId, listItemId)
     {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up the callback method to execute when a List Item matching the given ID is found
+        var removeListItem = function(data, listIndex, listItemIndex)
         {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //Remove the matching List Item object from the List's items array
-                        parsedStorageData.lists[i].listItems.splice(j, 1);
-                        break;
-                    }
-                }
-            }
-        } 
+            //Remove the returned List Item object from the List Items array
+            data.lists[listIndex].listItems.splice(listItemIndex, 1);
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+            //Store the updated data object
+            storeListData(data);
+        };
+        
+        //Search for the List Item in storage and, if it's found, execute the callback method
+        findListItemInStorage(listId, listItemId, removeListItem);
     }
 
-    // function getListItemDataFromStorage(listId, listItemId)
-    // {
-    //     return findListItemInStorage(listId, listItemId);
-    // }
-
-    //TODO Update this file to use methods similar to Render or Bind in the View
+    //TODO Could update this file to use methods similar to Render or Bind in the View
     return {
         //AccessStorage : accessStorage,
         StoreListData : storeListData,
