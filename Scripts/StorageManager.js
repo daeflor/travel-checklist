@@ -1,7 +1,5 @@
 window.StorageManager = (function () 
 {
-    //function Storage() {}
-
     /** Utility Methods **/
 
     function loadValueFromLocalStorage(name)
@@ -30,7 +28,7 @@ window.StorageManager = (function ()
         }
     }
 
-    /** List-Specific Methods **/
+    /** List-Specific / Private Methods **/
 
     function storeListData(data)
     {
@@ -44,6 +42,28 @@ window.StorageManager = (function ()
 
         return JSON.parse(rawStorageData);
     }
+
+    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
+    function findListInStorage(listId, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            //If the List IDs match, call the passed callback method and end execution of this method
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                callback(parsedStorageData, i);
+                return;
+            }
+        } 
+
+        window.DebugController.LogError('ERROR: Unable to find requested List in Storage');
+    }
+
+    //PUBLIC? :
 
     function getListStorageData()
     {
@@ -63,23 +83,38 @@ window.StorageManager = (function ()
 
     function editListNameInStorage(listId, updatedName)
     {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored list data for one that matches the given ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up he callback method to call when a List matching the given ID is found
+        var updateListName = function(data, index)
         {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //Update the name of the matching list object
-                parsedStorageData.lists[i].name = updatedName;
-                break;
-            }
-        } 
+            //Update the name of the returned list object
+            data.lists[index].name = updatedName;
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+            //Store the updated data object
+            storeListData(data);
+        };
+        
+        findListInStorage(listId, updateListName);
     }
+
+    // function editListNameInStorage(listId, updatedName)
+    // {
+    //     //Get the parsed data from storage
+    //     var parsedStorageData = getParsedDataFromStorage();
+
+    //     //Traverse the stored list data for one that matches the given ID
+    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    //     {
+    //         if (parsedStorageData.lists[i].id == listId)
+    //         {
+    //             //Update the name of the matching list object
+    //             parsedStorageData.lists[i].name = updatedName;
+    //             break;
+    //         }
+    //     } 
+
+    //     //Store the updated storage data object
+    //     storeListData(parsedStorageData);
+    // }
 
     function removeListFromStorage(listId)
     {
@@ -360,25 +395,6 @@ window.StorageManager = (function ()
         //Store the updated storage data object
         storeListData(parsedStorageData);
     }
-
-    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
-    // function findListInStorage(listId)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
-
-    //     //Traverse the stored List data for one that matches the given List ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //If the List IDs match, return the list object 
-    //             return parsedStorageData.lists[i]
-    //         }
-    //     } 
-
-    //     console.log('ERROR: Unable to find requested List in Storage');
-    // }
 
     //TODO This ended up complicating things even more. A simple solution could be to have this return an object with both a ListItem and parsedStorage sub-object, but this seems like an incorrect way of handling this
     // function findListItemInStorage(listId, listItemId, callback)
