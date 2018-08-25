@@ -258,72 +258,42 @@ window.StorageManager = (function ()
 
     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
     {
-    //Get the parsed data from storage
-    var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up the callback method to execute when a List Item matching the given ID is found
+        var editQuantity = function(data, listIndex, listItemIndex)
         {
-            if (parsedStorageData.lists[i].id == listId)
+            var dataModified = false;
+            var quantities = data.lists[listIndex].listItems[listItemIndex].quantities;
+
+            //Increment or decrement the specified List Item's quantity value as applicable
+            if (assignmentType == 'decrement')
             {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
+                if (quantities[quantityType] > 0)
                 {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //TODO Error handling here wouldn't hurt
-
-                        var dataModified = false;
-                        var quantities = parsedStorageData.lists[i].listItems[j].quantities;
-
-                        //Increment or decrement the specified List Item's quantity value as applicable
-
-                        // if (assignmentType == 'set')
-                        // {
-                        //     if (quantities[quantityType] != assignment.value)
-                        //     {
-                        //         quantities[quantityType] = assignment.value;
-                        //         dataModified = true;
-                        //     }                            
-                        // }
-                        // if (assignmentType == 'clear')
-                        // {
-                        //     if (quantities[quantityType] != 0)
-                        //     {
-                        //         quantities[quantityType] = 0;
-                        //         dataModified = true;
-                        //     }                            
-                        // }
-                        if (assignmentType == 'decrement')
-                        {
-                            if (quantities[quantityType] > 0)
-                            {
-                                quantities[quantityType]--;
-                                dataModified = true;
-                            }
-                        }
-                        else if (assignmentType == 'increment')
-                        {
-                            quantities[quantityType]++;
-                            dataModified = true;
-                        }
-                        else 
-                        {
-                            window.DebugController.LogError("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
-                        }
-            
-                        //If the quantity value was actually changed, store the updated data and perform the callback
-                        if (dataModified == true)
-                        {
-                            storeListData(parsedStorageData);
-                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?... I think it's fine if the alternative is an ERROR message
-                        }
-                                                
-                        break;
-                    }
+                    quantities[quantityType]--;
+                    dataModified = true;
                 }
             }
-        } 
+            else if (assignmentType == 'increment')
+            {
+                quantities[quantityType]++;
+                dataModified = true;
+            }
+            else 
+            {
+                window.DebugController.LogError("ERROR: Tried to perform an invalid operation on a quantity value in storage. List Item ID: " + listItemId);
+            }
+
+            //If the quantity value was actually changed, store the updated data object and execute the provided callback method
+            if (dataModified == true)
+            {
+                storeListData(data);
+                callback(quantities); 
+            }
+        };
+        
+        //Search for the List Item in storage and, if it's found, execute the callback method
+        findListItemInStorage(listId, listItemId, editQuantity);
     }
 
     function clearListQuantityColumnInStorage(listId, quantityType, callback)
