@@ -206,6 +206,7 @@ window.StorageManager = (function ()
     function moveListItemUpwardsInStorage(listId, listItemId, callback)
     {
         //TOOD would prefer to make this a more standardized SwapLists method
+            //Instead, could just be part of a ModifyListItem method with commands. Maybe...
 
         //Set up the callback method to execute when a List Item matching the given ID is found
         var moveUpwards = function(data, listIndex, listItemIndex)
@@ -230,80 +231,29 @@ window.StorageManager = (function ()
         findListItemInStorage(listId, listItemId, moveUpwards);
     }
 
-    // function moveListItemUpwardsInStorage(listId, listItemId, callback)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
-
-    //     //Traverse the stored List data for one that matches the given List ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-    //             for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-    //             {
-    //                 if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-    //                 {
-    //                     //If the List Item is not the first in the List...
-    //                     //TODO the button should be greyed out if it can't be used, which means that the controller would already know if this isn't possible...?...
-    //                     if (j > 0)
-    //                     {
-    //                         //Swap the positions of the List Item and the previous List Item
-    //                         var prevListItem = parsedStorageData.lists[i].listItems[j-1];
-    //                         parsedStorageData.lists[i].listItems[j-1] = parsedStorageData.lists[i].listItems[j];
-    //                         parsedStorageData.lists[i].listItems[j] = prevListItem;
-
-    //                         //Store the updated storage data object and call the provided callback method
-    //                         storeListData(parsedStorageData);
-    //                         callback(prevListItem.id);
-    //                     }
-
-    //                     break;
-    //                 }
-    //             } 
-    //         }
-    //     } 
-    // }
-
     function moveListItemDownwardsInStorage(listId, listItemId, callback)
     {
-
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up the callback method to execute when a List Item matching the given ID is found
+        var moveDownwards = function(data, listIndex, listItemIndex)
         {
-            if (parsedStorageData.lists[i].id == listId)
+            //If the List Item is not the last in the List...
+            if (listItemIndex < data.lists[listIndex].listItems.length-1)
             {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        window.DebugController.Print("Received request to swap List Item positions in Storage");
+                //Swap the positions of the List Item matching the given ID, and the next List Item in the array
+                var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
+                data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
+                data.lists[listIndex].listItems[listItemIndex] = nextListItem;
 
-                        //If the List Item is not the last in the List...
-                        if (j < parsedStorageData.lists[i].listItems.length-1)
-                        {
-                            //Swap the positions of the List Item and the next List Item
-                            var nextListItem = parsedStorageData.lists[i].listItems[j+1];
-                            parsedStorageData.lists[i].listItems[j+1] = parsedStorageData.lists[i].listItems[j];
-                            parsedStorageData.lists[i].listItems[j] = nextListItem;
+                //Store the updated data object
+                storeListData(data);
 
-                            window.DebugController.Print("Swapped List Item positions in Storage");
-
-                            //Store the updated storage data object and call the provided callback method
-                            storeListData(parsedStorageData);
-                            callback(nextListItem.id);
-                        }
-
-                        break;
-                    }
-                } 
+                //Execute the provided callback method
+                callback(nextListItem.id);
             }
-        } 
+        };
+        
+        //Search for the List Item in storage and, if it's found, execute the callback method
+        findListItemInStorage(listId, listItemId, moveDownwards);
     }
 
     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
