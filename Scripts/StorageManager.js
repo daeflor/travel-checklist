@@ -62,6 +62,29 @@ window.StorageManager = (function ()
         window.DebugController.LogError('ERROR: Unable to find requested List in Storage');
     }
 
+    function findListItemInStorage(listId, listItemId, callback)
+    {
+        //Set up he callback method to execute when a List matching the given ID is found
+        var findListItem = function(data, listIndex)
+        {
+            //Traverse the List Items array of the returned List Object, searching for one that matches the given List Item ID
+            for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
+            {
+                //If the List Item IDs match, call the passed callback method and end execution of this method
+                if (data.lists[listIndex].listItems[i].id == listItemId)
+                {
+                    callback(data, listIndex, i);
+                    return;
+                }
+            } 
+
+            window.DebugController.LogError('ERROR: Unable to find requested List Item in Storage');
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListInStorage(listId, findListItem);
+    }
+
     //PUBLIC? :
 
     // function accessStorage(command, parameters, callback)
@@ -89,6 +112,8 @@ window.StorageManager = (function ()
 
     //
 
+    /** Access & Modify Lists **/
+
     function getListStorageData()
     {
         return getParsedDataFromStorage().lists;
@@ -105,9 +130,13 @@ window.StorageManager = (function ()
         callback(newList);
     }
 
+    /** Modify List **/
+
+    //TODO Since the methods below all follow the same format (mostly), maybe they could be moved into a ModifyList method with 'command' parameter
+
     function editListNameInStorage(listId, updatedName)
     {
-        //Set up he callback method to execute when a List matching the given ID is found
+        //Set up the callback method to execute when a List matching the given ID is found
         var updateListName = function(data, index)
         {
             //Update the name of the returned List object
@@ -123,7 +152,7 @@ window.StorageManager = (function ()
 
     function removeListFromStorage(listId)
     {
-        //Set up he callback method to execute when a List matching the given ID is found
+        //Set up the callback method to execute when a List matching the given ID is found
         var removeList = function(data, index)
         {
             //Remove the returned List object from the lists array
@@ -139,7 +168,7 @@ window.StorageManager = (function ()
 
     function addListItemToStorage(listId, newListItem, callback)
     {
-        //Set up he callback method to execute when a List matching the given ID is found
+        //Set up the callback method to execute when a List matching the given ID is found
         var addListItem = function(data, index)
         {
             //Add the new List Item to the returned List object
@@ -156,32 +185,22 @@ window.StorageManager = (function ()
         findListInStorage(listId, addListItem);
     }
 
+    /** Modify List Items **/
+
     function editListItemNameInStorage(listId, listItemId, updatedName)
     {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up the callback method to execute when a List matching the given ID is found
+        var updateListItemName = function(data, listIndex, listItemIndex)
         {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //Update the name of the matching ListItem object
-                        parsedStorageData.lists[i].listItems[j].name = updatedName;
-                        break;
-                    }
-                } 
-            }
-        } 
+            //Update the name of the returned List Item object
+            data.lists[listIndex].listItems[listItemIndex].name = updatedName;
 
-        //TODO does it make sense for this to be outside of the for loops?
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+            //Store the updated data object
+            storeListData(data);
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListItemInStorage(listId, listItemId, updateListItemName);
     }
 
     function moveListItemUpwardsInStorage(listId, listItemId, callback)
