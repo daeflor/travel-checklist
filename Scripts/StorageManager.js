@@ -43,7 +43,6 @@ window.StorageManager = (function ()
         return JSON.parse(rawStorageData);
     }
 
-    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
     function findListInStorage(listId, callback)
     {
         //Get the parsed data from storage
@@ -64,6 +63,31 @@ window.StorageManager = (function ()
     }
 
     //PUBLIC? :
+
+    // function accessStorage(command, parameters, callback)
+    // {
+    //     var commands = 
+    //     {
+    //         EditListNameInStorage: function() 
+    //         {
+    //             //Set up he callback method to call when a List matching the given ID is found
+    //             var updateListName = function(data, index)
+    //             {
+    //                 //Update the name of the returned list object
+    //                 data.lists[index].name = parameters.updatedName;
+
+    //                 //Store the updated data object
+    //                 storeListData(data);
+    //             };
+                
+    //             findListInStorage(parameters.listId, updateListName);
+    //         }
+    //     };
+
+    //     commands[command]();
+    // }
+
+    //
 
     function getListStorageData()
     {
@@ -86,55 +110,31 @@ window.StorageManager = (function ()
         //Set up he callback method to call when a List matching the given ID is found
         var updateListName = function(data, index)
         {
-            //Update the name of the returned list object
+            //Update the name of the returned List object
             data.lists[index].name = updatedName;
 
             //Store the updated data object
             storeListData(data);
         };
         
+        //Search for the List in storage and, if it's found, execute the callback method
         findListInStorage(listId, updateListName);
     }
 
-    // function editListNameInStorage(listId, updatedName)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
-
-    //     //Traverse the stored list data for one that matches the given ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //Update the name of the matching list object
-    //             parsedStorageData.lists[i].name = updatedName;
-    //             break;
-    //         }
-    //     } 
-
-    //     //Store the updated storage data object
-    //     storeListData(parsedStorageData);
-    // }
-
-    function removeListFromStorage(listId)
+    function removeListFromStorage(listId, updatedName)
     {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored list data for one that matches the given ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        //Set up he callback method to call when a List matching the given ID is found
+        var removeList = function(data, index)
         {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                window.DebugController.Print("Removing List from Storage. List ID: " + listId);
-                //Remove the matching List object from the lists array
-                parsedStorageData.lists.splice(i, 1);
-                break;
-            }
-        } 
+            //Remove the returned List object from the lists array
+            data.lists.splice(index, 1);
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+            //Store the updated data object
+            storeListData(data);
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListInStorage(listId, removeList);
     }
 
     function addListItemToStorage(listId, newListItem, callback)
@@ -455,6 +455,7 @@ window.StorageManager = (function ()
 
     //TODO Update this file to use methods similar to Render or Bind in the View
     return {
+        //AccessStorage : accessStorage,
         StoreListData : storeListData,
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,

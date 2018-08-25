@@ -146,6 +146,7 @@ window.View = (function()
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
 
+            //TODO maybe could have a util method that finds elements and handles error checking
             var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
 
             if (button != null)
