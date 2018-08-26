@@ -257,16 +257,32 @@ window.ListController = (function()
             //yeah it would be good to make this section smaller and more readable
             //TODO could have a completely separate method like editListItemNameInModelAndView 
 
-        //Add an event listener for when the Text Area to edit the List Item name is modified
-        window.View.Bind(
-            'NameEdited', 
-            function(updatedValue) 
+        var updateName = function(updatedValue) 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var updateView = function()
             {
-                window.Model.EditListItemName(listId, listItem.id, updatedValue);
                 window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
-            },
-            {id:listItem.id}
-        ); 
+            };
+
+            //Update the Model
+            window.Model.EditListItemName(listId, listItem.id, updateView, updatedValue);
+
+        };
+
+        //Add an event listener for when the Text Area to edit the List Item name is modified
+        window.View.Bind('NameEdited', updateName, {id:listItem.id});
+
+        // //Add an event listener for when the Text Area to edit the List Item name is modified
+        // window.View.Bind(
+        //     'NameEdited', 
+        //     function(updatedValue) 
+        //     {
+        //         window.Model.EditListItemName(listId, listItem.id, updatedValue);
+        //         window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
+        //     },
+        //     {id:listItem.id}
+        // ); 
 
         //Add an event listener to the Delete Button to remove the List Item
         window.View.Bind(

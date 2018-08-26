@@ -43,9 +43,10 @@ window.Model = (function()
         window.StorageManager.AddListItemToStorage(listId, newListItem, callback);
     }
 
-    function editListItemName(listId, listItemId, updatedValue)
+    function editListItemName(listId, listItemId, callback, updatedName)
     {
-        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
+        window.StorageManager.ModifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
+        //window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
     }
 
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)

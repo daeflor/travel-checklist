@@ -284,21 +284,42 @@ window.StorageManager = (function ()
 
     /** Modify List Items **/
 
-    function editListItemNameInStorage(listId, listItemId, updatedName)
+    function modifyListItem(command, listId, listItemId, callback, parameters)
     {
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        var updateListItemName = function(data, listIndex, listItemIndex)
+        var commands = 
         {
-            //Update the name of the returned List Item object
-            data.lists[listIndex].listItems[listItemIndex].name = updatedName;
+            EditName: function(data, listIndex, listItemIndex)
+            {
+                //Update the name of the returned List Item object
+                data.lists[listIndex].listItems[listItemIndex].name = parameters.updatedName;
 
-            //Store the updated data object
-            storeListData(data);
+                //Store the updated data object
+                storeListData(data);
+
+                //Execute the provided callback method
+                callback();
+            }
         };
-        
-        //Search for the List Item in storage and, if it's found, execute the callback method
-        findListItemInStorage(listId, listItemId, updateListItemName);
+
+        //Search for the List Item in storage and, if it's found, execute the method matching the given command
+        findListItemInStorage(listId, listItemId, commands[command]);
     }
+
+    // function editListItemNameInStorage(listId, listItemId, updatedName)
+    // {
+    //     //Set up the callback method to execute when a List Item matching the given ID is found
+    //     var updateListItemName = function(data, listIndex, listItemIndex)
+    //     {
+    //         //Update the name of the returned List Item object
+    //         data.lists[listIndex].listItems[listItemIndex].name = updatedName;
+
+    //         //Store the updated data object
+    //         storeListData(data);
+    //     };
+        
+    //     //Search for the List Item in storage and, if it's found, execute the callback method
+    //     findListItemInStorage(listId, listItemId, updateListItemName);
+    // }
 
     function moveListItemUpwardsInStorage(listId, listItemId, callback)
     {
@@ -401,7 +422,8 @@ window.StorageManager = (function ()
         EditListNameInStorage : editListNameInStorage,
         RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
-        EditListItemNameInStorage : editListItemNameInStorage,
+        ModifyListItem : modifyListItem,
+        //EditListItemNameInStorage : editListItemNameInStorage,
         MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
         MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
