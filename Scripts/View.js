@@ -328,6 +328,8 @@ window.View = (function()
 
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
 
+                    //TODO Should the things below be done in a separate method?
+
                     //If the new List Item is the first one in the List, set both reorder buttons to be gray
                     if (lastListItemElement == null)
                     {

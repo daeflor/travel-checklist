@@ -85,43 +85,34 @@ window.StorageManager = (function ()
         findListInStorage(listId, findListItem);
     }
 
-    function modifyQuantityValue(quantities, quantityType, assignmentType, callback)
+    function modifyListItemQuantityValue(listItem, quantityType, assignmentType, callback)
     {
-        //Initialize an array to keep track of any List Items that will have a quantity value be modified
-        //var modifiedListItems = [];
-
-        //Increment or decrement the specified List Item's quantity value as applicable
+        //Increment, decrement, or clear the specified List Item's quantity value as applicable
+        //TODO could use more comments in this method
         if (assignmentType == 'clear')
         {
-            if (quantities[quantityType] != 0)
+            if (listItem.quantities[quantityType] != 0)
             {
-                quantities[quantityType] = 0;
+                listItem.quantities[quantityType] = 0;
                 
-                callback();
-                
-                //dataModified = true;
-                
-                //Add the List Item to the array of modified List Items
-                //modifiedListItems.push(data.lists[listIndex].listItems[i]);
+                callback(listItem);
             }                            
         }
         else if (assignmentType == 'decrement')
         {
             //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
-            if (quantities[quantityType] > 0)
+            if (listItem.quantities[quantityType] > 0)
             {
-                quantities[quantityType]--;
+                listItem.quantities[quantityType]--;
 
-                callback();
-                //dataModified = true;
+                callback(listItem);
             }
         }
         else if (assignmentType == 'increment')
         {
-            quantities[quantityType]++;
+            listItem.quantities[quantityType]++;
 
-            callback();
-            //dataModified = true;
+            callback(listItem);
         }
         else 
         {
@@ -230,70 +221,28 @@ window.StorageManager = (function ()
         findListInStorage(listId, addListItem);
     }
 
-    // function clearListQuantityColumnInStorage(listId, quantityType, callback)
-    // {
-    //     //Set up the callback method to execute when a List matching the given ID is found
-    //     var clearQuantityColumn = function(data, listIndex)
-    //     {
-    //         //Initialize an array to keep track of any List Items that will have a quantity value be modified
-    //         var modifiedListItems = [];
-
-    //         //Traverse the List Items array of the returned List Object
-    //         for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
-    //         {      
-    //             modifyQuantityValue(data.lists[listIndex].listItems[i].quantities, quantityType, 'clear', storeModifiedQuantity);
-    //         }
-            
-
-
-    //         //var quantities = data.lists[listIndex].listItems[listItemIndex].quantities;
-
-    //         var storeModifiedQuantity = function()
-    //         {
-    //             modifiedListItems.push...? need list item 
-    //         };
-            
-    //         //If any quantity value was actually changed...
-    //         if (modifiedListItems.length > 0)
-    //         {
-    //             //Store the updated data object
-    //             storeListData(data);
-
-    //             //Execute the provided callback method
-    //             callback(modifiedListItems);
-    //         }
-
-    //     };
-
-    //     //Search for the List in storage and, if it's found, execute the callback method
-    //     findListInStorage(listId, clearQuantityColumn);
-    // }
-
     function clearListQuantityColumnInStorage(listId, quantityType, callback)
     {
         //Set up the callback method to execute when a List matching the given ID is found
         var clearQuantityColumn = function(data, listIndex)
         {
-            //TODO would it make any sense to use editListItemQuantityInStorage for this? Probably not because it would be a lot of extra unnecessary writes to storage
-                //TODO...BUT, what might make more sense is having an abstracted helper/util method for just the part about performing the operation on the quantity value and tracking whether or not the value was changed, but not including actually retrieving or storing data
-
             //Initialize an array to keep track of any List Items that will have a quantity value be modified
             var modifiedListItems = [];
 
+            //TODO it should be possible to do this without passing the List Item as a param in this callback
+            //Set up the callback method to execute when a List Item's quantity value has been modified
+            var storeModifiedQuantityValue = function(listItem)
+            {
+                modifiedListItems.push(listItem);
+            };
+
             //Traverse the List Items array of the returned List Object
             for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
-            {      
-                //If the List Item's quantity value for the given quantity type is not already zero...            
-                if (data.lists[listIndex].listItems[i].quantities[quantityType] != 0)
-                {
-                    //Set the List Item's quantity value for the given quantity type to zero
-                    data.lists[listIndex].listItems[i].quantities[quantityType] = 0;
-
-                    //Add the List Item to the array of modified List Items
-                    modifiedListItems.push(data.lists[listIndex].listItems[i]);
-                }  
+            {   
+                //Clear the List Item's quantity value (i.e. set it to zero)   
+                modifyListItemQuantityValue(data.lists[listIndex].listItems[i], quantityType, 'clear', storeModifiedQuantityValue);
             }
-
+                        
             //If any quantity value was actually changed...
             if (modifiedListItems.length > 0)
             {
@@ -304,7 +253,7 @@ window.StorageManager = (function ()
                 callback(modifiedListItems);
             }
         };
-        
+
         //Search for the List in storage and, if it's found, execute the callback method
         findListInStorage(listId, clearQuantityColumn);
     }
@@ -385,66 +334,23 @@ window.StorageManager = (function ()
         //Set up the callback method to execute when a List Item matching the given ID is found
         var editQuantity = function(data, listIndex, listItemIndex)
         {
-            var quantities = data.lists[listIndex].listItems[listItemIndex].quantities;
-
-            var storeModifiedQuantity = function()
+            //Set up the callback method to execute when the List Item quantity has been modified
+            var storeModifiedQuantity = function(listItem)
             {
                 //Store the updated data object
                 storeListData(data);
 
                 //Execute the provided callback method
-                callback(quantities);
+                callback(listItem);
             };
 
-            modifyQuantityValue(quantities, quantityType, assignmentType, storeModifiedQuantity);
+            //Update the List Item's quantity value for the given quantity type
+            modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], quantityType, assignmentType, storeModifiedQuantity);
         };
         
         //Search for the List Item in storage and, if it's found, execute the callback method
         findListItemInStorage(listId, listItemId, editQuantity);
     }
-
-    // function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
-    // {
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var editQuantity = function(data, listIndex, listItemIndex)
-    //     {
-    //         var dataModified = false;
-    //         var quantities = data.lists[listIndex].listItems[listItemIndex].quantities;
-
-    //         //Increment or decrement the specified List Item's quantity value as applicable
-    //         if (assignmentType == 'decrement')
-    //         {
-    //             //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
-    //             if (quantities[quantityType] > 0)
-    //             {
-    //                 quantities[quantityType]--;
-    //                 dataModified = true;
-    //             }
-    //         }
-    //         else if (assignmentType == 'increment')
-    //         {
-    //             quantities[quantityType]++;
-    //             dataModified = true;
-    //         }
-    //         else 
-    //         {
-    //             window.DebugController.LogError("ERROR: Tried to perform an invalid operation on a quantity value in storage. List Item ID: " + listItemId);
-    //         }
-
-    //         //If the quantity value was actually changed...
-    //         if (dataModified == true)
-    //         {
-    //             //Store the updated data object
-    //             storeListData(data);
-
-    //             //Execute the provided callback method
-    //             callback(quantities);
-    //         }
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, editQuantity);
-    // }
 
     function removeListItemFromStorage(listId, listItemId)
     {

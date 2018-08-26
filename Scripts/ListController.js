@@ -34,7 +34,8 @@ window.ListController = (function()
 
                 for (var j = 0; j < lists[i].listItems.length; j++) 
                 {
-                    addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
+                    addListItemToView(lists[i].id, lists[i].listItems[j])
+                    //addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
                 }
             }
         });
@@ -58,10 +59,10 @@ window.ListController = (function()
                             for (var i = 0; i < modifiedListItems.length; i++)
                             {
                                 //Update the List Item's quantity value for the given type
-                                updateListItemQuantityText(modifiedListItems[i].id, quantityType, modifiedListItems[i].quantities);
+                                updateListItemQuantityText(modifiedListItems[i], quantityType);
                                 
                                 //Update the List Item name's color
-                                updateListItemNameColor(modifiedListItems[i].id, modifiedListItems[i].quantities);
+                                updateListItemNameColor(modifiedListItems[i]);
                             }
                         });
                     }
@@ -165,7 +166,8 @@ window.ListController = (function()
             listId,
             function(newListItem) 
             {
-                addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
+                addListItemToView(listId, newListItem);
+                //addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
                 
                 //After the List Item is added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:newListItem.id});
@@ -174,25 +176,28 @@ window.ListController = (function()
         );
     }
 
-    //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... I don't think so...
-    function addListItemToView(listId, listItemId, listItemName, quantities)
+    function addListItemToView(listId, listItem)
+    //function addListItemToView(listId, listItemId, listItemName, quantities)
     {
         //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
 
+        //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... Unsure...
         window.View.Render(
             'AddListItem', 
             { 
-                listItemId: listItemId, 
-                listItemName: listItemName,
-                quantityValues: quantities,
+                listItemId: listItem.id, 
+                listItemName: listItem.name,
+                quantityValues: listItem.quantities,
                 listId: listId, 
             }
         );
 
-        updateListItemNameColor(listItemId, quantities);
+        //TODO The above could probably be separated from all the below. (and then go back to passing ListItemId as a parameter?)
+
+        updateListItemNameColor(listItem);
 
         //Bind user interaction with the quantity toggles to corresponding behavior
-        for (var key in quantities)
+        for (var key in listItem.quantities)
         {
             (function(lockedKey) //TODO is there a simpler way to do this?
             {
@@ -202,7 +207,7 @@ window.ListController = (function()
                         window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 
                         event.stopPropagation();
-                        window.View.Render('ShowQuantityPopover', {listItemId:listItemId, quantityType:lockedKey});   
+                        window.View.Render('ShowQuantityPopover', {listItemId:listItem.id, quantityType:lockedKey});   
                         quantityPopoverActive = true;
                     }
                 };
@@ -211,29 +216,29 @@ window.ListController = (function()
                     window.DebugController.Print("A Quantity Popover was shown.");
 
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});   
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});   
                     window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
                     window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
                 };
     
                 var _decrementListItemQuantityValue = function() {   
-                    updateListItemQuantityValue(listId, listItemId, lockedKey, 'decrement');
+                    updateListItemQuantityValue(listId, listItem.id, lockedKey, 'decrement');
                 };
     
                 var _incrementListItemQuantityValue = function() {
-                    updateListItemQuantityValue(listId, listItemId, lockedKey, 'increment');
+                    updateListItemQuantityValue(listId, listItem.id, lockedKey, 'increment');
                 };
                 
                 var _hideQuantityPopover = function() {
                     window.DebugController.Print("A Quantity Popover will be hidden.");
 
-                    window.View.Render('HideQuantityPopover', {listItemId:listItemId, quantityType:lockedKey} );
+                    window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:lockedKey} );
                     quantityPopoverActive = false;
                 };
     
-                window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItemId, quantityType:lockedKey});
+                window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});
     
-                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItemId, quantityType:lockedKey});    
+                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItem.id, quantityType:lockedKey});    
             })(key);
         }
 
@@ -245,7 +250,7 @@ window.ListController = (function()
             {
                 window.View.Render('HideActiveSettingsView'); 
             },
-            {id:listItemId}
+            {id:listItem.id}
         );
 
         //TODO might be nice to move the anonymous functions within the bindings above and below into named functions that are just reference by the bind, for potentially better readability
@@ -257,10 +262,10 @@ window.ListController = (function()
             'NameEdited', 
             function(updatedValue) 
             {
-                window.Model.EditListItemName(listId, listItemId, updatedValue);
-                window.View.Render('UpdateName', {id:listItemId, updatedValue:updatedValue}); 
+                window.Model.EditListItemName(listId, listItem.id, updatedValue);
+                window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
             },
-            {id:listItemId}
+            {id:listItem.id}
         ); 
 
         //Add an event listener to the Delete Button to remove the List Item
@@ -268,9 +273,9 @@ window.ListController = (function()
             'DeleteButtonPressed', 
             function() 
             {
-                removeListItem(listId, listItemId);
+                removeListItem(listId, listItem.id);
             }, 
-            {id:listItemId}
+            {id:listItem.id}
         );
 
         //TODO would rather move the two calls below into one method that takes a direction (up or down)
@@ -280,11 +285,11 @@ window.ListController = (function()
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListItemUpwards(listId, listItemId, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:listItemId, moveDownwardsId:swapId});
+                window.Model.MoveListItemUpwards(listId, listItem.id, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swapId});
                 });
             }, 
-            {id:listItemId}
+            {id:listItem.id}
         );
 
         //Add an event listener to the Move Downwards Button to move the List Item downwards by one position in the List
@@ -294,11 +299,11 @@ window.ListController = (function()
             {
                 window.DebugController.Print("Button pressed to swap List Item positions");
 
-                window.Model.MoveListItemDownwards(listId, listItemId, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItemId});
+                window.Model.MoveListItemDownwards(listId, listItem.id, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItem.id});
                 });
             }, 
-            {id:listItemId}
+            {id:listItem.id}
         );
     }
 
@@ -306,29 +311,29 @@ window.ListController = (function()
 
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
     {
-        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedQuantities) {
-            updateListItemQuantityText(listItemId, quantityType, updatedQuantities);
-            updateListItemNameColor(listItemId, updatedQuantities);
+        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedListItem) {
+            updateListItemQuantityText(updatedListItem, quantityType);
+            updateListItemNameColor(updatedListItem);
         });
     }
 
     //TODO would it be better if View commands always received consistent paramters (e.g. a list object)
 
-    function updateListItemQuantityText(listItemId, quantityType, updatedQuantities)
+    function updateListItemQuantityText(listItem, quantityType)
     {
         window.View.Render('updateListItemQuantityText', {
-            listItemId:listItemId, 
+            listItemId:listItem.id, 
             quantityType:quantityType, 
-            updatedValue:updatedQuantities[quantityType]
+            updatedValue:listItem.quantities[quantityType]
         });
     }
 
-    function updateListItemNameColor(listItemId, updatedQuantities)
+    function updateListItemNameColor(listItem)
     {
         window.View.Render('updateListItemNameColor', {
-            listItemId:listItemId, 
-            quantityNeeded:updatedQuantities.needed, 
-            quantityBalance:(updatedQuantities.needed - updatedQuantities.luggage - updatedQuantities.wearing - updatedQuantities.backpack)
+            listItemId:listItem.id, 
+            quantityNeeded:listItem.quantities.needed, 
+            quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)
         });
     }
 
