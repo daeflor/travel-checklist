@@ -250,6 +250,7 @@ window.ListController = (function()
 
         //TODO might be nice to move the anonymous functions within the bindings above and below into named functions that are just reference by the bind, for potentially better readability
             //yeah it would be good to make this section smaller and more readable
+            //TODO could have a completely separate method like editListItemNameInModelAndView 
 
         //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind(
