@@ -56,16 +56,16 @@ window.Model = (function()
 
     function moveListItemUpwards(listId, listItemId, callback)
     {
-        //TODO don't like this name much
-        window.StorageManager.MoveListItemUpwardsInStorage(listId, listItemId, callback);
+        window.StorageManager.ModifyListItem('MoveUpwards', listId, listItemId, callback);
+        // //TODO don't like this name much
+        // window.StorageManager.MoveListItemUpwardsInStorage(listId, listItemId, callback);
     }
 
     //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
     function moveListItemDownwards(listId, listItemId, callback)
     {
-        window.DebugController.Print("Request received to swap List Item positions in Model");
-
-        window.StorageManager.MoveListItemDownwardsInStorage(listId, listItemId, callback);
+        window.StorageManager.ModifyListItem('MoveDownwards', listId, listItemId, callback);
+        //window.StorageManager.MoveListItemDownwardsInStorage(listId, listItemId, callback);
     }
 
     function clearListQuantityColumn(listId, quantityType, callback)

@@ -286,9 +286,11 @@ window.StorageManager = (function ()
 
     function modifyListItem(command, listId, listItemId, callback, parameters)
     {
+        //var returnArg = null;
+       
         var commands = 
         {
-            EditName: function(data, listIndex, listItemIndex)
+            EditName : function(data, listIndex, listItemIndex)
             {
                 //Update the name of the returned List Item object
                 data.lists[listIndex].listItems[listItemIndex].name = parameters.updatedName;
@@ -298,8 +300,55 @@ window.StorageManager = (function ()
 
                 //Execute the provided callback method
                 callback();
-            }
+            },
+            MoveUpwards : function(data, listIndex, listItemIndex)
+            {
+                //If the List Item is not the first in the List...
+                if (listItemIndex > 0)
+                {
+                    //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
+                    var prevListItem = data.lists[listIndex].listItems[listItemIndex-1];
+                    data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
+                    data.lists[listIndex].listItems[listItemIndex] = prevListItem;
+
+                    //Store the updated data object
+                    storeListData(data);
+
+                    //Execute the provided callback method, passing the ID of the swapped List Item as an argument
+                    callback(prevListItem.id);
+                }
+            },
+            MoveDownwards : function(data, listIndex, listItemIndex)
+            {
+                //If the List Item is not the last in the List...
+                if (listItemIndex < data.lists[listIndex].listItems.length-1)
+                {
+                    //Swap the positions of the List Item matching the given ID, and the next List Item in the array
+                    var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
+                    data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
+                    data.lists[listIndex].listItems[listItemIndex] = nextListItem;
+
+                    //Store the updated data object
+                    storeListData(data);
+
+                    //Execute the provided callback method, passing the ID of the swapped List Item as an argument
+                    callback(nextListItem.id);
+                }
+            },
         };
+
+        //??
+        // var runCommand = function()
+        // {
+        //     //Execute the method matching the given command
+        //     commands[command]();
+
+        //     //Store the updated data object
+        //     storeListData(data);
+
+        //     //Execute the provided callback method, passing the ARGS
+        //     callback(xxx);
+        // }
 
         //Search for the List Item in storage and, if it's found, execute the method matching the given command
         findListItemInStorage(listId, listItemId, commands[command]);
@@ -321,58 +370,58 @@ window.StorageManager = (function ()
     //     findListItemInStorage(listId, listItemId, updateListItemName);
     // }
 
-    function moveListItemUpwardsInStorage(listId, listItemId, callback)
-    {
-        //TOOD would prefer to make this a more standardized SwapLists method
-            //Instead, could just be part of a ModifyListItem method with commands. Maybe...
+    // function moveListItemUpwardsInStorage(listId, listItemId, callback)
+    // {
+    //     //TOOD would prefer to make this a more standardized SwapLists method
+    //         //Instead, could just be part of a ModifyListItem method with commands. Maybe...
 
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        var moveUpwards = function(data, listIndex, listItemIndex)
-        {
-            //If the List Item is not the first in the List...
-            if (listItemIndex > 0)
-            {
-                //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
-                var prevListItem = data.lists[listIndex].listItems[listItemIndex-1];
-                data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
-                data.lists[listIndex].listItems[listItemIndex] = prevListItem;
+    //     //Set up the callback method to execute when a List Item matching the given ID is found
+    //     var moveUpwards = function(data, listIndex, listItemIndex)
+    //     {
+    //         //If the List Item is not the first in the List...
+    //         if (listItemIndex > 0)
+    //         {
+    //             //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
+    //             var prevListItem = data.lists[listIndex].listItems[listItemIndex-1];
+    //             data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
+    //             data.lists[listIndex].listItems[listItemIndex] = prevListItem;
 
-                //Store the updated data object
-                storeListData(data);
+    //             //Store the updated data object
+    //             storeListData(data);
 
-                //Execute the provided callback method
-                callback(prevListItem.id);
-            }
-        };
+    //             //Execute the provided callback method
+    //             callback(prevListItem.id);
+    //         }
+    //     };
         
-        //Search for the List Item in storage and, if it's found, execute the callback method
-        findListItemInStorage(listId, listItemId, moveUpwards);
-    }
+    //     //Search for the List Item in storage and, if it's found, execute the callback method
+    //     findListItemInStorage(listId, listItemId, moveUpwards);
+    // }
 
-    function moveListItemDownwardsInStorage(listId, listItemId, callback)
-    {
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        var moveDownwards = function(data, listIndex, listItemIndex)
-        {
-            //If the List Item is not the last in the List...
-            if (listItemIndex < data.lists[listIndex].listItems.length-1)
-            {
-                //Swap the positions of the List Item matching the given ID, and the next List Item in the array
-                var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
-                data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
-                data.lists[listIndex].listItems[listItemIndex] = nextListItem;
+    // function moveListItemDownwardsInStorage(listId, listItemId, callback)
+    // {
+    //     //Set up the callback method to execute when a List Item matching the given ID is found
+    //     var moveDownwards = function(data, listIndex, listItemIndex)
+    //     {
+    //         //If the List Item is not the last in the List...
+    //         if (listItemIndex < data.lists[listIndex].listItems.length-1)
+    //         {
+    //             //Swap the positions of the List Item matching the given ID, and the next List Item in the array
+    //             var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
+    //             data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
+    //             data.lists[listIndex].listItems[listItemIndex] = nextListItem;
 
-                //Store the updated data object
-                storeListData(data);
+    //             //Store the updated data object
+    //             storeListData(data);
 
-                //Execute the provided callback method
-                callback(nextListItem.id);
-            }
-        };
+    //             //Execute the provided callback method
+    //             callback(nextListItem.id);
+    //         }
+    //     };
         
-        //Search for the List Item in storage and, if it's found, execute the callback method
-        findListItemInStorage(listId, listItemId, moveDownwards);
-    }
+    //     //Search for the List Item in storage and, if it's found, execute the callback method
+    //     findListItemInStorage(listId, listItemId, moveDownwards);
+    // }
 
     function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
     {
@@ -423,9 +472,9 @@ window.StorageManager = (function ()
         RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
         ModifyListItem : modifyListItem,
-        //EditListItemNameInStorage : editListItemNameInStorage,
-        MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
-        MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
+        // EditListItemNameInStorage : editListItemNameInStorage,
+        // MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
+        // MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
         EditListItemQuantityInStorage : editListItemQuantityInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         RemoveListItemFromStorage : removeListItemFromStorage
