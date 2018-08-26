@@ -88,31 +88,38 @@ window.StorageManager = (function ()
     function modifyListItemQuantityValue(listItem, quantityType, assignmentType, callback)
     {
         //Increment, decrement, or clear the specified List Item's quantity value as applicable
-        //TODO could use more comments in this method
         if (assignmentType == 'clear')
         {
+            //If the quantity value is not already set to zero...
             if (listItem.quantities[quantityType] != 0)
             {
+                //Set the quantity value to zero
                 listItem.quantities[quantityType] = 0;
                 
-                callback(listItem);
+                //Execute the provided callback method
+                callback();
             }                            
         }
         else if (assignmentType == 'decrement')
         {
             //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
+            //If the quantity value is greater than zero...
             if (listItem.quantities[quantityType] > 0)
             {
+                //Decrement the quantity value by one
                 listItem.quantities[quantityType]--;
 
-                callback(listItem);
+                //Execute the provided callback method
+                callback();
             }
         }
         else if (assignmentType == 'increment')
         {
+            //Increment the quantity value by one
             listItem.quantities[quantityType]++;
 
-            callback(listItem);
+            //Execute the provided callback method
+            callback();
         }
         else 
         {
@@ -231,14 +238,31 @@ window.StorageManager = (function ()
 
             //TODO it should be possible to do this without passing the List Item as a param in this callback
             //Set up the callback method to execute when a List Item's quantity value has been modified
-            var storeModifiedQuantityValue = function(listItem)
-            {
-                modifiedListItems.push(listItem);
-            };
+            // var storeModifiedQuantityValue = function(listItem)
+            // {
+            //     modifiedListItems.push(listItem);
+            // };
+
+            // //Traverse the List Items array of the returned List Object
+            // for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
+            // {   
+            //     //Clear the List Item's quantity value (i.e. set it to zero)   
+            //     modifyListItemQuantityValue(data.lists[listIndex].listItems[i], quantityType, 'clear', storeModifiedQuantityValue);
+            // }
+
+            //Initialize a variable that will be used to store the callback method which will execute when a List Item's quantity value has been modified
+            var storeModifiedQuantityValue;
 
             //Traverse the List Items array of the returned List Object
             for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
             {   
+                //Set up the callback method to execute when a List Item's quantity value has been modified
+                storeModifiedQuantityValue = function()
+                {
+                    //Add the updated List Item object to the array of modified List Items
+                    modifiedListItems.push(data.lists[listIndex].listItems[i]);
+                };
+                
                 //Clear the List Item's quantity value (i.e. set it to zero)   
                 modifyListItemQuantityValue(data.lists[listIndex].listItems[i], quantityType, 'clear', storeModifiedQuantityValue);
             }
@@ -335,13 +359,13 @@ window.StorageManager = (function ()
         var editQuantity = function(data, listIndex, listItemIndex)
         {
             //Set up the callback method to execute when the List Item quantity has been modified
-            var storeModifiedQuantity = function(listItem)
+            var storeModifiedQuantity = function()
             {
                 //Store the updated data object
                 storeListData(data);
 
                 //Execute the provided callback method
-                callback(listItem);
+                callback(data.lists[listIndex].listItems[listItemIndex]);
             };
 
             //Update the List Item's quantity value for the given quantity type
