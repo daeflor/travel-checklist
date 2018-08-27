@@ -22,6 +22,11 @@ window.Model = (function()
         window.StorageManager.EditListNameInStorage(listId, updatedValue);
     }
 
+    function clearListQuantityColumn(listId, quantityType, callback)
+    {
+        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
+    }
+
     function removeList(listId)
     {
         window.StorageManager.RemoveListFromStorage(listId);
@@ -49,11 +54,6 @@ window.Model = (function()
         //window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
     }
 
-    function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
-    {
-        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
-    }
-
     function moveListItemUpwards(listId, listItemId, callback)
     {
         window.StorageManager.ModifyListItem('MoveUpwards', listId, listItemId, callback);
@@ -68,9 +68,10 @@ window.Model = (function()
         //window.StorageManager.MoveListItemDownwardsInStorage(listId, listItemId, callback);
     }
 
-    function clearListQuantityColumn(listId, quantityType, callback)
+    function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
-        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
+        window.StorageManager.ModifyListItem('EditQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        //window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
     function removeListItem(listId, listItemId)

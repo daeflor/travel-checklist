@@ -335,19 +335,43 @@ window.StorageManager = (function ()
                     callback(nextListItem.id);
                 }
             },
+            EditQuantityValue : function(data, listIndex, listItemIndex)
+            {
+                //Set up the callback method to execute when the List Item quantity has been modified
+                var storeModifiedQuantity = function()
+                {
+                    //Store the updated data object
+                    storeListData(data);
+
+                    //Execute the provided callback method
+                    callback(data.lists[listIndex].listItems[listItemIndex]);
+                };
+
+                //Update the List Item's quantity value for the given quantity type
+                modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, storeModifiedQuantity);
+            }
         };
 
         //??
-        // var runCommand = function()
+        // var runCommand = function(data, listIndex, listItemIndex)
         // {
         //     //Execute the method matching the given command
-        //     commands[command]();
+        //     commands[command](data, listIndex, listItemIndex, onCommandSuccess);
 
-        //     //Store the updated data object
-        //     storeListData(data);
+                        // //Store the updated data object
+                        // storeListData(data);
 
-        //     //Execute the provided callback method, passing the ARGS
-        //     callback(xxx);
+                        // //Execute the provided callback method, passing the ARGS
+                        // callback(xxx);
+
+            //    var onCommandSuccess = function(ARGS)
+            //    {       
+            //         //Store the updated data object
+            //         //storeListData(data);
+
+            //         //Execute the provided callback method, passing the ARGS
+            //         //callback(ARGS);
+            //    };
         // }
 
         //Search for the List Item in storage and, if it's found, execute the method matching the given command
@@ -423,28 +447,28 @@ window.StorageManager = (function ()
     //     findListItemInStorage(listId, listItemId, moveDownwards);
     // }
 
-    function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
-    {
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        var editQuantity = function(data, listIndex, listItemIndex)
-        {
-            //Set up the callback method to execute when the List Item quantity has been modified
-            var storeModifiedQuantity = function()
-            {
-                //Store the updated data object
-                storeListData(data);
+    // function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
+    // {
+    //     //Set up the callback method to execute when a List Item matching the given ID is found
+    //     var editQuantity = function(data, listIndex, listItemIndex)
+    //     {
+    //         //Set up the callback method to execute when the List Item quantity has been modified
+    //         var storeModifiedQuantity = function()
+    //         {
+    //             //Store the updated data object
+    //             storeListData(data);
 
-                //Execute the provided callback method
-                callback(data.lists[listIndex].listItems[listItemIndex]);
-            };
+    //             //Execute the provided callback method
+    //             callback(data.lists[listIndex].listItems[listItemIndex]);
+    //         };
 
-            //Update the List Item's quantity value for the given quantity type
-            modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], quantityType, assignmentType, storeModifiedQuantity);
-        };
+    //         //Update the List Item's quantity value for the given quantity type
+    //         modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], quantityType, assignmentType, storeModifiedQuantity);
+    //     };
         
-        //Search for the List Item in storage and, if it's found, execute the callback method
-        findListItemInStorage(listId, listItemId, editQuantity);
-    }
+    //     //Search for the List Item in storage and, if it's found, execute the callback method
+    //     findListItemInStorage(listId, listItemId, editQuantity);
+    // }
 
     function removeListItemFromStorage(listId, listItemId)
     {
@@ -475,7 +499,7 @@ window.StorageManager = (function ()
         // EditListItemNameInStorage : editListItemNameInStorage,
         // MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
         // MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
-        EditListItemQuantityInStorage : editListItemQuantityInStorage,
+        // EditListItemQuantityInStorage : editListItemQuantityInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         RemoveListItemFromStorage : removeListItemFromStorage
     };
