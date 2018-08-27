@@ -129,31 +129,6 @@ window.StorageManager = (function ()
 
     //PUBLIC? :
 
-    // function accessStorage(command, parameters, callback)
-    // {
-    //     var commands = 
-    //     {
-    //         EditListNameInStorage: function() 
-    //         {
-    //             //Set up he callback method to call when a List matching the given ID is found
-    //             var updateListName = function(data, index)
-    //             {
-    //                 //Update the name of the returned list object
-    //                 data.lists[index].name = parameters.updatedName;
-
-    //                 //Store the updated data object
-    //                 storeListData(data);
-    //             };
-                
-    //             findListInStorage(parameters.listId, updateListName);
-    //         }
-    //     };
-
-    //     commands[command]();
-    // }
-
-    //
-
     /** Access & Modify Lists **/
 
     function getListStorageData()
@@ -174,40 +149,51 @@ window.StorageManager = (function ()
 
     /** Modify List **/
 
+    function modifyList(command, listId, callback, parameters)
+    {       
+        var commands = 
+        {
+            EditName : function(data, listIndex, commandSucceededCallback)
+            {
+                //Update the name of the returned List object
+                data.lists[listIndex].name = parameters.updatedName;
+
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            },
+            Remove : function(data, listIndex, commandSucceededCallback)
+            {
+                //Remove the returned List object from the lists array
+                data.lists.splice(listIndex, 1);
+
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            }
+        };
+
+        //Set up the callback method to execute when a List matching the given ID is found
+        var runCommand = function(data, listIndex)
+        {
+            //Set up the callback method to execute once the given command has been executed successfully 
+            var commandSucceededCallback = function(args)
+            {       
+                //Store the updated data object
+                storeListData(data);
+
+                //Execute the provided callback method, passing the returned arguments if not null
+                args != null ? callback(args) : callback();
+            };
+
+            //Execute the method matching the given command
+            commands[command](data, listIndex, commandSucceededCallback);
+        }
+
+        //Search for the List in storage and, if it's found, execute the method matching the given command
+        findListInStorage(listId, runCommand);
+    }
+
     //TODO Since the methods below all follow the same format (mostly), maybe they could be moved into a ModifyList method with 'command' parameter
         //Most likely all methods here should take a callback, and that should help standardize them even further
-
-    function editListNameInStorage(listId, updatedName)
-    {
-        //Set up the callback method to execute when a List matching the given ID is found
-        var updateListName = function(data, index)
-        {
-            //Update the name of the returned List object
-            data.lists[index].name = updatedName;
-
-            //Store the updated data object
-            storeListData(data);
-        };
-        
-        //Search for the List in storage and, if it's found, execute the callback method
-        findListInStorage(listId, updateListName);
-    }
-
-    function removeListFromStorage(listId)
-    {
-        //Set up the callback method to execute when a List matching the given ID is found
-        var removeList = function(data, index)
-        {
-            //Remove the returned List object from the lists array
-            data.lists.splice(index, 1);
-
-            //Store the updated data object
-            storeListData(data);
-        };
-        
-        //Search for the List in storage and, if it's found, execute the callback method
-        findListInStorage(listId, removeList);
-    }
 
     function addListItemToStorage(listId, newListItem, callback)
     {
@@ -366,9 +352,10 @@ window.StorageManager = (function ()
         StoreListData : storeListData,
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
-        EditListNameInStorage : editListNameInStorage,
+        ModifyList : modifyList,
+        // EditListNameInStorage : editListNameInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
-        RemoveListFromStorage : removeListFromStorage,
+        // RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
         ModifyListItem : modifyListItem
     };

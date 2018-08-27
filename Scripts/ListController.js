@@ -106,30 +106,62 @@ window.ListController = (function()
             },
             {id:data.id}
         );
-    
-        //When the Text Area to edit a list name gets modified, update the text in the List name toggle
-        window.View.Bind(
-            'NameEdited', 
-            function(updatedValue) 
-            {
-                window.Model.EditListName(data.id, updatedValue);
-                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
-            },
-            {id:data.id}
-        );
-    
-        //Add an event listener to the Delete Button to remove the List Item
-        window.View.Bind(
-            'DeleteButtonPressed', 
-            function() 
-            {
-                //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
 
-                window.Model.RemoveList(data.id);
-                window.View.Render('removeList', {listId:data.id});
-            }, 
-            {id:data.id}
-        );
+        //TODO can this be merged with the corresponding method for List Item?
+        var updateName = function(updatedValue) 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var updateView = function()
+            {
+                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
+            };
+
+            //Update the Model
+            window.Model.EditListName(data.id, updateView, updatedValue);
+        };
+
+        //Add an event listener for when the Text Area to edit the List Item name is modified
+        window.View.Bind('NameEdited', updateName, {id:data.id});
+
+        // //When the Text Area to edit a list name gets modified, update the text in the List name toggle
+        // window.View.Bind(
+        //     'NameEdited', 
+        //     function(updatedValue) 
+        //     {
+        //         window.Model.EditListName(data.id, updatedValue);
+        //         window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
+        //     },
+        //     {id:data.id}
+        // );
+
+        //TODO standardize ID parameter names
+        //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
+        var removeList = function(updatedValue) 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var updateView = function()
+            {
+                window.View.Render('RemoveList', {listId:data.id}); 
+            };
+
+            //Update the Model
+            window.Model.RemoveList(data.id, updateView);
+        };
+
+        //Add an event listener for when the button to delete a List is pressed
+        window.View.Bind('DeleteButtonPressed', removeList, {id:data.id});
+    
+        // //Add an event listener to the Delete Button to remove the List Item
+        // window.View.Bind(
+        //     'DeleteButtonPressed', 
+        //     function() 
+        //     {
+
+        //         window.Model.RemoveList(data.id);
+        //         window.View.Render('removeList', {listId:data.id});
+        //     }, 
+        //     {id:data.id}
+        // );
 
         //When the Go To List button is selected, navigate to that list
         window.View.Bind(

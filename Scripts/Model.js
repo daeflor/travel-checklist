@@ -17,9 +17,10 @@ window.Model = (function()
         window.StorageManager.AddListToStorage(newList, callback);
     }
 
-    function editListName(listId, updatedValue)
+    function editListName(listId, callback, updatedName)
     {
-        window.StorageManager.EditListNameInStorage(listId, updatedValue);
+        window.StorageManager.ModifyList('EditName', listId, callback, {updatedName:updatedName});
+        // window.StorageManager.EditListNameInStorage(listId, updatedValue);
     }
 
     function clearListQuantityColumn(listId, quantityType, callback)
@@ -27,9 +28,10 @@ window.Model = (function()
         window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
     }
 
-    function removeList(listId)
+    function removeList(listId, callback)
     {
-        window.StorageManager.RemoveListFromStorage(listId);
+        window.StorageManager.ModifyList('Remove', listId, callback);
+        //window.StorageManager.RemoveListFromStorage(listId);
     }
 
     function createListItem(listId, callback)
@@ -51,33 +53,27 @@ window.Model = (function()
     function editListItemName(listId, listItemId, callback, updatedName)
     {
         window.StorageManager.ModifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
-        //window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
     }
 
     function moveListItemUpwards(listId, listItemId, callback)
     {
         window.StorageManager.ModifyListItem('MoveUpwards', listId, listItemId, callback);
-        // //TODO don't like this name much
-        // window.StorageManager.MoveListItemUpwardsInStorage(listId, listItemId, callback);
     }
 
     //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
     function moveListItemDownwards(listId, listItemId, callback)
     {
         window.StorageManager.ModifyListItem('MoveDownwards', listId, listItemId, callback);
-        //window.StorageManager.MoveListItemDownwardsInStorage(listId, listItemId, callback);
     }
 
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
         window.StorageManager.ModifyListItem('EditQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
-        //window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
     function removeListItem(listId, listItemId, callback)
     {
         window.StorageManager.ModifyListItem('Remove', listId, listItemId, callback);
-        //window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
     }
 
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers

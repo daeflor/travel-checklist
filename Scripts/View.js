@@ -309,7 +309,7 @@ window.View = (function()
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
             },
-            removeList: function() //Expected parameters: listId
+            RemoveList: function() //Expected parameters: listId
             {
                 //Remove the List element from the Lists wrapper
                 document.getElementById(parameters.listId).remove();
