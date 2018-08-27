@@ -74,9 +74,10 @@ window.Model = (function()
         //window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
     }
 
-    function removeListItem(listId, listItemId)
+    function removeListItem(listId, listItemId, callback)
     {
-        window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
+        window.StorageManager.ModifyListItem('Remove', listId, listItemId, callback);
+        //window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
     }
 
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers

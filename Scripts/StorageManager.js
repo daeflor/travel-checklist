@@ -349,6 +349,17 @@ window.StorageManager = (function ()
 
                 //Update the List Item's quantity value for the given quantity type
                 modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, storeModifiedQuantity);
+            },
+            Remove : function(data, listIndex, listItemIndex)
+            {
+                //Remove the returned List Item object from the List Items array
+                data.lists[listIndex].listItems.splice(listItemIndex, 1);
+
+                //Store the updated data object
+                storeListData(data);
+
+                //Execute the provided callback method
+                callback();
             }
         };
 
@@ -470,21 +481,21 @@ window.StorageManager = (function ()
     //     findListItemInStorage(listId, listItemId, editQuantity);
     // }
 
-    function removeListItemFromStorage(listId, listItemId)
-    {
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        var removeListItem = function(data, listIndex, listItemIndex)
-        {
-            //Remove the returned List Item object from the List Items array
-            data.lists[listIndex].listItems.splice(listItemIndex, 1);
+    // function removeListItemFromStorage(listId, listItemId)
+    // {
+    //     //Set up the callback method to execute when a List Item matching the given ID is found
+    //     var removeListItem = function(data, listIndex, listItemIndex)
+    //     {
+    //         //Remove the returned List Item object from the List Items array
+    //         data.lists[listIndex].listItems.splice(listItemIndex, 1);
 
-            //Store the updated data object
-            storeListData(data);
-        };
+    //         //Store the updated data object
+    //         storeListData(data);
+    //     };
         
-        //Search for the List Item in storage and, if it's found, execute the callback method
-        findListItemInStorage(listId, listItemId, removeListItem);
-    }
+    //     //Search for the List Item in storage and, if it's found, execute the callback method
+    //     findListItemInStorage(listId, listItemId, removeListItem);
+    // }
 
     //TODO Could update this file to use methods similar to Render or Bind in the View
     return {
@@ -500,7 +511,7 @@ window.StorageManager = (function ()
         // MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
         // MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
         // EditListItemQuantityInStorage : editListItemQuantityInStorage,
-        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
-        RemoveListItemFromStorage : removeListItemFromStorage
+        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage
+        // RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  

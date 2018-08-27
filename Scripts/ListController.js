@@ -267,7 +267,6 @@ window.ListController = (function()
 
             //Update the Model
             window.Model.EditListItemName(listId, listItem.id, updateView, updatedValue);
-
         };
 
         //Add an event listener for when the Text Area to edit the List Item name is modified
@@ -284,15 +283,30 @@ window.ListController = (function()
         //     {id:listItem.id}
         // ); 
 
-        //Add an event listener to the Delete Button to remove the List Item
-        window.View.Bind(
-            'DeleteButtonPressed', 
-            function() 
+        var removeListItem = function() 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var updateView = function()
             {
-                removeListItem(listId, listItem.id);
-            }, 
-            {id:listItem.id}
-        );
+                window.View.Render('RemoveListItem', {listItemId:listItem.id}); 
+            };
+
+            //Update the Model
+            window.Model.RemoveListItem(listId, listItem.id, updateView);
+        };
+
+        //Add an event listener to the Delete Button to remove the List Item
+        window.View.Bind('DeleteButtonPressed', removeListItem, {id:listItem.id});
+
+        // //Add an event listener to the Delete Button to remove the List Item
+        // window.View.Bind(
+        //     'DeleteButtonPressed', 
+        //     function() 
+        //     {
+        //         removeListItem(listId, listItem.id);
+        //     }, 
+        //     {id:listItem.id}
+        // );
 
         //TODO would rather move the two calls below into one method that takes a direction (up or down)
 
@@ -353,11 +367,11 @@ window.ListController = (function()
         });
     }
 
-    function removeListItem(listId, listItemId)
-    {
-        Model.RemoveListItem(listId, listItemId);
-        window.View.Render('removeListItem', {listItemId:listItemId});
-    }
+    // function removeListItem(listId, listItemId)
+    // {
+    //     Model.RemoveListItem(listId, listItemId);
+    //     window.View.Render('removeListItem', {listItemId:listItemId});
+    // }
 
     /** Experimental & In Progress **/
 

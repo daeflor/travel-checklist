@@ -356,7 +356,7 @@ window.View = (function()
                     window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
                 }    
             },
-            removeListItem: function() 
+            RemoveListItem: function() 
             {
                 document.getElementById(parameters.listItemId).remove();
             },
