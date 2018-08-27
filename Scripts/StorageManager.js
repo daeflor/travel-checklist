@@ -285,9 +285,7 @@ window.StorageManager = (function ()
     /** Modify List Items **/
 
     function modifyListItem(command, listId, listItemId, callback, parameters)
-    {
-        //var returnArg = null;
-       
+    {       
         var commands = 
         {
             EditName : function(data, listIndex, listItemIndex, commandSucceededCallback)
@@ -297,12 +295,6 @@ window.StorageManager = (function ()
 
                 //Execute the provided callback method once the command has been successfully executed
                 commandSucceededCallback();
-
-                // //Store the updated data object
-                // storeListData(data);
-
-                // //Execute the provided callback method
-                // callback();
             },
             MoveUpwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -316,12 +308,6 @@ window.StorageManager = (function ()
 
                     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
                     commandSucceededCallback(prevListItem.id);
-
-                    // //Store the updated data object
-                    // storeListData(data);
-
-                    // //Execute the provided callback method, passing the ID of the swapped List Item as an argument
-                    // callback(prevListItem.id);
                 }
             },
             MoveDownwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
@@ -336,32 +322,12 @@ window.StorageManager = (function ()
 
                     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
                     commandSucceededCallback(nextListItem.id);
-
-                    // //Store the updated data object
-                    // storeListData(data);
-
-                    // //Execute the provided callback method, passing the ID of the swapped List Item as an argument
-                    // callback(nextListItem.id);
                 }
             },
             EditQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
-                // //Set up the callback method to execute when the List Item quantity has been modified
-                // var storeModifiedQuantity = function()
-                // {
-                //     //Execute the provided callback method once the command has been successfully executed
-                //     commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
-
-                //     // //Store the updated data object
-                //     // storeListData(data);
-
-                //     // //Execute the provided callback method
-                //     // callback(data.lists[listIndex].listItems[listItemIndex]);
-                // };
-
                 //Update the List Item's quantity value for the given quantity type
                 modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, commandSucceededCallback);
-                //modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, storeModifiedQuantity);
             },
             Remove : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -370,12 +336,6 @@ window.StorageManager = (function ()
 
                 //Execute the provided callback method once the command has been successfully executed
                 commandSucceededCallback();
-
-                // //Store the updated data object
-                // storeListData(data);
-
-                // //Execute the provided callback method
-                // callback();
             }
         };
 
@@ -385,23 +345,11 @@ window.StorageManager = (function ()
             //Set up the callback method to execute once the given command has been executed successfully 
             var commandSucceededCallback = function(args)
             {       
-                 //Store the updated data object
-                 storeListData(data);
+                //Store the updated data object
+                storeListData(data);
 
-                 ////Execute the provided callback method, passing the returned arguments if not null
-                 //if (args != null) {callback(args);} else {callback();}
-
-                 //Execute the provided callback method, passing the returned arguments if not null
-                 if (args != null)
-                 {
-                     //Execute the provided callback method, passing the returned arguments
-                     callback(args);
-                 }
-                 else
-                 {
-                     //Execute the provided callback method, without any arguments
-                     callback();
-                 }
+                //Execute the provided callback method, passing the returned arguments if not null
+                args != null ? callback(args) : callback();
             };
 
             //Execute the method matching the given command
@@ -410,118 +358,9 @@ window.StorageManager = (function ()
 
         //Search for the List Item in storage and, if it's found, execute the method matching the given command
         findListItemInStorage(listId, listItemId, runCommand);
-        //findListItemInStorage(listId, listItemId, commands[command]);
     }
 
-    // function editListItemNameInStorage(listId, listItemId, updatedName)
-    // {
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var updateListItemName = function(data, listIndex, listItemIndex)
-    //     {
-    //         //Update the name of the returned List Item object
-    //         data.lists[listIndex].listItems[listItemIndex].name = updatedName;
-
-    //         //Store the updated data object
-    //         storeListData(data);
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, updateListItemName);
-    // }
-
-    // function moveListItemUpwardsInStorage(listId, listItemId, callback)
-    // {
-    //     //TOOD would prefer to make this a more standardized SwapLists method
-    //         //Instead, could just be part of a ModifyListItem method with commands. Maybe...
-
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var moveUpwards = function(data, listIndex, listItemIndex)
-    //     {
-    //         //If the List Item is not the first in the List...
-    //         if (listItemIndex > 0)
-    //         {
-    //             //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
-    //             var prevListItem = data.lists[listIndex].listItems[listItemIndex-1];
-    //             data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
-    //             data.lists[listIndex].listItems[listItemIndex] = prevListItem;
-
-    //             //Store the updated data object
-    //             storeListData(data);
-
-    //             //Execute the provided callback method
-    //             callback(prevListItem.id);
-    //         }
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, moveUpwards);
-    // }
-
-    // function moveListItemDownwardsInStorage(listId, listItemId, callback)
-    // {
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var moveDownwards = function(data, listIndex, listItemIndex)
-    //     {
-    //         //If the List Item is not the last in the List...
-    //         if (listItemIndex < data.lists[listIndex].listItems.length-1)
-    //         {
-    //             //Swap the positions of the List Item matching the given ID, and the next List Item in the array
-    //             var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
-    //             data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
-    //             data.lists[listIndex].listItems[listItemIndex] = nextListItem;
-
-    //             //Store the updated data object
-    //             storeListData(data);
-
-    //             //Execute the provided callback method
-    //             callback(nextListItem.id);
-    //         }
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, moveDownwards);
-    // }
-
-    // function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
-    // {
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var editQuantity = function(data, listIndex, listItemIndex)
-    //     {
-    //         //Set up the callback method to execute when the List Item quantity has been modified
-    //         var storeModifiedQuantity = function()
-    //         {
-    //             //Store the updated data object
-    //             storeListData(data);
-
-    //             //Execute the provided callback method
-    //             callback(data.lists[listIndex].listItems[listItemIndex]);
-    //         };
-
-    //         //Update the List Item's quantity value for the given quantity type
-    //         modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], quantityType, assignmentType, storeModifiedQuantity);
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, editQuantity);
-    // }
-
-    // function removeListItemFromStorage(listId, listItemId)
-    // {
-    //     //Set up the callback method to execute when a List Item matching the given ID is found
-    //     var removeListItem = function(data, listIndex, listItemIndex)
-    //     {
-    //         //Remove the returned List Item object from the List Items array
-    //         data.lists[listIndex].listItems.splice(listItemIndex, 1);
-
-    //         //Store the updated data object
-    //         storeListData(data);
-    //     };
-        
-    //     //Search for the List Item in storage and, if it's found, execute the callback method
-    //     findListItemInStorage(listId, listItemId, removeListItem);
-    // }
-
-    //TODO Could update this file to use methods similar to Render or Bind in the View
+    //TODO Continue to update this file to use methods similar to ModifyListItem
     return {
         //AccessStorage : accessStorage,
         StoreListData : storeListData,
@@ -532,10 +371,5 @@ window.StorageManager = (function ()
         RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
         ModifyListItem : modifyListItem
-        // EditListItemNameInStorage : editListItemNameInStorage,
-        // MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
-        // MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
-        // EditListItemQuantityInStorage : editListItemQuantityInStorage,
-        // RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  
