@@ -358,7 +358,17 @@ window.View = (function()
             },
             RemoveListItem: function() 
             {
-                document.getElementById(parameters.listItemId).remove();
+                var listItem = document.getElementById(parameters.listItemId);
+
+                //If the quantity toggle element was found, update the text content of the toggle to the new value
+                if (listItem != null)
+                {
+                    listItem.remove();
+                }
+                else
+                {
+                    window.DebugController.LogError("ERROR: Tried to remove a List Item from the View but it could not be found. List Item ID: " + parameters.listItemId);
+                }
             },
             updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {

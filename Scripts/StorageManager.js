@@ -109,8 +109,8 @@ window.StorageManager = (function ()
                 //Decrement the quantity value by one
                 listItem.quantities[quantityType]--;
 
-                //Execute the provided callback method
-                callback();
+                //Execute the provided callback method, passing the updated List Item object as an argument
+                callback(listItem);
             }
         }
         else if (assignmentType == 'increment')
@@ -118,8 +118,8 @@ window.StorageManager = (function ()
             //Increment the quantity value by one
             listItem.quantities[quantityType]++;
 
-            //Execute the provided callback method
-            callback();
+            //Execute the provided callback method, passing the updated List Item object as an argument
+            callback(listItem);
         }
         else 
         {
@@ -290,18 +290,21 @@ window.StorageManager = (function ()
        
         var commands = 
         {
-            EditName : function(data, listIndex, listItemIndex)
+            EditName : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Update the name of the returned List Item object
                 data.lists[listIndex].listItems[listItemIndex].name = parameters.updatedName;
 
-                //Store the updated data object
-                storeListData(data);
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
 
-                //Execute the provided callback method
-                callback();
+                // //Store the updated data object
+                // storeListData(data);
+
+                // //Execute the provided callback method
+                // callback();
             },
-            MoveUpwards : function(data, listIndex, listItemIndex)
+            MoveUpwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //If the List Item is not the first in the List...
                 if (listItemIndex > 0)
@@ -311,14 +314,17 @@ window.StorageManager = (function ()
                     data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
                     data.lists[listIndex].listItems[listItemIndex] = prevListItem;
 
-                    //Store the updated data object
-                    storeListData(data);
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+                    commandSucceededCallback(prevListItem.id);
 
-                    //Execute the provided callback method, passing the ID of the swapped List Item as an argument
-                    callback(prevListItem.id);
+                    // //Store the updated data object
+                    // storeListData(data);
+
+                    // //Execute the provided callback method, passing the ID of the swapped List Item as an argument
+                    // callback(prevListItem.id);
                 }
             },
-            MoveDownwards : function(data, listIndex, listItemIndex)
+            MoveDownwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //If the List Item is not the last in the List...
                 if (listItemIndex < data.lists[listIndex].listItems.length-1)
@@ -328,65 +334,83 @@ window.StorageManager = (function ()
                     data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
                     data.lists[listIndex].listItems[listItemIndex] = nextListItem;
 
-                    //Store the updated data object
-                    storeListData(data);
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+                    commandSucceededCallback(nextListItem.id);
 
-                    //Execute the provided callback method, passing the ID of the swapped List Item as an argument
-                    callback(nextListItem.id);
+                    // //Store the updated data object
+                    // storeListData(data);
+
+                    // //Execute the provided callback method, passing the ID of the swapped List Item as an argument
+                    // callback(nextListItem.id);
                 }
             },
-            EditQuantityValue : function(data, listIndex, listItemIndex)
+            EditQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Set up the callback method to execute when the List Item quantity has been modified
-                var storeModifiedQuantity = function()
-                {
-                    //Store the updated data object
-                    storeListData(data);
+                // //Set up the callback method to execute when the List Item quantity has been modified
+                // var storeModifiedQuantity = function()
+                // {
+                //     //Execute the provided callback method once the command has been successfully executed
+                //     commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
 
-                    //Execute the provided callback method
-                    callback(data.lists[listIndex].listItems[listItemIndex]);
-                };
+                //     // //Store the updated data object
+                //     // storeListData(data);
+
+                //     // //Execute the provided callback method
+                //     // callback(data.lists[listIndex].listItems[listItemIndex]);
+                // };
 
                 //Update the List Item's quantity value for the given quantity type
-                modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, storeModifiedQuantity);
+                modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, commandSucceededCallback);
+                //modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, storeModifiedQuantity);
             },
-            Remove : function(data, listIndex, listItemIndex)
+            Remove : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Remove the returned List Item object from the List Items array
                 data.lists[listIndex].listItems.splice(listItemIndex, 1);
 
-                //Store the updated data object
-                storeListData(data);
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
 
-                //Execute the provided callback method
-                callback();
+                // //Store the updated data object
+                // storeListData(data);
+
+                // //Execute the provided callback method
+                // callback();
             }
         };
 
-        //??
-        // var runCommand = function(data, listIndex, listItemIndex)
-        // {
-        //     //Execute the method matching the given command
-        //     commands[command](data, listIndex, listItemIndex, onCommandSuccess);
+        //Set up the callback method to execute when a List Item matching the given ID is found
+        var runCommand = function(data, listIndex, listItemIndex)
+        {
+            //Set up the callback method to execute once the given command has been executed successfully 
+            var commandSucceededCallback = function(args)
+            {       
+                 //Store the updated data object
+                 storeListData(data);
 
-                        // //Store the updated data object
-                        // storeListData(data);
+                 ////Execute the provided callback method, passing the returned arguments if not null
+                 //if (args != null) {callback(args);} else {callback();}
 
-                        // //Execute the provided callback method, passing the ARGS
-                        // callback(xxx);
+                 //Execute the provided callback method, passing the returned arguments if not null
+                 if (args != null)
+                 {
+                     //Execute the provided callback method, passing the returned arguments
+                     callback(args);
+                 }
+                 else
+                 {
+                     //Execute the provided callback method, without any arguments
+                     callback();
+                 }
+            };
 
-            //    var onCommandSuccess = function(ARGS)
-            //    {       
-            //         //Store the updated data object
-            //         //storeListData(data);
-
-            //         //Execute the provided callback method, passing the ARGS
-            //         //callback(ARGS);
-            //    };
-        // }
+            //Execute the method matching the given command
+            commands[command](data, listIndex, listItemIndex, commandSucceededCallback);
+        }
 
         //Search for the List Item in storage and, if it's found, execute the method matching the given command
-        findListItemInStorage(listId, listItemId, commands[command]);
+        findListItemInStorage(listId, listItemId, runCommand);
+        //findListItemInStorage(listId, listItemId, commands[command]);
     }
 
     // function editListItemNameInStorage(listId, listItemId, updatedName)
@@ -504,14 +528,14 @@ window.StorageManager = (function ()
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
         EditListNameInStorage : editListNameInStorage,
+        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         RemoveListFromStorage : removeListFromStorage,
         AddListItemToStorage : addListItemToStorage,
-        ModifyListItem : modifyListItem,
+        ModifyListItem : modifyListItem
         // EditListItemNameInStorage : editListItemNameInStorage,
         // MoveListItemUpwardsInStorage : moveListItemUpwardsInStorage,
         // MoveListItemDownwardsInStorage : moveListItemDownwardsInStorage,
         // EditListItemQuantityInStorage : editListItemQuantityInStorage,
-        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage
         // RemoveListItemFromStorage : removeListItemFromStorage
     };
 })();  
