@@ -84,50 +84,7 @@ window.StorageManager = (function ()
         //Search for the List in storage and, if it's found, execute the callback method
         findListInStorage(listId, findListItem);
     }
-
-    // //TODO starting to think it might be best to separate these into their own commands in the 'modify' methods, and remove this abstracted helper method
-    // function modifyListItemQuantityValue(listItem, quantityType, assignmentType, callback)
-    // {
-    //     //Increment, decrement, or clear the specified List Item's quantity value as applicable
-    //     if (assignmentType == 'clear')
-    //     {
-    //         //If the quantity value is not already set to zero...
-    //         if (listItem.quantities[quantityType] != 0)
-    //         {
-    //             //Set the quantity value to zero
-    //             listItem.quantities[quantityType] = 0;
-                
-    //             //Execute the provided callback method, passing the updated List Item object as an argument
-    //             callback(listItem);
-    //         }                            
-    //     }
-    //     else if (assignmentType == 'decrement')
-    //     {
-    //         //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
-    //         //If the quantity value is greater than zero...
-    //         if (listItem.quantities[quantityType] > 0)
-    //         {
-    //             //Decrement the quantity value by one
-    //             listItem.quantities[quantityType]--;
-
-    //             //Execute the provided callback method, passing the updated List Item object as an argument
-    //             callback(listItem);
-    //         }
-    //     }
-    //     else if (assignmentType == 'increment')
-    //     {
-    //         //Increment the quantity value by one
-    //         listItem.quantities[quantityType]++;
-
-    //         //Execute the provided callback method, passing the updated List Item object as an argument
-    //         callback(listItem);
-    //     }
-    //     else 
-    //     {
-    //         window.DebugController.LogError("ERROR: Tried to perform an invalid operation on a quantity value in storage. List Item ID: " + listItemId);
-    //     }
-    // }
-
+    
     //PUBLIC? :
 
     //TODO Add JSDoc comments to each of the methods below
@@ -172,39 +129,6 @@ window.StorageManager = (function ()
                 //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
                 commandSucceededCallback(parameters.newListItem);
             },
-            // ClearQuantityValues : function(data, listIndex, commandSucceededCallback)
-            // {
-            //     //Initialize an array to keep track of any List Items that will have a quantity value be modified
-            //     var modifiedListItems = [];
-
-            //     //Set up the callback method to execute when a List Item's quantity value has been modified
-            //     var storeModifiedQuantityValue = function(listItem)
-            //     {
-            //         modifiedListItems.push(listItem);
-            //     };
-
-            //     // var clearQuantityValue = function(item)
-            //     // {
-            //     //     //Clear the List Item's quantity value (i.e. set it to zero)   
-            //     //     modifyListItemQuantityValue(item, parameters.quantityType, 'clear', storeModifiedQuantityValue);
-            //     // }
-
-            //     // data.lists[listIndex].listItems.forEach(clearQuantityValue);
-
-            //     //Traverse the List Items array of the List Object at the given index
-            //     for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
-            //     {   
-            //         //Clear the List Item's quantity value (i.e. set it to zero)   
-            //         modifyListItemQuantityValue(data.lists[listIndex].listItems[i], parameters.quantityType, 'clear', storeModifiedQuantityValue);
-            //     }
-                            
-            //     //If any quantity value was actually changed...
-            //     if (modifiedListItems.length > 0)
-            //     {
-            //         //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
-            //         commandSucceededCallback(modifiedListItems);
-            //     }
-            // },
             ClearQuantityValues : function(data, listIndex, commandSucceededCallback)
             {
                 //Initialize an array to keep track of any List Items that will have a quantity value be modified
@@ -243,6 +167,7 @@ window.StorageManager = (function ()
             }
         };
 
+        //TODO Is it possible to somehow merge this with the same method in modifyListItem?... Maybe at least the commandSucceededCallback can be abstracted? But it wouldn't help much
         //Set up the callback method to execute when a List matching the given ID is found
         var runCommand = function(data, listIndex)
         {
@@ -306,11 +231,6 @@ window.StorageManager = (function ()
                     commandSucceededCallback(nextListItem.id);
                 }
             },
-            // EditQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
-            // {
-            //     //Update the List Item's quantity value for the given quantity type
-            //     modifyListItemQuantityValue(data.lists[listIndex].listItems[listItemIndex], parameters.quantityType, parameters.assignmentType, commandSucceededCallback);
-            // },
             DecrementQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
@@ -332,18 +252,6 @@ window.StorageManager = (function ()
                 //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
                 commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
             },
-            // ClearQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
-            // {
-            //     //If the quantity value for the given quantity type is not already set to zero...
-            //     if (data.lists[listIndex].listItems[listItemIndex].quantities[parameters.quantityType] != 0)
-            //     {
-            //         //Set the quantity value to zero
-            //         data.lists[listIndex].listItems[listItemIndex].quantities[parameters.quantityType] = 0;
-
-            //         //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
-            //         commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
-            //     }
-            // },
             Remove : function(data, listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Remove the returned List Item object from the List Items array
