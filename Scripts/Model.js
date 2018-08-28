@@ -20,12 +20,11 @@ window.Model = (function()
     function editListName(listId, callback, updatedName)
     {
         window.StorageManager.ModifyList('EditName', listId, callback, {updatedName:updatedName});
-        // window.StorageManager.EditListNameInStorage(listId, updatedValue);
     }
 
     function clearListQuantityColumn(listId, quantityType, callback)
     {
-        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
+        window.StorageManager.ModifyList('ClearQuantityValues', listId, callback, {quantityType:quantityType});
     }
 
     function removeList(listId, callback)

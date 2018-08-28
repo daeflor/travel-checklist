@@ -96,8 +96,8 @@ window.StorageManager = (function ()
                 //Set the quantity value to zero
                 listItem.quantities[quantityType] = 0;
                 
-                //Execute the provided callback method
-                callback();
+                //Execute the provided callback method, passing the updated List Item object as an argument
+                callback(listItem);
             }                            
         }
         else if (assignmentType == 'decrement')
@@ -171,6 +171,33 @@ window.StorageManager = (function ()
                 //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
                 commandSucceededCallback(parameters.newListItem);
             },
+            ClearQuantityValues : function(data, listIndex, commandSucceededCallback)
+            {
+                //Initialize an array to keep track of any List Items that will have a quantity value be modified
+                var modifiedListItems = [];
+
+                //Set up the callback method to execute when a List Item's quantity value has been modified
+                var storeModifiedQuantityValue = function(listItem)
+                {
+                    modifiedListItems.push(listItem);
+                };
+
+                //data.lists[listIndex].listItems.forEach()
+
+                //Traverse the List Items array of the List Object at the given index
+                for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
+                {   
+                    //Clear the List Item's quantity value (i.e. set it to zero)   
+                    modifyListItemQuantityValue(data.lists[listIndex].listItems[i], parameters.quantityType, 'clear', storeModifiedQuantityValue);
+                }
+                            
+                //If any quantity value was actually changed...
+                if (modifiedListItems.length > 0)
+                {
+                    //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
+                    commandSucceededCallback(modifiedListItems);
+                }
+            },
             Remove : function(data, listIndex, commandSucceededCallback)
             {
                 //Remove the returned List object from the lists array
@@ -200,63 +227,6 @@ window.StorageManager = (function ()
 
         //Search for the List in storage and, if it's found, execute the method matching the given command
         findListInStorage(listId, runCommand);
-    }
-
-    //TODO Since the methods below all follow the same format (mostly), maybe they could be moved into a ModifyList method with 'command' parameter
-        //Most likely all methods here should take a callback, and that should help standardize them even further
-
-    function clearListQuantityColumnInStorage(listId, quantityType, callback)
-    {
-        //Set up the callback method to execute when a List matching the given ID is found
-        var clearQuantityColumn = function(data, listIndex)
-        {
-            //Initialize an array to keep track of any List Items that will have a quantity value be modified
-            var modifiedListItems = [];
-
-            //TODO it should be possible to do this without passing the List Item as a param in this callback
-            //Set up the callback method to execute when a List Item's quantity value has been modified
-            // var storeModifiedQuantityValue = function(listItem)
-            // {
-            //     modifiedListItems.push(listItem);
-            // };
-
-            // //Traverse the List Items array of the returned List Object
-            // for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
-            // {   
-            //     //Clear the List Item's quantity value (i.e. set it to zero)   
-            //     modifyListItemQuantityValue(data.lists[listIndex].listItems[i], quantityType, 'clear', storeModifiedQuantityValue);
-            // }
-
-            //Initialize a variable that will be used to store the callback method which will execute when a List Item's quantity value has been modified
-            var storeModifiedQuantityValue;
-
-            //Traverse the List Items array of the returned List Object
-            for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
-            {   
-                //Set up the callback method to execute when a List Item's quantity value has been modified
-                storeModifiedQuantityValue = function()
-                {
-                    //Add the updated List Item object to the array of modified List Items
-                    modifiedListItems.push(data.lists[listIndex].listItems[i]);
-                };
-                
-                //Clear the List Item's quantity value (i.e. set it to zero)   
-                modifyListItemQuantityValue(data.lists[listIndex].listItems[i], quantityType, 'clear', storeModifiedQuantityValue);
-            }
-                        
-            //If any quantity value was actually changed...
-            if (modifiedListItems.length > 0)
-            {
-                //Store the updated data object
-                storeListData(data);
-
-                //Execute the provided callback method
-                callback(modifiedListItems);
-            }
-        };
-
-        //Search for the List in storage and, if it's found, execute the callback method
-        findListInStorage(listId, clearQuantityColumn);
     }
 
     /** Modify List Items **/
@@ -342,7 +312,6 @@ window.StorageManager = (function ()
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
         ModifyList : modifyList,
-        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
         ModifyListItem : modifyListItem
     };
 })();  
