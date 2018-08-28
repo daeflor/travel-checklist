@@ -84,12 +84,10 @@ window.StorageManager = (function ()
         //Search for the List in storage and, if it's found, execute the callback method
         findListInStorage(listId, findListItem);
     }
-    
-    //PUBLIC? :
 
-    //TODO Add JSDoc comments to each of the methods below
+    //TODO Add JSDoc comments to each of the methods below, and add any other comments as needed
 
-    /** Access & Modify Lists **/
+    /** Publicly Exposed Methods To Access & Modify List Data In Storage **/
 
     function getListStorageData()
     {
@@ -106,8 +104,6 @@ window.StorageManager = (function ()
 
         callback(newList);
     }
-
-    /** Modify List **/
 
     function modifyList(command, listId, callback, parameters)
     {       
@@ -188,8 +184,6 @@ window.StorageManager = (function ()
         //Search for the List in storage and, if it's found, execute the method matching the given command
         findListInStorage(listId, runCommand);
     }
-
-    /** Modify List Items **/
 
     function modifyListItem(command, listId, listItemId, callback, parameters)
     {       
@@ -283,7 +277,6 @@ window.StorageManager = (function ()
         findListItemInStorage(listId, listItemId, runCommand);
     }
 
-    //TODO Continue to update this file to use methods similar to ModifyListItem
     return {
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
