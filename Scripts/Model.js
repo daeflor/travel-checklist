@@ -66,7 +66,16 @@ window.Model = (function()
 
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
-        window.StorageManager.ModifyListItem('EditQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        //TODO Should probably move the logic here to the Controller?...
+
+        if (assignmentType == 'decrement')
+        {
+            window.StorageManager.ModifyListItem('DecrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        }
+        else if(assignmentType == 'increment')
+        {
+            window.StorageManager.ModifyListItem('IncrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        }
     }
 
     function removeListItem(listId, listItemId, callback)
