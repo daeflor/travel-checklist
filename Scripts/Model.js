@@ -31,7 +31,6 @@ window.Model = (function()
     function removeList(listId, callback)
     {
         window.StorageManager.ModifyList('Remove', listId, callback);
-        //window.StorageManager.RemoveListFromStorage(listId);
     }
 
     function createListItem(listId, callback)
@@ -47,7 +46,7 @@ window.Model = (function()
             }
         };
         
-        window.StorageManager.AddListItemToStorage(listId, newListItem, callback);
+        window.StorageManager.ModifyList('AddListItem', listId, callback, {newListItem:newListItem});
     }
 
     function editListItemName(listId, listItemId, callback, updatedName)

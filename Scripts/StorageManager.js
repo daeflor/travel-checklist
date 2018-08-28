@@ -163,6 +163,14 @@ window.StorageManager = (function ()
                 //Execute the provided callback method once the command has been successfully executed
                 commandSucceededCallback();
             },
+            AddListItem : function(data, listIndex, commandSucceededCallback)
+            {
+                //Add the new List Item to the returned List object
+                data.lists[listIndex].listItems.push(parameters.newListItem);
+
+                //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
+                commandSucceededCallback(parameters.newListItem);
+            },
             Remove : function(data, listIndex, commandSucceededCallback)
             {
                 //Remove the returned List object from the lists array
@@ -196,25 +204,6 @@ window.StorageManager = (function ()
 
     //TODO Since the methods below all follow the same format (mostly), maybe they could be moved into a ModifyList method with 'command' parameter
         //Most likely all methods here should take a callback, and that should help standardize them even further
-
-    function addListItemToStorage(listId, newListItem, callback)
-    {
-        //Set up the callback method to execute when a List matching the given ID is found
-        var addListItem = function(data, index)
-        {
-            //Add the new List Item to the returned List object
-            data.lists[index].listItems.push(newListItem);
-
-            //Store the updated data object
-            storeListData(data);
-
-            //Execute the provided callback method
-            callback(newListItem);
-        };
-        
-        //Search for the List in storage and, if it's found, execute the callback method
-        findListInStorage(listId, addListItem);
-    }
 
     function clearListQuantityColumnInStorage(listId, quantityType, callback)
     {
@@ -353,10 +342,7 @@ window.StorageManager = (function ()
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
         ModifyList : modifyList,
-        // EditListNameInStorage : editListNameInStorage,
         ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
-        // RemoveListFromStorage : removeListFromStorage,
-        AddListItemToStorage : addListItemToStorage,
         ModifyListItem : modifyListItem
     };
 })();  
