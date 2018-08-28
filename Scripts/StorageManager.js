@@ -1,6 +1,6 @@
 window.StorageManager = (function () 
 {
-    /** Utility Methods **/
+    /** General Storage Utility Methods **/
 
     function loadValueFromLocalStorage(name)
     {
@@ -28,7 +28,7 @@ window.StorageManager = (function ()
         }
     }
 
-    /** List-Specific / Private / Helper Methods **/
+    /** Checklist Storage Utility Methods (Private) **/
 
     function storeListData(data)
     {
@@ -128,6 +128,8 @@ window.StorageManager = (function ()
     }
 
     //PUBLIC? :
+
+    //TODO Add JSDoc comments to each of the methods below
 
     /** Access & Modify Lists **/
 
@@ -348,8 +350,6 @@ window.StorageManager = (function ()
 
     //TODO Continue to update this file to use methods similar to ModifyListItem
     return {
-        //AccessStorage : accessStorage,
-        StoreListData : storeListData,
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
         ModifyList : modifyList,

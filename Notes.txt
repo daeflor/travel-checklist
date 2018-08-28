@@ -1,14 +1,15 @@
 TO-DOs:
 	- index.html            : 3
     - style_new.css         : 3
-    - StorageManager.js     : 7
-    - Model.js              : 1
-	- ListController.js     : 18
-    - View.js               : 23
+    - StorageManager.js     : 5
+    - Model.js              : 3
+	- ListController.js     : 23
+    - View.js               : 26
     - CustomTemplates.js    : 6
     - StandardTemplates.js  : 3
     - DebugUtilities.js     : 4
     - Utilities.js          : 0
+    - - - Total             : 76
 
 Upcoming To-Do List:
 - Look into consolidating StorageManager functions (e.g. findInStorage)
@@ -18,7 +19,6 @@ Upcoming To-Do List:
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - To Switch row pos: Model/Storage: for i = 0 ... if (id == id) ... var x = list[i+1], lists[i+1] = lists[i], lists[i] = x ...
     View: param: id, prevId ... GetElement(id).remove() ... insertBefore(GetELement(prevId), GetElement(id));
-- Need to clearly differentiate between item categories and packed categories (or whatever the term ends up as)
 
 Features:
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
