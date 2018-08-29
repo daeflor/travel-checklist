@@ -22,6 +22,17 @@ window.Model = (function()
         window.StorageManager.ModifyList('EditName', listId, callback, {updatedName:updatedName});
     }
 
+    function moveListUpwards(listId, callback)
+    {
+        window.StorageManager.ModifyList('MoveUpwards', listId, callback);
+    }
+
+    //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
+    function moveListDownwards(listId, callback)
+    {
+        window.StorageManager.ModifyList('MoveDownwards', listId, callback);
+    }
+
     function clearListQuantityColumn(listId, quantityType, callback)
     {
         window.StorageManager.ModifyList('ClearQuantityValues', listId, callback, {quantityType:quantityType});
@@ -90,6 +101,8 @@ window.Model = (function()
         LoadData : loadData,
         CreateList : createList,
         EditListName : editListName,
+        MoveListUpwards : moveListUpwards,
+        MoveListDownwards : moveListDownwards,
         RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,

@@ -38,14 +38,14 @@ window.CustomTemplates = (function ()
 
     function createListWrapperFromTemplate(listId)
     {
-        return CreateNewElement('div', [ ['id',listId], ['class','container-fluid'], ['hidden', 'true'] ]);
+        return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
     }
 
     function createListToggleFromTemplate(data)
     {
         window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
 
-        var wrapper = CreateNewElement('div', [ ['id','ListToggle-'.concat(data.listId)], ['class','row divItemRow divListToggleWrapper'] ]);
+        var wrapper = CreateNewElement('div', [ ['id',data.listId], ['class','row divItemRow divListToggleWrapper'] ]);
 
         /* Name Toggle/Button */
 

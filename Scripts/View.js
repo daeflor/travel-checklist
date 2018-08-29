@@ -276,9 +276,10 @@ window.View = (function()
                 //Traverse all the List elements
                 for (var i = 0; i < elements.listScreenListElements.children.length; i++)
                 {
-                    if (elements.listScreenListElements.children[i].id == parameters.listId)
+                    //If the List element's ID contains the given List ID...
+                    if (elements.listScreenListElements.children[i].id.includes(parameters.listId))
                     {
-                        //If the List element matches the given listId, display that element
+                        //Display that element
                         elements.listScreenListElements.children[i].hidden = false;
 
                         //Set the Active List ID
@@ -301,6 +302,8 @@ window.View = (function()
             {
                 window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
+                var lastListElement = elements.homeScreenListElements.lastChild;
+                
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
                 
@@ -308,18 +311,49 @@ window.View = (function()
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
+                //If the new List is the first one in the Lists array, set both reorder buttons to be gray
+                if (lastListElement == null)
+                {
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).style.color = '#606060';
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).style.color = '#606060';
+                }
+                //Else, if the new List is not the first one in the List array...
+                else
+                {
+                    //TODO what a horrible name
+                    var lastListElementMoveDownwardsButton = document.getElementById('MoveDownwards-'.concat(lastListElement.id));
+
+                    window.DebugController.Print("Move Downwards button: " + lastListElementMoveDownwardsButton);
+
+                    if (lastListElementMoveDownwardsButton != null)
+                    {
+                        //Set the previous List's 'Move Downwards' button to be black
+                        lastListElementMoveDownwardsButton.style.color = 'black';
+                    }
+                    else
+                    {
+                        window.DebugController.LogError("ERROR: Tried to set the color of the last List's Move Downwards button, but the List could not be found. List ID expected: " + parameters.listId);
+                    }
+
+                    //Set the new List's 'Move Upwards' button to be black
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).style.color = 'black';
+
+                    //Set the new List's 'Move Downwards' button to be gray
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).style.color = '#606060';
+                }
+           
             },
             RemoveList: function() //Expected parameters: listId
             {
                 //Remove the List element from the Lists wrapper
-                document.getElementById(parameters.listId).remove();
+                document.getElementById('ListWrapper-'.concat(parameters.listId)).remove();
 
                 //Remove the List Toggle element from the Lists of Lists wrapper
-                document.getElementById('ListToggle-'.concat(parameters.listId)).remove();
+                document.getElementById(parameters.listId).remove();
             },
             AddListItem: function() 
             {
-                var listWrapper = document.getElementById(parameters.listId);
+                var listWrapper = document.getElementById('ListWrapper-'.concat(parameters.listId));
                 
                 if (listWrapper != null)
                 {
@@ -457,7 +491,7 @@ window.View = (function()
                 var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
                 $(toggle).popover('hide');
             },
-            SwapListObjects: function() 
+            SwapListObjects: function()
             {
                 var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
                 var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);

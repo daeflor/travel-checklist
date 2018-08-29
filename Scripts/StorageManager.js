@@ -120,6 +120,34 @@ window.StorageManager = (function ()
                 //Execute the provided callback method once the command has been successfully executed
                 commandSucceededCallback();
             },
+            MoveUpwards : function(data, listIndex, commandSucceededCallback)
+            {
+                //If the List Item is not the first in the List...
+                if (listIndex > 0)
+                {
+                    //Swap the positions of the List matching the given ID, and the previous List in the array
+                    var prevList = data.lists[listIndex-1];
+                    data.lists[listIndex-1] = data.lists[listIndex];
+                    data.lists[listIndex] = prevList;
+
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(prevList.id);
+                }
+            },
+            MoveDownwards : function(data, listIndex, commandSucceededCallback)
+            {
+                //If the List is not the last in the Lists array...
+                if (listIndex < data.lists.length-1)
+                {
+                    //Swap the positions of the List matching the given ID, and the next List in the array
+                    var nextList = data.lists[listIndex+1];
+                    data.lists[listIndex+1] = data.lists[listIndex];
+                    data.lists[listIndex] = nextList;
+
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(nextList.id);
+                }
+            },
             AddListItem : function(data, listIndex, commandSucceededCallback)
             {
                 //Add the new List Item to the returned List object

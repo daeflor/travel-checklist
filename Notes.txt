@@ -12,6 +12,10 @@ TO-DOs:
     - - - Total             : 76
 
 Upcoming To-Do List:
+BUG: Move last list object upwards, then add a new list object. The now second to last list object has gray downwards button
+- Make a GetElement function with error handling
+    - Perhaps also a GetElementOfType (e.g. to get a Name Button for list with ID x)
+- Model refactor?
 - Look into consolidating StorageManager functions (e.g. findInStorage)
 - Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Every time an unreported error is hit, add error handling for it

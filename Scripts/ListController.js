@@ -172,6 +172,30 @@ window.ListController = (function()
             },
             {listId:data.id}
         );
+
+        //Add an event listener to the Move Upwards Button to move the List upwards by one position in the Lists array
+        window.View.Bind(
+            'MoveUpwardsButtonPressed', 
+            function() 
+            {
+                window.Model.MoveListUpwards(data.id, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swapId});
+                });
+            }, 
+            {id:data.id}
+        );
+
+        //Add an event listener to the Move Downwards Button to move the List downwards by one position in the Lists array
+        window.View.Bind(
+            'MoveDownwardsButtonPressed', 
+            function() 
+            {
+                window.Model.MoveListDownwards(data.id, function(swapId) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:data.id});
+                });
+            }, 
+            {id:data.id}
+        );
     }
 
     function navigateToList(listId)
