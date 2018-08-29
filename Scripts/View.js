@@ -146,6 +146,7 @@ window.View = (function()
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
 
+            //TODO maybe could have a util method that finds elements and handles error checking
             var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
 
             if (button != null)
@@ -308,7 +309,7 @@ window.View = (function()
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
             },
-            removeList: function() //Expected parameters: listId
+            RemoveList: function() //Expected parameters: listId
             {
                 //Remove the List element from the Lists wrapper
                 document.getElementById(parameters.listId).remove();
@@ -326,6 +327,8 @@ window.View = (function()
                     var lastListItemElement = listWrapper.lastChild;
 
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
+
+                    //TODO Should the things below be done in a separate method?
 
                     //If the new List Item is the first one in the List, set both reorder buttons to be gray
                     if (lastListItemElement == null)
@@ -353,9 +356,19 @@ window.View = (function()
                     window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
                 }    
             },
-            removeListItem: function() 
+            RemoveListItem: function() 
             {
-                document.getElementById(parameters.listItemId).remove();
+                var listItem = document.getElementById(parameters.listItemId);
+
+                //If the quantity toggle element was found, update the text content of the toggle to the new value
+                if (listItem != null)
+                {
+                    listItem.remove();
+                }
+                else
+                {
+                    window.DebugController.LogError("ERROR: Tried to remove a List Item from the View but it could not be found. List Item ID: " + parameters.listItemId);
+                }
             },
             updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
