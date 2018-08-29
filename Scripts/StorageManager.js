@@ -87,6 +87,9 @@ window.StorageManager = (function ()
 
     //TODO Add JSDoc comments to each of the methods below, and add any other comments as needed
 
+    //TODO A lot of this logic could probably be handled in the Model instead. Once it has the List or List Item object it needs and doesn't interact with Storage or JSON. 
+        //TODO Model could have a getLists method that could either return the lists from local storage or from a local variable that stores this
+
     /** Publicly Exposed Methods To Access & Modify List Data In Storage **/
 
     function getListStorageData()
