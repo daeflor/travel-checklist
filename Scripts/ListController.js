@@ -2,6 +2,7 @@ window.ListController = (function()
 {
     var quantityPopoverActive = false;
 
+    //TODO this probably shouldn't be in the Controller, but I'm not sure where exactly it belons... app.js?
     //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
     document.addEventListener('DOMContentLoaded', setup, {once:true});
 
