@@ -12,7 +12,6 @@ TO-DOs:
     - - - Total             : 76
 
 Upcoming To-Do List:
-BUG: Move last list object upwards, then add a new list object. The now second to last list object has gray downwards button
 - Make a GetElement function with error handling
     - Perhaps also a GetElementOfType (e.g. to get a Name Button for list with ID x)
 - Model refactor?

@@ -314,8 +314,8 @@ window.View = (function()
                 //If the new List is the first one in the Lists array, set both reorder buttons to be gray
                 if (lastListElement == null)
                 {
-                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).style.color = '#606060';
-                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).style.color = '#606060';
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
                 }
                 //Else, if the new List is not the first one in the List array...
                 else
@@ -323,12 +323,12 @@ window.View = (function()
                     //TODO what a horrible name
                     var lastListElementMoveDownwardsButton = document.getElementById('MoveDownwards-'.concat(lastListElement.id));
 
-                    window.DebugController.Print("Move Downwards button: " + lastListElementMoveDownwardsButton);
+                    window.DebugController.Print("Move Downwards button ID: " + lastListElementMoveDownwardsButton.id);
 
                     if (lastListElementMoveDownwardsButton != null)
                     {
                         //Set the previous List's 'Move Downwards' button to be black
-                        lastListElementMoveDownwardsButton.style.color = 'black';
+                        lastListElementMoveDownwardsButton.firstChild.style.color = 'black';
                     }
                     else
                     {
@@ -336,10 +336,10 @@ window.View = (function()
                     }
 
                     //Set the new List's 'Move Upwards' button to be black
-                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).style.color = 'black';
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = 'black';
 
                     //Set the new List's 'Move Downwards' button to be gray
-                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).style.color = '#606060';
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
                 }
            
             },
@@ -362,25 +362,25 @@ window.View = (function()
 
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
 
-                    //TODO Should the things below be done in a separate method?
+                    //TODO Should the things below be done in a separate method? (And consolidated with the similar logic in AddListElements)
 
                     //If the new List Item is the first one in the List, set both reorder buttons to be gray
                     if (lastListItemElement == null)
                     {
-                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).style.color = '#606060';
-                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).style.color = '#606060';
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
                     }
                     //Else, if the new List Item is not the first one in the List...
                     else
                     {
                         //Set the previous List Item's 'Move Downwards' button to be black
-                        document.getElementById('MoveDownwards-'.concat(lastListItemElement.id)).style.color = 'black';
+                        document.getElementById('MoveDownwards-'.concat(lastListItemElement.id)).firstChild.style.color = 'black';
 
                         //Set the new List Item's 'Move Upwards' button to be black
-                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).style.color = 'black';
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = 'black';
 
                         //Set the new List Item's 'Move Downwards' button to be gray
-                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).style.color = '#606060';
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
                     }
 
                     window.DebugController.Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
