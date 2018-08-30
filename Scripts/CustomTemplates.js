@@ -38,14 +38,14 @@ window.CustomTemplates = (function ()
 
     function createListWrapperFromTemplate(listId)
     {
-        return CreateNewElement('div', [ ['id',listId], ['class','container-fluid'], ['hidden', 'true'] ]);
+        return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
     }
 
     function createListToggleFromTemplate(data)
     {
         window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
 
-        var wrapper = CreateNewElement('div', [ ['id','ListToggle-'.concat(data.listId)], ['class','row divItemRow divListToggleWrapper'] ]);
+        var wrapper = CreateNewElement('div', [ ['id',data.listId], ['class','row divItemRow divListToggleWrapper'] ]);
 
         /* Name Toggle/Button */
 
@@ -116,14 +116,29 @@ window.CustomTemplates = (function ()
             CreateNewElement('i', [['class','fa fa-trash']])
         );
 
+        /* Create Re-order Buttons */
+        var buttonMoveUpwards = CreateNewElement(
+            'button', 
+            [ ['id','MoveUpwards-'.concat(id)], ['type','button'] ], 
+            CreateNewElement('i', [['class','fa fa-arrow-up']])
+        );
+
+        var buttonMoveDownwards = CreateNewElement(
+            'button', 
+            [ ['id','MoveDownwards-'.concat(id)], ['type','button'] ], 
+            CreateNewElement('i', [['class','fa fa-arrow-down']])
+        );
+
         /* Create Element Wrappers */
         var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], editNameTextarea);
         var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], buttonDelete);
+        var divButtonMoveUpwards = CreateNewElement('div', [ ['class','col-2'] ], buttonMoveUpwards);
+        var divButtonMoveDownwards = CreateNewElement('div', [ ['class','col-2'] ], buttonMoveDownwards);
         
         var settingsRowClass = (parentType == 'list') ? 'row divSettingsWrapperRow divListSettingsWrapperRow' : 'row divSettingsWrapperRow';
 
         //TODO could consider only having to pass custom classes (i.e. the helper function would create element with default classes, and then add on any custom ones passed to it).
-        var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete], rowClass:settingsRowClass});
+        var wrapper  = CreateCollapsibleView({collapsibleId:'SettingsView-'.concat(id), collapsibleClass:'collapse container-fluid divSettingsWrapper', collapsedChildren:[divTextareaName, divButtonDelete, divButtonMoveUpwards, divButtonMoveDownwards], rowClass:settingsRowClass});
 
         /* Setup Listeners */
         //When the animation to expand the Settings View ends, scroll the Settings View into view

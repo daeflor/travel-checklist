@@ -1,8 +1,6 @@
 window.StorageManager = (function () 
 {
-    //function Storage() {}
-
-    /** Utility Methods **/
+    /** General Storage Utility Methods **/
 
     function loadValueFromLocalStorage(name)
     {
@@ -30,7 +28,7 @@ window.StorageManager = (function ()
         }
     }
 
-    /** List-Specific Methods **/
+    /** Checklist Storage Utility Methods (Private) **/
 
     function storeListData(data)
     {
@@ -44,6 +42,55 @@ window.StorageManager = (function ()
 
         return JSON.parse(rawStorageData);
     }
+
+    function findListInStorage(listId, callback)
+    {
+        //Get the parsed data from storage
+        var parsedStorageData = getParsedDataFromStorage();
+
+        //Traverse the stored List data for one that matches the given List ID
+        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+        {
+            //If the List IDs match, call the passed callback method and end execution of this method
+            if (parsedStorageData.lists[i].id == listId)
+            {
+                callback(parsedStorageData, i);
+                return;
+            }
+        } 
+
+        window.DebugController.LogError('ERROR: Unable to find requested List in Storage');
+    }
+
+    function findListItemInStorage(listId, listItemId, callback)
+    {
+        //Set up he callback method to execute when a List matching the given ID is found
+        var findListItem = function(data, listIndex)
+        {
+            //Traverse the List Items array of the returned List Object, searching for one that matches the given List Item ID
+            for (var i = data.lists[listIndex].listItems.length-1; i >= 0; i--)
+            {
+                //If the List Item IDs match, call the passed callback method and end execution of this method
+                if (data.lists[listIndex].listItems[i].id == listItemId)
+                {
+                    callback(data, listIndex, i);
+                    return;
+                }
+            } 
+
+            window.DebugController.LogError('ERROR: Unable to find requested List Item in Storage');
+        };
+        
+        //Search for the List in storage and, if it's found, execute the callback method
+        findListInStorage(listId, findListItem);
+    }
+
+    //TODO Add JSDoc comments to each of the methods below, and add any other comments as needed
+
+    //TODO A lot of this logic could probably be handled in the Model instead. Once it has the List or List Item object it needs and doesn't interact with Storage or JSON. 
+        //TODO Model could have a getLists method that could either return the lists from local storage or from a local variable that stores this
+
+    /** Publicly Exposed Methods To Access & Modify List Data In Storage **/
 
     function getListStorageData()
     {
@@ -61,315 +108,210 @@ window.StorageManager = (function ()
         callback(newList);
     }
 
-    function editListNameInStorage(listId, updatedName)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored list data for one that matches the given ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
+    function modifyList(command, listId, callback, parameters)
+    {       
+        var commands = 
         {
-            if (parsedStorageData.lists[i].id == listId)
+            EditName : function(data, listIndex, commandSucceededCallback)
             {
-                //Update the name of the matching list object
-                parsedStorageData.lists[i].name = updatedName;
-                break;
-            }
-        } 
+                //Update the name of the returned List object
+                data.lists[listIndex].name = parameters.updatedName;
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
-    }
-
-    function removeListFromStorage(listId)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored list data for one that matches the given ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            },
+            MoveUpwards : function(data, listIndex, commandSucceededCallback)
             {
-                window.DebugController.Print("Removing List from Storage. List ID: " + listId);
-                //Remove the matching List object from the lists array
-                parsedStorageData.lists.splice(i, 1);
-                break;
-            }
-        } 
-
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
-    }
-
-    function addListItemToStorage(listId, newListItem, callback)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //Add the new List Item to the matching List object
-                parsedStorageData.lists[i].listItems.push(newListItem);
-                break;
-            }
-        } 
-
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
-
-        callback(newListItem);
-    }
-
-    function editListItemNameInStorage(listId, listItemId, updatedName)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
+                //If the List Item is not the first in the List...
+                if (listIndex > 0)
                 {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //Update the name of the matching ListItem object
-                        parsedStorageData.lists[i].listItems[j].name = updatedName;
-                        break;
-                    }
-                } 
-            }
-        } 
+                    //Swap the positions of the List matching the given ID, and the previous List in the array
+                    var prevList = data.lists[listIndex-1];
+                    data.lists[listIndex-1] = data.lists[listIndex];
+                    data.lists[listIndex] = prevList;
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
-    }
-
-    function editListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback)
-    {
-    //Get the parsed data from storage
-    var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
-            {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //TODO Error handling here wouldn't hurt
-
-                        var dataModified = false;
-                        var quantities = parsedStorageData.lists[i].listItems[j].quantities;
-
-                        //Increment or decrement the specified List Item's quantity value as applicable
-
-                        // if (assignmentType == 'set')
-                        // {
-                        //     if (quantities[quantityType] != assignment.value)
-                        //     {
-                        //         quantities[quantityType] = assignment.value;
-                        //         dataModified = true;
-                        //     }                            
-                        // }
-                        // if (assignmentType == 'clear')
-                        // {
-                        //     if (quantities[quantityType] != 0)
-                        //     {
-                        //         quantities[quantityType] = 0;
-                        //         dataModified = true;
-                        //     }                            
-                        // }
-                        if (assignmentType == 'decrement')
-                        {
-                            if (quantities[quantityType] > 0)
-                            {
-                                quantities[quantityType]--;
-                                dataModified = true;
-                            }
-                        }
-                        else if (assignmentType == 'increment')
-                        {
-                            quantities[quantityType]++;
-                            dataModified = true;
-                        }
-                        else 
-                        {
-                            window.DebugController.LogError("ERROR: Tried to make in invalid modification to a quantity value in storage. List Item ID: " + listItemId);
-                        }
-            
-                        //If the quantity value was actually changed, store the updated data and perform the callback
-                        if (dataModified == true)
-                        {
-                            storeListData(parsedStorageData);
-                            callback(quantities); //TODO is it correct to only call the callback under certain circumstances?... I think it's fine if the alternative is an ERROR message
-                        }
-                                                
-                        break;
-                    }
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(prevList.id);
                 }
-            }
-        } 
-    }
-
-    function clearListQuantityColumnInStorage(listId, quantityType, callback)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
+            },
+            MoveDownwards : function(data, listIndex, commandSucceededCallback)
             {
-                //var dataModified = false;
+                //If the List is not the last in the Lists array...
+                if (listIndex < data.lists.length-1)
+                {
+                    //Swap the positions of the List matching the given ID, and the next List in the array
+                    var nextList = data.lists[listIndex+1];
+                    data.lists[listIndex+1] = data.lists[listIndex];
+                    data.lists[listIndex] = nextList;
+
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(nextList.id);
+                }
+            },
+            AddListItem : function(data, listIndex, commandSucceededCallback)
+            {
+                //Add the new List Item to the returned List object
+                data.lists[listIndex].listItems.push(parameters.newListItem);
+
+                //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
+                commandSucceededCallback(parameters.newListItem);
+            },
+            ClearQuantityValues : function(data, listIndex, commandSucceededCallback)
+            {
+                //Initialize an array to keep track of any List Items that will have a quantity value be modified
                 var modifiedListItems = [];
 
-                //If the List IDs match, traverse the list's items array
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {      
-                    //If the List Item's quantity value for the given type is not 0, set it to 0              
-                    if (parsedStorageData.lists[i].listItems[j].quantities[quantityType] != 0)
+                var clearQuantityValue = function(listItem)
+                {
+                    //If the quantity value for the given quantity type is not already set to zero...
+                    if (listItem.quantities[parameters.quantityType] != 0)
                     {
-                        parsedStorageData.lists[i].listItems[j].quantities[quantityType] = 0;
-                        modifiedListItems.push(parsedStorageData.lists[i].listItems[j]);
-                    }  
-                }
+                        //Set the quantity value to zero
+                        listItem.quantities[parameters.quantityType] = 0;
 
-                //If any quantity value was actually changed, store the updated data and perform the callback
+                        //Add the List Item to the array of modified List Items
+                        modifiedListItems.push(listItem);
+                    }
+                };
+
+                //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
+                data.lists[listIndex].listItems.forEach(clearQuantityValue);
+           
+                //If the quantity value of any List Item was actually changed...
                 if (modifiedListItems.length > 0)
                 {
-                    storeListData(parsedStorageData);
-                    callback(modifiedListItems); //TODO is it correct to only call the callback under certain circumstances?... In this case the alternative isn't an error.. But if the view doesn't need to get updated, it seems right to not call back
+                    //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
+                    commandSucceededCallback(modifiedListItems);
                 }
-
-                break;
-            }
-        } 
-    }
-
-    function removeListItemFromStorage(listId, listItemId)
-    {
-        //Get the parsed data from storage
-        var parsedStorageData = getParsedDataFromStorage();
-
-        //Traverse the stored List data for one that matches the given List ID
-        for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-        {
-            if (parsedStorageData.lists[i].id == listId)
+            },
+            Remove : function(data, listIndex, commandSucceededCallback)
             {
-                //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-                for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-                {
-                    if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-                    {
-                        //Remove the matching List Item object from the List's items array
-                        parsedStorageData.lists[i].listItems.splice(j, 1);
-                        break;
-                    }
-                }
-            }
-        } 
+                //Remove the returned List object from the lists array
+                data.lists.splice(listIndex, 1);
 
-        //Store the updated storage data object
-        storeListData(parsedStorageData);
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            }
+        };
+
+        //TODO Is it possible to somehow merge this with the same method in modifyListItem?... Maybe at least the commandSucceededCallback can be abstracted? But it wouldn't help much
+        //Set up the callback method to execute when a List matching the given ID is found
+        var runCommand = function(data, listIndex)
+        {
+            //Set up the callback method to execute once the given command has been executed successfully 
+            var commandSucceededCallback = function(args)
+            {       
+                //Store the updated data object
+                storeListData(data);
+
+                //Execute the provided callback method, passing the returned arguments if not null
+                args != null ? callback(args) : callback();
+            };
+
+            //Execute the method matching the given command
+            commands[command](data, listIndex, commandSucceededCallback);
+        }
+
+        //Search for the List in storage and, if it's found, execute the method matching the given command
+        findListInStorage(listId, runCommand);
     }
 
-    //TODO I still think this could be useful. If the error messages are in this method, error handling and messages could be omitted from any of the above methods calling this one...
-    // function findListInStorage(listId)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
+    function modifyListItem(command, listId, listItemId, callback, parameters)
+    {       
+        var commands = 
+        {
+            EditName : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //Update the name of the returned List Item object
+                data.lists[listIndex].listItems[listItemIndex].name = parameters.updatedName;
 
-    //     //Traverse the stored List data for one that matches the given List ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //If the List IDs match, return the list object 
-    //             return parsedStorageData.lists[i]
-    //         }
-    //     } 
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            },
+            MoveUpwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //If the List Item is not the first in the List...
+                if (listItemIndex > 0)
+                {
+                    //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
+                    var prevListItem = data.lists[listIndex].listItems[listItemIndex-1];
+                    data.lists[listIndex].listItems[listItemIndex-1] = data.lists[listIndex].listItems[listItemIndex];
+                    data.lists[listIndex].listItems[listItemIndex] = prevListItem;
 
-    //     console.log('ERROR: Unable to find requested List in Storage');
-    // }
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+                    commandSucceededCallback(prevListItem.id);
+                }
+            },
+            MoveDownwards : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //If the List Item is not the last in the List...
+                if (listItemIndex < data.lists[listIndex].listItems.length-1)
+                {
+                    //Swap the positions of the List Item matching the given ID, and the next List Item in the array
+                    var nextListItem = data.lists[listIndex].listItems[listItemIndex+1];
+                    data.lists[listIndex].listItems[listItemIndex+1] = data.lists[listIndex].listItems[listItemIndex];
+                    data.lists[listIndex].listItems[listItemIndex] = nextListItem;
 
-    //TODO This ended up complicating things even more. A simple solution could be to have this return an object with both a ListItem and parsedStorage sub-object, but this seems like an incorrect way of handling this
-    // function findListItemInStorage(listId, listItemId, callback)
-    // {
-    //     var list = findListInStorage(listId);
+                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+                    commandSucceededCallback(nextListItem.id);
+                }
+            },
+            DecrementQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //TODO would it make sense to store this value in the Model so as not to have to access storage unnecessarily? Probably not worth making a change like that just for this case... 
+                //If the quantity value for the given quantity type is greater than zero...
+                if (data.lists[listIndex].listItems[listItemIndex].quantities[parameters.quantityType] > 0)
+                {
+                    //Decrement the quantity value by one
+                    data.lists[listIndex].listItems[listItemIndex].quantities[parameters.quantityType]--;
 
-    //     if (list != null)
-    //     {
-    //         //Traverse the list's items array, searching for one that matches the given ListItem ID
-    //         for (var i = list.listItems.length-1; i >= 0; i--)
-    //         {
-    //             if (list.listItems[i].id == listItemId)
-    //             {
-    //                 //If the ListItem IDs match, return the list item object 
-    //                 //return list.listItems[i];
-    //                 callback(list.listItems[i]);
-    //             }
-    //         } 
-    //     }
+                    //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
+                    commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
+                }
+            },
+            IncrementQuantityValue : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //Increment the quantity value for the given quantity type by one
+                data.lists[listIndex].listItems[listItemIndex].quantities[parameters.quantityType]++;
+                
+                //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
+                commandSucceededCallback(data.lists[listIndex].listItems[listItemIndex]);
+            },
+            Remove : function(data, listIndex, listItemIndex, commandSucceededCallback)
+            {
+                //Remove the returned List Item object from the List Items array
+                data.lists[listIndex].listItems.splice(listItemIndex, 1);
 
-    //     console.log('ERROR: Unable to find requested ListItem in Storage');
-    // }
+                //Execute the provided callback method once the command has been successfully executed
+                commandSucceededCallback();
+            }
+        };
 
-    //TODO Could re-use the traversing code with callbacks, rather than always repeating code in this file
-        //This is the attempt to see if this idea works
-        //TODO see if this method can be utilized by the methods above, in some form. Could also create a similar one for finding just a List
-    // function findListItemInStorage(listId, listItemId)
-    // {
-    //     //Get the parsed data from storage
-    //     var parsedStorageData = getParsedDataFromStorage();
+        //Set up the callback method to execute when a List Item matching the given ID is found
+        var runCommand = function(data, listIndex, listItemIndex)
+        {
+            //Set up the callback method to execute once the given command has been executed successfully 
+            var commandSucceededCallback = function(args)
+            {       
+                //Store the updated data object
+                storeListData(data);
 
-    //     //Traverse the stored List data for one that matches the given List ID
-    //     for (var i = parsedStorageData.lists.length-1; i >= 0; i--)
-    //     {
-    //         if (parsedStorageData.lists[i].id == listId)
-    //         {
-    //             //If the List IDs match, traverse the list's items array, searching for one that matches the given ListItem ID
-    //             for (var j = parsedStorageData.lists[i].listItems.length-1; j >= 0; j--)
-    //             {
-    //                 if (parsedStorageData.lists[i].listItems[j].id == listItemId)
-    //                 {
-    //                     return parsedStorageData.lists[i].listItems[j];
-    //                     // callback();
-    //                     // break;
-    //                 }
-    //             } 
-    //         }
-    //     } 
+                //Execute the provided callback method, passing the returned arguments if not null
+                args != null ? callback(args) : callback();
+            };
 
-    //     console.log('ERROR: Unable to find requested ListItem in Storage');
-    // }
+            //Execute the method matching the given command
+            commands[command](data, listIndex, listItemIndex, commandSucceededCallback);
+        }
 
-
-    // function getListItemDataFromStorage(listId, listItemId)
-    // {
-    //     return findListItemInStorage(listId, listItemId);
-    // }
+        //Search for the List Item in storage and, if it's found, execute the method matching the given command
+        findListItemInStorage(listId, listItemId, runCommand);
+    }
 
     return {
-        StoreListData : storeListData,
         GetListStorageData : getListStorageData,
         AddListToStorage : addListToStorage,
-        EditListNameInStorage : editListNameInStorage,
-        RemoveListFromStorage : removeListFromStorage,
-        AddListItemToStorage : addListItemToStorage,
-        EditListItemNameInStorage : editListItemNameInStorage,
-        EditListItemQuantityInStorage : editListItemQuantityInStorage,
-        ClearListQuantityColumnInStorage : clearListQuantityColumnInStorage,
-        RemoveListItemFromStorage : removeListItemFromStorage
+        ModifyList : modifyList,
+        ModifyListItem : modifyListItem
     };
 })();  

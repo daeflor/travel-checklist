@@ -17,14 +17,30 @@ window.Model = (function()
         window.StorageManager.AddListToStorage(newList, callback);
     }
 
-    function editListName(listId, updatedValue)
+    function editListName(listId, callback, updatedName)
     {
-        window.StorageManager.EditListNameInStorage(listId, updatedValue);
+        window.StorageManager.ModifyList('EditName', listId, callback, {updatedName:updatedName});
     }
 
-    function removeList(listId)
+    function moveListUpwards(listId, callback)
     {
-        window.StorageManager.RemoveListFromStorage(listId);
+        window.StorageManager.ModifyList('MoveUpwards', listId, callback);
+    }
+
+    //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
+    function moveListDownwards(listId, callback)
+    {
+        window.StorageManager.ModifyList('MoveDownwards', listId, callback);
+    }
+
+    function clearListQuantityColumn(listId, quantityType, callback)
+    {
+        window.StorageManager.ModifyList('ClearQuantityValues', listId, callback, {quantityType:quantityType});
+    }
+
+    function removeList(listId, callback)
+    {
+        window.StorageManager.ModifyList('Remove', listId, callback);
     }
 
     function createListItem(listId, callback)
@@ -40,38 +56,58 @@ window.Model = (function()
             }
         };
         
-        window.StorageManager.AddListItemToStorage(listId, newListItem, callback);
+        window.StorageManager.ModifyList('AddListItem', listId, callback, {newListItem:newListItem});
     }
 
-    function editListItemName(listId, listItemId, updatedValue)
+    function editListItemName(listId, listItemId, callback, updatedName)
     {
-        window.StorageManager.EditListItemNameInStorage(listId, listItemId, updatedValue);
+        window.StorageManager.ModifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
+    }
+
+    function moveListItemUpwards(listId, listItemId, callback)
+    {
+        window.StorageManager.ModifyListItem('MoveUpwards', listId, listItemId, callback);
+    }
+
+    //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
+    function moveListItemDownwards(listId, listItemId, callback)
+    {
+        window.StorageManager.ModifyListItem('MoveDownwards', listId, listItemId, callback);
     }
 
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
     {
-        window.StorageManager.EditListItemQuantityInStorage(listId, listItemId, quantityType, assignmentType, callback);
+        //TODO Should probably move the logic here to the Controller?...
+
+        if (assignmentType == 'decrement')
+        {
+            window.StorageManager.ModifyListItem('DecrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        }
+        else if(assignmentType == 'increment')
+        {
+            window.StorageManager.ModifyListItem('IncrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType, assignmentType:assignmentType});
+        }
     }
 
-    function clearListQuantityColumn(listId, quantityType, callback)
+    function removeListItem(listId, listItemId, callback)
     {
-        window.StorageManager.ClearListQuantityColumnInStorage(listId, quantityType, callback);
-    }
-
-    function removeListItem(listId, listItemId)
-    {
-        window.StorageManager.RemoveListItemFromStorage(listId, listItemId);
+        window.StorageManager.ModifyListItem('Remove', listId, listItemId, callback);
     }
 
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
+    //TODO Update this file to use methods similar to Render or Bind in the View
     return {
         LoadData : loadData,
         CreateList : createList,
         EditListName : editListName,
+        MoveListUpwards : moveListUpwards,
+        MoveListDownwards : moveListDownwards,
         RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
+        MoveListItemUpwards : moveListItemUpwards,
+        MoveListItemDownwards : moveListItemDownwards,
         EditListItemQuantity : editListItemQuantity,
         ClearListQuantityColumn : clearListQuantityColumn,
         RemoveListItem : removeListItem

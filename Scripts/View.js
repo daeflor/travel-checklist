@@ -115,15 +115,47 @@ window.View = (function()
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
-            var buttonDelete = document.getElementById('Delete-'.concat(parameters.id));
+            var button = document.getElementById('Delete-'.concat(parameters.id));
 
-            if (buttonDelete != null)
+            if (button != null)
             {
-                buttonDelete.addEventListener('click', callback);         
+                button.addEventListener('click', callback);         
             }
             else
             {
                 window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+            }
+        }
+        else if (event === 'MoveUpwardsButtonPressed') 
+        {
+            //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
+
+            var button = document.getElementById('MoveUpwards-'.concat(parameters.id));
+
+            if (button != null)
+            {
+                button.addEventListener('click', callback);         
+            }
+            else
+            {
+                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
+            }
+        }
+        //TODO Look into merging the two clauses above and below
+        else if (event === 'MoveDownwardsButtonPressed') 
+        {
+            //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
+
+            //TODO maybe could have a util method that finds elements and handles error checking
+            var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
+
+            if (button != null)
+            {
+                button.addEventListener('click', callback);         
+            }
+            else
+            {
+                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Downwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveDownwards-'.concat(parameters.id));
             }
         }
         else if (event === 'QuantityPopoverShown') 
@@ -244,9 +276,10 @@ window.View = (function()
                 //Traverse all the List elements
                 for (var i = 0; i < elements.listScreenListElements.children.length; i++)
                 {
-                    if (elements.listScreenListElements.children[i].id == parameters.listId)
+                    //If the List element's ID contains the given List ID...
+                    if (elements.listScreenListElements.children[i].id.includes(parameters.listId))
                     {
-                        //If the List element matches the given listId, display that element
+                        //Display that element
                         elements.listScreenListElements.children[i].hidden = false;
 
                         //Set the Active List ID
@@ -269,6 +302,8 @@ window.View = (function()
             {
                 window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
+                var lastListElement = elements.homeScreenListElements.lastChild;
+                
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
                 
@@ -276,32 +311,98 @@ window.View = (function()
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
+                //If the new List is the first one in the Lists array, set both reorder buttons to be gray
+                if (lastListElement == null)
+                {
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                }
+                //Else, if the new List is not the first one in the List array...
+                else
+                {
+                    //TODO what a horrible name
+                    var lastListElementMoveDownwardsButton = document.getElementById('MoveDownwards-'.concat(lastListElement.id));
+
+                    window.DebugController.Print("Move Downwards button ID: " + lastListElementMoveDownwardsButton.id);
+
+                    if (lastListElementMoveDownwardsButton != null)
+                    {
+                        //Set the previous List's 'Move Downwards' button to be black
+                        lastListElementMoveDownwardsButton.firstChild.style.color = 'black';
+                    }
+                    else
+                    {
+                        window.DebugController.LogError("ERROR: Tried to set the color of the last List's Move Downwards button, but the List could not be found. List ID expected: " + parameters.listId);
+                    }
+
+                    //Set the new List's 'Move Upwards' button to be black
+                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = 'black';
+
+                    //Set the new List's 'Move Downwards' button to be gray
+                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                }
+           
             },
-            removeList: function() //Expected parameters: listId
+            RemoveList: function() //Expected parameters: listId
             {
                 //Remove the List element from the Lists wrapper
-                document.getElementById(parameters.listId).remove();
+                document.getElementById('ListWrapper-'.concat(parameters.listId)).remove();
 
                 //Remove the List Toggle element from the Lists of Lists wrapper
-                document.getElementById('ListToggle-'.concat(parameters.listId)).remove();
+                document.getElementById(parameters.listId).remove();
             },
             AddListItem: function() 
             {
-                var listWrapper = document.getElementById(parameters.listId);
+                var listWrapper = document.getElementById('ListWrapper-'.concat(parameters.listId));
                 
                 if (listWrapper != null)
                 {
+                    //var listItemElement = window.CustomTemplates.CreateListItemFromTemplate(parameters);
+                    var lastListItemElement = listWrapper.lastChild;
+
                     listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
+
+                    //TODO Should the things below be done in a separate method? (And consolidated with the similar logic in AddListElements)
+
+                    //If the new List Item is the first one in the List, set both reorder buttons to be gray
+                    if (lastListItemElement == null)
+                    {
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                    }
+                    //Else, if the new List Item is not the first one in the List...
+                    else
+                    {
+                        //Set the previous List Item's 'Move Downwards' button to be black
+                        document.getElementById('MoveDownwards-'.concat(lastListItemElement.id)).firstChild.style.color = 'black';
+
+                        //Set the new List Item's 'Move Upwards' button to be black
+                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = 'black';
+
+                        //Set the new List Item's 'Move Downwards' button to be gray
+                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                    }
+
                     window.DebugController.Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
                 }
                 else
                 {
                     window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
-                }      
+                }    
             },
-            removeListItem: function() 
+            RemoveListItem: function() 
             {
-                document.getElementById(parameters.listItemId).remove();
+                var listItem = document.getElementById(parameters.listItemId);
+
+                //If the quantity toggle element was found, update the text content of the toggle to the new value
+                if (listItem != null)
+                {
+                    listItem.remove();
+                }
+                else
+                {
+                    window.DebugController.LogError("ERROR: Tried to remove a List Item from the View but it could not be found. List Item ID: " + parameters.listItemId);
+                }
             },
             updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
@@ -389,7 +490,41 @@ window.View = (function()
                     //TODO Could at least create a helper method to find and return the toggle element
                 var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
                 $(toggle).popover('hide');
-            }         
+            },
+            SwapListObjects: function()
+            {
+                var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
+                var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
+                elementToMoveUpwards.parentElement.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
+
+                var buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveUpwards.id));
+                var buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveUpwards.id));
+                
+                if (elementToMoveUpwards.previousElementSibling == null)
+                {
+                    buttonMoveUpwards.firstChild.style.color = '#606060';
+                }
+                else
+                {
+                    buttonMoveUpwards.firstChild.style.color = 'black';
+                }
+
+                buttonMoveDownwards.firstChild.style.color = 'black';
+
+                buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveDownwards.id));
+                buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveDownwards.id));
+                
+                if (elementToMoveDownwards.nextElementSibling == null)
+                {
+                    buttonMoveDownwards.firstChild.style.color = '#606060';
+                }
+                else
+                {
+                    buttonMoveDownwards.firstChild.style.color = 'black';
+                }
+
+                buttonMoveUpwards.firstChild.style.color = 'black';
+            },
         };
 
         viewCommands[command]();

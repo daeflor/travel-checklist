@@ -1,7 +1,7 @@
 window.DebugController = (function()
 {
     var debugModeEnabled = false;
-    var VERSION = '0.0.4';
+    var VERSION = '0.0.5';
 
     //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
     document.addEventListener('DOMContentLoaded', setup, {once:true});
@@ -41,12 +41,13 @@ window.DebugController = (function()
         }
     }
 
+    //TODO It's possible for there to be errors before the DOM has finished loading, therefore before the DebugView has been initialized 
     function logError(logString)
     {
+        console.log(logString);
+
         window.DebugView.Render('SetVersionVisibility', {debugMode:true}); //TODO this is janky
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:'Error'});
-
-        console.log(logString);
     }
 
     return {
