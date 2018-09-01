@@ -24,22 +24,36 @@ window.ListController = (function()
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
-        //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
-        window.Model.LoadData(function(lists) 
+        // //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
+        // window.Model.GetLists(function(lists) 
+        // {
+        //     window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
+
+        //     for (var i = 0; i < lists.length; i++) 
+        //     {
+        //         addListToView(lists[i]);
+
+        //         for (var j = 0; j < lists[i].listItems.length; j++) 
+        //         {
+        //             addListItemToView(lists[i].id, lists[i].listItems[j])
+        //             //addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
+        //         }
+        //     }
+        // });
+
+        var lists = window.Model.GetLists();
+
+        window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
+
+        for (var i = 0; i < lists.length; i++) 
         {
-            window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
+            addListToView(lists[i]);
 
-            for (var i = 0; i < lists.length; i++) 
+            for (var j = 0; j < lists[i].listItems.length; j++) 
             {
-                addListToView(lists[i]);
-
-                for (var j = 0; j < lists[i].listItems.length; j++) 
-                {
-                    addListItemToView(lists[i].id, lists[i].listItems[j])
-                    //addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
-                }
+                addListItemToView(lists[i].id, lists[i].listItems[j])
             }
-        });
+        }
     }
 
     //TODO this is hard to read
@@ -79,7 +93,7 @@ window.ListController = (function()
     {
         //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
 
-        window.Model.CreateList(function(data)
+        window.Model.AddList(function(data)
         {
             addListToView(data);
 

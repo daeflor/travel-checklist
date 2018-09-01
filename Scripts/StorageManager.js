@@ -64,7 +64,7 @@ window.StorageManager = (function ()
 
     function findListItemInStorage(listId, listItemId, callback)
     {
-        //Set up he callback method to execute when a List matching the given ID is found
+        //Set up the callback method to execute when a List matching the given ID is found
         var findListItem = function(data, listIndex)
         {
             //Traverse the List Items array of the returned List Object, searching for one that matches the given List Item ID
@@ -122,7 +122,7 @@ window.StorageManager = (function ()
             },
             MoveUpwards : function(data, listIndex, commandSucceededCallback)
             {
-                //If the List Item is not the first in the List...
+                //If the List is not the first in the List...
                 if (listIndex > 0)
                 {
                     //Swap the positions of the List matching the given ID, and the previous List in the array
@@ -309,9 +309,12 @@ window.StorageManager = (function ()
     }
 
     return {
-        GetListStorageData : getListStorageData,
-        AddListToStorage : addListToStorage,
-        ModifyList : modifyList,
-        ModifyListItem : modifyListItem
+        // GetListStorageData : getListStorageData,
+        // AddListToStorage : addListToStorage,
+        // ModifyList : modifyList,
+        // ModifyListItem : modifyListItem,
+
+        RetrieveChecklistData : getParsedDataFromStorage,
+        StoreChecklistData : storeListData
     };
 })();  
