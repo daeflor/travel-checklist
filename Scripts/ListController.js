@@ -384,7 +384,7 @@ window.ListController = (function()
             'MoveDownwardsButtonPressed', 
             function() 
             {
-                window.DebugController.Print("Button pressed to swap List Item positions");
+                //window.DebugController.Print("Button pressed to swap List Item positions");
 
                 window.Model.MoveListItemDownwards(listId, listItem.id, function(swapId) {
                     window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItem.id});

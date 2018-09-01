@@ -1,3 +1,4 @@
+'use strict';
 window.View = (function() 
 {
     //var self = this;
@@ -64,6 +65,44 @@ window.View = (function()
         else { window.DebugController.LogError("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
+    function getChecklistElement(prefix, id, callback)
+    {
+        var commands = 
+        {
+            GoToList : function()
+            {
+                GetElement((prefix.concat('-').concat(id)), callback);
+            }
+        };
+
+        commands[prefix]();
+    }
+
+    function getChecklistElementId(prefix, suffix)
+    {
+        return (prefix.concat('-').concat(suffix));
+    }
+
+    function addListener(elementOptions, eventType, callback, callbackArg)
+    {
+        //TODO should probably get rid of this. See below TODOS towards bottom of bind
+        var eventTriggeredCallback = function(event)
+        {
+            //Execute the provided callback method, passing the given argument if not undefined
+            //callbackArg !== undefined ? callback(callbackArg) : callback();
+            callbackArg !== undefined ? callback(elements[callbackArg]) : callback(event);
+        };
+        
+        var elementFoundCallback = function(element)
+        {
+            element.addEventListener(eventType, eventTriggeredCallback);
+        };
+
+        var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
+        
+        GetElement(id, elementFoundCallback);
+    }
+
     //TODO do something with this or remove it
     // function hideActiveSettingsView()
     // {
@@ -97,70 +136,103 @@ window.View = (function()
         }
         else if (event === 'GoToListButtonPressed') //Expected parameters: listId
         {
-            //Set the behavior for when the Add List button is pressed
-            document.getElementById('GoToList-'.concat(parameters.listId)).addEventListener('click', callback);         
+            //Set the behavior for when a Go To List button is pressed
+
+            // var elementFoundCallback = function(element)
+            // {
+            //     element.addEventListener('click', callback);
+            // }
+
+            // getChecklistElement('GoToList', parameters.listId, elementFoundCallback);
+
+
+            //addListener({prefix:'GoToList', id:parameters.listId}, 'click', {method:callback});
+            addListener({prefix:'GoToList', id:parameters.listId}, 'click', callback);
+
+            //document.getElementById('GoToList-'.concat(parameters.listId)).addEventListener('click', callback);         
         }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
-            document.getElementById('buttonAddRow').addEventListener(
-                'click', 
-                function()
-                {
-                    callback(activeListId);
-                }  
-            );         
+
+            // var elementFoundCallback = function(element)
+            // {
+            //     element.addEventListener('click', callback(elements.activeListId));
+            // }
+
+            // GetElement('buttonAddRow', elementFoundCallback);
+
+            addListener({id:'buttonAddRow'}, 'click', callback, 'activeListId');
+
+            // document.getElementById('buttonAddRow').addEventListener(
+            //     'click', 
+            //     function()
+            //     {
+            //         //window.DebugController.Print("Active List ID: " + activeListId + ". elements.activeListId: " + elements.activeListId);
+            //         callback(elements.activeListId);
+            //     }  
+            // );         
         }
         else if (event === 'DeleteButtonPressed') 
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
 
-            var button = document.getElementById('Delete-'.concat(parameters.id));
+            addListener({prefix:'Delete', id:parameters.id}, 'click', callback);
 
-            if (button != null)
-            {
-                button.addEventListener('click', callback);         
-            }
-            else
-            {
-                window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
-            }
+            // var button = document.getElementById('Delete-'.concat(parameters.id));
+
+            // if (button != null)
+            // {
+            //     button.addEventListener('click', callback);         
+            // }
+            // else
+            // {
+            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
+            // }
         }
         else if (event === 'MoveUpwardsButtonPressed') 
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
 
-            var button = document.getElementById('MoveUpwards-'.concat(parameters.id));
+            addListener({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
 
-            if (button != null)
-            {
-                button.addEventListener('click', callback);         
-            }
-            else
-            {
-                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
-            }
+            // var button = document.getElementById('MoveUpwards-'.concat(parameters.id));
+
+            // if (button != null)
+            // {
+            //     button.addEventListener('click', callback);         
+            // }
+            // else
+            // {
+            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
+            // }
         }
         //TODO Look into merging the two clauses above and below
         else if (event === 'MoveDownwardsButtonPressed') 
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
 
-            //TODO maybe could have a util method that finds elements and handles error checking
-            var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
+            addListener({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
 
-            if (button != null)
-            {
-                button.addEventListener('click', callback);         
-            }
-            else
-            {
-                window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Downwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveDownwards-'.concat(parameters.id));
-            }
+            // //TODO maybe could have a util method that finds elements and handles error checking
+            // var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
+
+            // if (button != null)
+            // {
+            //     button.addEventListener('click', callback);         
+            // }
+            // else
+            // {
+            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Downwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveDownwards-'.concat(parameters.id));
+            // }
         }
         else if (event === 'QuantityPopoverShown') 
         {
             window.DebugController.Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            
+            //TODO since popover functionality requires JQuery, maybe should rename addListener to addOnclickListener and remove eventType param
+                //TODO also need to include quantity type
+            //addListener({prefix:'QuantityToggle', id:parameters.listItemId}, 'click', callback);
             
             //Find the popover toggle element based on the given quantity type and List Item ID
             var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
@@ -178,21 +250,28 @@ window.View = (function()
         }
         else if (event === 'ClearButtonPressed') 
         {
-            document.getElementById('buttonClear').addEventListener(
-                'click', 
-                function()
-                {
-                    callback(activeListId);
-                }  
-            ); 
+            addListener({id:'buttonClear'}, 'click', callback, 'activeListId');
+
+            // document.getElementById('buttonClear').addEventListener(
+            //     'click', 
+            //     function()
+            //     {
+            //         window.DebugController.Print("Active List ID: " + activeListId + ". elements.activeListId: " + elements.activeListId);
+            //         callback(elements.activeListId);
+            //     }  
+            // ); 
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
-            document.getElementById('buttonMinus').addEventListener('click', callback);         
+            addListener({id:'buttonMinus'}, 'click', callback);
+
+            //document.getElementById('buttonMinus').addEventListener('click', callback);         
         }
         else if (event === 'IncrementQuantityButtonPressed')
         {
-            document.getElementById('buttonPlus').addEventListener('click', callback);      
+            addListener({id:'buttonPlus'}, 'click', callback);
+
+            //document.getElementById('buttonPlus').addEventListener('click', callback);      
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
@@ -212,6 +291,24 @@ window.View = (function()
         }
         else if (event === 'NameEdited') //Expected parameters: id
         {
+            //TODO finish this. Will probably want/need to add something like this to the addListener method:
+                    //But maybe for eventTriggered?
+                    //maybe none of this makes sense at all...
+                    //Do this instead of passing callbackArg?
+                    // var elementFoundCallback = elementFoundCallback || function(element)
+                    // {
+                    //     callback(element.value);
+                    // }
+                    //I think actually we'd get rid of the eventTriggeredCallback part, and just pass callback to addListener. callback would either be callback (directly from Controller), or it would be a custom one that passes a param, like the one below. 
+
+
+            // var eventTriggeredCallback = function(element)
+            // {
+            //     callback(element.value);
+            // }
+            
+            // addListener({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);
+            
             var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
 
             if (editNameTextarea != null)
@@ -230,15 +327,23 @@ window.View = (function()
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
+            //TODO need to be able to pass eventlistener params, such as once. Using an object is probably the more correct way but could also do: elementOptions, callback, eventType, listenerOptions. Then the last param is optional.
             document.getElementById('divChecklistBody').addEventListener('click', callback, {once:true});
 
             window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
         else if (event === 'QuantityToggleSelected')
         {
-            var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
+            // var eventTriggeredCallback = function(event)
+            // {
+            //     callback(event);
+            // }
+
+            addListener({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', callback);
             
-            document.getElementById(toggleId).addEventListener('click', callback);
+            // var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
+            
+            // document.getElementById(toggleId).addEventListener('click', callback);
         }
     }
 
@@ -283,7 +388,7 @@ window.View = (function()
                         elements.listScreenListElements.children[i].hidden = false;
 
                         //Set the Active List ID
-                        activeListId = parameters.listId;
+                        elements.activeListId = parameters.listId;
                     } 
                     else if (elements.listScreenListElements.children[i].hidden == false)
                     {

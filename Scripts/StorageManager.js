@@ -59,7 +59,7 @@ window.StorageManager = (function ()
             }
         } 
 
-        window.DebugController.LogError('ERROR: Unable to find requested List in Storage');
+        window.DebugController.LogError("ERROR: Unable to find requested List in Storage. List ID: " + listId);
     }
 
     function findListItemInStorage(listId, listItemId, callback)
