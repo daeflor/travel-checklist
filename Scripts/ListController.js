@@ -197,7 +197,8 @@ window.ListController = (function()
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListUpwards(data.id, function(swapId) {
+                //TODO could probably just return the swapped list instead of specifically it's ID
+                window.Model.ModifyList('MoveUpwards', data.id, function(swapId) {
                     window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swapId});
                 });
             }, 
@@ -209,7 +210,8 @@ window.ListController = (function()
             'MoveDownwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListDownwards(data.id, function(swapId) {
+                //TODO could probably just return the swapped list instead of specifically it's ID
+                window.Model.ModifyList('MoveDownwards', data.id, function(swapId) {
                     window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:data.id});
                 });
             }, 

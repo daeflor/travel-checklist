@@ -105,6 +105,7 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
+                //TODO could probably just return the swapped list instead of specifically it's ID and let the Controller figure it out
                 //Set up the callback method to execute when the Lists have been swapped
                 var listsSwappedCallback = function(swappedList)
                 {
@@ -117,17 +118,15 @@ window.Model = (function()
             },
             MoveDownwards : function(listIndex, commandSucceededCallback)
             {
-                //If the List is not the last in the Lists array...
-                if (listIndex < getLists().length-1)
+                //Set up the callback method to execute when the Lists have been swapped
+                var listsSwappedCallback = function(swappedList)
                 {
-                    //Swap the positions of the List matching the given ID, and the next List in the array
-                    var nextList = getLists()[listIndex+1];
-                    getLists()[listIndex+1] = getLists()[listIndex];
-                    getLists()[listIndex] = nextList;
-
-                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
-                    commandSucceededCallback(nextList.id);
+                    //Execute the provided callback method, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(swappedList.id);
                 }
+
+                //Swap the positions of the List matching the given ID, and the next List in the array
+                swapElementsInArray(getLists(), listIndex, listIndex+1, listsSwappedCallback);
             },
             AddListItem : function(listIndex, commandSucceededCallback)
             {
@@ -326,65 +325,9 @@ window.Model = (function()
 
 //////
 
-    function swapElementsInArray(array, index, indexToSwap, callback)
-    {
-        // //If the List Item is not the first in the List...
-        // if (listItemIndex > 0)
-        // {
-        //     //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
-        //     var prevListItem = getLists()[listIndex].listItems[listItemIndex-1];
-        //     getLists()[listIndex].listItems[listItemIndex-1] = getLists()[listIndex].listItems[listItemIndex];
-        //     getLists()[listIndex].listItems[listItemIndex] = prevListItem;
-
-        //     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
-        //     commandSucceededCallback(prevListItem.id);
-        // }
-
-        // //If the List Item is not the last in the List...
-        // if (listItemIndex < getLists()[listIndex].listItems.length-1)
-        // {
-        //     //Swap the positions of the List Item matching the given ID, and the next List Item in the array
-        //     var nextListItem = getLists()[listIndex].listItems[listItemIndex+1];
-        //     getLists()[listIndex].listItems[listItemIndex+1] = getLists()[listIndex].listItems[listItemIndex];
-        //     getLists()[listIndex].listItems[listItemIndex] = nextListItem;
-
-        //     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
-        //     commandSucceededCallback(nextListItem.id);
-        // }
-
-        //Declare the element in the array that should be swapped with the one selected
-        var elementToSwap = array[indexToSwap];
-
-        //If the element is not null...
-        if (elementToSwap != null)
-        {
-            //Swap the positions of the elements in the array
-            array[indexToSwap] = array[index];
-            array[index] = elementToSwap;
-
-            //Execute the provided callback method once the swap has been executed, passing the swapped element as an argument
-            callback(elementToSwap);
-        }
-        else
-        {
-            window.DebugController.Print("Unable to swap elements in array as the element to swap with is not defined");
-        }
-    }
-
-    function moveListUpwards(listId, callback)
-    {
-        modifyList('MoveUpwards', listId, callback);
-    }
-
     //TODO might be able to standardize reorder / move upwards/downwards by passing it an array (getLists() or getLists(x).listItems)
         //It doesn't necessarily need to know which array it is, it can just generically reorder objects
-
-
-    //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
-    function moveListDownwards(listId, callback)
-    {
-        modifyList('MoveDownwards', listId, callback);
-    }
+    //TODO Can they be standardized to work for both List and List Item, and both Up and Down?
 
     function clearListQuantityColumn(listId, quantityType, callback)
     {
@@ -453,15 +396,9 @@ window.Model = (function()
     //TODO Update this file to use methods similar to Render or Bind in the View
     return {
         RetrieveChecklistData : retrieveChecklistData,
-        // GetLists : getLists,
         AddList : addList,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem,
-        //LoadData : loadData,
-        // CreateList : createList,
-        // EditListName : editListName,
-        MoveListUpwards : moveListUpwards,
-        MoveListDownwards : moveListDownwards,
         RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
