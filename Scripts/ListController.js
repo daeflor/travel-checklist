@@ -24,26 +24,12 @@ window.ListController = (function()
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
-        // //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
-        // window.Model.GetLists(function(lists) 
-        // {
-        //     window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
+        window.Model.RetrieveChecklistData(loadListsIntoView);
+    }
 
-        //     for (var i = 0; i < lists.length; i++) 
-        //     {
-        //         addListToView(lists[i]);
-
-        //         for (var j = 0; j < lists[i].listItems.length; j++) 
-        //         {
-        //             addListItemToView(lists[i].id, lists[i].listItems[j])
-        //             //addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
-        //         }
-        //     }
-        // });
-
-        var lists = window.Model.GetLists();
-
-        window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
+    function loadListsIntoView(lists)
+    {
+        window.DebugController.Print("Number of Lists retrieved from Model: " + lists.length);
 
         for (var i = 0; i < lists.length; i++) 
         {
@@ -51,10 +37,25 @@ window.ListController = (function()
 
             for (var j = 0; j < lists[i].listItems.length; j++) 
             {
-                addListItemToView(lists[i].id, lists[i].listItems[j])
+                addListItemToView(lists[i].id, lists[i].listItems[j]);
             }
         }
     }
+
+    // function loadListsIntoView(lists)
+    // {
+    //     var loadList = function(list)
+    //     {
+    //         addListToView(list);
+
+    //         for (var i = 0; i < list.listItems.length; i++) 
+    //         {
+    //             addListItemToView(list.id, list.listItems[i]);
+    //         }
+    //     };
+
+    //     lists.forEach(loadList);
+    // }
 
     //TODO this is hard to read
     function bindQuantityHeaderToggleEvents(quantityType)
@@ -131,10 +132,13 @@ window.ListController = (function()
                 window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
             };
 
+            //TODO updatedName/Value should be consistent
+
             //Update the Model
-            window.Model.EditListName(data.id, updateView, updatedValue);
+            window.Model.ModifyList('EditName', data.id, updateView, {updatedName:updatedValue});
         };
 
+        //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
         //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind('NameEdited', updateName, {id:data.id});
 

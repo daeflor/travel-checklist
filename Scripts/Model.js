@@ -2,22 +2,26 @@ window.Model = (function()
 {
     var checklistData;
 
+    //TODO Add JSDoc comments to each of the methods here/below, and add any other comments as needed
+
     /** Private Checklist Data Utility Methods **/
 
+    function getLists() 
+    {
+        //If checklist data already has been loaded from storage
+        if (checklistData != null)
+        {
+            //Return the Lists array
+            return checklistData.lists;
+        }
+
+        window.DebugController.LogError("ERROR: Checklist data is null");
+    }
+    
     function storeChecklistData()
     {
         window.StorageManager.StoreChecklistData(checklistData);
     }
-
-    // function retrieveChecklistData(callback)
-    // {
-    //     checklistData = window.StorageManager.RetrieveChecklistData();
-
-    //     window.DebugController.Print("Checklist data retrieved from storage");
-
-    //     //TODO this callback should be passed through to the storage method call (above)
-    //     callback();        
-    // }
 
     function findList(listId, callback)
     {
@@ -59,34 +63,17 @@ window.Model = (function()
     }
 
     /** Publicly Exposed Methods To Access & Modify List Data **/
-    
-    function getLists() 
+
+    //TODO it might make more sense to do this in some sort of init method
+    function retrieveChecklistData(callback)
     {
-        //If this is the first time trying to access the checklist data, retrieve it from storage
-        if (checklistData == null)
-        {
-            checklistData = window.StorageManager.RetrieveChecklistData();
-            window.DebugController.Print("Checklist data retrieved from storage");
-        }
+        checklistData = window.StorageManager.RetrieveChecklistData();
 
-        //Return the Lists array
-        return checklistData.lists;
+        window.DebugController.Print("Checklist data retrieved from storage");
+
+        //TODO this callback should be passed through to the storage method call (above)
+        callback(checklistData.lists);        
     }
-
-    //TODO this whole async idea is kind of dumb
-        //Adding a separate method to load the storage data on init could help future proof if storage is ever async, but it seems a waste of effort to bother trying to make this work for the time being
-
-    // function getLists() 
-    // {
-    //     var returnListsArray = function()
-    //     {
-    //         //Return the Lists array
-    //         return checklistData.lists;
-    //     }
-
-    //     //If the checklist data is null, retrieve it from storage and return it, otherwise return the existing data object
-    //     checklistData == null ? retrieveChecklistData(returnListsArray) : returnListsArray();
-    // }
 
     function addList(callback)
     {
@@ -361,15 +348,19 @@ window.Model = (function()
     //     window.StorageManager.AddListToStorage(newList, callback);
     // }
 
-    function editListName(listId, callback, updatedName)
-    {
-        modifyList('EditName', listId, callback, {updatedName:updatedName});
-    }
+    // function editListName(listId, callback, updatedName)
+    // {
+    //     modifyList('EditName', listId, callback, {updatedName:updatedName});
+    // }
 
     function moveListUpwards(listId, callback)
     {
         modifyList('MoveUpwards', listId, callback);
     }
+
+    //TODO might be able to standardize reorder / move upwards/downwards by passing it an array (getLists() or getLists(x).listItems)
+        //It doesn't necessarily need to know which array it is, it can just generically reorder objects
+
 
     //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
     function moveListDownwards(listId, callback)
@@ -443,13 +434,14 @@ window.Model = (function()
 
     //TODO Update this file to use methods similar to Render or Bind in the View
     return {
-        GetLists : getLists,
+        RetrieveChecklistData : retrieveChecklistData,
+        // GetLists : getLists,
         AddList : addList,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem,
         //LoadData : loadData,
         // CreateList : createList,
-        EditListName : editListName,
+        // EditListName : editListName,
         MoveListUpwards : moveListUpwards,
         MoveListDownwards : moveListDownwards,
         RemoveList : removeList,
