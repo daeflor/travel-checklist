@@ -105,17 +105,15 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
-                //If the List is not the first in the List...
-                if (listIndex > 0)
+                //Set up the callback method to execute when the Lists have been swapped
+                var listsSwappedCallback = function(swappedList)
                 {
-                    //Swap the positions of the List matching the given ID, and the previous List in the array
-                    var prevList = getLists()[listIndex-1];
-                    getLists()[listIndex-1] = getLists()[listIndex];
-                    getLists()[listIndex] = prevList;
-
-                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List as an argument
-                    commandSucceededCallback(prevList.id);
+                    //Execute the provided callback method, passing the ID of the swapped List as an argument
+                    commandSucceededCallback(swappedList.id);
                 }
+                
+                //Swap the positions of the List matching the given ID, and the previous List in the array
+                swapElementsInArray(getLists(), listIndex, listIndex-1, listsSwappedCallback);
             },
             MoveDownwards : function(listIndex, commandSucceededCallback)
             {
@@ -326,32 +324,52 @@ window.Model = (function()
     //     }
     // }
 
-
-
-
 //////
 
-    // function loadData(callback)
-    // {
-    //     callback(window.StorageManager.GetListStorageData());
-    // }
+    function swapElementsInArray(array, index, indexToSwap, callback)
+    {
+        // //If the List Item is not the first in the List...
+        // if (listItemIndex > 0)
+        // {
+        //     //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
+        //     var prevListItem = getLists()[listIndex].listItems[listItemIndex-1];
+        //     getLists()[listIndex].listItems[listItemIndex-1] = getLists()[listIndex].listItems[listItemIndex];
+        //     getLists()[listIndex].listItems[listItemIndex] = prevListItem;
 
-    // function createList(callback)
-    // {
-    //     var newList = {
-	// 		id : new Date().getTime(), 
-    //         name : '',
-    //         type: ListType.Travel,
-    //         listItems : []
-    //     };
-        
-    //     window.StorageManager.AddListToStorage(newList, callback);
-    // }
+        //     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+        //     commandSucceededCallback(prevListItem.id);
+        // }
 
-    // function editListName(listId, callback, updatedName)
-    // {
-    //     modifyList('EditName', listId, callback, {updatedName:updatedName});
-    // }
+        // //If the List Item is not the last in the List...
+        // if (listItemIndex < getLists()[listIndex].listItems.length-1)
+        // {
+        //     //Swap the positions of the List Item matching the given ID, and the next List Item in the array
+        //     var nextListItem = getLists()[listIndex].listItems[listItemIndex+1];
+        //     getLists()[listIndex].listItems[listItemIndex+1] = getLists()[listIndex].listItems[listItemIndex];
+        //     getLists()[listIndex].listItems[listItemIndex] = nextListItem;
+
+        //     //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
+        //     commandSucceededCallback(nextListItem.id);
+        // }
+
+        //Declare the element in the array that should be swapped with the one selected
+        var elementToSwap = array[indexToSwap];
+
+        //If the element is not null...
+        if (elementToSwap != null)
+        {
+            //Swap the positions of the elements in the array
+            array[indexToSwap] = array[index];
+            array[index] = elementToSwap;
+
+            //Execute the provided callback method once the swap has been executed, passing the swapped element as an argument
+            callback(elementToSwap);
+        }
+        else
+        {
+            window.DebugController.Print("Unable to swap elements in array as the element to swap with is not defined");
+        }
+    }
 
     function moveListUpwards(listId, callback)
     {
