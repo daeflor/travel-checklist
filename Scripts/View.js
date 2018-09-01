@@ -65,37 +65,29 @@ window.View = (function()
         else { window.DebugController.LogError("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
     }
 
-    function getChecklistElement(prefix, id, callback)
-    {
-        var commands = 
-        {
-            GoToList : function()
-            {
-                GetElement((prefix.concat('-').concat(id)), callback);
-            }
-        };
+    // function getChecklistElement(prefix, id, callback)
+    // {
+    //     var commands = 
+    //     {
+    //         GoToList : function()
+    //         {
+    //             GetElement((prefix.concat('-').concat(id)), callback);
+    //         }
+    //     };
 
-        commands[prefix]();
-    }
+    //     commands[prefix]();
+    // }
 
-    function getChecklistElementId(prefix, suffix)
-    {
-        return (prefix.concat('-').concat(suffix));
-    }
+    // function getChecklistElementId(prefix, suffix)
+    // {
+    //     return (prefix.concat('-').concat(suffix));
+    // }
 
     function addListener(elementOptions, eventType, callback, callbackArg)
-    {
-        //TODO should probably get rid of this. See below TODOS towards bottom of bind
-        var eventTriggeredCallback = function(event)
-        {
-            //Execute the provided callback method, passing the given argument if not undefined
-            //callbackArg !== undefined ? callback(callbackArg) : callback();
-            callbackArg !== undefined ? callback(elements[callbackArg]) : callback(event);
-        };
-        
+    {        
         var elementFoundCallback = function(element)
         {
-            element.addEventListener(eventType, eventTriggeredCallback);
+            element.addEventListener(eventType, callback);
         };
 
         var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
@@ -103,19 +95,12 @@ window.View = (function()
         GetElement(id, elementFoundCallback);
     }
 
-    //TODO do something with this or remove it
-    // function hideActiveSettingsView()
-    // {
-        
-    // }
-
     //TODO Bind and Render events should probably have distinct names
     //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
         //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
 
     //TODO How can you have the parameters param before the callback param but still have the former be optional?
-    //TODO There are still some things that can be bound here. ALL event listeners should be bound here
     //TODO standardize between parameter, parameters, options, data, etc.
     /**
      * @param {string} event The name used to identify the event being bound
@@ -155,76 +140,28 @@ window.View = (function()
         {
             //Set the behavior for when the Add List Item button is pressed
 
-            // var elementFoundCallback = function(element)
-            // {
-            //     element.addEventListener('click', callback(elements.activeListId));
-            // }
+            var eventTriggeredCallback = function()
+            {
+                callback(elements.activeListId);
+            }
 
-            // GetElement('buttonAddRow', elementFoundCallback);
-
-            addListener({id:'buttonAddRow'}, 'click', callback, 'activeListId');
-
-            // document.getElementById('buttonAddRow').addEventListener(
-            //     'click', 
-            //     function()
-            //     {
-            //         //window.DebugController.Print("Active List ID: " + activeListId + ". elements.activeListId: " + elements.activeListId);
-            //         callback(elements.activeListId);
-            //     }  
-            // );         
+            addListener({id:'buttonAddRow'}, 'click', eventTriggeredCallback);      
         }
         else if (event === 'DeleteButtonPressed') 
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-
             addListener({prefix:'Delete', id:parameters.id}, 'click', callback);
-
-            // var button = document.getElementById('Delete-'.concat(parameters.id));
-
-            // if (button != null)
-            // {
-            //     button.addEventListener('click', callback);         
-            // }
-            // else
-            // {
-            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Delete button that couldn't be found. Delete button ID expected: " + 'Delete-'.concat(parameters.id));
-            // }
         }
         else if (event === 'MoveUpwardsButtonPressed') 
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-
             addListener({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
-
-            // var button = document.getElementById('MoveUpwards-'.concat(parameters.id));
-
-            // if (button != null)
-            // {
-            //     button.addEventListener('click', callback);         
-            // }
-            // else
-            // {
-            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Upwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveUpwards-'.concat(parameters.id));
-            // }
         }
         //TODO Look into merging the two clauses above and below
         else if (event === 'MoveDownwardsButtonPressed') 
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-
             addListener({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
-
-            // //TODO maybe could have a util method that finds elements and handles error checking
-            // var button = document.getElementById('MoveDownwards-'.concat(parameters.id));
-
-            // if (button != null)
-            // {
-            //     button.addEventListener('click', callback);         
-            // }
-            // else
-            // {
-            //     window.DebugController.LogError("ERROR: Tried to add an event listener to a Move Downwards button that couldn't be found. Move Upwards button ID expected: " + 'MoveDownwards-'.concat(parameters.id));
-            // }
         }
         else if (event === 'QuantityPopoverShown') 
         {
@@ -250,28 +187,20 @@ window.View = (function()
         }
         else if (event === 'ClearButtonPressed') 
         {
-            addListener({id:'buttonClear'}, 'click', callback, 'activeListId');
+            var eventTriggeredCallback = function()
+            {
+                callback(elements.activeListId);
+            }
 
-            // document.getElementById('buttonClear').addEventListener(
-            //     'click', 
-            //     function()
-            //     {
-            //         window.DebugController.Print("Active List ID: " + activeListId + ". elements.activeListId: " + elements.activeListId);
-            //         callback(elements.activeListId);
-            //     }  
-            // ); 
+            addListener({id:'buttonClear'}, 'click', eventTriggeredCallback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
             addListener({id:'buttonMinus'}, 'click', callback);
-
-            //document.getElementById('buttonMinus').addEventListener('click', callback);         
         }
         else if (event === 'IncrementQuantityButtonPressed')
         {
             addListener({id:'buttonPlus'}, 'click', callback);
-
-            //document.getElementById('buttonPlus').addEventListener('click', callback);      
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
@@ -334,16 +263,12 @@ window.View = (function()
         }
         else if (event === 'QuantityToggleSelected')
         {
-            // var eventTriggeredCallback = function(event)
-            // {
-            //     callback(event);
-            // }
+            var eventTriggeredCallback = function(event)
+            {
+                callback(event);
+            }
 
-            addListener({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', callback);
-            
-            // var toggleId = parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId);
-            
-            // document.getElementById(toggleId).addEventListener('click', callback);
+            addListener({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', eventTriggeredCallback);
         }
     }
 
