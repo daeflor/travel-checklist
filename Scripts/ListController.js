@@ -24,23 +24,38 @@ window.ListController = (function()
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
-        //TODO It's weird to be loading All List data but pasing a callback to Add one List. 
-        window.Model.LoadData(function(lists) 
-        {
-            window.DebugController.Print("Number of Lists retrieved from Storage: " + lists.length);
-
-            for (var i = 0; i < lists.length; i++) 
-            {
-                addListToView(lists[i]);
-
-                for (var j = 0; j < lists[i].listItems.length; j++) 
-                {
-                    addListItemToView(lists[i].id, lists[i].listItems[j])
-                    //addListItemToView(lists[i].id, lists[i].listItems[j].id, lists[i].listItems[j].name, lists[i].listItems[j].quantities);
-                }
-            }
-        });
+        window.Model.RetrieveChecklistData(loadListsIntoView);
     }
+
+    function loadListsIntoView(lists)
+    {
+        window.DebugController.Print("Number of Lists retrieved from Model: " + lists.length);
+
+        for (var i = 0; i < lists.length; i++) 
+        {
+            addListToView(lists[i]);
+
+            for (var j = 0; j < lists[i].listItems.length; j++) 
+            {
+                addListItemToView(lists[i].id, lists[i].listItems[j]);
+            }
+        }
+    }
+
+    // function loadListsIntoView(lists)
+    // {
+    //     var loadList = function(list)
+    //     {
+    //         addListToView(list);
+
+    //         for (var i = 0; i < list.listItems.length; i++) 
+    //         {
+    //             addListItemToView(list.id, list.listItems[i]);
+    //         }
+    //     };
+
+    //     lists.forEach(loadList);
+    // }
 
     //TODO this is hard to read
     function bindQuantityHeaderToggleEvents(quantityType)
@@ -54,23 +69,31 @@ window.ListController = (function()
                     {
                         window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
 
-                        window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) 
+                        //TODO this could be handled more efficiently 
+                        var modelUpdated = function(modifiedListItems)
                         {
-                            //Traverse the array of all List Items that had a quantity value cleared 
-                            for (var i = 0; i < modifiedListItems.length; i++)
-                            {
-                                //Update the List Item's quantity value for the given type
-                                updateListItemQuantityText(modifiedListItems[i], quantityType);
-                                
-                                //Update the List Item name's color
-                                updateListItemNameColor(modifiedListItems[i]);
-                            }
-                        });
+                            clearQuantitiesInView(modifiedListItems, quantityType);
+                        };
+
+                        window.Model.ModifyList('ClearQuantityValues', listId, modelUpdated, {quantityType:quantityType});
                     }
                 );
             },
             {quantityType:quantityType}
         );
+    }
+
+    function clearQuantitiesInView(listItems, quantityType)
+    {
+        //Traverse the array of List Items
+        for (var i = 0; i < listItems.length; i++)
+        {
+            //Update the List Item's quantity value for the given type
+            updateListItemQuantityText(listItems[i], quantityType);
+            
+            //Update the List Item name's color
+            updateListItemNameColor(listItems[i]);
+        }
     }
 
     /** List Management **/
@@ -79,7 +102,7 @@ window.ListController = (function()
     {
         //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
 
-        window.Model.CreateList(function(data)
+        window.Model.AddList(function(data)
         {
             addListToView(data);
 
@@ -117,10 +140,13 @@ window.ListController = (function()
                 window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
             };
 
+            //TODO updatedName/Value should be consistent
+
             //Update the Model
-            window.Model.EditListName(data.id, updateView, updatedValue);
+            window.Model.ModifyList('EditName', data.id, updateView, {updatedName:updatedValue});
         };
 
+        //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
         //Add an event listener for when the Text Area to edit the List Item name is modified
         window.View.Bind('NameEdited', updateName, {id:data.id});
 
@@ -146,7 +172,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.RemoveList(data.id, updateView);
+            window.Model.ModifyList('Remove', data.id, updateView);
         };
 
         //Add an event listener for when the button to delete a List is pressed
@@ -179,8 +205,9 @@ window.ListController = (function()
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListUpwards(data.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swapId});
+                //TODO could probably just return the swapped list instead of specifically it's ID
+                window.Model.ModifyList('MoveUpwards', data.id, function(swappedList) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swappedList.id});
                 });
             }, 
             {id:data.id}
@@ -191,8 +218,9 @@ window.ListController = (function()
             'MoveDownwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListDownwards(data.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:data.id});
+                //TODO could probably just return the swapped list instead of specifically it's ID
+                window.Model.ModifyList('MoveDownwards', data.id, function(swappedList) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedList.id, moveDownwardsId:data.id});
                 });
             }, 
             {id:data.id}
@@ -219,7 +247,8 @@ window.ListController = (function()
 
     function AddNewListItem(listId)
     {
-        window.Model.CreateListItem(
+        window.Model.ModifyList(
+            'AddListItem', 
             listId,
             function(newListItem) 
             {
@@ -323,7 +352,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.EditListItemName(listId, listItem.id, updateView, updatedValue);
+            window.Model.ModifyListItem('EditName', listId, listItem.id, updateView, {updatedName:updatedValue});
         };
 
         //Add an event listener for when the Text Area to edit the List Item name is modified
@@ -349,7 +378,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.RemoveListItem(listId, listItem.id, updateView);
+            window.Model.ModifyListItem('Remove', listId, listItem.id, updateView);
         };
 
         //Add an event listener to the Delete Button to remove the List Item
@@ -372,8 +401,8 @@ window.ListController = (function()
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListItemUpwards(listId, listItem.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swapId});
+                window.Model.ModifyListItem('MoveUpwards', listId, listItem.id, function(swappedListItem) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swappedListItem.id});
                 });
             }, 
             {id:listItem.id}
@@ -386,8 +415,8 @@ window.ListController = (function()
             {
                 //window.DebugController.Print("Button pressed to swap List Item positions");
 
-                window.Model.MoveListItemDownwards(listId, listItem.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItem.id});
+                window.Model.ModifyListItem('MoveDownwards', listId, listItem.id, function(swappedListItem) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});
                 });
             }, 
             {id:listItem.id}
@@ -396,12 +425,23 @@ window.ListController = (function()
 
     //TODO I think there can probably be a ListController and a ListItemController. Except then it might not be possible to share functions across both in a logical way...
 
+    //TODO Don't really like this (for example, usage of assignmentType)
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
     {
-        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedListItem) {
+        var modelUpdated = function(updatedListItem)
+        {
             updateListItemQuantityText(updatedListItem, quantityType);
             updateListItemNameColor(updatedListItem);
-        });
+        };
+
+        if (assignmentType == 'decrement')
+        {
+            window.Model.ModifyListItem('DecrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
+        }
+        else if(assignmentType == 'increment')
+        {
+            window.Model.ModifyListItem('IncrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
+        }
     }
 
     //TODO would it be better if View commands always received consistent paramters (e.g. a list object)
