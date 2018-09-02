@@ -1,6 +1,6 @@
 window.DebugController = (function()
 {
-    var debugModeEnabled = true;
+    var debugModeEnabled = false;
     var VERSION = '0.0.7';
 
     //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
