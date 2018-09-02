@@ -1,4 +1,4 @@
-/** Experimental & In Progress **/
+/** General Utilities **/
 
 function swapElementsInArray(array, index, indexToSwap, callback)
 {
@@ -20,6 +20,8 @@ function swapElementsInArray(array, index, indexToSwap, callback)
         window.DebugController.Print("Unable to swap elements in array as the element to swap with is not defined");
     }
 }
+
+/** Experimental & In Progress **/
 
 /** Unused Utilities **/
 

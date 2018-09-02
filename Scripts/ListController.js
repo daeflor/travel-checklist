@@ -198,8 +198,8 @@ window.ListController = (function()
             function() 
             {
                 //TODO could probably just return the swapped list instead of specifically it's ID
-                window.Model.ModifyList('MoveUpwards', data.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swapId});
+                window.Model.ModifyList('MoveUpwards', data.id, function(swappedList) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swappedList.id});
                 });
             }, 
             {id:data.id}
@@ -211,8 +211,8 @@ window.ListController = (function()
             function() 
             {
                 //TODO could probably just return the swapped list instead of specifically it's ID
-                window.Model.ModifyList('MoveDownwards', data.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:data.id});
+                window.Model.ModifyList('MoveDownwards', data.id, function(swappedList) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedList.id, moveDownwardsId:data.id});
                 });
             }, 
             {id:data.id}
@@ -392,8 +392,8 @@ window.ListController = (function()
             'MoveUpwardsButtonPressed', 
             function() 
             {
-                window.Model.MoveListItemUpwards(listId, listItem.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swapId});
+                window.Model.ModifyListItem('MoveUpwards', listId, listItem.id, function(swappedListItem) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swappedListItem.id});
                 });
             }, 
             {id:listItem.id}
@@ -406,8 +406,8 @@ window.ListController = (function()
             {
                 window.DebugController.Print("Button pressed to swap List Item positions");
 
-                window.Model.MoveListItemDownwards(listId, listItem.id, function(swapId) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swapId, moveDownwardsId:listItem.id});
+                window.Model.ModifyListItem('MoveDownwards', listId, listItem.id, function(swappedListItem) {
+                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});
                 });
             }, 
             {id:listItem.id}

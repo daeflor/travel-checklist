@@ -105,28 +105,13 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
-                //TODO could probably just return the swapped list instead of specifically it's ID and let the Controller figure it out
-                //Set up the callback method to execute when the Lists have been swapped
-                var listsSwappedCallback = function(swappedList)
-                {
-                    //Execute the provided callback method, passing the ID of the swapped List as an argument
-                    commandSucceededCallback(swappedList.id);
-                }
-                
-                //Swap the positions of the List matching the given ID, and the previous List in the array
-                swapElementsInArray(getLists(), listIndex, listIndex-1, listsSwappedCallback);
+                //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
+                swapElementsInArray(getLists(), listIndex, listIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, commandSucceededCallback)
             {
-                //Set up the callback method to execute when the Lists have been swapped
-                var listsSwappedCallback = function(swappedList)
-                {
-                    //Execute the provided callback method, passing the ID of the swapped List as an argument
-                    commandSucceededCallback(swappedList.id);
-                }
-
-                //Swap the positions of the List matching the given ID, and the next List in the array
-                swapElementsInArray(getLists(), listIndex, listIndex+1, listsSwappedCallback);
+                //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
+                swapElementsInArray(getLists(), listIndex, listIndex+1, commandSucceededCallback);
             },
             AddListItem : function(listIndex, commandSucceededCallback)
             {
@@ -221,31 +206,13 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //If the List Item is not the first in the List...
-                if (listItemIndex > 0)
-                {
-                    //Swap the positions of the List Item matching the given ID, and the previous List Item in the array
-                    var prevListItem = getLists()[listIndex].listItems[listItemIndex-1];
-                    getLists()[listIndex].listItems[listItemIndex-1] = getLists()[listIndex].listItems[listItemIndex];
-                    getLists()[listIndex].listItems[listItemIndex] = prevListItem;
-
-                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
-                    commandSucceededCallback(prevListItem.id);
-                }
+                //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
+                swapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //If the List Item is not the last in the List...
-                if (listItemIndex < getLists()[listIndex].listItems.length-1)
-                {
-                    //Swap the positions of the List Item matching the given ID, and the next List Item in the array
-                    var nextListItem = getLists()[listIndex].listItems[listItemIndex+1];
-                    getLists()[listIndex].listItems[listItemIndex+1] = getLists()[listIndex].listItems[listItemIndex];
-                    getLists()[listIndex].listItems[listItemIndex] = nextListItem;
-
-                    //Execute the provided callback method once the command has been successfully executed, passing the ID of the swapped List Item as an argument
-                    commandSucceededCallback(nextListItem.id);
-                }
+                //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
+                swapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -340,35 +307,13 @@ window.Model = (function()
     }
 
     function createListItem(listId, callback)
-    {
-        // var newListItem = {
-		// 	id : new Date().getTime(), 
-        //     name : '',
-        //     quantities : {
-        //         needed: 0,
-        //         luggage: 0,
-        //         wearing: 0,
-        //         backpack: 0
-        //     }
-        // };
-        
+    {        
         modifyList('AddListItem', listId, callback);
     }
 
     function editListItemName(listId, listItemId, callback, updatedName)
     {
         modifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
-    }
-
-    function moveListItemUpwards(listId, listItemId, callback)
-    {
-        modifyListItem('MoveUpwards', listId, listItemId, callback);
-    }
-
-    //TODO Can these be standardized to work for both List and List Item, and both Up and Down?
-    function moveListItemDownwards(listId, listItemId, callback)
-    {
-        modifyListItem('MoveDownwards', listId, listItemId, callback);
     }
 
     function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
@@ -402,8 +347,6 @@ window.Model = (function()
         RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
-        MoveListItemUpwards : moveListItemUpwards,
-        MoveListItemDownwards : moveListItemDownwards,
         EditListItemQuantity : editListItemQuantity,
         ClearListQuantityColumn : clearListQuantityColumn,
         RemoveListItem : removeListItem
