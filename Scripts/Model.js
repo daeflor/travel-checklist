@@ -214,6 +214,7 @@ window.Model = (function()
                 //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
                 SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
+            //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //If the quantity value for the given quantity type is greater than zero...
@@ -306,24 +307,14 @@ window.Model = (function()
         modifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
     }
 
-    function editListItemQuantity(listId, listItemId, quantityType, assignmentType, callback)
-    {
-        //TODO Should probably move the logic here to the Controller?...
-        //TODO having all of this here is temporary
-
-        if (assignmentType == 'decrement')
-        {
-            modifyListItem('DecrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType});
-        }
-        else if(assignmentType == 'increment')
-        {
-            modifyListItem('IncrementQuantityValue', listId, listItemId, callback, {quantityType:quantityType});
-        }
-    }
-
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     //TODO Update this file to use methods similar to Render or Bind in the View
+    //TODO could just have an Update method...
+    //TODO Lists and List Items could have a type value associated with them, then no extra type info would need to be passed from the Controller to a method such as 'Update', for example
+        //However, the additional data stored in Storage is a bit wasteful, and not really necessary, as it can be avoided with some extra code. 
+        //If a change like this is going to be made, might be worth doing that at the same time when (and if) the List Item index is modified to include the List index.
+        //Actually, having a type in the data object wouldn't really be necessary if the ID is modified as above. 
     return {
         RetrieveChecklistData : retrieveChecklistData,
         AddList : addList,
@@ -331,7 +322,6 @@ window.Model = (function()
         ModifyListItem : modifyListItem,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
-        EditListItemQuantity : editListItemQuantity,
         ClearListQuantityColumn : clearListQuantityColumn
     };
 })();

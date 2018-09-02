@@ -416,12 +416,23 @@ window.ListController = (function()
 
     //TODO I think there can probably be a ListController and a ListItemController. Except then it might not be possible to share functions across both in a logical way...
 
+    //TODO Don't really like this (for example, usage of assignmentType)
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
     {
-        Model.EditListItemQuantity(listId, listItemId, quantityType, assignmentType, function(updatedListItem) {
+        var modelUpdated = function(updatedListItem)
+        {
             updateListItemQuantityText(updatedListItem, quantityType);
             updateListItemNameColor(updatedListItem);
-        });
+        };
+
+        if (assignmentType == 'decrement')
+        {
+            window.Model.ModifyListItem('DecrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
+        }
+        else if(assignmentType == 'increment')
+        {
+            window.Model.ModifyListItem('IncrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
+        }
     }
 
     //TODO would it be better if View commands always received consistent paramters (e.g. a list object)
