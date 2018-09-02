@@ -91,6 +91,9 @@ window.Model = (function()
         callback(newList);
     }
 
+    //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
+        //Maybe keep MoifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
+        //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
     function modifyList(command, listId, callback, parameters)
     {       
         var commands = 
@@ -106,12 +109,12 @@ window.Model = (function()
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
                 //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
-                swapElementsInArray(getLists(), listIndex, listIndex-1, commandSucceededCallback);
+                SwapElementsInArray(getLists(), listIndex, listIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, commandSucceededCallback)
             {
                 //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
-                swapElementsInArray(getLists(), listIndex, listIndex+1, commandSucceededCallback);
+                SwapElementsInArray(getLists(), listIndex, listIndex+1, commandSucceededCallback);
             },
             AddListItem : function(listIndex, commandSucceededCallback)
             {
@@ -162,11 +165,8 @@ window.Model = (function()
             },
             Remove : function(listIndex, commandSucceededCallback)
             {
-                //Remove the returned List object from the lists array
-                getLists().splice(listIndex, 1);
-
-                //Execute the provided callback method once the command has been successfully executed
-                commandSucceededCallback();
+                //Remove the List object from the lists array and then execute the provided callback method
+                RemoveElementFromArray(getLists(), listIndex, commandSucceededCallback);
             }
         };
 
@@ -207,12 +207,12 @@ window.Model = (function()
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
-                swapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
+                SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
-                swapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
+                SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -236,11 +236,8 @@ window.Model = (function()
             },
             Remove : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Remove the returned List Item object from the List Items array
-                getLists()[listIndex].listItems.splice(listItemIndex, 1);
-
-                //Execute the provided callback method once the command has been successfully executed
-                commandSucceededCallback();
+                //Remove the List Item object from the listItems array and then execute the provided callback method
+                RemoveElementFromArray(getLists()[listIndex].listItems, listItemIndex, commandSucceededCallback);
             }
         };
 
@@ -292,18 +289,11 @@ window.Model = (function()
 
 //////
 
-    //TODO might be able to standardize reorder / move upwards/downwards by passing it an array (getLists() or getLists(x).listItems)
-        //It doesn't necessarily need to know which array it is, it can just generically reorder objects
-    //TODO Can they be standardized to work for both List and List Item, and both Up and Down?
+    //TODO Can reorder and other commands be standardized to work for both List and List Item, and both Up and Down?
 
     function clearListQuantityColumn(listId, quantityType, callback)
     {
         modifyList('ClearQuantityValues', listId, callback, {quantityType:quantityType});
-    }
-
-    function removeList(listId, callback)
-    {
-        modifyList('Remove', listId, callback);
     }
 
     function createListItem(listId, callback)
@@ -331,11 +321,6 @@ window.Model = (function()
         }
     }
 
-    function removeListItem(listId, listItemId, callback)
-    {
-        modifyListItem('Remove', listId, listItemId, callback);
-    }
-
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     //TODO Update this file to use methods similar to Render or Bind in the View
@@ -344,11 +329,9 @@ window.Model = (function()
         AddList : addList,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem,
-        RemoveList : removeList,
         CreateListItem : createListItem,
         EditListItemName : editListItemName,
         EditListItemQuantity : editListItemQuantity,
-        ClearListQuantityColumn : clearListQuantityColumn,
-        RemoveListItem : removeListItem
+        ClearListQuantityColumn : clearListQuantityColumn
     };
 })();

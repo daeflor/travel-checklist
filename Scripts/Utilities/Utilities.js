@@ -1,6 +1,6 @@
 /** General Utilities **/
 
-function swapElementsInArray(array, index, indexToSwap, callback)
+function SwapElementsInArray(array, index, indexToSwap, callback)
 {
     //Assign the element in the array that should be swapped with the one selected
     var elementToSwap = array[indexToSwap];
@@ -19,6 +19,15 @@ function swapElementsInArray(array, index, indexToSwap, callback)
     {
         window.DebugController.Print("Unable to swap elements in array as the element to swap with is not defined");
     }
+}
+
+function RemoveElementFromArray(array, index, callback)
+{
+    //Remove the element at the given index from the given array
+    array.splice(index, 1);
+
+    //Execute the provided callback method once the element has been removed from the array
+    callback();
 }
 
 /** Experimental & In Progress **/

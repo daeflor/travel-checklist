@@ -164,7 +164,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.RemoveList(data.id, updateView);
+            window.Model.ModifyList('Remove', data.id, updateView);
         };
 
         //Add an event listener for when the button to delete a List is pressed
@@ -369,7 +369,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.RemoveListItem(listId, listItem.id, updateView);
+            window.Model.ModifyListItem('Remove', listId, listItem.id, updateView);
         };
 
         //Add an event listener to the Delete Button to remove the List Item
