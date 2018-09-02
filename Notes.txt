@@ -12,6 +12,7 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
+- BUG: If you delete the first List or List Item, then the new first one has a black (enabled) Move Upwards button
 - Make a GetElement function with error handling
     - Perhaps also a GetElementOfType (e.g. to get a Name Button for list with ID x)
 - Model refactor?
