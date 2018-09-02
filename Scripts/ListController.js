@@ -69,23 +69,31 @@ window.ListController = (function()
                     {
                         window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
 
-                        window.Model.ClearListQuantityColumn(listId, quantityType, function(modifiedListItems) 
+                        //TODO this could be handled more efficiently 
+                        var modelUpdated = function(modifiedListItems)
                         {
-                            //Traverse the array of all List Items that had a quantity value cleared 
-                            for (var i = 0; i < modifiedListItems.length; i++)
-                            {
-                                //Update the List Item's quantity value for the given type
-                                updateListItemQuantityText(modifiedListItems[i], quantityType);
-                                
-                                //Update the List Item name's color
-                                updateListItemNameColor(modifiedListItems[i]);
-                            }
-                        });
+                            clearQuantitiesInView(modifiedListItems, quantityType);
+                        };
+
+                        window.Model.ModifyList('ClearQuantityValues', listId, modelUpdated, {quantityType:quantityType});
                     }
                 );
             },
             {quantityType:quantityType}
         );
+    }
+
+    function clearQuantitiesInView(listItems, quantityType)
+    {
+        //Traverse the array of List Items
+        for (var i = 0; i < listItems.length; i++)
+        {
+            //Update the List Item's quantity value for the given type
+            updateListItemQuantityText(listItems[i], quantityType);
+            
+            //Update the List Item name's color
+            updateListItemNameColor(listItems[i]);
+        }
     }
 
     /** List Management **/
@@ -239,7 +247,8 @@ window.ListController = (function()
 
     function AddNewListItem(listId)
     {
-        window.Model.CreateListItem(
+        window.Model.ModifyList(
+            'AddListItem', 
             listId,
             function(newListItem) 
             {
@@ -343,7 +352,7 @@ window.ListController = (function()
             };
 
             //Update the Model
-            window.Model.EditListItemName(listId, listItem.id, updateView, updatedValue);
+            window.Model.ModifyListItem('EditName', listId, listItem.id, updateView, {updatedName:updatedValue});
         };
 
         //Add an event listener for when the Text Area to edit the List Item name is modified

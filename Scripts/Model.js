@@ -62,6 +62,15 @@ window.Model = (function()
         findList(listId, findListItem);
     }
 
+    function editName(dataObject, updatedName, callback)
+    {
+        //Update the name of the List or List Item data object
+        dataObject.name = updatedName;
+
+        //Execute the provided callback method once the name has been updated
+        callback();
+    }
+
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
@@ -100,11 +109,8 @@ window.Model = (function()
         {
             EditName : function(listIndex, commandSucceededCallback)
             {
-                //Update the name of the returned List object
-                getLists()[listIndex].name = parameters.updatedName;
-
-                //Execute the provided callback method once the command has been successfully executed
-                commandSucceededCallback();
+                //Update the name of the List and then execute the provided callback method
+                editName(getLists()[listIndex], parameters.updatedName, commandSucceededCallback);
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
@@ -182,6 +188,8 @@ window.Model = (function()
 
                 //Execute the provided callback method, passing the returned arguments if not null
                 args != null ? callback(args) : callback();
+
+                //TODO it might be better to loop through the arguments array and then return all existing ones through the callback
             };
 
             //Execute the method matching the given command
@@ -198,11 +206,8 @@ window.Model = (function()
         {
             EditName : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Update the name of the returned List Item object
-                getLists()[listIndex].listItems[listItemIndex].name = parameters.updatedName;
-
-                //Execute the provided callback method once the command has been successfully executed
-                commandSucceededCallback();
+                //Update the name of the List Item and then execute the provided callback method
+                editName(getLists()[listIndex].listItems[listItemIndex], parameters.updatedName, commandSucceededCallback);
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -292,21 +297,6 @@ window.Model = (function()
 
     //TODO Can reorder and other commands be standardized to work for both List and List Item, and both Up and Down?
 
-    function clearListQuantityColumn(listId, quantityType, callback)
-    {
-        modifyList('ClearQuantityValues', listId, callback, {quantityType:quantityType});
-    }
-
-    function createListItem(listId, callback)
-    {        
-        modifyList('AddListItem', listId, callback);
-    }
-
-    function editListItemName(listId, listItemId, callback, updatedName)
-    {
-        modifyListItem('EditName', listId, listItemId, callback, {updatedName:updatedName});
-    }
-
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     //TODO Update this file to use methods similar to Render or Bind in the View
@@ -319,9 +309,6 @@ window.Model = (function()
         RetrieveChecklistData : retrieveChecklistData,
         AddList : addList,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem,
-        CreateListItem : createListItem,
-        EditListItemName : editListItemName,
-        ClearListQuantityColumn : clearListQuantityColumn
+        ModifyListItem : modifyListItem
     };
 })();
