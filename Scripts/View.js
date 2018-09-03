@@ -48,9 +48,8 @@ window.View = (function()
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
     }
 
-    //TODO It's weird that this is called 'get...' instead of 'doSomethingWith...'. Even 'find' might be better than get because 'get' implies a return statement instead of a callback...maybe?
-        //TODO 'Update' or 'Modify' ChecklistElement might fit better
-    function getChecklistElement(prefix, id, callback)
+    //TODO eventually this isn't going to work with prefix and ID separated like this
+    function updateChecklistElement(prefix, id, callback)
     {
         var id = prefix.concat('-').concat(id);
         
@@ -72,15 +71,14 @@ window.View = (function()
                 //Use JQuery to add the event listener
                 $(element).on(eventType, listener); 
             }
-            //Else, if the event type is of any other type
-            else
+            else //Else, if the event type is of any other type
             {
                 //Use vanilla JS to add the event listener
                 element.addEventListener(eventType, listener, options);
             }            
         };
 
-        //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (getChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
+        //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (updateChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
 
         //TODO I don't like this elementOptions system. Might be better to use getChecklistElementId, or some other solution
         //TODO Also, this isn't readable enough
@@ -399,8 +397,7 @@ window.View = (function()
                                               :                                     'rgb(77, 77, 77)'; //"darkgrey";
                 };
 
-                //TODO It's weird that this is called 'get...' instead of 'doSomethingWith...'. Even 'find' might be better than get because 'get' implies a return statement...maybe?
-                getChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
+                updateChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
             },
             ExpandSettingsView: function() 
             {
