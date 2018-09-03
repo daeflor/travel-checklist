@@ -67,15 +67,9 @@ window.View = (function()
 
     // function getChecklistElement(prefix, id, callback)
     // {
-    //     var commands = 
-    //     {
-    //         GoToList : function()
-    //         {
-    //             GetElement((prefix.concat('-').concat(id)), callback);
-    //         }
-    //     };
-
-    //     commands[prefix]();
+    //     var id = prefix.concat('-').concat(id);
+        
+    //     GetElement(id, callback);
     // }
 
     // function getChecklistElementId(prefix, suffix)
@@ -83,12 +77,14 @@ window.View = (function()
     //     return (prefix.concat('-').concat(suffix));
     // }
 
-    function addListener(elementOptions, eventType, callback, callbackArg)
+    function addListenerToChecklistElement(elementOptions, eventType, callback)
     {        
         var elementFoundCallback = function(element)
         {
             element.addEventListener(eventType, callback);
         };
+
+        //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (getChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
 
         var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
         
@@ -132,7 +128,7 @@ window.View = (function()
 
 
             //addListener({prefix:'GoToList', id:parameters.listId}, 'click', {method:callback});
-            addListener({prefix:'GoToList', id:parameters.listId}, 'click', callback);
+            addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
 
             //document.getElementById('GoToList-'.concat(parameters.listId)).addEventListener('click', callback);         
         }
@@ -145,23 +141,23 @@ window.View = (function()
                 callback(elements.activeListId);
             }
 
-            addListener({id:'buttonAddRow'}, 'click', eventTriggeredCallback);      
+            addListenerToChecklistElement({id:'buttonAddRow'}, 'click', eventTriggeredCallback);      
         }
         else if (event === 'DeleteButtonPressed') 
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            addListener({prefix:'Delete', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
         }
         else if (event === 'MoveUpwardsButtonPressed') 
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            addListener({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
         }
         //TODO Look into merging the two clauses above and below
         else if (event === 'MoveDownwardsButtonPressed') 
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            addListener({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
         }
         else if (event === 'QuantityPopoverShown') 
         {
@@ -192,15 +188,15 @@ window.View = (function()
                 callback(elements.activeListId);
             }
 
-            addListener({id:'buttonClear'}, 'click', eventTriggeredCallback);
+            addListenerToChecklistElement({id:'buttonClear'}, 'click', eventTriggeredCallback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
-            addListener({id:'buttonMinus'}, 'click', callback);
+            addListenerToChecklistElement({id:'buttonMinus'}, 'click', callback);
         }
         else if (event === 'IncrementQuantityButtonPressed')
         {
-            addListener({id:'buttonPlus'}, 'click', callback);
+            addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
@@ -231,28 +227,28 @@ window.View = (function()
                     //I think actually we'd get rid of the eventTriggeredCallback part, and just pass callback to addListener. callback would either be callback (directly from Controller), or it would be a custom one that passes a param, like the one below. 
 
 
-            // var eventTriggeredCallback = function(element)
-            // {
-            //     callback(element.value);
-            // }
+            var eventTriggeredCallback = function(event)
+            {
+                callback(event.target.value);
+            }
             
-            // addListener({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);
+            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);
             
             var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
 
-            if (editNameTextarea != null)
-            {
-                editNameTextarea.addEventListener(
-                    'change', 
-                    function() {
-                        callback(editNameTextarea.value);
-                    }
-                ); 
-            }
-            else
-            {
-                window.DebugController.LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
-            }  
+            // if (editNameTextarea != null)
+            // {
+            //     editNameTextarea.addEventListener(
+            //         'change', 
+            //         function() {
+            //             callback(editNameTextarea.value);
+            //         }
+            //     ); 
+            // }
+            // else
+            // {
+            //     window.DebugController.LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
+            // }  
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
@@ -268,7 +264,7 @@ window.View = (function()
                 callback(event);
             }
 
-            addListener({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', eventTriggeredCallback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', eventTriggeredCallback);
         }
     }
 
