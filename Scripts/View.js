@@ -232,23 +232,7 @@ window.View = (function()
                 callback(event.target.value);
             }
             
-            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);
-            
-            var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
-
-            // if (editNameTextarea != null)
-            // {
-            //     editNameTextarea.addEventListener(
-            //         'change', 
-            //         function() {
-            //             callback(editNameTextarea.value);
-            //         }
-            //     ); 
-            // }
-            // else
-            // {
-            //     window.DebugController.LogError("ERROR: Tried to add an event listener to an Edit Name Text Area that couldn't be found. Text Area ID expected: " + 'EditName-'.concat(parameters.id));
-            // }  
+            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
@@ -259,12 +243,7 @@ window.View = (function()
         }
         else if (event === 'QuantityToggleSelected')
         {
-            var eventTriggeredCallback = function(event)
-            {
-                callback(event);
-            }
-
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', eventTriggeredCallback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', callback);
         }
     }
 
