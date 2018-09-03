@@ -12,6 +12,7 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
+- All instances of document.getElementById should be replaced with a custom one that includes error handling
 - FindKVpInObjectsArray helper method for findList and findListItem
 - BUG: If you delete the first List or List Item, then the new first one has a black (enabled) Move Upwards button
 - BUG: After deleting the last List or List Item, the new last one has a black Move Downwards button, but it should be grayed out. 

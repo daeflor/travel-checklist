@@ -4,8 +4,6 @@ window.View = (function()
     //var self = this;
 
     //TODO The Bind and Render calls could all use error handling
-    //TODO Shouldn't be passing element data to the View. The View should take care of that using IDs
-        //I don't think this is a problem anymore
 
     var elements = {  
         homeHeader : null,
@@ -22,7 +20,22 @@ window.View = (function()
     function init()
     {
         //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
-            
+
+        //TODO should be possible to use this if the element names get standardized
+        // var ele mentFoundCallback;
+
+        // for (var key in elements)
+        // {
+        //     elementFoundCallback = function(element)
+        //     {
+        //         elements[key] = element;
+        //     };
+ 
+        //     GetElement(key, elementFoundCallback);
+        // }
+
+        //TODO Could have a ReturnElement util function with a try catch maybe? Instead of callbacks...
+
         //Assign the Home Screen elements
         elements.homeHeader = document.getElementById('divHomeHeader');
         elements.homeScreen = document.getElementById('divHomeScreen'); 
@@ -35,42 +48,14 @@ window.View = (function()
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
     }
 
-    //TODO is this still necessary now that new ID naming convention is used (i.e. ElementType-ID)
-    function getListItemNameButton(listItemId)
+    //TODO It's weird that this is called 'get...' instead of 'doSomethingWith...'. Even 'find' might be better than get because 'get' implies a return statement instead of a callback...maybe?
+        //TODO 'Update' or 'Modify' ChecklistElement might fit better
+    function getChecklistElement(prefix, id, callback)
     {
-        window.DebugController.Print("Request to get name button of List Item with id: " + listItemId);
-
-        //TODO might be easier to just set the data-id to the same value for all elements that are part of a single List Item.. Hmm maybe not because then you'd have to figure out which of those elements you're looking for
-            //TODO maybe could just set custom IDs to particular elements (e.g. 'listItemNameButton-745382490375' )
-        var listItemWrapper = document.getElementById(listItemId);
-
-        if (listItemWrapper != null)
-        {
-            var listNameWrapper = listItemWrapper.firstChild;
-            
-            if (listNameWrapper != null)
-            {
-                return listNameWrapper.firstChild;
-
-                // var listNameButton = listNameWrapper.firstChild;
-
-                // if (listNameButton != null)
-                // {
-                //     return listNameButton; 
-                // }
-                // else { console.log("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); }
-            }
-            else { window.DebugController.LogError("ERROR: Could not find List Name wrapper element which should be a child of List Item wrapper element with ID: " + listItemId); }
-        }
-        else { window.DebugController.LogError("ERROR: Could not find List Item wrapper element with ID: " + listItemId); }
-    }
-
-    // function getChecklistElement(prefix, id, callback)
-    // {
-    //     var id = prefix.concat('-').concat(id);
+        var id = prefix.concat('-').concat(id);
         
-    //     GetElement(id, callback);
-    // }
+        GetElement(id, callback);
+    }
 
     // function getChecklistElementId(prefix, suffix)
     // {
@@ -104,12 +89,10 @@ window.View = (function()
         GetElement(id, elementFoundCallback);
     }
 
-    //TODO Bind and Render events should probably have distinct names
-    //TODO maybe Binds should be in the past tense (e.g. SettingsViewExpanded, ButtonPressed),
-        //and Render should be commands (e.g. ExpandSettingsView, ShowHomeScreen)
+    //TODO Bind and Render events should probably have distinct names. 
+        //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
 
-    //TODO How can you have the parameters param before the callback param but still have the former be optional?
     //TODO standardize between parameter, parameters, options, data, etc.
     /**
      * @param {string} event The name used to identify the event being bound
@@ -131,16 +114,6 @@ window.View = (function()
         else if (event === 'GoToListButtonPressed') //Expected parameters: listId
         {
             //Set the behavior for when a Go To List button is pressed
-
-            // var elementFoundCallback = function(element)
-            // {
-            //     element.addEventListener('click', callback);
-            // }
-
-            // getChecklistElement('GoToList', parameters.listId, elementFoundCallback);
-
-
-            //addListener({prefix:'GoToList', id:parameters.listId}, 'click', {method:callback});
             addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
         }
         else if (event === 'NewListItemButtonPressed') 
@@ -419,27 +392,15 @@ window.View = (function()
             {
                 window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
 
-                var listNameButton = getListItemNameButton(parameters.listItemId);
+                var elementFoundCallback = function(element)
+                {                    
+                    element.style.borderColor = (parameters.quantityBalance != 0) ? 'peru' //lightsalmon is also good
+                                              : (parameters.quantityNeeded != 0)  ? 'mediumseagreen'
+                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
+                };
 
-                if (listNameButton != null)
-                {
-                    if (parameters.quantityBalance != 0)
-                    {
-                        listNameButton.style.borderColor = 'peru'; //lightsalmon is also good
-                    }
-                    else if (parameters.quantityNeeded != 0)
-                    {
-                        listNameButton.style.borderColor = 'mediumseagreen';
-                    }
-                    else 
-                    {
-                        listNameButton.style.borderColor = 'rgb(77, 77, 77)'; //"darkgrey";
-                    }  
-                }
-                else 
-                { 
-                    window.DebugController.LogError("ERROR: Could not find List Name button element which should be a grandchild of List Item wrapper element with ID: " + parameters.listItemId); 
-                }  
+                //TODO It's weird that this is called 'get...' instead of 'doSomethingWith...'. Even 'find' might be better than get because 'get' implies a return statement...maybe?
+                getChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
             },
             ExpandSettingsView: function() 
             {
