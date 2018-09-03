@@ -77,15 +77,16 @@ window.View = (function()
     //     return (prefix.concat('-').concat(suffix));
     // }
 
-    function addListenerToChecklistElement(elementOptions, eventType, callback)
+    function addListenerToChecklistElement(elementOptions, eventType, listener, options)
     {        
         var elementFoundCallback = function(element)
         {
-            element.addEventListener(eventType, callback);
+            element.addEventListener(eventType, listener, options);
         };
 
         //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (getChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
 
+        //TODO I don't like this elementOptions system. Might be better to use getChecklistElementId, or some other solution
         var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
         
         GetElement(id, elementFoundCallback);
@@ -236,9 +237,8 @@ window.View = (function()
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
-            //TODO need to be able to pass eventlistener params, such as once. Using an object is probably the more correct way but could also do: elementOptions, callback, eventType, listenerOptions. Then the last param is optional.
-            document.getElementById('divChecklistBody').addEventListener('click', callback, {once:true});
-
+            addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
+            
             window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
         else if (event === 'QuantityToggleSelected')
