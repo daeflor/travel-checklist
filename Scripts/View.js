@@ -81,14 +81,26 @@ window.View = (function()
     {        
         var elementFoundCallback = function(element)
         {
-            element.addEventListener(eventType, listener, options);
+            //If the event type is one of the used Bootstrap events...
+            if (eventType.includes('collapse') || eventType.includes('popover'))
+            {
+                //Use JQuery to add the event listener
+                $(element).on(eventType, listener); 
+            }
+            //Else, if the event type is of any other type
+            else
+            {
+                //Use vanilla JS to add the event listener
+                element.addEventListener(eventType, listener, options);
+            }            
         };
 
         //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (getChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
 
         //TODO I don't like this elementOptions system. Might be better to use getChecklistElementId, or some other solution
+        //TODO Also, this isn't readable enough
         var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
-        
+
         GetElement(id, elementFoundCallback);
     }
 
@@ -130,8 +142,6 @@ window.View = (function()
 
             //addListener({prefix:'GoToList', id:parameters.listId}, 'click', {method:callback});
             addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
-
-            //document.getElementById('GoToList-'.concat(parameters.listId)).addEventListener('click', callback);         
         }
         else if (event === 'NewListItemButtonPressed') 
         {
@@ -162,25 +172,15 @@ window.View = (function()
         }
         else if (event === 'QuantityPopoverShown') 
         {
-            window.DebugController.Print("Attempting to binding popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
-            
-            //TODO since popover functionality requires JQuery, maybe should rename addListener to addOnclickListener and remove eventType param
-                //TODO also need to include quantity type
-            //addListener({prefix:'QuantityToggle', id:parameters.listItemId}, 'click', callback);
-            
-            //Find the popover toggle element based on the given quantity type and List Item ID
-            var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+            //Set the behavior for when the Quantity popover for the given quantity type is made visible
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'shown.bs.popover', callback);
 
-            //Set the behavior for when the popover is made visible
-            $(toggle).on('shown.bs.popover', callback); 
+            window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
         }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
-            //Find the Quantity Header Toggle based on the given quantity type
-            var toggle = document.getElementById(parameters.quantityType.concat('QuantityHeaderToggle'));
-
-            //Set the behavior for when the popover is made visible
-            $(toggle).on('shown.bs.popover', callback);  
+            //Set the behavior for when the Quantity Header popover for the given quantity type is made visible
+            addListenerToChecklistElement({id:parameters.quantityType.concat('QuantityHeaderToggle')}, 'shown.bs.popover', callback);
         }
         else if (event === 'ClearButtonPressed') 
         {
@@ -201,33 +201,20 @@ window.View = (function()
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
-            var newSettingsView = document.getElementById('SettingsView-'.concat(parameters.id));
-
-            $(newSettingsView).on('show.bs.collapse', function() 
+            var eventTriggeredCallback = function(event)
             {
                 //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
                     //then maybe this doesn't make sense for a BIND...?
                 //self.render('HideActiveSettingsView');
                 callback(); //TODO don't really like the idea of having a callback and THEN still doing something... It implies the View does actually have knowledge of what is going on, and doesn't really seem correct
-                elements.activeSettingsView = newSettingsView;
+                elements.activeSettingsView = event.target;
                 // callback(newSettingsView); 
-            });  
-
-            //TODO would it make sense to keep track of the Active Settings View here (in the View) and in this method handle toggling it as needed
+            }
+            
+            addListenerToChecklistElement({prefix:'SettingsView', id:parameters.id}, 'show.bs.collapse', eventTriggeredCallback); 
         }
         else if (event === 'NameEdited') //Expected parameters: id
         {
-            //TODO finish this. Will probably want/need to add something like this to the addListener method:
-                    //But maybe for eventTriggered?
-                    //maybe none of this makes sense at all...
-                    //Do this instead of passing callbackArg?
-                    // var elementFoundCallback = elementFoundCallback || function(element)
-                    // {
-                    //     callback(element.value);
-                    // }
-                    //I think actually we'd get rid of the eventTriggeredCallback part, and just pass callback to addListener. callback would either be callback (directly from Controller), or it would be a custom one that passes a param, like the one below. 
-
-
             var eventTriggeredCallback = function(event)
             {
                 callback(event.target.value);
@@ -238,7 +225,7 @@ window.View = (function()
         else if (event === 'ClickDetectedOutsidePopover')
         {
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
-            
+
             window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
         else if (event === 'QuantityToggleSelected')
