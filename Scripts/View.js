@@ -121,12 +121,12 @@ window.View = (function()
         if (event === 'HomeButtonPressed') 
         {
             //Set the behavior for when the Home button is pressed
-            document.getElementById('buttonHome').addEventListener('click', callback);         
+            addListenerToChecklistElement({id:'buttonHome'}, 'click', callback);
         }
         else if (event === 'NewListButtonPressed') 
         {
             //Set the behavior for when the Add List button is pressed
-            document.getElementById('buttonAddList').addEventListener('click', callback);         
+            addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
         else if (event === 'GoToListButtonPressed') //Expected parameters: listId
         {
