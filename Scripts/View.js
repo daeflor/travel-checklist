@@ -233,27 +233,41 @@ window.View = (function()
                 //Hide the Home Screen when an individual List is displayed
                 elements.homeScreen.hidden = true;
 
-                //Set the List title
-                elements.listTitle.textContent = document.getElementById('NameButton-'.concat(parameters.listId)).textContent;
+                //TODO might be worth renaming the callback function variables to improve readability
 
-                //Traverse all the List elements
-                for (var i = 0; i < elements.listScreenListElements.children.length; i++)
-                {
-                    //If the List element's ID contains the given List ID...
-                    if (elements.listScreenListElements.children[i].id.includes(parameters.listId))
-                    {
-                        //Display that element
-                        elements.listScreenListElements.children[i].hidden = false;
+                //Set up the callback method to execute when a name button matching the given ID is found
+                var elementFoundCallback = function(element)
+                {                    
+                    //Set the List title to match the text content of the name button element
+                    elements.listTitle.textContent = element.textContent;
+                };
 
-                        //Set the Active List ID
-                        elements.activeListId = parameters.listId;
-                    } 
-                    else if (elements.listScreenListElements.children[i].hidden == false)
-                    {
-                        //Else, for any other element, if it is currently displayed, hide it 
-                        elements.listScreenListElements.children[i].hidden = true;
-                    }
-                }
+                //TODO this sounds like it would be updating the name button, but it isn't, which is confusing. Might reword from 'update' to something else, maybe just generic 'find'
+                //Find the name button element for the List matching the given ID, and then update the List title to match it
+                updateChecklistElement('NameButton', parameters.listId, elementFoundCallback);
+
+                //Set up the callback method to execute when the List wrapper element for the Active List is found
+                elementFoundCallback = function(element)
+                {                    
+                    //Hide the List wrapper element
+                    element.hidden = true;
+                };
+
+                //Find the wrapper element for the Active List, and then hide the element
+                updateChecklistElement('ListWrapper', elements.activeListId, elementFoundCallback);
+
+                //Set up the callback method to execute when a List wrapper element matching the given ID is found
+                elementFoundCallback = function(element)
+                {                    
+                    //Display the List wrapper element
+                    element.hidden = false;
+
+                    //Set the Active List ID
+                    elements.activeListId = parameters.listId;
+                };
+
+                //Find the wrapper element for the List matching the given ID, and then display the element
+                updateChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
