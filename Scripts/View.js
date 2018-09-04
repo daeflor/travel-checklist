@@ -13,8 +13,8 @@ window.View = (function()
         listTitle : null,
         listScreen : null,
         listScreenListElements : null,
-        activeSettingsView : null,
-        activeListId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
+        activeSettingsView : null
+        //activeListId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
     };
 
     function init()
@@ -118,12 +118,12 @@ window.View = (function()
         {
             //Set the behavior for when the Add List Item button is pressed
 
-            var eventTriggeredCallback = function()
-            {
-                callback(elements.activeListId);
-            }
+            // var eventTriggeredCallback = function()
+            // {
+            //     callback(elements.activeListId);
+            // }
 
-            addListenerToChecklistElement({id:'buttonAddRow'}, 'click', eventTriggeredCallback);      
+            addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);      
         }
         else if (event === 'DeleteButtonPressed') 
         {
@@ -155,12 +155,12 @@ window.View = (function()
         }
         else if (event === 'ClearButtonPressed') 
         {
-            var eventTriggeredCallback = function()
-            {
-                callback(elements.activeListId);
-            }
+            // var eventTriggeredCallback = function()
+            // {
+            //     callback(elements.activeListId);
+            // }
 
-            addListenerToChecklistElement({id:'buttonClear'}, 'click', eventTriggeredCallback);
+            addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -225,7 +225,7 @@ window.View = (function()
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
             },
-            DisplayList: function() //Expected parameters: listId
+            DisplayList: function() //Expected parameters: listId, activeListId
             {
                 //Hide the Home Header when an individual List is displayed
                 elements.homeHeader.hidden = true;
@@ -246,15 +246,19 @@ window.View = (function()
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
                 updateChecklistElement('NameButton', parameters.listId, elementFoundCallback);
 
-                //Set up the callback method to execute when the List wrapper element for the Active List is found
-                elementFoundCallback = function(element)
-                {                    
-                    //Hide the List wrapper element
-                    element.hidden = true;
-                };
+                //If a valid Active List ID was provided...
+                if (parameters.activeListId != null)
+                {
+                    //Set up the callback method to execute when the List wrapper element for the Active List is found
+                    elementFoundCallback = function(element)
+                    {                    
+                        //Hide the List wrapper element
+                        element.hidden = true;
+                    };
 
-                //Find the wrapper element for the Active List, and then hide the element
-                updateChecklistElement('ListWrapper', elements.activeListId, elementFoundCallback);
+                    //Find the wrapper element for the Active List, and then hide the element
+                    updateChecklistElement('ListWrapper', parameters.activeListId, elementFoundCallback);
+                }
 
                 //Set up the callback method to execute when a List wrapper element matching the given ID is found
                 elementFoundCallback = function(element)
@@ -262,8 +266,8 @@ window.View = (function()
                     //Display the List wrapper element
                     element.hidden = false;
 
-                    //Set the Active List ID
-                    elements.activeListId = parameters.listId;
+                    // //Set the Active List ID
+                    // elements.activeListId = parameters.listId;
                 };
 
                 //Find the wrapper element for the List matching the given ID, and then display the element
