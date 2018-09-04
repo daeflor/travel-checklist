@@ -14,7 +14,6 @@ window.View = (function()
         listScreen : null,
         listScreenListElements : null,
         activeSettingsView : null
-        //activeListId : null //TODO I don't think it's ideal having to keep track of this (in the View or anywhere else really)
     };
 
     function init()
@@ -117,12 +116,6 @@ window.View = (function()
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
-
-            // var eventTriggeredCallback = function()
-            // {
-            //     callback(elements.activeListId);
-            // }
-
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);      
         }
         else if (event === 'DeleteButtonPressed') 
@@ -155,11 +148,7 @@ window.View = (function()
         }
         else if (event === 'ClearButtonPressed') 
         {
-            // var eventTriggeredCallback = function()
-            // {
-            //     callback(elements.activeListId);
-            // }
-
+            //Set the behavior for when a Clear button in the Header is pressed
             addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
@@ -233,7 +222,7 @@ window.View = (function()
                 //Hide the Home Screen when an individual List is displayed
                 elements.homeScreen.hidden = true;
 
-                //TODO might be worth renaming the callback function variables to improve readability
+                //TODO might be worth renaming the callback function variables below to improve readability
 
                 //Set up the callback method to execute when a name button matching the given ID is found
                 var elementFoundCallback = function(element)
@@ -265,9 +254,6 @@ window.View = (function()
                 {                    
                     //Display the List wrapper element
                     element.hidden = false;
-
-                    // //Set the Active List ID
-                    // elements.activeListId = parameters.listId;
                 };
 
                 //Find the wrapper element for the List matching the given ID, and then display the element
@@ -322,7 +308,6 @@ window.View = (function()
                     //Set the new List's 'Move Downwards' button to be gray
                     document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
                 }
-           
             },
             RemoveList: function() //Expected parameters: listId
             {
@@ -445,6 +430,8 @@ window.View = (function()
             },
             ShowQuantityHeader: function() 
             {
+                //TODO might be worth having a helper method specifically dedicated to updating / working with Bootstrap elements
+
                 elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             },
             ShowQuantityPopover: function() 
