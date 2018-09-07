@@ -48,7 +48,7 @@ window.View = (function()
     }
 
     //TODO eventually this isn't going to work with prefix and ID separated like this
-    function updateChecklistElement(prefix, id, callback)
+    function findChecklistElement(prefix, id, callback)
     {
         var id = prefix.concat('-').concat(id);
         
@@ -77,7 +77,7 @@ window.View = (function()
             }            
         };
 
-        //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (updateChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
+        //elementOptions.prefix == null ? (GetElement(elementOptions.id, elementFoundCallback)) : (findChecklistElement(elementOptions.prefix, elementOptions.id, elementFoundCallback));
 
         //TODO I don't like this elementOptions system. Might be better to use getChecklistElementId, or some other solution
         //TODO Also, this isn't readable enough
@@ -231,9 +231,8 @@ window.View = (function()
                     elements.listTitle.textContent = element.textContent;
                 };
 
-                //TODO this sounds like it would be updating the name button, but it isn't, which is confusing. Might reword from 'update' to something else, maybe just generic 'find'
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
-                updateChecklistElement('NameButton', parameters.listId, elementFoundCallback);
+                findChecklistElement('NameButton', parameters.listId, elementFoundCallback);
 
                 //If a valid Active List ID was provided...
                 if (parameters.activeListId != null)
@@ -246,7 +245,7 @@ window.View = (function()
                     };
 
                     //Find the wrapper element for the Active List, and then hide the element
-                    updateChecklistElement('ListWrapper', parameters.activeListId, elementFoundCallback);
+                    findChecklistElement('ListWrapper', parameters.activeListId, elementFoundCallback);
                 }
 
                 //Set up the callback method to execute when a List wrapper element matching the given ID is found
@@ -257,7 +256,7 @@ window.View = (function()
                 };
 
                 //Find the wrapper element for the List matching the given ID, and then display the element
-                updateChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
+                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -287,26 +286,35 @@ window.View = (function()
                 //Else, if the new List is not the first one in the List array...
                 else
                 {
-                    //TODO what a horrible name
-                    var lastListElementMoveDownwardsButton = document.getElementById('MoveDownwards-'.concat(lastListElement.id));
+                    //Set up the callback method to execute when a Move Downards button is found which matches the ID of the last List element
+                    var elementFoundCallback = function(element)
+                    {                    
+                        //Set the previous List's 'Move Downwards' button icon to be black
+                        element.firstChild.style.color = 'black';
+                    };
 
-                    window.DebugController.Print("Move Downwards button ID: " + lastListElementMoveDownwardsButton.id);
+                    //Find the Move Downards button which matches the ID of the last List element, and then update the button icon's color
+                    findChecklistElement('MoveDownwards', lastListElement.id, elementFoundCallback);
 
-                    if (lastListElementMoveDownwardsButton != null)
-                    {
-                        //Set the previous List's 'Move Downwards' button to be black
-                        lastListElementMoveDownwardsButton.firstChild.style.color = 'black';
-                    }
-                    else
-                    {
-                        window.DebugController.LogError("ERROR: Tried to set the color of the last List's Move Downwards button, but the List could not be found. List ID expected: " + parameters.listId);
-                    }
+                    //Set up the callback method to execute when the Move Upwards button matching the new List ID is found
+                    elementFoundCallback = function(element)
+                    {                    
+                        //Set the previous List's 'Move Downwards' button icon to be black (currently this is still the last List element)
+                        element.firstChild.style.color = 'black';
+                    };
 
-                    //Set the new List's 'Move Upwards' button to be black
-                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = 'black';
+                    //Find the Move Upwards button which matches the new List ID, and then update the button icon's color
+                    findChecklistElement('MoveUpwards', parameters.listId, elementFoundCallback);
 
-                    //Set the new List's 'Move Downwards' button to be gray
-                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                    //Set up the callback method to execute when the Move Downwards button matching the new List ID is found
+                    elementFoundCallback = function(element)
+                    {                    
+                        //Set the previous List's 'Move Downwards' button icon to be black (currently this is still the last List element)
+                        element.firstChild.style.color = '#606060';
+                    };
+
+                    //Find the Move Downwards button which matches the new List ID, and then update the button icon's color
+                    findChecklistElement('MoveDownwards', parameters.listId, elementFoundCallback);
                 }
             },
             RemoveList: function() //Expected parameters: listId
@@ -400,7 +408,7 @@ window.View = (function()
                                               :                                     'rgb(77, 77, 77)'; //"darkgrey";
                 };
 
-                updateChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
+                findChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
             },
             ExpandSettingsView: function() 
             {
