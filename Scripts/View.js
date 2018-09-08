@@ -290,44 +290,26 @@ window.View = (function()
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
-                //If the new List is the first one in the Lists array, set both reorder buttons to be gray
+                //If the new List is the first one in the Lists array...
                 if (lastListElement == null)
                 {
-                    document.getElementById('MoveUpwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
-                    document.getElementById('MoveDownwards-'.concat(parameters.listId)).firstChild.style.color = '#606060';
+                    //Set the new List's 'Move Upwards' button to be gray
+                    setReorderButtonColor('MoveUpwards', parameters.listId, '#606060');
+
+                    //Set the new List's 'Move Downwards' button to be gray
+                    setReorderButtonColor('MoveDownwards', parameters.listId, '#606060');
                 }
                 //Else, if the new List is not the first one in the List array...
                 else
                 {
-                    //Set up the callback method to execute when a Move Downards button is found which matches the ID of the last List element
-                    var elementFoundCallback = function(element)
-                    {                    
-                        //Set the previous List's 'Move Downwards' button icon to be black
-                        element.firstChild.style.color = 'black';
-                    };
+                    //Set the previous List's 'Move Downwards' button to be black
+                    setReorderButtonColor('MoveDownwards', lastListElement.id, 'black');
 
-                    //Find the Move Downards button which matches the ID of the last List element, and then update the button icon's color
-                    findChecklistElement('MoveDownwards', lastListElement.id, elementFoundCallback);
+                    //Set the new List's 'Move Upwards' button to be black
+                    setReorderButtonColor('MoveUpwards', parameters.listId, 'black');
 
-                    //Set up the callback method to execute when the Move Upwards button matching the new List ID is found
-                    elementFoundCallback = function(element)
-                    {                    
-                        //Set the previous List's 'Move Downwards' button icon to be black (currently this is still the last List element)
-                        element.firstChild.style.color = 'black';
-                    };
-
-                    //Find the Move Upwards button which matches the new List ID, and then update the button icon's color
-                    findChecklistElement('MoveUpwards', parameters.listId, elementFoundCallback);
-
-                    //Set up the callback method to execute when the Move Downwards button matching the new List ID is found
-                    elementFoundCallback = function(element)
-                    {                    
-                        //Set the previous List's 'Move Downwards' button icon to be black (currently this is still the last List element)
-                        element.firstChild.style.color = '#606060';
-                    };
-
-                    //Find the Move Downwards button which matches the new List ID, and then update the button icon's color
-                    findChecklistElement('MoveDownwards', parameters.listId, elementFoundCallback);
+                    //Set the new List's 'Move Downwards' button to be gray
+                    setReorderButtonColor('MoveDownwards', parameters.listId, '#606060');
                 }
             },
             RemoveList: function() //Expected parameters: listId
