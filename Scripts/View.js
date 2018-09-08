@@ -86,6 +86,19 @@ window.View = (function()
         GetElement(id, elementFoundCallback);
     }
 
+    function setReorderButtonColor(prefix, idNumber, color)
+    {
+        //Set up the callback method to execute when the element is found which matches the given prefix and ID number
+        var elementFoundCallback = function(element)
+        {                    
+            //Set the button icon (the button's first child) to be the given color
+            element.firstChild.style.color = color;
+        };
+
+        //Find the button which matches the given prefix and ID number, and then update the button icon's color
+        findChecklistElement(prefix, idNumber, elementFoundCallback);
+    }
+
     //TODO Bind and Render events should probably have distinct names. 
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
@@ -339,58 +352,51 @@ window.View = (function()
                 //Find the List toggle element which matches the given ID, and then remove it
                 GetElement(parameters.listId, elementFoundCallback);
             },
-            AddListItem: function() 
+            AddListItem: function() //Expected parameters: listId, listItemId
             {
-                var listWrapper = document.getElementById('ListWrapper-'.concat(parameters.listId));
+                //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+                var elementFoundCallback = function(element)
+                {             
+                    var lastListItemElement = element.lastChild;
 
-                //TODO finish this
-                // //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                // var elementFoundCallback = function(element)
-                // {                    
-                //     //Remove the List Wrapper element
-                //     element.remove();
-                // };
-
-                // //Find the List wrapper element which matches the given ID, and then 
-                // findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
-                
-                if (listWrapper != null)
-                {
-                    //var listItemElement = window.CustomTemplates.CreateListItemFromTemplate(parameters);
-                    var lastListItemElement = listWrapper.lastChild;
-
-                    listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
 
                     //TODO Should the things below be done in a separate method? (And consolidated with the similar logic in AddListElements)
 
                     //If the new List Item is the first one in the List, set both reorder buttons to be gray
                     if (lastListItemElement == null)
                     {
-                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
-                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                        setReorderButtonColor('MoveUpwards', parameters.listItemId, '#606060');
+                        setReorderButtonColor('MoveDownwards', parameters.listItemId, '#606060');
                     }
-                    //Else, if the new List Item is not the first one in the List...
-                    else
+                    else //Else, if the new List Item is not the first one in the List...
                     {
                         //Set the previous List Item's 'Move Downwards' button to be black
-                        document.getElementById('MoveDownwards-'.concat(lastListItemElement.id)).firstChild.style.color = 'black';
+                        setReorderButtonColor('MoveDownwards', lastListItemElement.id, 'black');
 
                         //Set the new List Item's 'Move Upwards' button to be black
-                        document.getElementById('MoveUpwards-'.concat(parameters.listItemId)).firstChild.style.color = 'black';
+                        setReorderButtonColor('MoveUpwards', parameters.listItemId, 'black');
 
                         //Set the new List Item's 'Move Downwards' button to be gray
-                        document.getElementById('MoveDownwards-'.concat(parameters.listItemId)).firstChild.style.color = '#606060';
+                        setReorderButtonColor('MoveDownwards', parameters.listItemId, '#606060');
                     }
+                };
 
-                    window.DebugController.Print("Added a List Item to the DOM. ListItem ID: " + parameters.listItemId);
-                }
-                else
-                {
-                    window.DebugController.LogError("ERROR: Tried to add a List Item, but the parent List could not be found. List ID expected: " + parameters.listId);
-                }    
+                //Find the List wrapper element which matches the given ID, and then set the color of the reorder buttons for the List Item matching the given ID
+                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
             },
-            RemoveListItem: function() 
+            RemoveListItem: function() //Expected parameters: listItemId
             {
+                // //Set up the callback method to execute when the List Item element is found which matches the given ID
+                // var elementFoundCallback = function(element)
+                // {                    
+                //     //Remove the List Item element
+                //     element.remove();
+                // };
+
+                // //Find the List Item element which matches the given ID, and then remove it
+                // findChecklistElement('', parameters.listItemId, elementFoundCallback);
+                
                 var listItem = document.getElementById(parameters.listItemId);
 
                 //If the quantity toggle element was found, update the text content of the toggle to the new value
