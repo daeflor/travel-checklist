@@ -48,9 +48,9 @@ window.View = (function()
     }
 
     //TODO eventually this isn't going to work with prefix and ID separated like this
-    function findChecklistElement(prefix, id, callback)
+    function findChecklistElement(prefix, idNumber, callback)
     {
-        var id = prefix.concat('-').concat(id);
+        var id = prefix.concat('-').concat(idNumber);
         
         GetElement(id, callback);
     }
@@ -319,15 +319,40 @@ window.View = (function()
             },
             RemoveList: function() //Expected parameters: listId
             {
-                //Remove the List element from the Lists wrapper
-                document.getElementById('ListWrapper-'.concat(parameters.listId)).remove();
+                //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+                var elementFoundCallback = function(element)
+                {                    
+                    //Remove the List wrapper element
+                    element.remove();
+                };
 
-                //Remove the List Toggle element from the Lists of Lists wrapper
-                document.getElementById(parameters.listId).remove();
+                //Find the List wrapper element which matches the given ID, and then remove it
+                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
+
+                //Set up the callback method to execute when the List toggle element is found which matches the given ID
+                elementFoundCallback = function(element)
+                {                    
+                    //Remove the List toggle element
+                    element.remove();
+                };
+
+                //Find the List toggle element which matches the given ID, and then remove it
+                GetElement(parameters.listId, elementFoundCallback);
             },
             AddListItem: function() 
             {
                 var listWrapper = document.getElementById('ListWrapper-'.concat(parameters.listId));
+
+                //TODO finish this
+                // //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+                // var elementFoundCallback = function(element)
+                // {                    
+                //     //Remove the List Wrapper element
+                //     element.remove();
+                // };
+
+                // //Find the List wrapper element which matches the given ID, and then 
+                // findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
                 
                 if (listWrapper != null)
                 {
