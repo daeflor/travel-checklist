@@ -5,6 +5,7 @@ window.View = (function()
 
     //TODO The Bind and Render calls could all use error handling
 
+    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityType)
     var elements = {  
         homeHeader : null,
         homeScreen : null,
@@ -21,7 +22,7 @@ window.View = (function()
         //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
 
         //TODO should be possible to use this if the element names get standardized
-        // var ele mentFoundCallback;
+        // var elementFoundCallback;
 
         // for (var key in elements)
         // {
@@ -47,6 +48,8 @@ window.View = (function()
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
     }
 
+    //TODO move prefix to be the last param and make it optional. And use JSDOCS to document this method
+        //There could even be an optional options param that takes a quantity type
     //TODO eventually this isn't going to work with prefix and ID separated like this
     function findChecklistElement(prefix, idNumber, callback)
     {
@@ -215,6 +218,9 @@ window.View = (function()
         {
             showHomeScreen: function() 
             {
+                //TODO this can probably all be put into a Toggle helper method.
+                    //But first should probably move the headers into their respective screens
+
                 //Hide the List Header
                 elements.listHeader.hidden = true;
 
@@ -425,15 +431,20 @@ window.View = (function()
             },
             ExpandSettingsView: function() 
             {
-                //TODO could use error handling
+                var elementFoundCallback = function(element)
+                {                    
+                    $(element).collapse('show');
+                };
 
-                var settingsView = document.getElementById('SettingsView-'.concat(parameters.id));
-
-                $(settingsView).collapse('show');
-
-                var editNameTextarea = document.getElementById('EditName-'.concat(parameters.id));
+                findChecklistElement('SettingsView', parameters.id, elementFoundCallback);   
                 
-                editNameTextarea.focus(); 
+                elementFoundCallback = function(element)
+                {                    
+                    $(element).focus();
+                };
+
+                findChecklistElement('EditName', parameters.id, elementFoundCallback);   
+
             },
             HideActiveSettingsView: function() //TODO consider having this be its own private method in the View, instead of accessible through Render
             {
