@@ -101,29 +101,68 @@ window.View = (function()
         findChecklistElement(idNumber, elementFoundCallback, prefix);
     }
 
-    function setupReorderButtons(newElementId, previousElementId)
-    {             
-        //If there is no previous element...
-        if (previousElementId == null)
+    // function setupReorderButtons(newElementId, previousElementId)
+    // {        
+    //     //TODO an alternative option that might make sense is to:
+    //         //Set the default color of the buttons to gray. Then,
+    //         //1st: update the previous element, if it exists, so that the down color is black
+    //         //2nd: update the new element's up color to be black
+        
+    //     //If there is no previous element...
+    //     if (previousElementId == null)
+    //     {
+    //         //Set the new element's 'Move Upwards' button to be gray
+    //         setReorderButtonColor('MoveUpwards', newElementId, '#606060');
+
+    //         //Set the new element's 'Move Downwards' button to be gray
+    //         setReorderButtonColor('MoveDownwards', newElementId, '#606060');
+    //     }
+    //     else //Else, if there is a previous element
+    //     {
+    //         //Set the previous element's 'Move Downwards' button to be black
+    //         setReorderButtonColor('MoveDownwards', previousElementId, 'black');
+
+    //         //Set the new element's 'Move Upwards' button to be black
+    //         setReorderButtonColor('MoveUpwards', newElementId, 'black');
+
+    //         //Set the new element's 'Move Downwards' button to be gray
+    //         setReorderButtonColor('MoveDownwards', newElementId, '#606060');
+    //     }
+    // };
+
+    //TODO maybe a simpler, albeit not very well optimized solution is to have a helper method that:
+        //Loops through all the elements in the list (is this possible?) 
+        //If it's the first child, Up is Gray, else Up is black
+        //If it's the last child, Down is Gray, else Down is black
+            //If looping isn't possible, could have a var to keep track of current first and last, but there should be a better way
+            //It should be possible to loop through all the children elements, if the parent wrapper is available
+    //TODO document this method, using the comments above as reference
+    function updateReorderButtons(parentWrapper)
+    {
+        for (var i = 0; i < parentWrapper.children.length; i++) 
         {
-            //Set the new element's 'Move Upwards' button to be gray
-            setReorderButtonColor('MoveUpwards', newElementId, '#606060');
+            if (i == 0)
+            {
+                //TODO somehow parse the id number from the element, and then:
 
-            //Set the new element's 'Move Downwards' button to be gray
-            setReorderButtonColor('MoveDownwards', newElementId, '#606060');
+                setReorderButtonColor('MoveUpwards', parentWrapper.children[i].id, '#606060');
+            }
+            else
+            {
+                setReorderButtonColor('MoveUpwards', parentWrapper.children[i].id, 'black');
+            }
+
+            if (i == parentWrapper.children.length-1)
+            {
+                setReorderButtonColor('MoveDownwards', parentWrapper.children[i].id, '#606060');
+            }
+            else
+            {
+                setReorderButtonColor('MoveDownwards', parentWrapper.children[i].id, 'black');
+            }
         }
-        else //Else, if there is a previous element
-        {
-            //Set the previous element's 'Move Downwards' button to be black
-            setReorderButtonColor('MoveDownwards', previousElementId, 'black');
+    }
 
-            //Set the new element's 'Move Upwards' button to be black
-            setReorderButtonColor('MoveUpwards', newElementId, 'black');
-
-            //Set the new element's 'Move Downwards' button to be gray
-            setReorderButtonColor('MoveDownwards', newElementId, '#606060');
-        }
-    };
 
     //TODO Bind and Render events should probably have distinct names. 
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
@@ -313,7 +352,7 @@ window.View = (function()
             {
                 window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
 
-                var lastListElement = elements.homeScreenListElements.lastChild;
+                //var lastListElement = elements.homeScreenListElements.lastChild;
                 
                 //Add the List Toggle element to the DOM, under the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
@@ -322,33 +361,11 @@ window.View = (function()
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
-                lastListElement == null ? setupReorderButtons(parameters.listId) 
-                                        : setupReorderButtons(parameters.listId, lastListElement.id);
-                
-                
-                // //TODO seems like the below could be merged with the same method for ListItem
+                //Update the reorder buttons for all the List toggles in the Home Screen
+                updateReorderButtons(elements.homeScreenListElements);
 
-                // //If the new List is the first one in the Lists array...
-                // if (lastListElement == null)
-                // {
-                //     //Set the new List's 'Move Upwards' button to be gray
-                //     setReorderButtonColor('MoveUpwards', parameters.id, '#606060');
-
-                //     //Set the new List's 'Move Downwards' button to be gray
-                //     setReorderButtonColor('MoveDownwards', parameters.id, '#606060');
-                // }
-                // //Else, if the new List is not the first one in the List array...
-                // else
-                // {
-                //     //Set the previous List's 'Move Downwards' button to be black
-                //     setReorderButtonColor('MoveDownwards', lastListElement.id, 'black');
-
-                //     //Set the new List's 'Move Upwards' button to be black
-                //     setReorderButtonColor('MoveUpwards', parameters.id, 'black');
-
-                //     //Set the new List's 'Move Downwards' button to be gray
-                //     setReorderButtonColor('MoveDownwards', parameters.id, '#606060');
-                // }
+                // lastListElement == null ? setupReorderButtons(parameters.listId) 
+                //                         : setupReorderButtons(parameters.listId, lastListElement.id);
             },
             RemoveList: function() //Expected parameters: listId
             {
@@ -367,6 +384,9 @@ window.View = (function()
                 {                    
                     //Remove the List toggle element
                     element.remove();
+
+                    //Update the reorder buttons for all the List toggles in the Home Screen
+                    updateReorderButtons(elements.homeScreenListElements);
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
@@ -380,44 +400,33 @@ window.View = (function()
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 var elementFoundCallback = function(element)
                 {             
-                    var lastListItemElement = element.lastChild;
+                    //var lastListItemElement = element.lastChild;
 
                     element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
 
-                    lastListItemElement == null ? setupReorderButtons(parameters.listItemId) 
-                                                : setupReorderButtons(parameters.listItemId, lastListItemElement.id);
+                    //Update the reorder buttons for all the List Items in the added element's parent List
+                    updateReorderButtons(element);
 
-                    // //TODO Should the things below be done in a separate method? (And consolidated with the similar logic in AddListElements)
-
-                    // //If the new List Item is the first one in the List, set both reorder buttons to be gray
-                    // if (lastListItemElement == null)
-                    // {
-                    //     setReorderButtonColor('MoveUpwards', parameters.listItemId, '#606060');
-                    //     setReorderButtonColor('MoveDownwards', parameters.listItemId, '#606060');
-                    // }
-                    // else //Else, if the new List Item is not the first one in the List...
-                    // {
-                    //     //Set the previous List Item's 'Move Downwards' button to be black
-                    //     setReorderButtonColor('MoveDownwards', lastListItemElement.id, 'black');
-
-                    //     //Set the new List Item's 'Move Upwards' button to be black
-                    //     setReorderButtonColor('MoveUpwards', parameters.listItemId, 'black');
-
-                    //     //Set the new List Item's 'Move Downwards' button to be gray
-                    //     setReorderButtonColor('MoveDownwards', parameters.listItemId, '#606060');
-                    // }
+                    // lastListItemElement == null ? setupReorderButtons(parameters.listItemId) 
+                    //                             : setupReorderButtons(parameters.listItemId, lastListItemElement.id);
                 };
 
-                //Find the List wrapper element which matches the given ID, and then set the color of the reorder buttons for the List Item matching the given ID
+                //Find the List wrapper element which matches the given ID, and then add a new List Item to it
                 findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
             },
             RemoveListItem: function() //Expected parameters: listItemId
             {
                 //Set up the callback method to execute when the List Item element is found which matches the given ID
                 var elementFoundCallback = function(element)
-                {                    
+                {     
+                    //Store a reference to the List Item's parent List wrapper element
+                    var listWrapper = element.parentElement;     
+
                     //Remove the List Item element
                     element.remove();
+
+                    //Update the reorder buttons for all the List Items in the removed element's parent List
+                    updateReorderButtons(listWrapper);
                 };
 
                 //Find the List Item element which matches the given ID, and then remove it
