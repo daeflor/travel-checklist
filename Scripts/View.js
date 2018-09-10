@@ -51,11 +51,13 @@ window.View = (function()
     //TODO move prefix to be the last param and make it optional. And use JSDOCS to document this method
         //There could even be an optional options param that takes a quantity type
     //TODO eventually this isn't going to work with prefix and ID separated like this
-    function findChecklistElement(prefix, idNumber, callback)
+    function findChecklistElement(id, callback, elementType, quantityType)
     {
-        var id = prefix.concat('-').concat(idNumber);
+        var elementId = (elementType == null)  ? id
+                      : (quantityType == null) ? elementType.concat('-').concat(id)
+                                               : quantityType.concat(elementType).concat('-').concat(id);
         
-        GetElement(id, callback);
+        GetElement(elementId, callback);
     }
 
     // function getChecklistElementId(prefix, suffix)
@@ -63,6 +65,8 @@ window.View = (function()
     //     return (prefix.concat('-').concat(suffix));
     // }
 
+    //TODO Should there be some sort of template "checklist element". You provide a method with the id, elementType, and quantityType, and it returns a data object in a standard format that is used consistently throughout the View...?
+        //Or is that too much overhead?
     function addListenerToChecklistElement(elementOptions, eventType, listener, options)
     {        
         var elementFoundCallback = function(element)
@@ -84,9 +88,11 @@ window.View = (function()
 
         //TODO I don't like this elementOptions system. Might be better to use getChecklistElementId, or some other solution
         //TODO Also, this isn't readable enough
-        var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
+        // var id = (elementOptions.prefix != null) ? (elementOptions.prefix.concat('-').concat(elementOptions.id)) : elementOptions.id;
 
-        GetElement(id, elementFoundCallback);
+        // GetElement(id, elementFoundCallback);
+
+        findChecklistElement(elementOptions.id, elementFoundCallback, elementOptions.prefix);
     }
 
     function setReorderButtonColor(prefix, idNumber, color)
@@ -99,7 +105,7 @@ window.View = (function()
         };
 
         //Find the button which matches the given prefix and ID number, and then update the button icon's color
-        findChecklistElement(prefix, idNumber, elementFoundCallback);
+        findChecklistElement(idNumber, elementFoundCallback, prefix);
     }
 
     //TODO Bind and Render events should probably have distinct names. 
@@ -212,6 +218,9 @@ window.View = (function()
 
     //TODO why is the format in bind and render different? Seems like it could be the same
 
+    //TODO maybe split this between View.HomeScreen and View.ListScreen? 
+        //Maybe the parent View could redirect to the correct subView so that it is abstracted from the Controller?
+
     function render(command, parameters)
     {
         var viewCommands = 
@@ -251,7 +260,7 @@ window.View = (function()
                 };
 
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
-                findChecklistElement('NameButton', parameters.listId, elementFoundCallback);
+                findChecklistElement(parameters.listId, elementFoundCallback, 'NameButton');
 
                 //If a valid Active List ID was provided...
                 if (parameters.activeListId != null)
@@ -264,7 +273,7 @@ window.View = (function()
                     };
 
                     //Find the wrapper element for the Active List, and then hide the element
-                    findChecklistElement('ListWrapper', parameters.activeListId, elementFoundCallback);
+                    findChecklistElement(parameters.activeListId, elementFoundCallback, 'ListWrapper');
                 }
 
                 //Set up the callback method to execute when a List wrapper element matching the given ID is found
@@ -275,7 +284,7 @@ window.View = (function()
                 };
 
                 //Find the wrapper element for the List matching the given ID, and then display the element
-                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
+                findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -295,6 +304,8 @@ window.View = (function()
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Add the List element to the DOM, under the List Screen List Elements div
                 elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
+
+                //TODO seems like the below could be merged with the same method for ListItem
 
                 //If the new List is the first one in the Lists array...
                 if (lastListElement == null)
@@ -328,7 +339,7 @@ window.View = (function()
                 };
 
                 //Find the List wrapper element which matches the given ID, and then remove it
-                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
+                findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
 
                 //Set up the callback method to execute when the List toggle element is found which matches the given ID
                 elementFoundCallback = function(element)
@@ -338,7 +349,10 @@ window.View = (function()
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
-                GetElement(parameters.listId, elementFoundCallback);
+                findChecklistElement(parameters.listId, elementFoundCallback)
+
+                // //Find the List toggle element which matches the given ID, and then remove it
+                // GetElement(parameters.listId, elementFoundCallback);
             },
             AddListItem: function() //Expected parameters: listId, listItemId
             {
@@ -371,50 +385,35 @@ window.View = (function()
                 };
 
                 //Find the List wrapper element which matches the given ID, and then set the color of the reorder buttons for the List Item matching the given ID
-                findChecklistElement('ListWrapper', parameters.listId, elementFoundCallback);
+                findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
             },
             RemoveListItem: function() //Expected parameters: listItemId
             {
-                // //Set up the callback method to execute when the List Item element is found which matches the given ID
-                // var elementFoundCallback = function(element)
-                // {                    
-                //     //Remove the List Item element
-                //     element.remove();
-                // };
+                //Set up the callback method to execute when the List Item element is found which matches the given ID
+                var elementFoundCallback = function(element)
+                {                    
+                    //Remove the List Item element
+                    element.remove();
+                };
 
-                // //Find the List Item element which matches the given ID, and then remove it
-                // findChecklistElement('', parameters.listItemId, elementFoundCallback);
-                
-                var listItem = document.getElementById(parameters.listItemId);
-
-                //If the quantity toggle element was found, update the text content of the toggle to the new value
-                if (listItem != null)
-                {
-                    listItem.remove();
-                }
-                else
-                {
-                    window.DebugController.LogError("ERROR: Tried to remove a List Item from the View but it could not be found. List Item ID: " + parameters.listItemId);
-                }
+                //Find the List Item element which matches the given ID, and then remove it
+                findChecklistElement(parameters.listItemId, elementFoundCallback);
             },
             updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
                 window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
-                //TODO can we save references to the list item quantity modifiers to not always have to search for them
+                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
 
-                //Get the popover toggle element based on the given quantity type and List Item ID
-                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
+                //Set up the callback method to execute when the quantity toggle element for the List Item which matches the given ID is found
+                var elementFoundCallback = function(element)
+                {                    
+                    //Update the text value of the List Item's quantity toggle
+                    element.text = parameters.updatedValue;
+                };
 
-                //If the quantity toggle element was found, update the text content of the toggle to the new value
-                if (toggle != null)
-                {
-                    toggle.text = parameters.updatedValue;
-                }
-                else
-                {
-                    window.DebugController.LogError("ERROR: Tried to update the value of a quantity toggle that could not be found");
-                }
+                //Find the quantity toggle element for the List Item which matches the given ID, and then update its text value
+                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType);
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
             {
@@ -427,7 +426,7 @@ window.View = (function()
                                               :                                     'rgb(77, 77, 77)'; //"darkgrey";
                 };
 
-                findChecklistElement('NameButton', parameters.listItemId, elementFoundCallback);
+                findChecklistElement(parameters.listItemId, elementFoundCallback, 'NameButton');
             },
             ExpandSettingsView: function() 
             {
@@ -436,14 +435,14 @@ window.View = (function()
                     $(element).collapse('show');
                 };
 
-                findChecklistElement('SettingsView', parameters.id, elementFoundCallback);   
+                findChecklistElement(parameters.id, elementFoundCallback, 'SettingsView');   
                 
                 elementFoundCallback = function(element)
                 {                    
                     $(element).focus();
                 };
 
-                findChecklistElement('EditName', parameters.id, elementFoundCallback);   
+                findChecklistElement(parameters.id, elementFoundCallback, 'EditName');   
 
             },
             HideActiveSettingsView: function() //TODO consider having this be its own private method in the View, instead of accessible through Render
@@ -454,11 +453,17 @@ window.View = (function()
                     elements.activeSettingsView = null;
                 }
             },
-            UpdateName: function() 
+            UpdateName: function() //Expected parameters: id, updatedValue
             {
-                var nameButton = document.getElementById('NameButton-'.concat(parameters.id));
-                
-                nameButton.textContent = parameters.updatedValue;
+                //Set up the callback method to execute when the name toggle/button which matches the given ID is found
+                var elementFoundCallback = function(element)
+                {                    
+                    //Update the text value of name button/toggle
+                    element.textContent = parameters.updatedValue;
+                };
+
+                //Find the name toggle/button element which matches the given ID, and then update its text value
+                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
             },
             ShowQuantityHeader: function() 
             {
@@ -468,18 +473,28 @@ window.View = (function()
             },
             ShowQuantityPopover: function() 
             {
-                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
-                $(toggle).popover('show');
+                var elementFoundCallback = function(element)
+                {                    
+                    $(element).popover('show');
+                };
+
+                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType); 
             },
             HideQuantityPopover: function() 
             {
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-                    //TODO Could at least create a helper method to find and return the toggle element
-                var toggle = document.getElementById(parameters.quantityType.concat('QuantityToggle-').concat(parameters.listItemId));
-                $(toggle).popover('hide');
+                
+                var elementFoundCallback = function(element)
+                {                    
+                    $(element).popover('hide');
+                };
+
+                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType); 
             },
             SwapListObjects: function()
             {
+                //TODO should this be cleaned up? Should it use findChecklistElement or other helpers?
+
                 var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
                 var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
                 elementToMoveUpwards.parentElement.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
