@@ -130,6 +130,10 @@ window.View = (function()
             action == 'SetText'       ? element.textContent = options.updatedValue : 
             action == 'Remove'        ? element.remove() :
             action == 'SetIconColor'  ? element.firstChild.style.color = options.updatedValue :
+            action == 'Focus'         ? element.focus() :
+            action == 'Expand'        ? $(element).collapse('show') :
+            action == 'ShowPopover'   ? $(element).popover('show') :
+            action == 'HidePopover'   ? $(element).popover('hide') :
             window.DebugController.LogError("Tried to perform an invalid update action on a checklist element");
         };
 
@@ -404,20 +408,11 @@ window.View = (function()
             },
             ExpandSettingsView: function() 
             {
-                var elementFoundCallback = function(element)
-                {                    
-                    $(element).collapse('show');
-                };
-
-                findChecklistElement(parameters.id, elementFoundCallback, 'SettingsView');   
+                //Expand the collapsible element which matches the given ID
+                updateChecklistElement('Expand', {type:'SettingsView', id:parameters.id});
                 
-                elementFoundCallback = function(element)
-                {                    
-                    element.focus();
-                };
-
-                findChecklistElement(parameters.id, elementFoundCallback, 'EditName');   
-
+                //Set focus to the edit name text area element which matches the given ID
+                updateChecklistElement('Focus', {type:'EditName', id:parameters.id});
             },
             HideActiveSettingsView: function() //TODO consider having this be its own private method in the View, instead of accessible through Render
             {
@@ -440,23 +435,19 @@ window.View = (function()
             },
             ShowQuantityPopover: function() 
             {
-                var elementFoundCallback = function(element)
-                {                    
-                    $(element).popover('show');
-                };
-
-                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType); 
+                //Show the popover element which matches the given ID and quantity type
+                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                updateChecklistElement('ShowPopover', elementData);
             },
             HideQuantityPopover: function() 
             {
-                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-                
-                var elementFoundCallback = function(element)
-                {                    
-                    $(element).popover('hide');
-                };
+                //TODO should this be merged with the method above, into a 'Toggle' method that takes an additional param?
 
-                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType); 
+                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
+               
+                //Hide the popover element which matches the given ID and quantity type
+                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                updateChecklistElement('HidePopover', elementData);
             },
             SwapListObjects: function()
             {
