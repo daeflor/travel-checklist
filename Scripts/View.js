@@ -87,6 +87,7 @@ window.View = (function()
         findChecklistElement(elementOptions.id, elementFoundCallback, elementOptions.prefix);
     }
 
+    //TODO this could be standardized and moved into updateChecklistElement method
     function setReorderButtonColor(prefix, idNumber, color)
     {
         //Set up the callback method to execute when the element is found which matches the given prefix and ID number
@@ -124,30 +125,26 @@ window.View = (function()
     //     }
     // }
 
-    function SetChecklistElementVisibility(id, visible, elementType)
+    //TODO Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
+
+    //TODO more logic in render could be moved here, such as updating bootstrap elements
+    //TODO if the only optional param is 'updatedValue', then it could be its own param instead of within a data object
+    function updateChecklistElement(action, elementData, options)
     {
         //Set up the callback method to execute when the element matching the given ID is found
         var elementFoundCallback = function(element)
-        {                    
-            //Set the visibility of element to the value provided
-            element.hidden = !visible;
+        {          
+            //Update the element based on the action and options provided       
+            action == 'Hide'    ? element.hidden = true : 
+            action == 'Show'    ? element.hidden = false :
+            action == 'SetText' ? element.textContent = options.updatedValue : //TODO could use error handling
+            action == 'Remove'  ? element.remove() :
+            window.DebugController.LogError("Tried to perform an invalid update action on a checklist element");
         };
 
-        //Find the element matching the given ID, and then set the element's visibility as specified
-        findChecklistElement(id, elementFoundCallback, elementType);
+        //Find the element matching the given ID, and then update as specified
+        findChecklistElement(elementData.id, elementFoundCallback, elementData.type, elementData.quantityType);
     }
-
-    //TODO can do the same as above but to set the element's text content
-        //Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
-
-    // function GetChecklistElementDataObject(id, type, quantityType)
-    // {
-
-    // }
-
-    // //TODO what's better? Function that returns a data object, as above, or just creating the var as needed, as below?
-
-    // var elementData = { type:'ListWrapper', id:parameters.listId, quantityType:parameters.quantityType};
 
     //TODO Bind and Render events should probably have distinct names. 
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
@@ -312,32 +309,14 @@ window.View = (function()
                 //If a valid Active List ID was provided...
                 if (parameters.activeListId != null)
                 {
-                    // //Set up the callback method to execute when the List wrapper element for the Active List is found
-                    // elementFoundCallback = function(element)
-                    // {                    
-                    //     //Hide the List wrapper element
-                    //     element.hidden = true;
-                    // };
-
-                    // //Find the wrapper element for the Active List, and then hide the element
-                    // findChecklistElement(parameters.activeListId, elementFoundCallback, 'ListWrapper');
-
                     //Hide the wrapper element for the Active List
-                    SetChecklistElementVisibility(parameters.activeListId, false, 'ListWrapper');
+                    updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.activeListId});
+                    //SetChecklistElementVisibility(parameters.activeListId, false, 'ListWrapper');
                 }
 
-                // //Set up the callback method to execute when a List wrapper element matching the given ID is found
-                // elementFoundCallback = function(element)
-                // {                    
-                //     //Display the List wrapper element
-                //     element.hidden = false;
-                // };
-
-                // //Find the wrapper element for the List matching the given ID, and then display the element
-                // findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
-
                 //Show the wrapper element for the List matching the given ID
-                SetChecklistElementVisibility(parameters.listId, true, 'ListWrapper');
+                updateChecklistElement('Show', {type:'ListWrapper', id:parameters.listId});
+                //SetChecklistElementVisibility(parameters.listId, true, 'ListWrapper');
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -361,18 +340,21 @@ window.View = (function()
             },
             RemoveList: function() //Expected parameters: listId
             {
-                //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                var elementFoundCallback = function(element)
-                {                    
-                    //Remove the List wrapper element
-                    element.remove();
-                };
+                // //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+                // var elementFoundCallback = function(element)
+                // {                    
+                //     //Remove the List wrapper element
+                //     element.remove();
+                // };
 
-                //Find the List wrapper element which matches the given ID, and then remove it
-                findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+                // //Find the List wrapper element which matches the given ID, and then remove it
+                // findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+
+                //Remove the List wrapper element which matches the given ID
+                updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.listId});
 
                 //Set up the callback method to execute when the List toggle element is found which matches the given ID
-                elementFoundCallback = function(element)
+                var elementFoundCallback = function(element)
                 {                    
                     //Remove the List toggle element
                     element.remove();
@@ -423,15 +405,20 @@ window.View = (function()
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
 
-                //Set up the callback method to execute when the quantity toggle element for the List Item which matches the given ID is found
-                var elementFoundCallback = function(element)
-                {                    
-                    //Update the text value of the List Item's quantity toggle
-                    element.textContent = parameters.updatedValue;
-                };
+                // //Set up the callback method to execute when the quantity toggle element for the List Item which matches the given ID is found
+                // var elementFoundCallback = function(element)
+                // {                    
+                //     //Update the text value of the List Item's quantity toggle
+                //     element.textContent = parameters.updatedValue;
+                // };
 
-                //Find the quantity toggle element for the List Item which matches the given ID, and then update its text value
-                findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType);
+                // //Find the quantity toggle element for the List Item which matches the given ID, and then update its text value
+                // findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType);
+            
+                var elementData = { type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+
+                //Update the text value of the quantity toggle for the List Item which matches the given ID
+                updateChecklistElement('SetText', elementData, {updatedValue:parameters.updatedValue});
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
             {
@@ -457,7 +444,7 @@ window.View = (function()
                 
                 elementFoundCallback = function(element)
                 {                    
-                    $(element).focus();
+                    element.focus();
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'EditName');   
@@ -473,15 +460,18 @@ window.View = (function()
             },
             UpdateName: function() //Expected parameters: id, updatedValue
             {
-                //Set up the callback method to execute when the name toggle/button which matches the given ID is found
-                var elementFoundCallback = function(element)
-                {                    
-                    //Update the text value of name button/toggle
-                    element.textContent = parameters.updatedValue;
-                };
+                // //Set up the callback method to execute when the name toggle/button which matches the given ID is found
+                // var elementFoundCallback = function(element)
+                // {                    
+                //     //Update the text value of name button/toggle
+                //     element.textContent = parameters.updatedValue;
+                // };
 
-                //Find the name toggle/button element which matches the given ID, and then update its text value
-                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
+                // //Find the name toggle/button element which matches the given ID, and then update its text value
+                // findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
+
+                //Update the text value of the name toggle/button element which matches the given ID
+                updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, {updatedValue:parameters.updatedValue});
             },
             ShowQuantityHeader: function() 
             {
