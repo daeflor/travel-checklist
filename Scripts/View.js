@@ -311,12 +311,10 @@ window.View = (function()
                 {
                     //Hide the wrapper element for the Active List
                     updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.activeListId});
-                    //SetChecklistElementVisibility(parameters.activeListId, false, 'ListWrapper');
                 }
 
                 //Show the wrapper element for the List matching the given ID
                 updateChecklistElement('Show', {type:'ListWrapper', id:parameters.listId});
-                //SetChecklistElementVisibility(parameters.listId, true, 'ListWrapper');
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -340,16 +338,6 @@ window.View = (function()
             },
             RemoveList: function() //Expected parameters: listId
             {
-                // //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                // var elementFoundCallback = function(element)
-                // {                    
-                //     //Remove the List wrapper element
-                //     element.remove();
-                // };
-
-                // //Find the List wrapper element which matches the given ID, and then remove it
-                // findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
-
                 //Remove the List wrapper element which matches the given ID
                 updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.listId});
 
@@ -404,17 +392,6 @@ window.View = (function()
                 window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-
-                // //Set up the callback method to execute when the quantity toggle element for the List Item which matches the given ID is found
-                // var elementFoundCallback = function(element)
-                // {                    
-                //     //Update the text value of the List Item's quantity toggle
-                //     element.textContent = parameters.updatedValue;
-                // };
-
-                // //Find the quantity toggle element for the List Item which matches the given ID, and then update its text value
-                // findChecklistElement(parameters.listItemId, elementFoundCallback, 'QuantityToggle', parameters.quantityType);
-            
                 var elementData = { type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
@@ -460,16 +437,6 @@ window.View = (function()
             },
             UpdateName: function() //Expected parameters: id, updatedValue
             {
-                // //Set up the callback method to execute when the name toggle/button which matches the given ID is found
-                // var elementFoundCallback = function(element)
-                // {                    
-                //     //Update the text value of name button/toggle
-                //     element.textContent = parameters.updatedValue;
-                // };
-
-                // //Find the name toggle/button element which matches the given ID, and then update its text value
-                // findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
-
                 //Update the text value of the name toggle/button element which matches the given ID
                 updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, {updatedValue:parameters.updatedValue});
             },
@@ -501,41 +468,15 @@ window.View = (function()
             },
             SwapListObjects: function()
             {
-                //TODO is this still necessary with new updateReorderButtons method?
-
-                //TODO should this be cleaned up? Should it use findChecklistElement or other helpers?
+                //TODO Should this use findChecklistElement or other helpers with error handling?
 
                 var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
                 var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
-                elementToMoveUpwards.parentElement.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
+                var wrapper = elementToMoveUpwards.parentElement;
 
-                var buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveUpwards.id));
-                var buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveUpwards.id));
-                
-                if (elementToMoveUpwards.previousElementSibling == null)
-                {
-                    buttonMoveUpwards.firstChild.style.color = '#606060';
-                }
-                else
-                {
-                    buttonMoveUpwards.firstChild.style.color = 'black';
-                }
+                wrapper.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
 
-                buttonMoveDownwards.firstChild.style.color = 'black';
-
-                buttonMoveUpwards = document.getElementById('MoveUpwards-'.concat(elementToMoveDownwards.id));
-                buttonMoveDownwards = document.getElementById('MoveDownwards-'.concat(elementToMoveDownwards.id));
-                
-                if (elementToMoveDownwards.nextElementSibling == null)
-                {
-                    buttonMoveDownwards.firstChild.style.color = '#606060';
-                }
-                else
-                {
-                    buttonMoveDownwards.firstChild.style.color = 'black';
-                }
-
-                buttonMoveUpwards.firstChild.style.color = 'black';
+                updateReorderButtons(wrapper);
             },
         };
 
