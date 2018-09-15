@@ -87,32 +87,21 @@ window.View = (function()
         findChecklistElement(elementOptions.id, elementFoundCallback, elementOptions.prefix);
     }
 
-    //TODO this could be standardized and moved into updateChecklistElement method
-    function setReorderButtonColor(prefix, idNumber, color)
-    {
-        //Set up the callback method to execute when the element is found which matches the given prefix and ID number
-        var elementFoundCallback = function(element)
-        {                    
-            //Set the button icon (the button's first child) to be the given color
-            element.firstChild.style.color = color;
-        };
-
-        //Find the button which matches the given prefix and ID number, and then update the button icon's color
-        findChecklistElement(idNumber, elementFoundCallback, prefix);
-    }
-
     function updateReorderButtons(wrapper)
     {
         //Traverse the array of List toggle or List Item elements
         for (var i = 0; i < wrapper.children.length; i++) 
         {
+            var id = wrapper.children[i].id;
+            var color;
+            
             //If the element is first one in the array, set the Move Upwards button to be gray, otherwise set it to be black
-            i == 0 ? setReorderButtonColor('MoveUpwards', wrapper.children[i].id, '#606060')
-                   : setReorderButtonColor('MoveUpwards', wrapper.children[i].id, 'black');
+            color = (i == 0) ? '#606060' : 'black';
+            updateChecklistElement('SetIconColor', {type:'MoveUpwards', id:id}, {updatedValue:color}); 
 
             //If the element is last one in the array, set the Move Downwards button to be gray, otherwise set it to be black
-            i == wrapper.children.length-1 ? setReorderButtonColor('MoveDownwards', wrapper.children[i].id, '#606060')
-                                           : setReorderButtonColor('MoveDownwards', wrapper.children[i].id, 'black');
+            color = (i == wrapper.children.length-1) ? '#606060' : 'black';
+            updateChecklistElement('SetIconColor', {type:'MoveDownwards', id:id}, {updatedValue:color});
         }
     }
 
@@ -134,11 +123,13 @@ window.View = (function()
         //Set up the callback method to execute when the element matching the given ID is found
         var elementFoundCallback = function(element)
         {          
+            //TODO could use error handling wherever 'options' is referenced, to ensure it's not null
             //Update the element based on the action and options provided       
-            action == 'Hide'    ? element.hidden = true : 
-            action == 'Show'    ? element.hidden = false :
-            action == 'SetText' ? element.textContent = options.updatedValue : //TODO could use error handling
-            action == 'Remove'  ? element.remove() :
+            action == 'Hide'          ? element.hidden = true : 
+            action == 'Show'          ? element.hidden = false :
+            action == 'SetText'       ? element.textContent = options.updatedValue : 
+            action == 'Remove'        ? element.remove() :
+            action == 'SetIconColor'  ? element.firstChild.style.color = options.updatedValue :
             window.DebugController.LogError("Tried to perform an invalid update action on a checklist element");
         };
 
@@ -392,7 +383,8 @@ window.View = (function()
                 window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-                var elementData = { type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                
+                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, {updatedValue:parameters.updatedValue});
