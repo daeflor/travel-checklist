@@ -64,11 +64,6 @@ window.View = (function()
         GetElement(elementId, callback);
     }
 
-    // function getChecklistElementId(prefix, suffix)
-    // {
-    //     return (prefix.concat('-').concat(suffix));
-    // }
-
     //TODO Should there be some sort of template "checklist element". You provide a method with the id, elementType, and quantityType, and it returns a data object in a standard format that is used consistently throughout the View...?
         //Or is that too much overhead?
     function addListenerToChecklistElement(elementOptions, eventType, listener, options)
@@ -105,42 +100,54 @@ window.View = (function()
         findChecklistElement(idNumber, elementFoundCallback, prefix);
     }
 
-    //TODO maybe a simpler, albeit not very well optimized solution is to have a helper method that:
-        //Loops through all the elements in the list (is this possible?) 
-        //If it's the first child, Up is Gray, else Up is black
-        //If it's the last child, Down is Gray, else Down is black
-            //If looping isn't possible, could have a var to keep track of current first and last, but there should be a better way
-            //It should be possible to loop through all the children elements, if the parent wrapper is available
-    //TODO document this method, using the comments above as reference
     function updateReorderButtons(wrapper)
     {
+        //Traverse the array of List toggle or List Item elements
         for (var i = 0; i < wrapper.children.length; i++) 
         {
+            //If the element is first one in the array, set the Move Upwards button to be gray, otherwise set it to be black
             i == 0 ? setReorderButtonColor('MoveUpwards', wrapper.children[i].id, '#606060')
                    : setReorderButtonColor('MoveUpwards', wrapper.children[i].id, 'black');
 
+            //If the element is last one in the array, set the Move Downwards button to be gray, otherwise set it to be black
             i == wrapper.children.length-1 ? setReorderButtonColor('MoveDownwards', wrapper.children[i].id, '#606060')
                                            : setReorderButtonColor('MoveDownwards', wrapper.children[i].id, 'black');
-
-            // if (i == 0)
-            // {
-            //     setReorderButtonColor('MoveUpwards', parentWrapper.children[i].id, '#606060');
-            // }
-            // else
-            // {
-            //     setReorderButtonColor('MoveUpwards', parentWrapper.children[i].id, 'black');
-            // }
-
-            // if (i == parentWrapper.children.length-1)
-            // {
-            //     setReorderButtonColor('MoveDownwards', parentWrapper.children[i].id, '#606060');
-            // }
-            // else
-            // {
-            //     setReorderButtonColor('MoveDownwards', parentWrapper.children[i].id, 'black');
-            // }
         }
     }
+
+    // function HideActiveSettingsView() 
+    // {
+    //     if (elements.activeSettingsView != null)
+    //     {
+    //         $(elements.activeSettingsView).collapse('hide');
+    //         elements.activeSettingsView = null;
+    //     }
+    // }
+
+    function SetChecklistElementVisibility(id, visible, elementType)
+    {
+        //Set up the callback method to execute when the element matching the given ID is found
+        var elementFoundCallback = function(element)
+        {                    
+            //Set the visibility of element to the value provided
+            element.hidden = !visible;
+        };
+
+        //Find the element matching the given ID, and then set the element's visibility as specified
+        findChecklistElement(id, elementFoundCallback, elementType);
+    }
+
+    //TODO can do the same as above but to set the element's text content
+        //Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
+
+    // function GetChecklistElementDataObject(id, type, quantityType)
+    // {
+
+    // }
+
+    // //TODO what's better? Function that returns a data object, as above, or just creating the var as needed, as below?
+
+    // var elementData = { type:'ListWrapper', id:parameters.listId, quantityType:parameters.quantityType};
 
     //TODO Bind and Render events should probably have distinct names. 
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
@@ -184,7 +191,6 @@ window.View = (function()
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
         }
-        //TODO Look into merging the two clauses above and below
         else if (event === 'MoveDownwardsButtonPressed') 
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
@@ -221,10 +227,17 @@ window.View = (function()
             {
                 //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
                     //then maybe this doesn't make sense for a BIND...?
+                    //But it kind of needs to be a Bind because it needs to be done for *each* Settings View
+                    //TODO perhaps this can be moved to be included in the logic of adding a List or List Item
+                        //but then this would be mixing with render logic which is also not right
+
                 //self.render('HideActiveSettingsView');
                 callback(); //TODO don't really like the idea of having a callback and THEN still doing something... It implies the View does actually have knowledge of what is going on, and doesn't really seem correct
                 elements.activeSettingsView = event.target;
                 // callback(newSettingsView); 
+                
+                //HideActiveSettingsView();
+                //elements.activeSettingsView = event.target;
             }
             
             addListenerToChecklistElement({prefix:'SettingsView', id:parameters.id}, 'show.bs.collapse', eventTriggeredCallback); 
@@ -299,26 +312,32 @@ window.View = (function()
                 //If a valid Active List ID was provided...
                 if (parameters.activeListId != null)
                 {
-                    //Set up the callback method to execute when the List wrapper element for the Active List is found
-                    elementFoundCallback = function(element)
-                    {                    
-                        //Hide the List wrapper element
-                        element.hidden = true;
-                    };
+                    // //Set up the callback method to execute when the List wrapper element for the Active List is found
+                    // elementFoundCallback = function(element)
+                    // {                    
+                    //     //Hide the List wrapper element
+                    //     element.hidden = true;
+                    // };
 
-                    //Find the wrapper element for the Active List, and then hide the element
-                    findChecklistElement(parameters.activeListId, elementFoundCallback, 'ListWrapper');
+                    // //Find the wrapper element for the Active List, and then hide the element
+                    // findChecklistElement(parameters.activeListId, elementFoundCallback, 'ListWrapper');
+
+                    //Hide the wrapper element for the Active List
+                    SetChecklistElementVisibility(parameters.activeListId, false, 'ListWrapper');
                 }
 
-                //Set up the callback method to execute when a List wrapper element matching the given ID is found
-                elementFoundCallback = function(element)
-                {                    
-                    //Display the List wrapper element
-                    element.hidden = false;
-                };
+                // //Set up the callback method to execute when a List wrapper element matching the given ID is found
+                // elementFoundCallback = function(element)
+                // {                    
+                //     //Display the List wrapper element
+                //     element.hidden = false;
+                // };
 
-                //Find the wrapper element for the List matching the given ID, and then display the element
-                findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+                // //Find the wrapper element for the List matching the given ID, and then display the element
+                // findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+
+                //Show the wrapper element for the List matching the given ID
+                SetChecklistElementVisibility(parameters.listId, true, 'ListWrapper');
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -408,7 +427,7 @@ window.View = (function()
                 var elementFoundCallback = function(element)
                 {                    
                     //Update the text value of the List Item's quantity toggle
-                    element.text = parameters.updatedValue;
+                    element.textContent = parameters.updatedValue;
                 };
 
                 //Find the quantity toggle element for the List Item which matches the given ID, and then update its text value
@@ -492,6 +511,8 @@ window.View = (function()
             },
             SwapListObjects: function()
             {
+                //TODO is this still necessary with new updateReorderButtons method?
+
                 //TODO should this be cleaned up? Should it use findChecklistElement or other helpers?
 
                 var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
