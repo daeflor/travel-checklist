@@ -32,6 +32,20 @@ function RemoveElementFromArray(array, index, callback)
 
 /** Experimental & In Progress **/
 
+function GetElement(id, callback)
+{
+    var element = document.getElementById(id);
+
+    if (element != null)
+    {
+        callback(element);
+    }
+    else
+    {
+        window.DebugController.LogError("ERROR: Failed to find element with an ID of: " + id);
+    }
+}
+
 /** Unused Utilities **/
 
 function htmlEscape(str) 

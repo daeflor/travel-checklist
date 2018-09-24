@@ -1,5 +1,6 @@
 window.ListController = (function()
 {
+    var activeListId;
     var quantityPopoverActive = false;
 
     //TODO this probably shouldn't be in the Controller, but I'm not sure where exactly it belons... app.js?
@@ -65,7 +66,7 @@ window.ListController = (function()
             function() {
                 window.View.Bind(
                     'ClearButtonPressed', 
-                    function(listId)
+                    function()
                     {
                         window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
 
@@ -75,7 +76,7 @@ window.ListController = (function()
                             clearQuantitiesInView(modifiedListItems, quantityType);
                         };
 
-                        window.Model.ModifyList('ClearQuantityValues', listId, modelUpdated, {quantityType:quantityType});
+                        window.Model.ModifyList('ClearQuantityValues', activeListId, modelUpdated, {quantityType:quantityType});
                     }
                 );
             },
@@ -232,8 +233,12 @@ window.ListController = (function()
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView');
 
+        //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+            //Although, if this is the only place the Active List is hidden, then maybe it's fine
+            //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
         //Display the specified List Screen
-        window.View.Render('DisplayList', {listId:listId});
+        window.View.Render('DisplayList', {listId:listId, activeListId:activeListId});
+        activeListId = listId;
     }
 
     function NavigateHome()
@@ -245,15 +250,14 @@ window.ListController = (function()
         window.View.Render('showHomeScreen'); 
     }
 
-    function AddNewListItem(listId)
+    function AddNewListItem()
     {
         window.Model.ModifyList(
             'AddListItem', 
-            listId,
+            activeListId,
             function(newListItem) 
             {
-                addListItemToView(listId, newListItem);
-                //addListItemToView(listId, newListItem.id, newListItem.name, newListItem.quantities);
+                addListItemToView(activeListId, newListItem);
                 
                 //After the List Item is added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:newListItem.id});
@@ -413,7 +417,7 @@ window.ListController = (function()
             'MoveDownwardsButtonPressed', 
             function() 
             {
-                window.DebugController.Print("Button pressed to swap List Item positions");
+                //window.DebugController.Print("Button pressed to swap List Item positions");
 
                 window.Model.ModifyListItem('MoveDownwards', listId, listItem.id, function(swappedListItem) {
                     window.View.Render('SwapListObjects', {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});

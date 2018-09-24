@@ -47,7 +47,7 @@ window.StorageManager = (function ()
         //Return the data object parsed from the JSON string in Storage
         return JSON.parse(rawStorageData);
     }
-
+  
     return {
         RetrieveChecklistData : retrieveChecklistData,
         StoreChecklistData : storeChecklistData
