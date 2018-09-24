@@ -38,6 +38,7 @@ Features:
     Reminder: Should figure out which exact subset of files is necessary (specifically for font-awesome)
         - Could also consider using a different font library, if not going to be using CDN anyway.
 - Could have a travel preparation category/section, which would require different columns and interactions
+- A feature that guesses clothing quantities based on the number of nights provided. 
 
 Usability & Appearance (UX & UI):
 - BUG: The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
