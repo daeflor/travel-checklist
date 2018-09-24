@@ -12,9 +12,8 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
-- FindKVpInObjectsArray util method for findList and findListItem (model methods)
-- Cleanup and document Model
 - Clean up ListController
+- Cleanup and document Model
 - Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Every time an unreported error is hit, add error handling for it
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.

@@ -30,8 +30,6 @@ function RemoveElementFromArray(array, index, callback)
     callback();
 }
 
-/** Experimental & In Progress **/
-
 function GetElement(id, callback)
 {
     var element = document.getElementById(id);
@@ -45,6 +43,24 @@ function GetElement(id, callback)
         window.DebugController.LogError("ERROR: Failed to find element with an ID of: " + id);
     }
 }
+
+function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
+{
+    //Traverse the array, searching for an object that has a key matching the given value
+    for (var i = array.length-1; i >= 0; i--)
+    {
+        //If the List IDs match, call the passed callback method and end execution of this method
+        if (array[i][key] == value)
+        {
+            callback(i);
+            return;
+        }
+    } 
+
+    window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value");
+}
+
+/** Experimental & In Progress **/
 
 /** Unused Utilities **/
 

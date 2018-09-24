@@ -25,41 +25,30 @@ window.Model = (function()
 
     function findList(listId, callback)
     {
-        //Traverse the Lists array for one that matches the given List ID
-        for (var i = getLists().length-1; i >= 0; i--)
-        {
-            //If the List IDs match, call the passed callback method and end execution of this method
-            if (getLists()[i].id == listId)
-            {
-                callback(i);
-                return;
-            }
-        } 
-
-        window.DebugController.LogError("ERROR: Unable to find requested List in checklist data object");
+        //Search for the List and, if it's found, execute the callback method
+        GetArrayIndexOfObjectWithKVP(getLists(), 'id', listId, callback);
     }
 
     function findListItem(listId, listItemId, callback)
     {
-        //Set up the callback method to execute when a List matching the given ID is found
-        var findListItem = function(listIndex)
-        {
-            //Traverse the List Items array of the returned List Object, searching for one that matches the given List Item ID
-            for (var i = getLists()[listIndex].listItems.length-1; i >= 0; i--)
-            {
-                //If the List Item IDs match, call the passed callback method and end execution of this method
-                if (getLists()[listIndex].listItems[i].id == listItemId)
-                {
-                    callback(listIndex, i);
-                    return;
-                }
-            } 
+        //TODO This change doesn't really make this any simpler
 
-            window.DebugController.LogError("ERROR: Unable to find requested List Item in checklist data object");
+        //Set up the callback method to execute when a List matching the given ID is found
+        var listFoundCallback = function(listIndex)
+        {
+            //Set up the callback method to execute when a List Item matching the given ID is found
+            var listItemFoundCallback = function(listItemIndex)
+            {
+                //Execute the provided callback method, passing both the List index and List Item index as arguments
+                callback(listIndex, listItemIndex);
+            };
+            
+            //Search for the List Item and, if it's found, execute the callback method
+            GetArrayIndexOfObjectWithKVP(getLists()[listIndex].listItems, 'id', listItemId, listItemFoundCallback);
         };
         
         //Search for the List and, if it's found, execute the callback method
-        findList(listId, findListItem);
+        findList(listId, listFoundCallback);
     }
 
     function editName(dataObject, updatedName, callback)
