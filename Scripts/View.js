@@ -116,7 +116,6 @@ window.View = (function()
 
     //TODO Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
 
-    //TODO more logic in render could be moved here, such as updating bootstrap elements
     //TODO if the only optional param is 'updatedValue', then it could be its own param instead of within a data object
     function updateChecklistElement(action, elementData, options)
     {
