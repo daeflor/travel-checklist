@@ -30,6 +30,7 @@ function RemoveElementFromArray(array, index, callback)
     callback();
 }
 
+//TODO Might be useful to use Try/Catch here
 function GetElement(id, callback)
 {
     var element = document.getElementById(id);

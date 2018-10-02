@@ -193,7 +193,7 @@ window.View = (function()
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'shown.bs.popover', callback);
 
-            window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
         }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {

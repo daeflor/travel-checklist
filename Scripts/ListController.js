@@ -3,18 +3,6 @@ window.ListController = (function()
     var activeListId;
     var quantityPopoverActive = false;
 
-    //TODO This shouldn't be in the Controller
-    window.addEventListener('load', setView);
-
-    //TODO this probably shouldn't be in the Controller, but I'm not sure where exactly it belons... app.js?
-    //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
-    document.addEventListener('DOMContentLoaded', setup, {once:true});
-
-    //TODO This shouldn't be in the Controller
-    window.addEventListener('hashchange', setView);
-
-    //TODO this is a good time to make an app.js or similar, and move almost all remaining event listeners there
-
     function setView()
     {
         DebugController.Print("Hash changed to: " + document.location.hash);
@@ -34,29 +22,23 @@ window.ListController = (function()
         {
             NavigateHome();
         }
-
-        // if (id === undefined)
-        // {
-        //     NavigateHome();
-        // }
-        // else 
-        // {
-        //     var section = hash.split('/')[0];
-        //     var id = hash.split('/')[1];
-
-    
-        //     if (section == 'list' && id != null)
-        //     {
-        //         navigateToList(id);
-        //     }
-        // }
     }
 
     /** List & Button Setup **/
 
-    function setup()
+    function setup(hash)
     {            
         window.View.Init();
+
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
+        window.View.Bind('HomeButtonPressed', NavigateHome);
+        window.View.Bind('NewListButtonPressed', AddNewList);
+        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
+
+        //////
+
+        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
+
         window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
@@ -65,12 +47,11 @@ window.ListController = (function()
             bindQuantityHeaderToggleEvents(key);
         }
 
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). ^
-        window.View.Bind('HomeButtonPressed', NavigateHome);
-        window.View.Bind('NewListButtonPressed', AddNewList);
-        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
+        //////
 
         window.Model.RetrieveChecklistData(loadListsIntoView);
+
+        setView();
     }
 
     function loadListsIntoView(lists)
@@ -538,6 +519,11 @@ window.ListController = (function()
     //         {id:id}
     //     );
     // }
+
+    return {
+        Setup : setup,
+        SetView : setView
+    };
 })();
 
 //TODO Consider moving this to a separate file?
