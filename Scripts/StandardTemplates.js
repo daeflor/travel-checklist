@@ -136,3 +136,54 @@ function CreateCollapsibleView(data)
 
     return wrapperElement;
 }
+
+    /** Experimental & In Progress **/
+
+function CreateHyperlinkWithIcon(data)
+{
+    var iconElement = document.createElement('i');
+
+    if (data.iconClass !== undefined)
+    {
+        iconElement.setAttribute('class', data.iconClass);
+    }
+
+    //TODO 'a' elements don't get the default Button style
+    var buttonElement = CreateNewElement('a', [ ['href', data.hyperlink] ], iconElement);
+
+    if (data.buttonId !== undefined)
+    {
+        buttonElement.setAttribute('id', data.buttonId);
+    }
+
+    if (data.buttonClass !== undefined)
+    {
+        buttonElement.setAttribute('class', data.buttonClass);
+    }
+
+    return buttonElement;
+}
+
+// function CreateButtonWithHyperlink(data)
+// {
+//     var iconElement = document.createElement('i');
+
+//     if (data.iconClass !== undefined)
+//     {
+//         iconElement.setAttribute('class', data.iconClass);
+//     }
+
+//     var buttonElement = CreateNewElement('button', [ ['type','button'], ['onclick', data.hyperlink] ], iconElement);
+
+//     if (data.buttonId !== undefined)
+//     {
+//         buttonElement.setAttribute('id', data.buttonId);
+//     }
+
+//     if (data.buttonClass !== undefined)
+//     {
+//         buttonElement.setAttribute('class', data.buttonClass);
+//     }
+
+//     return buttonElement;
+// }

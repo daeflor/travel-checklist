@@ -17,6 +17,7 @@ Upcoming To-Do List:
 - Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Every time an unreported error is hit, add error handling for it
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
+- Revamp CreateNewElement
 
 Features:
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')

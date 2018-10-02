@@ -33,6 +33,24 @@ window.StorageManager = (function ()
 
     /** Publicly Exposed Methods To Access & Modify List Data In Storage **/
 
+    function getStorageKey()
+    {
+        var checklistType = document.location.hash.split('/')[1];
+
+        DebugController.Print("Checklist type determined based on hash: " + checklistType);
+
+        //TODO forthis to work, need to force default page to go to <defaultURL>#/travel
+
+        if (checklistType == 'travel')
+        {
+            return 'TraveList-Data';
+        }
+        // else if (checklistType == 'shopping')
+        // {
+        //     return 'daeflor-checklist-shopping';
+        // }
+    }
+
     function storeChecklistData(data)
     {
         //Stringify the data object to JSON and then store it alongside the key specified below

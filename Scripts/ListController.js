@@ -3,9 +3,54 @@ window.ListController = (function()
     var activeListId;
     var quantityPopoverActive = false;
 
+    //TODO This shouldn't be in the Controller
+    window.addEventListener('load', setView);
+
     //TODO this probably shouldn't be in the Controller, but I'm not sure where exactly it belons... app.js?
     //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
     document.addEventListener('DOMContentLoaded', setup, {once:true});
+
+    //TODO This shouldn't be in the Controller
+    window.addEventListener('hashchange', setView);
+
+    //TODO this is a good time to make an app.js or similar, and move almost all remaining event listeners there
+
+    function setView()
+    {
+        DebugController.Print("Hash changed to: " + document.location.hash);
+
+        //TODO 'list' section isn't really necessary. Will likely replace it with Checklist Type
+
+        var section = document.location.hash.split('/')[1];
+        var id = document.location.hash.split('/')[2];
+
+        DebugController.Print("Hash section: " + section + ". Hash id: " + id + ". Navigating to List with ID: " + id);
+
+        if (section == 'list' && id != null)
+        {
+            navigateToList(id);
+        }
+        else
+        {
+            NavigateHome();
+        }
+
+        // if (id === undefined)
+        // {
+        //     NavigateHome();
+        // }
+        // else 
+        // {
+        //     var section = hash.split('/')[0];
+        //     var id = hash.split('/')[1];
+
+    
+        //     if (section == 'list' && id != null)
+        //     {
+        //         navigateToList(id);
+        //     }
+        // }
+    }
 
     /** List & Button Setup **/
 
