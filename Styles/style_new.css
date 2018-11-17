@@ -6,7 +6,7 @@ body {
     background-color: aliceblue;
 }
 
-a, a:visited {
+a, a:visited, a:hover {
     color: black;
 }
 

@@ -68,7 +68,7 @@ function CreatePopoverToggle(data)
     } 
 
     /* Create Popover Toggle */
-    var popoverToggle = CreateNewElement('a', [ ['id',data.id], ['class',data.class], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
+    var popoverToggle = CreateNewElement('a', [ ['id',data.id], ['class',data.class], ['tabIndex','0'] ]); //Could also set the href attribute to '#!' or 'javascript://' as a hyperlink placeholder
     
     if (data.display != null && (typeof(data.display) == 'string') || typeof(data.display) == 'number')
     {

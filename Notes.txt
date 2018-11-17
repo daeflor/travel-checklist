@@ -14,6 +14,8 @@ TO-DOs:
 Upcoming To-Do List:
 - The new HASH system doesn't work so well with popups, that use the #! hash... :(
 - BUG!: If you open a list, then return to Home, then delete the list, then open another list (e.g. the previous one), there will be an error.
+- BUG!: If you press the back button while a popup is open, the popup doesn't close 
+- Backup or cloud storage functionality
 - Clean up ListController
 - Cleanup and document Model
 - Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
