@@ -350,6 +350,7 @@ window.ListController = (function()
 
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
                     window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});   
+                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
                     window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
                     window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
                 };
