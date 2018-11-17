@@ -1,6 +1,6 @@
 window.DebugController = (function()
 {
-    var debugModeEnabled = true;
+    var debugModeEnabled = false;
     var VERSION = '0.0.10';
 
     function setup()
@@ -34,13 +34,19 @@ window.DebugController = (function()
         if (debugModeEnabled == true)
         {
             console.log(logString);
+            //console.trace(logString);
         }
+    }
+
+    function logWarning(logString)
+    {
+        console.warn(logString);
     }
 
     //TODO It's possible for there to be errors before the DOM has finished loading, therefore before the DebugView has been initialized 
     function logError(logString)
     {
-        console.log(logString);
+        console.error(logString);
 
         window.DebugView.Render('SetVersionVisibility', {debugMode:true}); //TODO this is janky
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:'Error'});
@@ -49,6 +55,7 @@ window.DebugController = (function()
     return {
         Setup : setup,
         Print : print,
+        LogWarning : logWarning,
         LogError: logError
     };
 })();

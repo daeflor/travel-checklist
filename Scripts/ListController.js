@@ -1,37 +1,51 @@
 window.ListController = (function()
 {
+    var self = this;
+    
     var activeListId;
     var quantityPopoverActive = false;
+    var checklistType;
+
+    //TODO I think I'd like setView() to be decoupled from setup(). app.js could call setup (or init) and then setView (which should also be renamed)
 
     function setView()
     {
-        DebugController.Print("Hash changed to: " + document.location.hash);
+        //DebugController.Print("Hash is: " + document.location.hash);
 
-        //TODO 'list' section isn't really necessary. Will likely replace it with Checklist Type
+        //var checklistType = document.location.hash.split('/')[1]; //TODO move this to helper method?
+        var listId = document.location.hash.split('/')[2];
 
-        var section = document.location.hash.split('/')[1];
-        var id = document.location.hash.split('/')[2];
+        //DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId);
 
-        DebugController.Print("Hash section: " + section + ". Hash id: " + id + ". Navigating to List with ID: " + id);
+        //if (checklistType == 'travel' && listId != null)
+        if (listId != null)
+        {   
+            //TODO Curently, the user could input an invalid ID in the URL hash and this would lead to errors and a blank list instead of rerouting to the Home Screen, or some sort of error message.
 
-        if (section == 'list' && id != null)
-        {
-            navigateToList(id);
+            DebugController.LogWarning("Hash checklist type: " + self.checklistType + ". Hash id: " + listId + ". Navigating to List with ID: " + listId);
+
+            navigateToList(listId);
         }
         else
         {
+            DebugController.LogWarning("Hash does not contain a listId. Navigating to the Home Screen.");
+            
             NavigateHome();
         }
     }
 
     /** List & Button Setup **/
 
-    function setup(hash)
+    function setup(checklistType)
     {            
+        self.checklistType = checklistType;
+
+        DebugController.LogWarning("Setting up List Controller. Checklist type is: " + self.checklistType);
+        
         window.View.Init();
 
         //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-        window.View.Bind('HomeButtonPressed', NavigateHome);
+        //window.View.Bind('HomeButtonPressed', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
         window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
@@ -143,7 +157,7 @@ window.ListController = (function()
     {
         window.View.Render(
             'AddListElements', 
-            {listId:data.id, listName:data.name}
+            {listId:data.id, listName:data.name, listType:self.checklistType} //listType:document.location.hash.split('/')[0]
         );
 
         //TODO this method could possibly be standardized and re-used for list item
@@ -218,14 +232,14 @@ window.ListController = (function()
         // );
 
         //When the Go To List button is selected, navigate to that list
-        window.View.Bind(
-            'GoToListButtonPressed', 
-            function() 
-            {
-                navigateToList(data.id);
-            },
-            {listId:data.id}
-        );
+        // window.View.Bind(
+        //     'GoToListButtonPressed', 
+        //     function() 
+        //     {
+        //         navigateToList(data.id);
+        //     },
+        //     {listId:data.id}
+        // );
 
         //Add an event listener to the Move Upwards Button to move the List upwards by one position in the Lists array
         window.View.Bind(
@@ -269,6 +283,9 @@ window.ListController = (function()
 
     function NavigateHome()
     {
+        //TODO This temporarily forces the hash to '#travel'
+        //location.href = '#/travel';
+        
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
 

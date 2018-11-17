@@ -35,7 +35,7 @@ window.StorageManager = (function ()
 
     function getStorageKey()
     {
-        var checklistType = document.location.hash.split('/')[1];
+        var checklistType = document.location.hash.split('/')[0];
 
         DebugController.Print("Checklist type determined based on hash: " + checklistType);
 

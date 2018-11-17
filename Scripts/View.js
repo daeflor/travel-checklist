@@ -153,21 +153,21 @@ window.View = (function()
      */
     function bind(event, callback, parameters)
     {
-        if (event === 'HomeButtonPressed') 
-        {
-            //Set the behavior for when the Home button is pressed
-            addListenerToChecklistElement({id:'buttonHome'}, 'click', callback);
-        }
-        else if (event === 'NewListButtonPressed') 
+        // if (event === 'HomeButtonPressed') 
+        // {
+        //     //Set the behavior for when the Home button is pressed
+        //     addListenerToChecklistElement({id:'buttonHome'}, 'click', callback);
+        // }
+        if (event === 'NewListButtonPressed') 
         {
             //Set the behavior for when the Add List button is pressed
             addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
-        else if (event === 'GoToListButtonPressed') //Expected parameters: listId
-        {
-            //Set the behavior for when a Go To List button is pressed
-            addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
-        }
+        // else if (event === 'GoToListButtonPressed') //Expected parameters: listId
+        // {
+        //     //Set the behavior for when a Go To List button is pressed
+        //     addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
+        // }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
@@ -319,7 +319,7 @@ window.View = (function()
             },
             AddListElements: function() //Expected parameters: listId
             {
-                window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
+                //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
                 
                 //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
                 elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
@@ -395,7 +395,7 @@ window.View = (function()
             },
             updateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
             {
-                window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
+                //window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
 
                 var elementFoundCallback = function(element)
                 {                    

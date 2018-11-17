@@ -149,6 +149,9 @@ function CreateHyperlinkWithIcon(data)
     }
 
     //TODO 'a' elements don't get the default Button style
+
+    //TODO should merge this with the CreateButtonWithIcon method, and simply pass it a type
+    
     var buttonElement = CreateNewElement('a', [ ['href', data.hyperlink] ], iconElement);
 
     if (data.buttonId !== undefined)
