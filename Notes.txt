@@ -12,7 +12,7 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
-- BUG!: If you open a list, then return to Home, then delete the list, then open another list (e.g. the previous one), there will be an error.
+- What needs to be done with the Warnings? Turned to prints or errors?
 - Backup or cloud storage functionality
 - Clean up ListController
 - Cleanup and document Model

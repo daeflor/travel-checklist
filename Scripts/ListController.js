@@ -207,13 +207,19 @@ window.ListController = (function()
         var removeList = function(updatedValue) 
         {
             //Set up the callback method to execute once the Model has been updated
-            var updateView = function()
+            var _modelUpdated = function()
             {
+                //If the List that was removed was the most recently Active List, set the Active List ID to null
+                if (activeListId == data.id)
+                {
+                    activeListId = null;
+                }
+
                 window.View.Render('RemoveList', {listId:data.id}); 
             };
 
             //Update the Model
-            window.Model.ModifyList('Remove', data.id, updateView);
+            window.Model.ModifyList('Remove', data.id, _modelUpdated);
         };
 
         //Add an event listener for when the button to delete a List is pressed
