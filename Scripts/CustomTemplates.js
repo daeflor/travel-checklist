@@ -154,7 +154,7 @@ window.CustomTemplates = (function ()
         //When the ENTER key is pressed, blur the text area
         editNameTextarea.addEventListener('keypress', function(e) 
         {
-            if(e.keyCode==13)
+            if(e.keyCode == 13)
             {
                 editNameTextarea.blur();
             }

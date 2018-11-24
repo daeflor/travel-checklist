@@ -8,6 +8,7 @@ window.DebugController = (function()
         window.DebugView.Init(VERSION);
 
         window.DebugView.Bind('DebugButtonPressed', toggleDebugMode);
+        window.DebugView.Bind('TestButtonPressed', testMethod);
 
         updateDebugModeState(debugModeEnabled);
     }
@@ -17,6 +18,7 @@ window.DebugController = (function()
     {
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:enabled});
         window.DebugView.Render('SetVersionVisibility', {debugMode:enabled});
+        window.DebugView.Render('SetTestButtonVisibility', {debugMode:enabled});
     }
 
     function toggleDebugMode()
@@ -52,6 +54,11 @@ window.DebugController = (function()
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:'Error'});
     }
 
+    function testMethod()
+    {
+        console.log("Test Method Executed");
+    }
+
     return {
         Setup : setup,
         Print : print,
@@ -71,6 +78,7 @@ window.DebugView = (function()
     {
         elements.versionNumberDiv = document.getElementById('versionNumber');  
         elements.debugButton = document.getElementById('buttonDebug');
+        elements.testButton = document.getElementById('buttonTest');
 
         elements.versionNumberDiv.innerText = versionNumber;
     }
@@ -86,6 +94,11 @@ window.DebugView = (function()
             //Set the behavior for when the Debug button is pressed
             elements.debugButton.addEventListener('click', callback);         
         }
+        else if (event === 'TestButtonPressed') 
+        {
+            //Set the behavior for when the Debug button is pressed
+            elements.testButton.addEventListener('click', callback);         
+        }
     }
 
     function render(command, parameters)
@@ -95,6 +108,10 @@ window.DebugView = (function()
             SetVersionVisibility: function() 
             {
                 elements.versionNumberDiv.hidden = !parameters.debugMode;
+            },
+            SetTestButtonVisibility: function() 
+            {
+                elements.testButton.hidden = !parameters.debugMode;
             },
             // ToggleVersionVisibility: function() 
             // {

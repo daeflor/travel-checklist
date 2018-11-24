@@ -12,7 +12,7 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
-- What needs to be done with the Warnings? Turned to prints or errors?
+- What needs to be done with the Warnings? Turned to prints or errors? Figure out what needs to be a Warning and what shouldn't be, and when they appear.
 - Backup or cloud storage functionality
 - Clean up ListController
 - Cleanup and document Model
