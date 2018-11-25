@@ -12,7 +12,7 @@
         //If the URL doesn't specify a checklist type, default to 'travel'
         if (document.location.hash.length == 0)
         {
-            DebugController.LogWarning("URL doesn't specify a checklist type, so it will default 'travel' and hash will be set to '#/travel'");
+            window.DebugController.LogWarning("URL doesn't specify a checklist type, so it will default 'travel' and hash will be set to '#/travel'");
             location.href = '#/travel';
         }
 
@@ -21,7 +21,7 @@
         //If the URL specifies the 'travel' checklist type, setup the Controllers
         if (getChecklistTypeFromUrl() == 'travel')
         {
-            DebugController.LogWarning("Hash checklist is set to travel. Setting up Controllers.");
+            window.DebugController.LogWarning("Hash checklist is set to travel. Setting up Controllers.");
 
             window.DebugController.Setup();
             window.ListController.Setup('travel');
@@ -43,12 +43,22 @@
 
     function urlHashChanged()
     {
-        DebugController.LogWarning("App: The URL fragment identifier changed");
+        //window.DebugController.LogWarning("Hash: " + document.location.hash + "Split up Hash: " + document.location.hash.split('/'));
+
+        //console.log("History length: " + window.history.length);
+
+        //If the new page is the root (List of Lists), clear the browser history log
+        if (document.location.hash.split('/').length == 2)
+        {
+            window.history.go(-(window.history.length-1));
+        }
+
+        window.DebugController.LogWarning("App: The URL fragment identifier changed");
 
         //If the URL specifies the 'travel' checklist type, update the screen
         if (getChecklistTypeFromUrl() == 'travel')
         {
-            DebugController.LogWarning("The URL hash specifies the 'travel' checklist type. Updating the view.");
+            window.DebugController.LogWarning("The URL hash specifies the 'travel' checklist type. Updating the view.");
 
             window.ListController.SetView();
         }

@@ -13,6 +13,7 @@ TO-DOs:
 
 Upcoming To-Do List:
 - What needs to be done with the Warnings? Turned to prints or errors? Figure out what needs to be a Warning and what shouldn't be, and when they appear.
+- Find some way to force the PWA to update to the latest version
 - Backup or cloud storage functionality
 - Clean up ListController
 - Cleanup and document Model

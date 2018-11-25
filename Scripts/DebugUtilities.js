@@ -1,7 +1,7 @@
 window.DebugController = (function()
 {
     var debugModeEnabled = false;
-    var VERSION = '0.0.10';
+    var VERSION = '0.0.11';
 
     function setup()
     {
@@ -56,7 +56,8 @@ window.DebugController = (function()
 
     function testMethod()
     {
-        console.log("Test Method Executed");
+        console.log("Test Method Executed. History length: " + window.history.length);
+        window.history.go(-(window.history.length-1));
     }
 
     return {
