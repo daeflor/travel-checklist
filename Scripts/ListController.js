@@ -288,10 +288,7 @@ window.ListController = (function()
     }
 
     function NavigateHome()
-    {
-        //TODO This temporarily forces the hash to '#travel'
-        //location.href = '#/travel';
-        
+    {   
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
 

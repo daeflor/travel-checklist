@@ -39,8 +39,6 @@ window.StorageManager = (function ()
 
         DebugController.Print("Checklist type determined based on hash: " + checklistType);
 
-        //TODO forthis to work, need to force default page to go to <defaultURL>#/travel
-
         if (checklistType == 'travel')
         {
             return 'TraveList-Data';
