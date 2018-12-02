@@ -1,7 +1,7 @@
 window.DebugController = (function()
 {
     var debugModeEnabled = false;
-    var VERSION = '0.0.11';
+    var VERSION = '0.0.12';
 
     function setup()
     {
@@ -56,8 +56,17 @@ window.DebugController = (function()
 
     function testMethod()
     {
-        console.log("Test Method Executed. History length: " + window.history.length);
-        window.history.go(-(window.history.length-1));
+        console.log("Test Method Executed. User agent: " + navigator.userAgent);
+        //window.history.go(-(window.history.length-1));
+
+        if (/Android 9; Pixel 2/i.test(navigator.userAgent))
+        {
+            window.DebugView.Render('UpdateTestButtonColor', {color:'red'});
+        }
+        else
+        {
+            console.log("The current device is not a mobile device.");
+        }
     }
 
     return {
@@ -135,6 +144,10 @@ window.DebugView = (function()
                 {
                     elements.debugButton.style.color = 'green';
                 }
+            },
+            UpdateTestButtonColor: function() 
+            {
+                elements.testButton.style.color = parameters.color;
             }
         };
 

@@ -1,38 +1,29 @@
 (function () 
-{ 
-    //window.addEventListener('load', setView, {once:true});
-    //window.removeEventListener('hashchange', setView);
-    //unloadApp();
-    
+{     
     //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
     document.addEventListener('DOMContentLoaded', setup, {once:true});
 
     function setup()
     {
+        window.DebugController.Print("Setting up app");
+
         //If the URL doesn't specify a checklist type, default to 'travel'
         if (document.location.hash.length == 0)
         {
-            window.DebugController.LogWarning("URL doesn't specify a checklist type, so it will default 'travel' and hash will be set to '#/travel'");
+            window.DebugController.Print("URL doesn't specify a checklist type, so it will default 'travel' and hash will be set to '#/travel'");
             location.href = '#/travel';
         }
 
-        //var checklistType = document.location.hash.split('/')[1];
-
         //If the URL specifies the 'travel' checklist type, setup the Controllers
-        if (getChecklistTypeFromUrl() == 'travel')
+        if (GetLocationHashRoute() == 'travel')
         {
-            window.DebugController.LogWarning("Hash checklist is set to travel. Setting up Controllers.");
+            window.DebugController.Print("Hash checklist is set to travel. Setting up Controllers.");
 
             window.DebugController.Setup();
             window.ListController.Setup('travel');
 
             //Set the behavior for when the URL fragment identifier changes
             window.onhashchange = urlHashChanged;
-            //window.addEventListener('hashchange', setView);
-
-            //Set the behavior for when the window is closed or reloaded
-            //window.addEventListener('unload', unloadApp);
-            // window.onbeforeunload = unloadApp;
         }
     }
 
@@ -43,37 +34,26 @@
 
     function urlHashChanged()
     {
-        //window.DebugController.LogWarning("Hash: " + document.location.hash + "Split up Hash: " + document.location.hash.split('/'));
+        // //If the new page is the root (List of Lists), clear the browser history log
+        // if (document.location.hash.split('/').length == 2 && window.history.length > 2)
+        // {
+        //     window.history.go(-(window.history.length-1));
+        // }
 
-        //console.log("History length: " + window.history.length);
-
-        //If the new page is the root (List of Lists), clear the browser history log
-        if (document.location.hash.split('/').length == 2)
+        //If on Pixel 2, and the new page is the root (List of Lists), clear the browser history log
+        if (/Android 9; Pixel 2/i.test(navigator.userAgent) && document.location.hash.split('/').length == 2)
         {
             window.history.go(-(window.history.length-1));
         }
 
-        window.DebugController.LogWarning("App: The URL fragment identifier changed");
+        window.DebugController.Print("App: The URL fragment identifier changed. Hash route: " + GetLocationHashRoute());
 
         //If the URL specifies the 'travel' checklist type, update the screen
-        if (getChecklistTypeFromUrl() == 'travel')
+        if (GetLocationHashRoute() == 'travel')
         {
-            window.DebugController.LogWarning("The URL hash specifies the 'travel' checklist type. Updating the view.");
+            window.DebugController.Print("The URL hash specifies the 'travel' checklist type. Updating the view.");
 
             window.ListController.SetView();
         }
     }
-
-    function getChecklistTypeFromUrl()
-    {
-        return document.location.hash.split('/')[1];
-    }
-
-    // function unloadApp()
-    // {
-    //     DebugController.Print("App: The app will be unloaded, and the hashchange event listener will be removed.");
-
-    //     //Remove the hashchange event listener
-    //     window.removeEventListener('hashchange', setView);
-    // }
 })();  

@@ -35,11 +35,7 @@ window.StorageManager = (function ()
 
     function getStorageKey()
     {
-        var checklistType = document.location.hash.split('/')[0];
-
-        DebugController.Print("Checklist type determined based on hash: " + checklistType);
-
-        if (checklistType == 'travel')
+        if (GetLocationHashRoute() == 'travel')
         {
             return 'TraveList-Data';
         }
@@ -52,13 +48,13 @@ window.StorageManager = (function ()
     function storeChecklistData(data)
     {
         //Stringify the data object to JSON and then store it alongside the key specified below
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
+        saveNameValuePairToLocalStorage(getStorageKey(), JSON.stringify(data));
     }
 
     function retrieveChecklistData()
     {
         //Try to load the raw data from storage. If there is none, create new template data.
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data') || '{"lists":[]}';
+        var rawStorageData = loadValueFromLocalStorage(getStorageKey()) || '{"lists":[]}';
 
         //Return the data object parsed from the JSON string in Storage
         return JSON.parse(rawStorageData);

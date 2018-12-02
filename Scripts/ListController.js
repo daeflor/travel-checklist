@@ -22,15 +22,15 @@ window.ListController = (function()
         {   
             //TODO Curently, the user could input an invalid ID in the URL hash and this would lead to errors and a blank list instead of rerouting to the Home Screen, or some sort of error message.
 
-            DebugController.LogWarning("Hash checklist type: " + self.checklistType + ". Hash id: " + listId + ". Navigating to List with ID: " + listId);
+            DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId + ". Navigating to List with ID: " + listId);
 
             navigateToList(listId);
         }
         else
         {
-            DebugController.LogWarning("Hash does not contain a listId. Navigating to the Home Screen.");
+            DebugController.Print("Hash does not contain a listId. Navigating to the Home Screen.");
             
-            NavigateHome();
+            navigateHome();
         }
     }
 
@@ -40,7 +40,7 @@ window.ListController = (function()
     {            
         self.checklistType = checklistType;
 
-        DebugController.LogWarning("Setting up List Controller. Checklist type is: " + self.checklistType);
+        //DebugController.Print("Setting up List Controller. Checklist type is: " + self.checklistType);
         
         window.View.Init();
 
@@ -287,7 +287,7 @@ window.ListController = (function()
         activeListId = listId;
     }
 
-    function NavigateHome()
+    function navigateHome()
     {   
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?

@@ -137,8 +137,9 @@ function CreateCollapsibleView(data)
     return wrapperElement;
 }
 
-    /** Experimental & In Progress **/
+/** Experimental & In Progress **/
 
+//TODO this could probably be merged with other methods above
 function CreateHyperlinkWithIcon(data)
 {
     var iconElement = document.createElement('i');

@@ -61,6 +61,11 @@ function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value");
 }
 
+function GetLocationHashRoute()
+{
+    return document.location.hash.split('/')[1];
+}
+
 /** Experimental & In Progress **/
 
 /** Unused Utilities **/
