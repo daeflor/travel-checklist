@@ -6,7 +6,7 @@ body {
     background-color: aliceblue;
 }
 
-a, a:visited {
+a, a:visited, a:hover {
     color: black;
 }
 
@@ -454,4 +454,8 @@ button {
     color: green;
 
     /* align-self: center; */
+}
+
+#buttonTest {
+    color: #333333;
 }

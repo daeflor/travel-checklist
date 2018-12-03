@@ -1,17 +1,14 @@
 window.DebugController = (function()
 {
     var debugModeEnabled = false;
-    var VERSION = '0.0.9';
+    var VERSION = '0.0.12';
 
-    //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
-    document.addEventListener('DOMContentLoaded', setup, {once:true});
-
-    //TODO it's pretty silly having multiple 'DOMContentLoaded' event listeners. This kind of thing should probably be consolidated.
     function setup()
     {
         window.DebugView.Init(VERSION);
 
         window.DebugView.Bind('DebugButtonPressed', toggleDebugMode);
+        window.DebugView.Bind('TestButtonPressed', testMethod);
 
         updateDebugModeState(debugModeEnabled);
     }
@@ -21,6 +18,7 @@ window.DebugController = (function()
     {
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:enabled});
         window.DebugView.Render('SetVersionVisibility', {debugMode:enabled});
+        window.DebugView.Render('SetTestButtonVisibility', {debugMode:enabled});
     }
 
     function toggleDebugMode()
@@ -38,20 +36,43 @@ window.DebugController = (function()
         if (debugModeEnabled == true)
         {
             console.log(logString);
+            //console.trace(logString);
         }
+    }
+
+    function logWarning(logString)
+    {
+        console.warn(logString);
     }
 
     //TODO It's possible for there to be errors before the DOM has finished loading, therefore before the DebugView has been initialized 
     function logError(logString)
     {
-        console.log(logString);
+        console.error(logString);
 
         window.DebugView.Render('SetVersionVisibility', {debugMode:true}); //TODO this is janky
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:'Error'});
     }
 
+    function testMethod()
+    {
+        console.log("Test Method Executed. User agent: " + navigator.userAgent);
+        //window.history.go(-(window.history.length-1));
+
+        if (/Android 9; Pixel 2/i.test(navigator.userAgent))
+        {
+            window.DebugView.Render('UpdateTestButtonColor', {color:'red'});
+        }
+        else
+        {
+            console.log("The current device is not a mobile device.");
+        }
+    }
+
     return {
+        Setup : setup,
         Print : print,
+        LogWarning : logWarning,
         LogError: logError
     };
 })();
@@ -67,6 +88,7 @@ window.DebugView = (function()
     {
         elements.versionNumberDiv = document.getElementById('versionNumber');  
         elements.debugButton = document.getElementById('buttonDebug');
+        elements.testButton = document.getElementById('buttonTest');
 
         elements.versionNumberDiv.innerText = versionNumber;
     }
@@ -82,6 +104,11 @@ window.DebugView = (function()
             //Set the behavior for when the Debug button is pressed
             elements.debugButton.addEventListener('click', callback);         
         }
+        else if (event === 'TestButtonPressed') 
+        {
+            //Set the behavior for when the Debug button is pressed
+            elements.testButton.addEventListener('click', callback);         
+        }
     }
 
     function render(command, parameters)
@@ -91,6 +118,10 @@ window.DebugView = (function()
             SetVersionVisibility: function() 
             {
                 elements.versionNumberDiv.hidden = !parameters.debugMode;
+            },
+            SetTestButtonVisibility: function() 
+            {
+                elements.testButton.hidden = !parameters.debugMode;
             },
             // ToggleVersionVisibility: function() 
             // {
@@ -113,6 +144,10 @@ window.DebugView = (function()
                 {
                     elements.debugButton.style.color = 'green';
                 }
+            },
+            UpdateTestButtonColor: function() 
+            {
+                elements.testButton.style.color = parameters.color;
             }
         };
 

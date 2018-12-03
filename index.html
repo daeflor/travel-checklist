@@ -17,14 +17,15 @@
   <script src='Libraries/popper.min.js'></script>
   <script src='Libraries/bootstrap.min.js'></script>
 
+  <script src='Scripts/Utilities/Utilities.js'></script>
+  <script src='Scripts/StandardTemplates.js'></script>
+  <script src='Scripts/CustomTemplates.js'></script>
+  <script src='Scripts/DebugUtilities.js'></script>
   <script src='Scripts/StorageManager.js'></script>
   <script src='Scripts/Model.js'></script>
   <script src='Scripts/ListController.js'></script>
   <script src='Scripts/View.js'></script>
-  <script src='Scripts/CustomTemplates.js'></script>
-  <script src='Scripts/StandardTemplates.js'></script>
-  <script src='Scripts/DebugUtilities.js'></script>
-  <script src='Scripts/Utilities/Utilities.js'></script>
+  <script src='Scripts/App.js'></script>
 <!--
   <script src="https://use.fontawesome.com/ab66adb55e.js"></script>
   
@@ -50,9 +51,9 @@
       <!--TODO Perhaps move the headers into the screen sections, below-->
       <div class='row divHeader' id='divListHeader' hidden='true'>
         <div class='col-1 divSmallPadding'>
-          <button id='buttonHome' type='button'> 
+          <a id='buttonHome' type='button' href='#/travel'> 
                 <i class='fa fa-home'></i>
-          </button>  
+          </a>  
         </div>
         <div class='col-4' id='headerCurrentListName'></div>
       </div>
@@ -77,6 +78,9 @@
 
     <div id='divDebug' class='debug container-fluid'>
       <div class='row'>
+        <button id='buttonTest' class='col-1' type='button' hidden='true'>
+          <i class='fa fa-exclamation-circle'></i>
+        </button>
         <div id='versionNumber' class='col-1' hidden='true'>
           version #
         </div>

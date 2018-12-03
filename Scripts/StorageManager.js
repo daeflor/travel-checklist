@@ -33,16 +33,28 @@ window.StorageManager = (function ()
 
     /** Publicly Exposed Methods To Access & Modify List Data In Storage **/
 
+    function getStorageKey()
+    {
+        if (GetLocationHashRoute() == 'travel')
+        {
+            return 'TraveList-Data';
+        }
+        // else if (checklistType == 'shopping')
+        // {
+        //     return 'daeflor-checklist-shopping';
+        // }
+    }
+
     function storeChecklistData(data)
     {
         //Stringify the data object to JSON and then store it alongside the key specified below
-        saveNameValuePairToLocalStorage('TraveList-Data', JSON.stringify(data));
+        saveNameValuePairToLocalStorage(getStorageKey(), JSON.stringify(data));
     }
 
     function retrieveChecklistData()
     {
         //Try to load the raw data from storage. If there is none, create new template data.
-        var rawStorageData = loadValueFromLocalStorage('TraveList-Data') || '{"lists":[]}';
+        var rawStorageData = loadValueFromLocalStorage(getStorageKey()) || '{"lists":[]}';
 
         //Return the data object parsed from the JSON string in Storage
         return JSON.parse(rawStorageData);

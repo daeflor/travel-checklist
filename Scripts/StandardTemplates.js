@@ -68,7 +68,7 @@ function CreatePopoverToggle(data)
     } 
 
     /* Create Popover Toggle */
-    var popoverToggle = CreateNewElement('a', [ ['id',data.id], ['class',data.class], ['href','#!'], ['tabIndex','0'] ]); //Could also use 'javascript://' for the href attribute
+    var popoverToggle = CreateNewElement('a', [ ['id',data.id], ['class',data.class], ['tabIndex','0'] ]); //Could also set the 'href' attribute to '#!' or 'javascript://' as a hyperlink placeholder
     
     if (data.display != null && (typeof(data.display) == 'string') || typeof(data.display) == 'number')
     {
@@ -136,3 +136,58 @@ function CreateCollapsibleView(data)
 
     return wrapperElement;
 }
+
+/** Experimental & In Progress **/
+
+//TODO this could probably be merged with other methods above
+function CreateHyperlinkWithIcon(data)
+{
+    var iconElement = document.createElement('i');
+
+    if (data.iconClass !== undefined)
+    {
+        iconElement.setAttribute('class', data.iconClass);
+    }
+
+    //TODO 'a' elements don't get the default Button style
+
+    //TODO should merge this with the CreateButtonWithIcon method, and simply pass it a type
+    
+    var buttonElement = CreateNewElement('a', [ ['href', data.hyperlink] ], iconElement);
+
+    if (data.buttonId !== undefined)
+    {
+        buttonElement.setAttribute('id', data.buttonId);
+    }
+
+    if (data.buttonClass !== undefined)
+    {
+        buttonElement.setAttribute('class', data.buttonClass);
+    }
+
+    return buttonElement;
+}
+
+// function CreateButtonWithHyperlink(data)
+// {
+//     var iconElement = document.createElement('i');
+
+//     if (data.iconClass !== undefined)
+//     {
+//         iconElement.setAttribute('class', data.iconClass);
+//     }
+
+//     var buttonElement = CreateNewElement('button', [ ['type','button'], ['onclick', data.hyperlink] ], iconElement);
+
+//     if (data.buttonId !== undefined)
+//     {
+//         buttonElement.setAttribute('id', data.buttonId);
+//     }
+
+//     if (data.buttonClass !== undefined)
+//     {
+//         buttonElement.setAttribute('class', data.buttonClass);
+//     }
+
+//     return buttonElement;
+// }

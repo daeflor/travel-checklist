@@ -1,17 +1,58 @@
 window.ListController = (function()
 {
+    var self = this;
+    
     var activeListId;
     var quantityPopoverActive = false;
+    var checklistType;
 
-    //TODO this probably shouldn't be in the Controller, but I'm not sure where exactly it belons... app.js?
-    //Initiate setup once the DOM content has loaded, and then remove this event listener after a single firing
-    document.addEventListener('DOMContentLoaded', setup, {once:true});
+    //TODO I think I'd like setView() to be decoupled from setup(). app.js could call setup (or init) and then setView (which should also be renamed)
+
+    function setView()
+    {
+        //DebugController.Print("Hash is: " + document.location.hash);
+
+        //var checklistType = document.location.hash.split('/')[1]; //TODO move this to helper method?
+        var listId = document.location.hash.split('/')[2];
+
+        //DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId);
+
+        //if (checklistType == 'travel' && listId != null)
+        if (listId != null)
+        {   
+            //TODO Curently, the user could input an invalid ID in the URL hash and this would lead to errors and a blank list instead of rerouting to the Home Screen, or some sort of error message.
+
+            DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId + ". Navigating to List with ID: " + listId);
+
+            navigateToList(listId);
+        }
+        else
+        {
+            DebugController.Print("Hash does not contain a listId. Navigating to the Home Screen.");
+            
+            navigateHome();
+        }
+    }
 
     /** List & Button Setup **/
 
-    function setup()
+    function setup(checklistType)
     {            
+        self.checklistType = checklistType;
+
+        //DebugController.Print("Setting up List Controller. Checklist type is: " + self.checklistType);
+        
         window.View.Init();
+
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
+        //window.View.Bind('HomeButtonPressed', NavigateHome);
+        window.View.Bind('NewListButtonPressed', AddNewList);
+        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
+
+        //////
+
+        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
+
         window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
@@ -20,12 +61,11 @@ window.ListController = (function()
             bindQuantityHeaderToggleEvents(key);
         }
 
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). ^
-        window.View.Bind('HomeButtonPressed', NavigateHome);
-        window.View.Bind('NewListButtonPressed', AddNewList);
-        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
+        //////
 
         window.Model.RetrieveChecklistData(loadListsIntoView);
+
+        setView();
     }
 
     function loadListsIntoView(lists)
@@ -117,7 +157,7 @@ window.ListController = (function()
     {
         window.View.Render(
             'AddListElements', 
-            {listId:data.id, listName:data.name}
+            {listId:data.id, listName:data.name, listType:self.checklistType} //listType:document.location.hash.split('/')[0]
         );
 
         //TODO this method could possibly be standardized and re-used for list item
@@ -167,13 +207,19 @@ window.ListController = (function()
         var removeList = function(updatedValue) 
         {
             //Set up the callback method to execute once the Model has been updated
-            var updateView = function()
+            var _modelUpdated = function()
             {
+                //If the List that was removed was the most recently Active List, set the Active List ID to null
+                if (activeListId == data.id)
+                {
+                    activeListId = null;
+                }
+
                 window.View.Render('RemoveList', {listId:data.id}); 
             };
 
             //Update the Model
-            window.Model.ModifyList('Remove', data.id, updateView);
+            window.Model.ModifyList('Remove', data.id, _modelUpdated);
         };
 
         //Add an event listener for when the button to delete a List is pressed
@@ -192,14 +238,14 @@ window.ListController = (function()
         // );
 
         //When the Go To List button is selected, navigate to that list
-        window.View.Bind(
-            'GoToListButtonPressed', 
-            function() 
-            {
-                navigateToList(data.id);
-            },
-            {listId:data.id}
-        );
+        // window.View.Bind(
+        //     'GoToListButtonPressed', 
+        //     function() 
+        //     {
+        //         navigateToList(data.id);
+        //     },
+        //     {listId:data.id}
+        // );
 
         //Add an event listener to the Move Upwards Button to move the List upwards by one position in the Lists array
         window.View.Bind(
@@ -241,8 +287,8 @@ window.ListController = (function()
         activeListId = listId;
     }
 
-    function NavigateHome()
-    {
+    function navigateHome()
+    {   
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
 
@@ -307,6 +353,7 @@ window.ListController = (function()
 
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
                     window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});   
+                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
                     window.View.Bind('DecrementQuantityButtonPressed', _decrementListItemQuantityValue);
                     window.View.Bind('IncrementQuantityButtonPressed', _incrementListItemQuantityValue);
                 };
@@ -493,6 +540,11 @@ window.ListController = (function()
     //         {id:id}
     //     );
     // }
+
+    return {
+        Setup : setup,
+        SetView : setView
+    };
 })();
 
 //TODO Consider moving this to a separate file?

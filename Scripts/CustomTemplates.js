@@ -57,7 +57,14 @@ window.CustomTemplates = (function ()
 
         /* Navigation Button */
 
-        var navButton = CreateButtonWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
+        //var navButton = CreateButtonWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
+        //TODO it's possible right now for this element creation to happen before the page is at the #travel hash location, which means the hyperlink below won't work. There are various ways this could be addressed. 
+        //var hyperlink = (document.location.hash).concat('/').concat(data.listId);
+        //console.log("current hash: " + (document.location.hash));
+        //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
+        var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(data.listType).concat('/').concat(data.listId)}); 
+        //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
+
 
         var navButtonWrapper = CreateNewElement('div', [ ['class','col-2'] ], navButton);
 
@@ -147,7 +154,7 @@ window.CustomTemplates = (function ()
         //When the ENTER key is pressed, blur the text area
         editNameTextarea.addEventListener('keypress', function(e) 
         {
-            if(e.keyCode==13)
+            if(e.keyCode == 13)
             {
                 editNameTextarea.blur();
             }

@@ -30,6 +30,7 @@ function RemoveElementFromArray(array, index, callback)
     callback();
 }
 
+//TODO Might be useful to use Try/Catch here
 function GetElement(id, callback)
 {
     var element = document.getElementById(id);
@@ -58,6 +59,11 @@ function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
     } 
 
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value");
+}
+
+function GetLocationHashRoute()
+{
+    return document.location.hash.split('/')[1];
 }
 
 /** Experimental & In Progress **/
