@@ -12,12 +12,10 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
-- What needs to be done with the Warnings? Turned to prints or errors? Figure out what needs to be a Warning and what shouldn't be, and when they appear.
-- Find some way to force the PWA to update to the latest version
+- Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Backup or cloud storage functionality
 - Clean up ListController
 - Cleanup and document Model
-- Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Every time an unreported error is hit, add error handling for it
 - Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - Revamp CreateNewElement
@@ -80,6 +78,8 @@ Code Cleanup:
 - Could use _ and $ to organize functions/methods
 
 Testing, Debug Tools, & Performance:
+- Find some way to force the PWA to update to the latest version 
+    - USB Debugging is the best current solution for this
 - Should have a good way to test backwards compatibility
 - Figure out what's causing poor performance with collapsible settings view
 - Debug mode could also dictate storage location, among other things
