@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>daeflor checklist</title>
+  <title>list</title>
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#404040">
-
+<!--
   <link rel="manifest" href="./manifest.json">
-
+-->
   <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
   <link rel='stylesheet' type='text/css' href='Styles/style_new.css?version=0.0.4'>
@@ -23,31 +23,34 @@
   <script src='Scripts/DebugUtilities.js'></script>
   <script src='Scripts/StorageManager.js'></script>
   <script src='Scripts/Model.js'></script>
-  <script src='Scripts/ListSelectionController.js'></script>
+  <script src='Scripts/ListController.js'></script>
   <script src='Scripts/View.js'></script>
   <script src='Scripts/App.js'></script>
 
 </head>
-<body>   
+<body>  
 
   <div id='divChecklistBody'>
-
+      
     <div class='container-fluid'>  <!--TODO Does this still need to be fluid and is it still necessary to use rows?-->
       
-      <div class='row divHeader' id='divHomeHeader'>
-        TraveLists
+      <div class='row divHeader' id='divListHeader' hidden='true'>
+        <div class='col-1 divSmallPadding'>
+          <a id='buttonHome' type='button' href='#/travel'> 
+                <i class='fa fa-home'></i>
+          </a>  
+        </div>
+        <div class='col-4' id='headerCurrentListName'></div>
       </div>
 
     </div>
 
-    <div id='divHomeScreen'>
-      <div class='divListElements' id='divHomeScreenListElements'></div>
-      <div class='newRow' id='newListRow'>
-        <button class='buttonNewRow' id='buttonAddList' type='button'>
-          <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
-        </button>                  
+    <div id='divListScreen' hidden='true'>
+      <div class='divListElements' id='divListScreenListElements'></div>
+      <div class='newRow' id='newListItemRow'>
+          <button class='buttonNewRow' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
       </div>
-    </div>
+    </div>  
 
     <div id='divDebug' class='debug container-fluid'>
       <div class='row'>
@@ -64,7 +67,6 @@
     </div>
 
   </div>   
-  <!-- TODO is it really necessary to have the New List and New List Item rows be separate? -->
-    <!-- It is nice to keep them separate in case in the future they differ more -->
+
 </body>
 </html>

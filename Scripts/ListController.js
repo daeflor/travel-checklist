@@ -47,19 +47,20 @@ window.ListController = (function()
         //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
         //window.View.Bind('HomeButtonPressed', NavigateHome);
         window.View.Bind('NewListButtonPressed', AddNewList);
-        window.View.Bind('NewListItemButtonPressed', AddNewListItem);
+        //window.View.Bind('NewListItemButtonPressed', AddNewListItem);
 
         //////
 
         //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
 
-        window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
+        //TODO this isn't so much SHOWING the quantity header as it is creating it
+        //window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (var key in QuantityType)
-        {
-            bindQuantityHeaderToggleEvents(key);
-        }
+        // for (var key in QuantityType)
+        // {
+        //     bindQuantityHeaderToggleEvents(key);
+        // }
 
         //////
 
@@ -76,10 +77,10 @@ window.ListController = (function()
         {
             addListToView(lists[i]);
 
-            for (var j = 0; j < lists[i].listItems.length; j++) 
-            {
-                addListItemToView(lists[i].id, lists[i].listItems[j]);
-            }
+            // for (var j = 0; j < lists[i].listItems.length; j++) 
+            // {
+            //     addListItemToView(lists[i].id, lists[i].listItems[j]);
+            // }
         }
     }
 
@@ -293,7 +294,8 @@ window.ListController = (function()
         window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
 
         //Display the Home Screen
-        window.View.Render('showHomeScreen'); 
+        //window.View.Render('showHomeScreen'); 
+        //location.href = 'index.html';
     }
 
     function AddNewListItem()
@@ -577,9 +579,4 @@ var QuantityType = {
         toggleClass: 'toggleQuantityHeader toggleSmallIcon',
         iconClass: 'fa fa-briefcase iconHeader'
     },
-};
-
-var ListType = {
-    Travel: 0,
-    Checklist: 1,
 };

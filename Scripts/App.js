@@ -20,7 +20,7 @@
             window.DebugController.Print("Hash checklist is set to travel. Setting up Controllers.");
 
             window.DebugController.Setup();
-            window.ListController.Setup('travel');
+            window.ListSelectionController.Setup('travel');
 
             //Set the behavior for when the URL fragment identifier changes
             window.onhashchange = urlHashChanged;
@@ -53,7 +53,7 @@
         {
             window.DebugController.Print("The URL hash specifies the 'travel' checklist type. Updating the view.");
 
-            window.ListController.SetView();
+            //window.ListController.SetView();
         }
     }
 })();  
