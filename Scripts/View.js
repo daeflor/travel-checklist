@@ -260,6 +260,7 @@ window.View = (function()
     //TODO maybe split this between View.HomeScreen and View.ListScreen? 
         //Maybe the parent View could redirect to the correct subView so that it is abstracted from the Controller?
 
+    //TODO could split out rendering things (showing/hiding) from adding them to the view/DOM (regardless of whether they are actually visible yet/currently)
     function render(command, parameters)
     {
         var viewCommands = 
@@ -326,7 +327,7 @@ window.View = (function()
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
-                //elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
+                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
                 //Update the reorder buttons for all the List toggles in the Home Screen
                 updateReorderButtons(elements.homeScreenListElements);
@@ -427,7 +428,7 @@ window.View = (function()
                 //Update the text value of the name toggle/button element which matches the given ID
                 updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, {updatedValue:parameters.updatedValue});
             },
-            ShowQuantityHeader: function() 
+            GenerateQuantityHeader: function() //TODO not a consistent naming convention for creating/adding elements to the DOM
             {
                 //TODO might be worth having a helper method specifically dedicated to updating / working with Bootstrap elements
 

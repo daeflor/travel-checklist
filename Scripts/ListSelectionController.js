@@ -35,51 +35,20 @@ window.ListSelectionController = (function()
 
     /** List & Button Setup **/
 
-    function setup(checklistType)
+    function init(checklistType)
     {            
         self.checklistType = checklistType;
-
-        //DebugController.Print("Setting up List Controller. Checklist type is: " + self.checklistType);
         
-        window.View.Init();
-
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-        //window.View.Bind('HomeButtonPressed', NavigateHome);
         window.View.Bind('NewListButtonPressed', addNewList);
-        //window.View.Bind('NewListItemButtonPressed', AddNewListItem);
-
-        //////
-
-        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-
-        //TODO this isn't so much SHOWING the quantity header as it is creating it
-        //window.View.Render('ShowQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
-
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        // for (var key in QuantityType)
-        // {
-        //     bindQuantityHeaderToggleEvents(key);
-        // }
-
-        //////
-
-        window.Model.RetrieveChecklistData(loadListsIntoView);
-
-        //setView();
     }
 
-    function loadListsIntoView(lists)
+    function loadListsIntoView(loadedListData)
     {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + lists.length);
+        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
 
-        for (var i = 0; i < lists.length; i++) 
+        for (var i = 0; i < loadedListData.length; i++) 
         {
-            addListToView(lists[i]);
-
-            // for (var j = 0; j < lists[i].listItems.length; j++) 
-            // {
-            //     addListItemToView(lists[i].id, lists[i].listItems[j]);
-            // }
+            addListToView(loadedListData[i]);
         }
     }
 
@@ -220,7 +189,8 @@ window.ListSelectionController = (function()
         );
     }
 
-    function navigateToList(listId)
+    //TODO not sure I like this passive naming convention
+    function listSelected(listId)
     {   
         //If there is any active settings view, close it
         window.View.Render('HideActiveSettingsView');
@@ -228,16 +198,19 @@ window.ListSelectionController = (function()
         //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
             //Although, if this is the only place the Active List is hidden, then maybe it's fine
             //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-        //Display the specified List Screen
+        //Display the specified List Screen (and hide the Active List Screen, if applicable)
         window.View.Render('DisplayList', {listId:listId, activeListId:activeListId});
+
+        //Set the newly selected List as the Active List
         activeListId = listId;
     }
 
     /** Experimental & In Progress **/
 
     return {
-        Setup : setup
-        //SetView : setView
+        Init : init,
+        LoadListsIntoView : loadListsIntoView,
+        ListSelected : listSelected
     };
 })();
 
