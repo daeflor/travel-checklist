@@ -1,6 +1,8 @@
 /** General Utilities **/
 
-function SwapElementsInArray(array, index, indexToSwap, callback)
+//TODO Utilities should probably have its own namespace, for clarity
+
+function SwapElementsInArray(array, index, indexToSwap, callback) //TODO these are not DOM elements. Is this confusing?
 {
     //Assign the element in the array that should be swapped with the one selected
     var elementToSwap = array[indexToSwap];
@@ -50,15 +52,16 @@ function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
     //Traverse the array, searching for an object that has a key matching the given value
     for (var i = array.length-1; i >= 0; i--)
     {
-        //If the List IDs match, call the passed callback method and end execution of this method
+        //If a match is found, call the passed callback method and end execution of this method
         if (array[i][key] == value)
         {
+            window.DebugController.Print("Returned object with Key: " + key + ", Value: " + value);
             callback(i);
             return;
         }
     } 
 
-    window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value");
+    window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
 function GetLocationHashRoute()

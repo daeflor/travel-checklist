@@ -182,7 +182,8 @@ window.ListSelectionController = (function()
     return {
         Init : init,
         LoadListsIntoView : loadListsIntoView,
-        ListSelected : listSelected
+        ListSelected : listSelected,
+        GetActiveListId : function() {return activeListId;}
     };
 })();
 

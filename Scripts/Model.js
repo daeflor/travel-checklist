@@ -189,14 +189,14 @@ window.Model = (function()
         findList(listId, runCommand);
     }
 
-    function modifyListItem(command, listId, listItemId, callback, parameters)
+    function modifyListItem(command, listId, listItemId, callback, options)
     {       
         var commands = 
         {
             EditName : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Update the name of the List Item and then execute the provided callback method
-                editName(getLists()[listIndex].listItems[listItemIndex], parameters.updatedName, commandSucceededCallback);
+                editName(getLists()[listIndex].listItems[listItemIndex], options.updatedValue, commandSucceededCallback);
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -212,10 +212,10 @@ window.Model = (function()
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //If the quantity value for the given quantity type is greater than zero...
-                if (getLists()[listIndex].listItems[listItemIndex].quantities[parameters.quantityType] > 0)
+                if (getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType] > 0)
                 {
                     //Decrement the quantity value by one
-                    getLists()[listIndex].listItems[listItemIndex].quantities[parameters.quantityType]--;
+                    getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]--;
 
                     //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
                     commandSucceededCallback(getLists()[listIndex].listItems[listItemIndex]);
@@ -224,7 +224,7 @@ window.Model = (function()
             IncrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Increment the quantity value for the given quantity type by one
-                getLists()[listIndex].listItems[listItemIndex].quantities[parameters.quantityType]++;
+                getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]++;
                 
                 //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
                 commandSucceededCallback(getLists()[listIndex].listItems[listItemIndex]);

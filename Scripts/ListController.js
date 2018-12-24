@@ -1,8 +1,5 @@
 window.ListController = (function()
-{
-    //var self = this;
-    
-    var activeListId;
+{    
     var quantityPopoverActive = false;
 
     /** List & Button Setup **/
@@ -58,7 +55,7 @@ window.ListController = (function()
                             clearQuantitiesInView(modifiedListItems, quantityType);
                         };
 
-                        window.Model.ModifyList('ClearQuantityValues', activeListId, modelUpdated, {quantityType:quantityType});
+                        window.Model.ModifyList('ClearQuantityValues', ListSelectionController.GetActiveListId(), modelUpdated, {quantityType:quantityType});
                     }
                 );
             },
@@ -85,10 +82,10 @@ window.ListController = (function()
     {
         window.Model.ModifyList(
             'AddListItem', 
-            activeListId,
+            ListSelectionController.GetActiveListId(),
             function(newListItem) 
             {
-                addListItemToView(activeListId, newListItem);
+                addListItemToView(ListSelectionController.GetActiveListId(), newListItem);
                 
                 //After the List Item is added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:newListItem.id});
@@ -179,67 +176,52 @@ window.ListController = (function()
             //yeah it would be good to make this section smaller and more readable
             //TODO could have a completely separate method like editListItemNameInModelAndView 
                             
-        setupBindings('EditName', listId, listItem);
+        //setupBindings('EditName', listId, listItem);
 
-        var removeListItem = function() 
-        {
-            //Set up the callback method to execute once the Model has been updated
-            var updateView = function()
-            {
-                window.View.Render('RemoveListItem', {listItemId:listItem.id}); 
-            };
+        //setupBindings('Remove', listId, listItem);
 
-            //Update the Model
-            window.Model.ModifyListItem('Remove', listId, listItem.id, updateView);
-        };
+        setupBinding(bindingReference.EditName, listId, listItem);
+        setupBinding(bindingReference.Remove, listId, listItem);
+        setupBinding(bindingReference.MoveUpwards, listId, listItem);
+        setupBinding(bindingReference.MoveDownwards, listId, listItem);
 
-        //Add an event listener to the Delete Button to remove the List Item
-        window.View.Bind('DeleteButtonPressed', removeListItem, {id:listItem.id});
+        //TODO would rather move the two calls below into one method that takes a direction (up or down)
 
-        // //Add an event listener to the Delete Button to remove the List Item
+        // //Add an event listener to the Move Upwards Button to move the List Item upwards by one position in the List
         // window.View.Bind(
-        //     'DeleteButtonPressed', 
+        //     'MoveUpwardsButtonPressed', 
         //     function() 
         //     {
-        //         removeListItem(listId, listItem.id);
+        //         window.Model.ModifyListItem('MoveUpwards', listId, listItem.id, function(swappedListItem) {
+        //             window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swappedListItem.id});
+        //         });
         //     }, 
         //     {id:listItem.id}
         // );
 
-        //TODO would rather move the two calls below into one method that takes a direction (up or down)
+        // //Add an event listener to the Move Downwards Button to move the List Item downwards by one position in the List
+        // window.View.Bind(
+        //     'MoveDownwardsButtonPressed', 
+        //     function() 
+        //     {
+        //         //window.DebugController.Print("Button pressed to swap List Item positions");
 
-        //Add an event listener to the Move Upwards Button to move the List Item upwards by one position in the List
-        window.View.Bind(
-            'MoveUpwardsButtonPressed', 
-            function() 
-            {
-                window.Model.ModifyListItem('MoveUpwards', listId, listItem.id, function(swappedListItem) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:listItem.id, moveDownwardsId:swappedListItem.id});
-                });
-            }, 
-            {id:listItem.id}
-        );
-
-        //Add an event listener to the Move Downwards Button to move the List Item downwards by one position in the List
-        window.View.Bind(
-            'MoveDownwardsButtonPressed', 
-            function() 
-            {
-                //window.DebugController.Print("Button pressed to swap List Item positions");
-
-                window.Model.ModifyListItem('MoveDownwards', listId, listItem.id, function(swappedListItem) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});
-                });
-            }, 
-            {id:listItem.id}
-        );
+        //         window.Model.ModifyListItem('MoveDownwards', listId, listItem.id, function(swappedListItem) {
+        //             window.View.Render('SwapListObjects', {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});
+        //         });
+        //     }, 
+        //     {id:listItem.id}
+        // );
     }
 
     //TODO Don't really like this (for example, usage of assignmentType)
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
     {
+        //TODO it seems it isn't necessary to pass the updated list item, assuming there is already a reference to the original one
         var modelUpdated = function(updatedListItem)
         {
+            //console.log(listItem);
+            //console.log(updatedListItem);
             updateListItemQuantityText(updatedListItem, quantityType);
             updateListItemNameColor(updatedListItem);
         };
@@ -300,62 +282,19 @@ window.ListController = (function()
     //     );
     // }
 
-    // function handleInput(command, listId, listItem, updatedValue)
-    // {       
-    //     var commands = 
-    //     {
-    //         EditName : function()
-    //         {
-    //             //Set up the callback method to execute once the Model has been updated
-    //             var _modelUpdated = function(updatedValue)
-    //             {
-    //                 window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
-    //             };
-
-    //             //Update the Model
-    //             window.Model.ModifyListItem('EditName', listId, listItem.id, _modelUpdated, {updatedName:updatedValue});
-    //         }
-    //     };
-
-    //     //Execute the method matching the given command
-    //     commands[command](listIndex, commandSucceededCallback);
-
-    //     // //Set up the callback method to execute when a List matching the given ID is found
-    //     // var runCommand = function(listIndex)
-    //     // {
-    //     //     //Set up the callback method to execute once the given command has been executed successfully 
-    //     //     var commandSucceededCallback = function(args)
-    //     //     {       
-    //     //         //Store the updated checklist data
-    //     //         storeChecklistData();
-
-    //     //         //Execute the provided callback method, passing the returned arguments if not null
-    //     //         args != null ? callback(args) : callback();
-
-    //     //         //TODO it might be better to loop through the arguments array and then return all existing ones through the callback
-    //     //     };
-
-    //     //     //Execute the method matching the given command
-    //     //     commands[command](listIndex, commandSucceededCallback);
-    //     // }
-
-    //     // //Search for the List and, if it's found, execute the method matching the given command
-    //     // findList(listId, runCommand);
-    // }
-
-    function setupBindingsForEditName(listId, listItem)
+    function bindEditNameTextArea(listId, listItem)
     {
         //Set up the callback method to execute for when the View recieves input from the user
-        var _onUserInput = function(updatedValue) 
+        var _onUserInput = function(args) 
         {
             //Set up the callback method to execute once the Model has been updated
             var _modelUpdated = function()
             {
-                window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
+                window.View.Render('UpdateName', {id:listItem.id, updatedValue:listItem.name}); 
             };
 
             //Update the Model
-            window.Model.ModifyListItem('EditName', listId, listItem.id, _modelUpdated, {updatedName:updatedValue});
+            window.Model.ModifyListItem('EditName', listId, listItem.id, _modelUpdated, args);
         };
 
         //TODO use command var instead of string to pass along command? (e.g. command instead of 'UpdateName' or 'EditName' or 'NameEdited')
@@ -365,19 +304,172 @@ window.ListController = (function()
         window.View.Bind('NameEdited', _onUserInput, {id:listItem.id});
     }
 
+    function bindDeleteButton(listId, listItem)
+    {
+        //Set up the callback method to execute for when the View recieves input from the user
+        var _onUserInput = function() 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var _modelUpdated = function()
+            {
+                window.View.Render('RemoveListItem', {listItemId:listItem.id}); 
+            };
+
+            //Update the Model
+            window.Model.ModifyListItem('Remove', listId, listItem.id, _modelUpdated);
+        };
+
+        //Add an event listener to the Delete Button to remove the List Item
+        window.View.Bind('DeleteButtonPressed', _onUserInput, {id:listItem.id});
+    }
+
+    // function bindMoveButtons(listId, listItem, data)
+    // {
+    //     var data = {
+    //         bindingName: 'MoveDownwardsButtonPressed',
+    //         modelCommand: 'MoveDownwards',
+    //         viewCommand: 'SwapListObjects',
+    //         moveUpwardsId: '',
+    //         moveDownwardsId: listItem.id
+    //     };
+    //     //The association between one command and the rest (e.g. 'MoveDownwards' corrsponds to 'MoveDownwardsButtonPressed') could be abstracted into a separate table
+
+    //     //Set up the callback method to execute for when the View recieves input from the user
+    //     var _onUserInput = function() 
+    //     {
+    //         //Set up the callback method to execute once the Model has been updated
+    //         var _modelUpdated = function(swappedListItem)
+    //         {
+    //             switch(data.modelCommand) {
+    //                 case 'MoveDownwards':
+    //                     data.moveUpwardsId = swappedListItem.id;
+    //                     data.moveUpwardsId = listItem.id;
+    //                     break;
+    //                 case 'MoveUpwards':
+    //                     data.moveUpwardsId = listItem.id;
+    //                     data.moveUpwardsId = swappedListItem.id;
+    //                     break;
+    //                 default:
+    //                     DebugController.LogError("ERROR: An invalid command was provided");
+    //               }
+                
+    //             window.View.Render(data.viewCommand, {moveUpwardsId:data.moveUpwardsId, moveDownwardsId:data.moveDownwardsId});
+    //             //TODO Maybe just the Render part of the Bind Setup could be in a separate (UpdateView?) method, since the rest is pretty boilerplate?
+    //         };
+
+    //         //Update the Model
+    //         window.Model.ModifyListItem(data.modelCommand, listId, listItem.id, _modelUpdated);
+    //     };
+
+    //     //Add an event listener to the specified Move Button to move the List Item upwards or downwards by one position in the List
+    //     window.View.Bind(data.bindingName, _onUserInput, {id:listItem.id});
+    // }
+
+    //////
+
+    function setupBinding(binding, listId, listItem)
+    {
+        //Set up the callback method to execute for when the View recieves input from the user
+        var _onUserInput = function(args) 
+        {
+            //Set up the callback method to execute once the Model has been updated. The 'swappedListItem' parameter is optional.
+            var _modelUpdated = function(swappedListItem) //TODO don't like this optional parameter, should find a better way around this
+            {    
+                updateView(binding, listItem, swappedListItem);            
+                //window.View.Render(data.viewCommand, {moveUpwardsId:data.moveUpwardsId, moveDownwardsId:data.moveDownwardsId});
+                //TODO Maybe just the Render part of the Bind Setup could be in a separate (UpdateView?) method, since the rest is pretty boilerplate?
+            };
+
+            //Update the Model
+            window.Model.ModifyListItem(binding.modelCommand, listId, listItem.id, _modelUpdated, args);
+        };
+
+        //Add an event listener to the specified element
+        window.View.Bind(binding.bindingName, _onUserInput, {id:listItem.id});
+    }
+
+    function updateView(binding, listItem, swappedListItem) 
+    {       
+        // switch(viewCommand) 
+        // {
+        //     case 'MoveDownwards':
+        //         data.moveUpwardsId = swappedListItem.id;
+        //         data.moveUpwardsId = listItem.id;
+        //         break;
+        //     case 'MoveUpwards':
+        //         data.moveUpwardsId = listItem.id;
+        //         data.moveUpwardsId = swappedListItem.id;
+        //         break;
+        //     default:
+        //         DebugController.LogError("ERROR: An invalid command was provided");
+        // }
+
+        var commands = 
+        {
+            EditName : function()
+            {
+                window.View.Render(binding.viewCommand, {id:listItem.id, updatedValue:listItem.name});
+            },
+            Remove : function()
+            {
+                window.View.Render(binding.viewCommand, {listItemId:listItem.id}); 
+            },
+            MoveUpwards : function()
+            {
+                window.View.Render(binding.viewCommand, {moveUpwardsId:listItem.id, moveDownwardsId:swappedListItem.id});
+            },
+            MoveDownwards : function()
+            {
+                window.View.Render(binding.viewCommand, {moveUpwardsId:swappedListItem.id, moveDownwardsId:listItem.id});
+            }
+        };
+
+        //Execute the method matching the given command
+        commands[binding.modelCommand]();
+    }
+
+    /////
+
     function setupBindings(command, listId, listItem)
     {       
         var commands = 
         {
             EditName : function()
             {
-                setupBindingsForEditName(listId, listItem)
-            }
+                bindEditNameTextArea(listId, listItem);
+            },
+            Remove : function()
+            {
+                bindDeleteButton(listId, listItem);
+            },
         };
 
         //Execute the method matching the given command
         commands[command]();
     }
+
+    var bindingReference = {
+        EditName: {
+            bindingName: 'NameEdited', 
+            modelCommand: 'EditName',
+            viewCommand: 'UpdateName'
+        },
+        Remove: {
+            bindingName: 'DeleteButtonPressed', 
+            modelCommand: 'Remove',
+            viewCommand: 'RemoveListItem'
+        },
+        MoveUpwards: {
+            bindingName: 'MoveUpwardsButtonPressed', 
+            modelCommand: 'MoveUpwards',
+            viewCommand: 'SwapListObjects'
+        },
+        MoveDownwards: {
+            bindingName: 'MoveDownwardsButtonPressed', 
+            modelCommand: 'MoveDownwards',
+            viewCommand: 'SwapListObjects'
+        }
+    };
 
     return {
         Init : init,

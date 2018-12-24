@@ -1,7 +1,7 @@
 window.DebugController = (function()
 {
-    var debugModeEnabled = false;
-    var VERSION = '0.0.12';
+    var debugModeEnabled = true;
+    var VERSION = '0.0.13';
 
     function init()
     {

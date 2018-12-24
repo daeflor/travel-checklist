@@ -238,7 +238,7 @@ window.View = (function()
         {
             var eventTriggeredCallback = function(event)
             {
-                callback(event.target.value);
+                callback({updatedValue:event.target.value});
             }
             
             addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
@@ -456,11 +456,19 @@ window.View = (function()
 
                 var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
                 var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
-                var wrapper = elementToMoveUpwards.parentElement;
 
-                wrapper.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
+                if (elementToMoveUpwards != null && elementToMoveDownwards != null)
+                {
+                    var wrapper = elementToMoveUpwards.parentElement;
 
-                updateReorderButtons(wrapper);
+                    wrapper.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
+    
+                    updateReorderButtons(wrapper);
+                }
+                else
+                {
+                    window.DebugController.LogError("ERROR: One or both of the list object elements to swap is null. ID of element to move Upwards: " + parameters.moveUpwardsId + ", Downwards: " + parameters.moveDownwardsId);
+                }
             },
         };
 
