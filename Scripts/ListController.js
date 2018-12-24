@@ -5,30 +5,6 @@ window.ListController = (function()
     var activeListId;
     var quantityPopoverActive = false;
 
-    //TODO I think I'd like setView() to be decoupled from setup(). app.js could call setup (or init) and then setView (which should also be renamed)
-
-    // function setView()
-    // {
-    //     //DebugController.Print("Hash is: " + document.location.hash);
-
-    //     //var checklistType = document.location.hash.split('/')[1]; //TODO move this to helper method?
-    //     var listId = document.location.hash.split('/')[2];
-
-    //     if (listId != null)
-    //     {   
-    //         //TODO Curently, the user could input an invalid ID in the URL hash and this would lead to errors and a blank list instead of rerouting to the Home Screen, or some sort of error message.
-
-    //         //TODO remove/fix
-    //         navigateToList(listId);
-    //     }
-    //     else
-    //     {
-    //         DebugController.Print("Hash does not contain a listId. Navigating to the Home Screen.");
-            
-    //         navigateHome();
-    //     }
-    // }
-
     /** List & Button Setup **/
 
     function init()
@@ -104,16 +80,6 @@ window.ListController = (function()
     }
 
     /** List Management **/
-
-    // function navigateHome()
-    // {   
-    //     //If there is any active settings view, close it
-    //     window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
-
-    //     //Display the Home Screen
-    //     window.View.Render('showHomeScreen'); 
-    //     //location.href = 'index.html';
-    // }
 
     function AddNewListItem()
     {
@@ -212,32 +178,8 @@ window.ListController = (function()
         //TODO might be nice to move the anonymous functions within the bindings above and below into named functions that are just reference by the bind, for potentially better readability
             //yeah it would be good to make this section smaller and more readable
             //TODO could have a completely separate method like editListItemNameInModelAndView 
-
-        var updateName = function(updatedValue) 
-        {
-            //Set up the callback method to execute once the Model has been updated
-            var updateView = function()
-            {
-                window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
-            };
-
-            //Update the Model
-            window.Model.ModifyListItem('EditName', listId, listItem.id, updateView, {updatedName:updatedValue});
-        };
-
-        //Add an event listener for when the Text Area to edit the List Item name is modified
-        window.View.Bind('NameEdited', updateName, {id:listItem.id});
-
-        // //Add an event listener for when the Text Area to edit the List Item name is modified
-        // window.View.Bind(
-        //     'NameEdited', 
-        //     function(updatedValue) 
-        //     {
-        //         window.Model.EditListItemName(listId, listItem.id, updatedValue);
-        //         window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
-        //     },
-        //     {id:listItem.id}
-        // ); 
+                            
+        setupBindings('EditName', listId, listItem);
 
         var removeListItem = function() 
         {
@@ -292,8 +234,6 @@ window.ListController = (function()
             {id:listItem.id}
         );
     }
-
-    //TODO I think there can probably be a ListController and a ListItemController. Except then it might not be possible to share functions across both in a logical way...
 
     //TODO Don't really like this (for example, usage of assignmentType)
     function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
@@ -359,6 +299,85 @@ window.ListController = (function()
     //         {id:id}
     //     );
     // }
+
+    // function handleInput(command, listId, listItem, updatedValue)
+    // {       
+    //     var commands = 
+    //     {
+    //         EditName : function()
+    //         {
+    //             //Set up the callback method to execute once the Model has been updated
+    //             var _modelUpdated = function(updatedValue)
+    //             {
+    //                 window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
+    //             };
+
+    //             //Update the Model
+    //             window.Model.ModifyListItem('EditName', listId, listItem.id, _modelUpdated, {updatedName:updatedValue});
+    //         }
+    //     };
+
+    //     //Execute the method matching the given command
+    //     commands[command](listIndex, commandSucceededCallback);
+
+    //     // //Set up the callback method to execute when a List matching the given ID is found
+    //     // var runCommand = function(listIndex)
+    //     // {
+    //     //     //Set up the callback method to execute once the given command has been executed successfully 
+    //     //     var commandSucceededCallback = function(args)
+    //     //     {       
+    //     //         //Store the updated checklist data
+    //     //         storeChecklistData();
+
+    //     //         //Execute the provided callback method, passing the returned arguments if not null
+    //     //         args != null ? callback(args) : callback();
+
+    //     //         //TODO it might be better to loop through the arguments array and then return all existing ones through the callback
+    //     //     };
+
+    //     //     //Execute the method matching the given command
+    //     //     commands[command](listIndex, commandSucceededCallback);
+    //     // }
+
+    //     // //Search for the List and, if it's found, execute the method matching the given command
+    //     // findList(listId, runCommand);
+    // }
+
+    function setupBindingsForEditName(listId, listItem)
+    {
+        //Set up the callback method to execute for when the View recieves input from the user
+        var _onUserInput = function(updatedValue) 
+        {
+            //Set up the callback method to execute once the Model has been updated
+            var _modelUpdated = function()
+            {
+                window.View.Render('UpdateName', {id:listItem.id, updatedValue:updatedValue}); 
+            };
+
+            //Update the Model
+            window.Model.ModifyListItem('EditName', listId, listItem.id, _modelUpdated, {updatedName:updatedValue});
+        };
+
+        //TODO use command var instead of string to pass along command? (e.g. command instead of 'UpdateName' or 'EditName' or 'NameEdited')
+            //EditName and NameEdited.. Why not make it the same? I t sort of makes sense that they are different, but maybe could be more efficient if made the same.
+
+        //Add an event listener for when the Text Area to edit the List Item name is modified
+        window.View.Bind('NameEdited', _onUserInput, {id:listItem.id});
+    }
+
+    function setupBindings(command, listId, listItem)
+    {       
+        var commands = 
+        {
+            EditName : function()
+            {
+                setupBindingsForEditName(listId, listItem)
+            }
+        };
+
+        //Execute the method matching the given command
+        commands[command]();
+    }
 
     return {
         Init : init,

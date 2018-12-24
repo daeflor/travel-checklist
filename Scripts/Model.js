@@ -90,7 +90,7 @@ window.Model = (function()
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
-        //Maybe keep MoifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
+        //Maybe keep ModifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
         //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
     function modifyList(command, listId, callback, parameters)
     {       

@@ -5,34 +5,6 @@ window.ListSelectionController = (function()
     var activeListId;
     var checklistType;
 
-    //TODO I think I'd like setView() to be decoupled from setup(). app.js could call setup (or init) and then setView (which should also be renamed)
-
-    // function setView()
-    // {
-    //     //DebugController.Print("Hash is: " + document.location.hash);
-
-    //     //var checklistType = document.location.hash.split('/')[1]; //TODO move this to helper method?
-    //     var listId = document.location.hash.split('/')[2];
-
-    //     //DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId);
-
-    //     //if (checklistType == 'travel' && listId != null)
-    //     if (listId != null)
-    //     {   
-    //         //TODO Curently, the user could input an invalid ID in the URL hash and this would lead to errors and a blank list instead of rerouting to the Home Screen, or some sort of error message.
-
-    //         DebugController.Print("Hash checklist type: " + self.checklistType + ". Hash id: " + listId + ". Navigating to List with ID: " + listId);
-
-    //         navigateToList(listId);
-    //     }
-    //     else
-    //     {
-    //         DebugController.Print("Hash does not contain a listId. Navigating to the Home Screen.");
-            
-    //         navigateHome();
-    //     }
-    // }
-
     /** List & Button Setup **/
 
     function init(checklistType)
