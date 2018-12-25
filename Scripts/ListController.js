@@ -188,54 +188,6 @@ window.ListController = (function()
         setupBinding(bindingReference.MoveDownwards, listId, listItem);
     }
 
-            // //TODO Don't really like this (for example, usage of assignmentType)
-            // function updateListItemQuantityValue(listId, listItemId, quantityType, assignmentType)
-            // {
-            //     //TODO it seems it isn't necessary to pass the updated list item, assuming there is already a reference to the original one
-            //     var modelUpdated = function(updatedListItem)
-            //     {
-            //         //console.log(listItem);
-            //         //console.log(updatedListItem);
-            //         updateListItemQuantityText(updatedListItem, quantityType);
-            //         updateListItemNameColor(updatedListItem);
-            //     };
-
-            //     if (assignmentType == 'decrement')
-            //     {
-            //         window.Model.ModifyListItem('DecrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
-            //     }
-            //     else if(assignmentType == 'increment')
-            //     {
-            //         window.Model.ModifyListItem('IncrementQuantityValue', listId, listItemId, modelUpdated, {quantityType:quantityType});
-            //     }
-            // }
-
-            // //TODO would it be better if View commands always received consistent paramters (e.g. a list object)
-
-            // function updateListItemQuantityText(listItem, quantityType)
-            // {
-            //     window.View.Render('UpdateListItemQuantityText', {
-            //         listItemId:listItem.id, 
-            //         quantityType:quantityType, 
-            //         updatedValue:listItem.quantities[quantityType]
-            //     });
-            // }
-
-            // function updateListItemNameColor(listItem)
-            // {
-            //     window.View.Render('UpdateListItemNameColor', {
-            //         listItemId:listItem.id, 
-            //         quantityNeeded:listItem.quantities.needed, 
-            //         quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)
-            //     });
-            // }
-
-    // function removeListItem(listId, listItemId)
-    // {
-    //     Model.RemoveListItem(listId, listItemId);
-    //     window.View.Render('removeListItem', {listItemId:listItemId});
-    // }
-
     /** Experimental & In Progress **/
 
     // function expandSettingsView(id)
@@ -305,6 +257,7 @@ window.ListController = (function()
      */
     function updateView(binding, listItem, options) //TODO should this use ViewCommand instead of binding?
     {       
+        //TODO would it be better if View commands always received consistent paramters (e.g. a list object)?
         //TODO Could use a switch/case here instead
         var commands = 
         {
