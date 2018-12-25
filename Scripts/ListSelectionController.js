@@ -183,7 +183,7 @@ window.ListSelectionController = (function()
         Init : init,
         LoadListsIntoView : loadListsIntoView,
         ListSelected : listSelected,
-        GetActiveListId : function() {return activeListId;}
+        GetActiveListId : function() {return activeListId;} //TODO Note that this is only used by calls to ModifyList, so maybe those should not be part of ListController...
     };
 })();
 

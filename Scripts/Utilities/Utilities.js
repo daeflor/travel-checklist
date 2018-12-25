@@ -14,8 +14,8 @@ function SwapElementsInArray(array, index, indexToSwap, callback) //TODO these a
         array[indexToSwap] = array[index];
         array[index] = elementToSwap;
 
-        //Execute the provided callback method once the swap has been executed, passing the swapped element as an argument
-        callback(elementToSwap);
+        //Return the swapped element once the swap has been executed
+        return elementToSwap;
     }
     else
     {

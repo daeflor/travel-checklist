@@ -200,13 +200,33 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
-                SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
+                //Try to move the List Item upwards in the array and, if successful, get the swapped List Item object
+                var swappedListItem = SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1);
+            
+                //If the swap succeeded, execute the callback method, passing the swapped List Item ID as an argument
+                if (swappedListItem != null)
+                {
+                    commandSucceededCallback({swappedListItemId:swappedListItem.id});
+                }
+                else
+                {
+                    window.DebugController.Print("Unable to move upwards the List Item with ID " + listItemId);
+                }
             },
             MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item as an argument
-                SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
+                //Try to move the List Item downwards in the array and, if successful, get the swapped List Item object
+                var swappedListItem = SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1);
+
+                //If the swap succeeded, execute the callback method, passing the swapped List Item ID as an argument
+                if (swappedListItem != null)
+                {
+                    commandSucceededCallback({swappedListItemId:swappedListItem.id});
+                }
+                else
+                {
+                    window.DebugController.Print("Unable to move downwards the List Item with ID " + listItemId);
+                }
             },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
@@ -217,8 +237,8 @@ window.Model = (function()
                     //Decrement the quantity value by one
                     getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]--;
 
-                    //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
-                    commandSucceededCallback(getLists()[listIndex].listItems[listItemIndex]);
+                    //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
+                    commandSucceededCallback({quantityType:options.quantityType});
                 }
             },
             IncrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
@@ -226,8 +246,8 @@ window.Model = (function()
                 //Increment the quantity value for the given quantity type by one
                 getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]++;
                 
-                //Execute the provided callback method once the command has been successfully executed, passing the updated List Item object as an argument
-                commandSucceededCallback(getLists()[listIndex].listItems[listItemIndex]);
+                //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
+                commandSucceededCallback({quantityType:options.quantityType});
             },
             Remove : function(listIndex, listItemIndex, commandSucceededCallback)
             {

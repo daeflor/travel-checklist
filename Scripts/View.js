@@ -149,7 +149,7 @@ window.View = (function()
     /**
      * @param {string} event The name used to identify the event being bound
      * @param {*} callback The function to call when the corresponding event has been triggered 
-     * @param {object} parameters An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id.
+     * @param {object} [parameters] An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id.
      */
     function bind(event, callback, parameters)
     {
@@ -383,18 +383,20 @@ window.View = (function()
                 //Find the List Item element which matches the given ID, and then remove it
                 findChecklistElement(parameters.listItemId, elementFoundCallback);
             },
-            updateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
+            UpdateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
             {
                 window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                 
+                //TODO could we not just update everything related to a list item in one go? Or does that not make this any easier?
+
                 var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, {updatedValue:parameters.updatedValue});
             },
-            updateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
+            UpdateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
             {
                 //window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
 
