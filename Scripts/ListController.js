@@ -2,37 +2,21 @@ window.ListController = (function()
 {    
     var quantityPopoverActive = false;
 
-    /** List & Button Setup **/
-
-    function init()
-    {            
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-        window.View.Bind('NewListItemButtonPressed', addNewListItem);
-        //TODO note that this Bind calls ModifyList, not ModifyListItem
-        //setupBinding(bindingReference.AddListItem, ListSelectionController.GetActiveListId());
-
-        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-
-        window.View.Render('GenerateQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
-
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (var key in QuantityType)
-        {
-            bindQuantityHeaderToggleEvents(key);
-        }
-    }
-
-    function loadListItemsIntoView(loadedListData)
+    //TODO this needs to be handled differently because it calls ModifyList
+    function addNewListItem()
     {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
-
-        for (var i = 0; i < loadedListData.length; i++) 
-        {
-            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
+        window.Model.ModifyList(
+            'AddListItem', 
+            ListSelectionController.GetActiveListId(),
+            function(newListItem) 
             {
-                addListItemToView(loadedListData[i].id, loadedListData[i].listItems[j]);
+                addListItemToView(ListSelectionController.GetActiveListId(), newListItem);
+
+                //After a 'new' List Item is added to the DOM, expand its Settings View
+                window.View.Render('ExpandSettingsView', {id:newListItem.id});
+                //expandSettingsView(newListItem.id);
             }
-        }
+        );
     }
 
     //TODO this is hard to read
@@ -76,22 +60,41 @@ window.ListController = (function()
         }
     }
 
-    /** List Management **/
+    /** Private Helper Methods To Setup Special Case Bindings **/
 
-    function addNewListItem()
+    function setupPopoverBindings(listId, listItem, quantityType)
     {
-        window.Model.ModifyList(
-            'AddListItem', 
-            ListSelectionController.GetActiveListId(),
-            function(newListItem) 
+        var _showQuantityPopover = function(event) {
+            if (quantityPopoverActive == false)
             {
-                addListItemToView(ListSelectionController.GetActiveListId(), newListItem);
+                window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 
-                //After a 'new' List Item is added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:newListItem.id});
-                //expandSettingsView(newListItem.id);
+                event.stopPropagation();
+                window.View.Render('ShowQuantityPopover', {listItemId:listItem.id, quantityType:quantityType});   
+                quantityPopoverActive = true;
             }
-        );
+        };
+
+        var _quantityPopoverShown = function() {
+            window.DebugController.Print("A Quantity Popover was shown.");
+
+            //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+            window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:quantityType});   
+            window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
+            
+            setupBinding(bindingReference.DecrementQuantityValue, listId, listItem, {quantityType:quantityType});
+            setupBinding(bindingReference.IncrementQuantityValue, listId, listItem, {quantityType:quantityType});
+        };
+        
+        var _hideQuantityPopover = function() {
+            window.DebugController.Print("A Quantity Popover will be hidden.");
+
+            window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:quantityType} );
+            quantityPopoverActive = false;
+        };
+
+        window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItem.id, quantityType:quantityType});
+        window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItem.id, quantityType:quantityType});
     }
 
     function addListItemToView(listId, listItem)
@@ -104,42 +107,7 @@ window.ListController = (function()
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in listItem.quantities)
         {
-            (function(lockedKey) //TODO is there a simpler way to do this?
-            {
-                var _showQuantityPopover = function(event) {
-                    if (quantityPopoverActive == false)
-                    {
-                        window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
-                        event.stopPropagation();
-                        window.View.Render('ShowQuantityPopover', {listItemId:listItem.id, quantityType:lockedKey});   
-                        quantityPopoverActive = true;
-                    }
-                };
-    
-                var _quantityPopoverShown = function() {
-                    window.DebugController.Print("A Quantity Popover was shown.");
-
-                    //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});   
-                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
-                    
-                    setupBinding(bindingReference.DecrementQuantityValue, listId, listItem, {quantityType:lockedKey});
-                    
-                    setupBinding(bindingReference.IncrementQuantityValue, listId, listItem, {quantityType:lockedKey});
-                };
-                
-                var _hideQuantityPopover = function() {
-                    window.DebugController.Print("A Quantity Popover will be hidden.");
-
-                    window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:lockedKey} );
-                    quantityPopoverActive = false;
-                };
-    
-                window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItem.id, quantityType:lockedKey});
-    
-                window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItem.id, quantityType:lockedKey});    
-            })(key);
+            setupPopoverBindings(listId, listItem, key);
         }
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
@@ -159,25 +127,7 @@ window.ListController = (function()
         setupBinding(bindingReference.MoveDownwards, listId, listItem);
     }
 
-    /** Experimental & In Progress **/
-
-    // function expandSettingsView(id)
-    // {
-    //     window.View.Render('ExpandSettingsView', {id:id});
-    // }
-
-    // function bindSettingsViewExpansion(id)
-    // {
-    //     //When the animation to expand a Settings View starts, hide the previously Active Settings View
-    //     window.View.Bind(
-    //         'SettingsViewExpansionStarted', 
-    //         function() 
-    //         {
-    //             window.View.Render('HideActiveSettingsView'); 
-    //         },
-    //         {id:id}
-    //     );
-    // }
+    /** Private Methods To Setup Bindings Between The View & The Model **/
 
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify a List Item, the Model is updated accordingly, and then the View renders those updates.
@@ -224,9 +174,9 @@ window.ListController = (function()
      * @param {object} listItem The List Item that has been modified
      * @param {object} [options] [Optional] An optional object to pass containing any additional data needed to render the updates. Possible properties: quantityType, swappedListItemId.
      */
-    function updateView(command, listItem, options) //TODO should this use ViewCommand instead of binding?
+    function updateView(command, listItem, options)
     {       
-        //TODO would it be better if View commands always received consistent paramters (e.g. a list object)?
+        //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
         //TODO Could use a switch/case here instead
         var commands = 
         {
@@ -285,51 +235,85 @@ window.ListController = (function()
         UpdateName: {
             bindingName: 'NameEdited', 
             modelViewCommand: 'UpdateName',
-            //viewCommand: 'UpdateName'
         },
         RemoveListItem: {
             bindingName: 'DeleteButtonPressed', 
             modelViewCommand: 'RemoveListItem',
-            //viewCommand: 'RemoveListItem'
         },
         MoveUpwards: {
             bindingName: 'MoveUpwardsButtonPressed', 
             modelViewCommand: 'MoveUpwards',
-            //viewCommand: 'SwapListObjects'
         },
         MoveDownwards: {
             bindingName: 'MoveDownwardsButtonPressed', 
             modelViewCommand: 'MoveDownwards',
-            //viewCommand: 'SwapListObjects'
         },
         DecrementQuantityValue: {
             bindingName: 'DecrementQuantityButtonPressed', 
             modelViewCommand: 'DecrementQuantityValue',
-            //viewCommands: ['UpdateListItemQuantityText','UpdateListItemNameColor']
         },
         IncrementQuantityValue: {
             bindingName: 'IncrementQuantityButtonPressed', 
             modelViewCommand: 'IncrementQuantityValue',
-            //viewCommands: ['UpdateListItemQuantityText','UpdateListItemNameColor']
-        },
-        AddListItem: { //TODO Not sure this should be in the ListController...
-            //viewCommands: ['AddListItem','UpdateListItemNameColor']
-            //modelViewCommand: 'AddListItem',
         }
-
-        //TODO It's super jank that some of the properties above are viewCommand and some are viewCommands
-
-        //TODO would it make sense to separate ViewCommands from RenderCommands, so that a single ViewCommand can be re-used by multiple bindings? e.g.
-            // DecrementQuantityValue: {
-                // bindingName: 'DecrementQuantityButtonPressed', 
-                // modelCommand: 'DecrementQuantityValue',
-                // viewCommand:  {
-                //     cmd: 'UpdateListItemQuantityTextAndNameColor'
-                //     renderCmds: ['UpdateListItemQuantityText','UpdateListItemNameColor']
-                // }
-            // }
-        //Might not be worth it...
+        // AddListItem: { //TODO Not sure this should be in the ListController...
+        //     //viewCommands: ['AddListItem','UpdateListItemNameColor']
+        //     //modelViewCommand: 'AddListItem',
+        // }
     };
+
+    /** Publicly Exposed Methods To Setup UI & Load List Data **/
+
+    function init()
+    {            
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
+        window.View.Bind('NewListItemButtonPressed', addNewListItem);
+        //TODO note that this Bind calls ModifyList, not ModifyListItem
+        //setupBinding(bindingReference.AddListItem, ListSelectionController.GetActiveListId());
+
+        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
+
+        window.View.Render('GenerateQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
+
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
+        for (var key in QuantityType)
+        {
+            bindQuantityHeaderToggleEvents(key);
+        }
+    }
+
+    function loadListItemsIntoView(loadedListData)
+    {
+        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
+
+        for (var i = 0; i < loadedListData.length; i++) 
+        {
+            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
+            {
+                addListItemToView(loadedListData[i].id, loadedListData[i].listItems[j]);
+            }
+        }
+    }
+
+    /** Experimental & In Progress **/
+
+    // function expandSettingsView(id)
+    // {
+    //     window.View.Render('ExpandSettingsView', {id:id});
+    // }
+
+    // function bindSettingsViewExpansion(id)
+    // {
+    //     //When the animation to expand a Settings View starts, hide the previously Active Settings View
+    //     window.View.Bind(
+    //         'SettingsViewExpansionStarted', 
+    //         function() 
+    //         {
+    //             window.View.Render('HideActiveSettingsView'); 
+    //         },
+    //         {id:id}
+    //     );
+    // }
 
     return {
         Init : init,
