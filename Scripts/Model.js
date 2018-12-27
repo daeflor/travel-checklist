@@ -193,7 +193,7 @@ window.Model = (function()
     {       
         var commands = 
         {
-            EditName : function(listIndex, listItemIndex, commandSucceededCallback)
+            UpdateName : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Update the name of the List Item and then execute the provided callback method
                 editName(getLists()[listIndex].listItems[listItemIndex], options.updatedValue, commandSucceededCallback);
@@ -249,7 +249,7 @@ window.Model = (function()
                 //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
                 commandSucceededCallback({quantityType:options.quantityType});
             },
-            Remove : function(listIndex, listItemIndex, commandSucceededCallback)
+            RemoveListItem : function(listIndex, listItemIndex, commandSucceededCallback)
             {
                 //Remove the List Item object from the listItems array and then execute the provided callback method
                 RemoveElementFromArray(getLists()[listIndex].listItems, listItemIndex, commandSucceededCallback);
