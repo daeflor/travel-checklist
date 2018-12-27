@@ -111,15 +111,7 @@ window.ListController = (function()
         }
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
-        //bindSettingsViewExpansion(listItemId);
-        window.View.Bind(
-            'SettingsViewExpansionStarted', 
-            function() 
-            {
-                window.View.Render('HideActiveSettingsView'); 
-            },
-            {id:listItem.id}
-        );
+        setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
 
         setupBinding(bindingReference.UpdateName, listId, listItem);
         setupBinding(bindingReference.RemoveListItem, listId, listItem);
@@ -154,14 +146,24 @@ window.ListController = (function()
                 Object.assign(options, args);
             }
 
-            //Set up the callback method to execute once the Model has been updated. 
-            var _modelUpdated = function(options) 
-            {    
-                updateView(binding.modelViewCommand, listItem, options);            
-            };
+            //If a command was provided that can be sent to both the Model and the View...
+            if (binding.modelViewCommand != null)
+            {
+                //Set up the callback method to execute once the Model has been updated. 
+                var _modelUpdated = function(options) 
+                {    
+                    //Update the View, passing along the updated listItem and any optional parameters as applicable
+                    updateView(binding.modelViewCommand, listItem, options);
+                };
 
-            //Update the Model
-            window.Model.ModifyListItem(binding.modelViewCommand, listId, listItem.id, _modelUpdated, options);
+                //Update the Model
+                window.Model.ModifyListItem(binding.modelViewCommand, listId, listItem.id, _modelUpdated, options);
+            }
+            else if (binding.viewCommand != null) //Else, if a command was provided that can be sent to only to the View...
+            {
+                //Update the View, passing along the updated listItem and any optional parameters as applicable
+                updateView(binding.viewCommand, listItem, options);
+            }
         };
 
         //Add an event listener to the specified element
@@ -210,6 +212,10 @@ window.ListController = (function()
             {
                 window.View.Render('AddListItem', {listItemId:listItem.id, listItemName:listItem.name, quantityValues:listItem.quantities, listId:options.listId});                    
                 window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+            },
+            HideActiveSettingsView : function()
+            {
+                window.View.Render('HideActiveSettingsView');
             }
         };
 
@@ -255,6 +261,10 @@ window.ListController = (function()
         IncrementQuantityValue: {
             bindingName: 'IncrementQuantityButtonPressed', 
             modelViewCommand: 'IncrementQuantityValue',
+        },
+        HideActiveSettingsView: {
+            bindingName: 'SettingsViewExpansionStarted', 
+            viewCommand: 'HideActiveSettingsView',
         }
         // AddListItem: { //TODO Not sure this should be in the ListController...
         //     //viewCommands: ['AddListItem','UpdateListItemNameColor']
@@ -297,23 +307,7 @@ window.ListController = (function()
 
     /** Experimental & In Progress **/
 
-    // function expandSettingsView(id)
-    // {
-    //     window.View.Render('ExpandSettingsView', {id:id});
-    // }
-
-    // function bindSettingsViewExpansion(id)
-    // {
-    //     //When the animation to expand a Settings View starts, hide the previously Active Settings View
-    //     window.View.Bind(
-    //         'SettingsViewExpansionStarted', 
-    //         function() 
-    //         {
-    //             window.View.Render('HideActiveSettingsView'); 
-    //         },
-    //         {id:id}
-    //     );
-    // }
+    /** Publicly Exposed Methods **/
 
     return {
         Init : init,
