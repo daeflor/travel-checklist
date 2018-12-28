@@ -11,41 +11,43 @@ window.ListController = (function()
             //modelViewCommand = action
             //modificationType (AddList, ModifyList, and ModifyListItem being the options)
     var bindingReference = {
+        /** MVC Bindings **/
         UpdateName: {
-            bindingName: 'NameEdited', 
-            modelViewCommand: 'UpdateName',
+            event: 'NameEdited', 
+            action: 'UpdateName'
         },
         RemoveListItem: {
-            bindingName: 'DeleteButtonPressed', 
-            modelViewCommand: 'RemoveListItem',
+            event: 'DeleteButtonPressed', 
+            action: 'RemoveListItem'
         },
         MoveUpwards: {
-            bindingName: 'MoveUpwardsButtonPressed', 
-            modelViewCommand: 'MoveUpwards',
+            event: 'MoveUpwardsButtonPressed', 
+            action: 'MoveUpwards'
         },
         MoveDownwards: {
-            bindingName: 'MoveDownwardsButtonPressed', 
-            modelViewCommand: 'MoveDownwards',
+            event: 'MoveDownwardsButtonPressed', 
+            action: 'MoveDownwards'
         },
         DecrementQuantityValue: {
-            bindingName: 'DecrementQuantityButtonPressed', 
-            modelViewCommand: 'DecrementQuantityValue',
+            event: 'DecrementQuantityButtonPressed', 
+            action: 'DecrementQuantityValue'
         },
         IncrementQuantityValue: {
-            bindingName: 'IncrementQuantityButtonPressed', 
-            modelViewCommand: 'IncrementQuantityValue',
-        },
-        HideActiveSettingsView: {
-            bindingName: 'SettingsViewExpansionStarted', 
-            viewCommand: 'HideActiveSettingsView',
+            event: 'IncrementQuantityButtonPressed', 
+            action: 'IncrementQuantityValue'
         },
         ClearQuantityValues: {
-            bindingName: 'ClearButtonPressed', 
-            modelViewCommand: 'ClearQuantityValues',
+            event: 'ClearButtonPressed', 
+            action: 'ClearQuantityValues'
         },
         AddList: {
-            bindingName: 'ClearButtonPressed', 
-            modelViewCommand: 'ClearQuantityValues',
+            event: 'ClearButtonPressed', 
+            action: 'ClearQuantityValues'
+        },
+        /** VC Bindings **/
+        HideActiveSettingsView: {
+            event: 'SettingsViewExpansionStarted', 
+            action: 'HideActiveSettingsView'
         }
         // AddListItem: { //TODO Not sure this should be in the ListController...
         //     //viewCommands: ['AddListItem','UpdateListItemNameColor']
@@ -131,13 +133,16 @@ window.ListController = (function()
         }
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
-        setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
+        //setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
+        setupVcBinding(bindingReference.HideActiveSettingsView, listItem);
 
-        setupBinding(bindingReference.UpdateName, listId, listItem);
-        setupBinding(bindingReference.RemoveListItem, listId, listItem);
-        setupBinding(bindingReference.MoveUpwards, listId, listItem);
-        setupBinding(bindingReference.MoveDownwards, listId, listItem);
+        setupMvcBinding(bindingReference.UpdateName, listId, listItem);
+        setupMvcBinding(bindingReference.RemoveListItem, listId, listItem);
+        setupMvcBinding(bindingReference.MoveUpwards, listId, listItem);
+        setupMvcBinding(bindingReference.MoveDownwards, listId, listItem);
     }
+
+    //TODO maybe need setupMvcBinding and setupVcBinding methods
 
     //TODO Instead of the existing method below, setupBinding could take the following params
     //function setupBinding(binding, checklistData, options)
@@ -146,13 +151,13 @@ window.ListController = (function()
         //OR a ListItem object AND a listID (or maybe a List object instead of just ID, for simplicity...)
 
     /**
-     * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify a List Item, the Model is updated accordingly, and then the View renders those updates.
+     * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user, such as removing a List Item).
      * @param {string} listId The unique identifier of the List that the modified List Item belongs to.
      * @param {object} listItem The List Item that has been modified.
      * @param {object} [options] [Optional] An optional object to pass containing any additional data needed to create the bind. Possible properties: quantityType.
      */
-    function setupBinding(binding, listId, listItem, options)
+    function setupMvcBinding(binding, listId, listItem, options)
     {
         //Set up the callback method to execute for when the View recieves input from the user
         var _onUserInput = function(args) 
@@ -170,30 +175,51 @@ window.ListController = (function()
                 Object.assign(options, args);
             }
 
-            //If a command was provided that can be sent to both the Model and the View...
-            if (binding.modelViewCommand != null)
+            //If an action was provided
+            if (binding.action != null)
             {
                 //Set up the callback method to execute once the Model has been updated. 
                 var _modelUpdated = function(options) 
                 {    
                     //Update the View, passing along the updated listItem and any optional parameters as applicable
-                    updateView(binding.modelViewCommand, listItem, options);
+                    updateView(binding.action, listItem, options);
                 };
 
                 //Update the Model
-                updateModel(binding.modelViewCommand, listId, listItem.id, _modelUpdated, options);
+                updateModel(binding.action, listId, listItem.id, _modelUpdated, options);
             }
-            else if (binding.viewCommand != null) //Else, if a command was provided that can be sent to only to the View...
+            else
             {
-                //Update the View, passing along the updated listItem and any optional parameters as applicable
-                updateView(binding.viewCommand, listItem, options);
+                window.DebugController.LogError("ERROR: No action provided when attempting to setup an MVC binding.");
             }
         };
 
         //Add an event listener to the specified element
-        window.View.Bind(binding.bindingName, _onUserInput, {id:listItem.id});
+        window.View.Bind(binding.event, _onUserInput, {id:listItem.id});
     }
 
+    /**
+     * Create a binding between the View and Controller, so that when the app receives user input which would modify the UI of the checklist, the View renders those updates.
+     * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user or application).
+     * @param {object} checklistObject The checklist object that is associated with the bind.
+     */
+    function setupVcBinding(binding, checklistObject)
+    {
+        //Set up the callback method to execute for when the View recieves input from the user
+        var _onUserInput = function() 
+        {
+            //If an action was provided that can be sent to the View, update the View accordingly...
+            if (binding.action != null) 
+            {
+                updateView(binding.action, checklistObject);
+            }
+        };
+
+        //Add an event listener to the specified element
+        window.View.Bind(binding.event, _onUserInput, {id:checklistObject.id});
+    }
+
+    //TODO Could possibly introduce a section for Controller logic to the setupBinding methods, to rid the need of having this separate method
     function setupPopoverBindings(listId, listItem, quantityType)
     {
         var _showQuantityPopover = function(event) {
@@ -214,8 +240,8 @@ window.ListController = (function()
             window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:quantityType});   
             window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
             
-            setupBinding(bindingReference.DecrementQuantityValue, listId, listItem, {quantityType:quantityType});
-            setupBinding(bindingReference.IncrementQuantityValue, listId, listItem, {quantityType:quantityType});
+            setupMvcBinding(bindingReference.DecrementQuantityValue, listId, listItem, {quantityType:quantityType});
+            setupMvcBinding(bindingReference.IncrementQuantityValue, listId, listItem, {quantityType:quantityType});
         };
         
         var _hideQuantityPopover = function() {
@@ -374,7 +400,7 @@ window.ListController = (function()
         var _onUserInput = function()
         {
             //If a command was provided that can be sent to both the Model and the View...
-            if (binding.modelViewCommand != null)
+            if (binding.action != null)
             {
                 //Set up the callback method to execute once the Model has been updated. 
                 var _modelUpdated = function(newList) 

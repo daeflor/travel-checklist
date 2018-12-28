@@ -166,6 +166,7 @@ window.CustomTemplates = (function ()
         return wrapper;
     }
 
+    //TODO Maybe the QuantityType object should be passed as a parameter instead of being Global
     function createTravelHeaderFromTemplate()
     {
         var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
