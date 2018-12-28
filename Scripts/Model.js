@@ -156,6 +156,7 @@ window.Model = (function()
                 {
                     //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
                     commandSucceededCallback(modifiedListItems);
+                    //commandSucceededCallback({modifiedListItems:modifiedListItems});
                 }
             },
             Remove : function(listIndex, commandSucceededCallback)

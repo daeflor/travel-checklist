@@ -14,7 +14,7 @@
         window.View.Init();
         window.DebugController.Init();
         window.ListSelectionController.Init('travel');
-        window.ListController.Init();
+        window.ListController.Init('travel');
 
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;

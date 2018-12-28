@@ -318,7 +318,7 @@ window.View = (function()
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
             },
-            AddListElements: function() //Expected parameters: listId
+            AddList: function() //Expected parameters: listId
             {
                 //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
                 
@@ -474,7 +474,16 @@ window.View = (function()
             },
         };
 
-        viewCommands[command]();
+        //If a command is provided, execute the corresponding method
+        if (command != null)
+        {
+            window.DebugController.Print("Executing View Command: " + command);
+            viewCommands[command]();
+        }
+        else
+        {
+            window.DebugController.LogError("ERROR: Tried to render updates in the View, but no action was provided.");
+        }
     }
 
     return {

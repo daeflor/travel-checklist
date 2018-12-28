@@ -36,14 +36,13 @@ window.ListSelectionController = (function()
 
             //After the List is added to the DOM, expand its Settings View
             window.View.Render('ExpandSettingsView', {id:data.id});
-            //expandSettingsView(data.id);
         });
     }
 
     function addListToView(data) //TODO don't really like using 'data' here
     {
         window.View.Render(
-            'AddListElements', 
+            'AddList', 
             {listId:data.id, listName:data.name, listType:self.checklistType} //listType:document.location.hash.split('/')[0]
         );
 
@@ -60,7 +59,7 @@ window.ListSelectionController = (function()
         );
 
         //TODO can this be merged with the corresponding method for List Item?
-        var updateName = function(updatedValue) 
+        var _updateName = function(updatedValue) 
         {
             //Set up the callback method to execute once the Model has been updated
             var updateView = function()
@@ -76,7 +75,7 @@ window.ListSelectionController = (function()
 
         //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
         //Add an event listener for when the Text Area to edit the List Item name is modified
-        window.View.Bind('NameEdited', updateName, {id:data.id});
+        window.View.Bind('NameEdited', _updateName, {id:data.id});
 
         // //When the Text Area to edit a list name gets modified, update the text in the List name toggle
         // window.View.Bind(
@@ -91,7 +90,7 @@ window.ListSelectionController = (function()
 
         //TODO standardize ID parameter names
         //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
-        var removeList = function(updatedValue) 
+        var _removeList = function() 
         {
             //Set up the callback method to execute once the Model has been updated
             var _modelUpdated = function()
@@ -110,19 +109,8 @@ window.ListSelectionController = (function()
         };
 
         //Add an event listener for when the button to delete a List is pressed
-        window.View.Bind('DeleteButtonPressed', removeList, {id:data.id});
-    
-        // //Add an event listener to the Delete Button to remove the List Item
-        // window.View.Bind(
-        //     'DeleteButtonPressed', 
-        //     function() 
-        //     {
+        window.View.Bind('DeleteButtonPressed', _removeList, {id:data.id});
 
-        //         window.Model.RemoveList(data.id);
-        //         window.View.Render('removeList', {listId:data.id});
-        //     }, 
-        //     {id:data.id}
-        // );
 
         //When the Go To List button is selected, navigate to that list
         // window.View.Bind(
