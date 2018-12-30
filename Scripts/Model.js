@@ -60,6 +60,22 @@ window.Model = (function()
         callback();
     }
 
+    function swapChecklistObjects(array, index, indexToSwapWith, callback)
+    {
+        //Try to swap the object at one index with the object at another index in the array and, if successful, get the swapped object
+        var swappedChecklistObject = SwapElementsInArray(array, index, indexToSwapWith);
+            
+        //If the swap succeeded, execute the callback method, passing the swapped checklist object ID as an argument
+        if (swappedChecklistObject != null)
+        {
+            callback({swappedListItemId:swappedChecklistObject.id}); //TODO this will need to be renamed to swappedChecklistObjectId
+        }
+        else
+        {
+            window.DebugController.Print("Unable to swap the checklist object with ID " + array[index].id);
+        }
+    }
+
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
@@ -201,33 +217,13 @@ window.Model = (function()
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Try to move the List Item upwards in the array and, if successful, get the swapped List Item object
-                var swappedListItem = SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1);
-            
-                //If the swap succeeded, execute the callback method, passing the swapped List Item ID as an argument
-                if (swappedListItem != null)
-                {
-                    commandSucceededCallback({swappedListItemId:swappedListItem.id});
-                }
-                else
-                {
-                    window.DebugController.Print("Unable to move upwards the List Item with ID " + listItemId);
-                }
+                //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+                swapChecklistObjects(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Try to move the List Item downwards in the array and, if successful, get the swapped List Item object
-                var swappedListItem = SwapElementsInArray(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1);
-
-                //If the swap succeeded, execute the callback method, passing the swapped List Item ID as an argument
-                if (swappedListItem != null)
-                {
-                    commandSucceededCallback({swappedListItemId:swappedListItem.id});
-                }
-                else
-                {
-                    window.DebugController.Print("Unable to move downwards the List Item with ID " + listItemId);
-                }
+                //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+                swapChecklistObjects(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
@@ -265,6 +261,9 @@ window.Model = (function()
             {       
                 //Store the updated checklist data object
                 storeChecklistData();
+
+                //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
+                    //But it wouldn't work for ClearQuantityValues (in ModifyList)
 
                 //Execute the provided callback method, passing the returned arguments if not null
                 args != null ? callback(args) : callback();
