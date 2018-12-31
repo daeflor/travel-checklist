@@ -12,6 +12,8 @@ TO-DOs:
     - - - Total             : 81
 
 Upcoming To-Do List:
+- BUG! : If you delete a List Item while its quantity popover is visible, you hit error.
+- BUG! : If you modify a quantity, then delete the List Item, then navigate Home, you hit an error.
 - Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
 - Backup or cloud storage functionality
 - Clean up ListController

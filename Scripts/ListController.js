@@ -12,48 +12,97 @@ window.ListController = (function()
             //modificationType (AddList, ModifyList, and ModifyListItem being the options)
     var bindingReference = {
         /** MVC Bindings **/
+        AddList: {
+            event: 'NewListButtonPressed', 
+            action: 'AddList',
+            bindOptions: [],
+            modelOptions: [],
+            renderOptions: ['checklistObject']
+        },
+        AddListItem: {
+            event: 'NewListItemButtonPressed', 
+            action: 'AddListItem',
+            bindOptions: [],
+            modelOptions: [],
+            renderOptions: ['checklistObject', 'listId']
+        },
         UpdateName: {
             event: 'NameEdited', 
-            action: 'UpdateName'
-        },
-        RemoveListItem: {
-            event: 'DeleteButtonPressed', 
-            action: 'RemoveListItem'
+            action: 'UpdateName',
+            bindOptions: ['id'], //TODO would it be better to have a more generic optionsRequired array, and then check against all of those when setting up the binding?
+            modelOptions: ['listId', 'listItemId', 'updatedValue'],
+            renderOptions: ['checklistObject']
         },
         MoveUpwards: {
             event: 'MoveUpwardsButtonPressed', 
-            action: 'MoveUpwards'
+            action: 'MoveUpwards',
+            bindOptions: ['id'],
+            modelOptions: ['listId', 'listItemId'],
+            renderOptions: ['checklistObject', 'swappedListItemId']
         },
         MoveDownwards: {
             event: 'MoveDownwardsButtonPressed', 
-            action: 'MoveDownwards'
+            action: 'MoveDownwards',
+            bindOptions: ['id'],
+            modelOptions: ['listId', 'listItemId'],
+            renderOptions: ['checklistObject', 'swappedListItemId']
         },
         DecrementQuantityValue: {
             event: 'DecrementQuantityButtonPressed', 
-            action: 'DecrementQuantityValue'
+            action: 'DecrementQuantityValue',
+            bindOptions: [],
+            modelOptions: ['listId', 'listItemId', 'quantityType'],
+            renderOptions: ['checklistObject', 'quantityType']
         },
         IncrementQuantityValue: {
             event: 'IncrementQuantityButtonPressed', 
-            action: 'IncrementQuantityValue'
+            action: 'IncrementQuantityValue',
+            bindOptions: [],
+            modelOptions: ['listId', 'listItemId', 'quantityType'],
+            renderOptions: ['checklistObject', 'quantityType']
+        },
+        RemoveListItem: {
+            event: 'DeleteButtonPressed', 
+            action: 'RemoveListItem',
+            bindOptions: ['id'],
+            modelOptions: ['listId', 'listItemId'],
+            renderOptions: ['checklistObject']
         },
         ClearQuantityValues: {
             event: 'ClearButtonPressed', 
-            action: 'ClearQuantityValues'
-        },
-        AddList: {
-            event: 'ClearButtonPressed', 
-            action: 'ClearQuantityValues'
+            action: 'ClearQuantityValues',
+            bindOptions: [],
+            modelOptions: ['listId', 'quantityType'],
+            renderOptions: ['checklistObject', 'quantityType']
         },
         /** VC Bindings **/
         HideActiveSettingsView: {
             event: 'SettingsViewExpansionStarted', 
-            action: 'HideActiveSettingsView'
-        }
+            action: 'HideActiveSettingsView',
+            bindOptions: ['id'],
+            modelOptions: ['N/A TODO'],
+            renderOptions: []
+        },
         // AddListItem: { //TODO Not sure this should be in the ListController...
         //     //viewCommands: ['AddListItem','UpdateListItemNameColor']
         //     //modelViewCommand: 'AddListItem',
         // }
+        TODO: {
+            event: 'QuantityHeaderPopoverShown', 
+            action: '??',
+            bindOptions: ['quantityType'],
+            modelOptions: [],
+            renderOptions: []
+        }
     };
+
+    //TODO maybe separate data needed for the model and for the view (bind AND render maybe??)??
+        //e.g. model:       checklistObjectId, quantityType, listId
+        //     view-bind:   checklistObjectId, quantityType 
+        //     view-render: checklistObject, quantityType, listId, swappedListItemId
+        //Maybe these three are all properties of options, each with their own sub-properties? 
+            //Then there might just be two params: bindingType, bindingParams (hopefully with beter names)
+
 
     //TODO this needs to be handled differently because it calls ModifyList
     function addNewListItem()
@@ -63,8 +112,10 @@ window.ListController = (function()
             ListSelectionController.GetActiveListId(),
             function(newListItem) 
             {
+                //TODO this logic could just be in the updateView method
                 addListItemToView(ListSelectionController.GetActiveListId(), newListItem);
 
+                //TODO And this logic would also be in the updateViewLogic, as a separate action?
                 //After a 'new' List Item is added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:newListItem.id});
                 //expandSettingsView(newListItem.id);
@@ -75,12 +126,14 @@ window.ListController = (function()
     //TODO this is hard to read
     function bindQuantityHeaderToggleEvents(quantityType)
     {
+        //TODO This is probably a case of setupVcBinding (if that still ends up being a separate function)
         window.View.Bind(
             'QuantityHeaderPopoverShown', 
             function() {
 
                 //setupBinding(bindingReference.ClearQuantityValues, listId, listItem);
 
+                //TODO this bind isn't associated with a checklist Object ID... :/
                 window.View.Bind(
                     'ClearButtonPressed', 
                     function()
@@ -88,12 +141,12 @@ window.ListController = (function()
                         window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
 
                         //TODO this could be handled more efficiently 
-                        var modelUpdated = function(modifiedListItems)
+                        var _modelUpdated = function(modifiedListItems)
                         {
                             clearQuantitiesInView(modifiedListItems, quantityType);
                         };
 
-                        window.Model.ModifyList('ClearQuantityValues', ListSelectionController.GetActiveListId(), modelUpdated, {quantityType:quantityType});
+                        window.Model.ModifyList('ClearQuantityValues', ListSelectionController.GetActiveListId(), _modelUpdated, {quantityType:quantityType});
                     }
                 );
             },
@@ -124,7 +177,8 @@ window.ListController = (function()
         //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
 
         //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... Unsure...
-        updateView('AddListItem', listItem, {listId:listId});
+        //updateView('AddListItem', listItem, {listId:listId});
+        handleUpdatesFromModel('AddListItem', {listId:listId, checklistObject:listItem})
         
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (var key in listItem.quantities)
@@ -136,13 +190,20 @@ window.ListController = (function()
         //setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
         setupVcBinding(bindingReference.HideActiveSettingsView, listItem);
 
-        setupMvcBinding(bindingReference.UpdateName, listId, listItem);
-        setupMvcBinding(bindingReference.RemoveListItem, listId, listItem);
-        setupMvcBinding(bindingReference.MoveUpwards, listId, listItem);
-        setupMvcBinding(bindingReference.MoveDownwards, listId, listItem);
-    }
+        //var _checklistData = {listId:listId, listItem:listItem};
 
-    //TODO maybe need setupMvcBinding and setupVcBinding methods
+        //TODO hmm could have a bindOptions property.. Maybe a property of the options param??
+
+        var bindParams= {};
+        bindParams.bindOptions = {id:listItem.id};
+        bindParams.modelOptions = {listId:listId, listItemId:listItem.id};
+        bindParams.renderOptions = {checklistObject:listItem};
+
+        setupMvcBinding(bindingReference.UpdateName, bindParams);
+        setupMvcBinding(bindingReference.MoveUpwards, bindParams);
+        setupMvcBinding(bindingReference.MoveDownwards, bindParams);
+        setupMvcBinding(bindingReference.RemoveListItem, bindParams);
+    }
 
     //TODO Instead of the existing method below, setupBinding could take the following params
     //function setupBinding(binding, checklistData, options)
@@ -153,49 +214,63 @@ window.ListController = (function()
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user, such as removing a List Item).
-     * @param {string} listId The unique identifier of the List that the modified List Item belongs to.
-     * @param {object} listItem The List Item that has been modified.
-     * @param {object} [options] [Optional] An optional object to pass containing any additional data needed to create the bind. Possible properties: quantityType.
+     * @param {string} parameters An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
      */
-    function setupMvcBinding(binding, listId, listItem, options)
+    function setupMvcBinding(binding, parameters)
     {
-        //Set up the callback method to execute for when the View recieves input from the user
-        var _onUserInput = function(args) 
+        //If the parameters provided have values, setup the binding. Otherwise throw an error message.
+        if (binding != null && binding.action != null && parameters != null)
         {
-            //If there are any arguments passed in from the View
-            if (args !== undefined)
+            //Set up the callback method to execute for when the View recieves input from the user
+            var _onUserInput = function(args) 
             {
-                //If the options parameter is undefined (i.e. none provided), assign an empty object to it
-                if (options === undefined)
+                //If there are any arguments passed in from the View
+                if (args !== undefined)
                 {
-                    options = {};
+                    //If the modelOptions parameter is undefined (i.e. none provided), assign an empty object to it
+                    if (parameters.modelOptions === undefined)
+                    {
+                        parameters.modelOptions = {};
+                    }
+
+                    //Merge any properties from the arguments passed from the View (from the user input) into the modelOptions object that gets passed to the Model
+                    Object.assign(parameters.modelOptions, args);
                 }
 
-                //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-                Object.assign(options, args);
-            }
 
-            //If an action was provided
-            if (binding.action != null)
-            {
+                //TODO perhaps move this small section out of here. (And then should only need ONE setupBinding method)
+                    //Also rewrite these comments
                 //Set up the callback method to execute once the Model has been updated. 
-                var _modelUpdated = function(options) 
+                var _modelUpdated = function(args) 
                 {    
+                    //If there are any arguments passed in from the Model
+                    if (args !== undefined)
+                    {
+                        //If the renderOptions parameter is undefined (i.e. none provided), assign an empty object to it
+                        if (parameters.renderOptions === undefined)
+                        {
+                            parameters.renderOptions = {};
+                        }
+
+                        //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
+                        Object.assign(parameters.renderOptions, args);
+                    }
+                   
                     //Update the View, passing along the updated listItem and any optional parameters as applicable
-                    updateView(binding.action, listItem, options);
+                    handleUpdatesFromModel(binding.action, parameters.renderOptions);
                 };
 
                 //Update the Model
-                updateModel(binding.action, listId, listItem.id, _modelUpdated, options);
-            }
-            else
-            {
-                window.DebugController.LogError("ERROR: No action provided when attempting to setup an MVC binding.");
-            }
-        };
+                handleUpdatesFromView(binding.action, parameters.modelOptions, _modelUpdated);
+            };
 
-        //Add an event listener to the specified element
-        window.View.Bind(binding.event, _onUserInput, {id:listItem.id});
+            //Add an event listener to the specified element
+            window.View.Bind(binding.event, _onUserInput, parameters.bindOptions);
+        }
+        else
+        {
+            window.DebugController.LogError("ERROR: Invalid parameters provided when attempting to setup an MVC binding.");
+        }
     }
 
     /**
@@ -211,7 +286,8 @@ window.ListController = (function()
             //If an action was provided that can be sent to the View, update the View accordingly...
             if (binding.action != null) 
             {
-                updateView(binding.action, checklistObject);
+                handleUpdatesFromView(binding.action);
+                //updateView(binding.action, checklistObject); //TODO checklistObject isn't actually being used right now
             }
         };
 
@@ -237,11 +313,19 @@ window.ListController = (function()
             window.DebugController.Print("A Quantity Popover was shown.");
 
             //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-            window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover, {listItemId:listItem.id, quantityType:quantityType});   
+            window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
             window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
             
-            setupMvcBinding(bindingReference.DecrementQuantityValue, listId, listItem, {quantityType:quantityType});
-            setupMvcBinding(bindingReference.IncrementQuantityValue, listId, listItem, {quantityType:quantityType});
+            var bindParams= {};
+            bindParams.modelOptions = {listId:listId, listItemId:listItem.id, quantityType:quantityType};
+            bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
+
+            setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
+            setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
+            
+            // var _checklistData = {listId:listId, listItem:listItem};
+            // setupMvcBinding(bindingReference.DecrementQuantityValue, _checklistData, {quantityType:quantityType});
+            // setupMvcBinding(bindingReference.IncrementQuantityValue, _checklistData, {quantityType:quantityType});
         };
         
         var _hideQuantityPopover = function() {
@@ -251,61 +335,88 @@ window.ListController = (function()
             quantityPopoverActive = false;
         };
 
-        window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {listItemId:listItem.id, quantityType:quantityType});
-        window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {listItemId:listItem.id, quantityType:quantityType});
+        window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {id:listItem.id, quantityType:quantityType});
+        window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {id:listItem.id, quantityType:quantityType});
     }
 
     /**
-     * Pass along to the View any modifications or updates throughout the app which need to be rendered
-     * @param {string} action The action that has been initiated by the user or application (e.g. removing a List Item)
-     * @param {object} [checklistObject] [Optional] The List or List Item object to be rendered, if applicable
-     * @param {object} [options] [Optional] An optional object to pass containing any additional data needed to render the updates. Possible properties: quantityType, swappedListItemId.
+     * Handle any user-initiated updates to the checklist, received from the View. These updates may be passed along to the Model or directly back to the View to be rendered.
+     * @param {string} action The action that has been initiated by the user or application
+     * @param {object} [modelOptions] [Optional] An optional object to pass containing any data needed to pass along updates to the Model
+     * @param {Function} [callback] [Optional] The method to call once the Model has been successfully updated
      */
-    function updateView(action, checklistObject, options)
+    function handleUpdatesFromView(action, modelOptions, callback)
+    {       
+        if (action === 'HideActiveSettingsView')
+        {
+            window.View.Render('HideActiveSettingsView');
+        }
+        else if (modelOptions.listId != null && modelOptions.listItemId != null)
+        {
+            window.Model.ModifyListItem(action, modelOptions.listId, modelOptions.listItemId, callback, modelOptions);
+        }
+        else if (modelOptions.listId != null)
+        {
+            window.Model.ModifyList(action, modelOptions.listId, callback, modelOptions);
+        }
+        else
+        {
+            window.DebugController.LogError("ERROR: Unable to handle updates received from the View. Action: " + action + "; Model Options: " + modelOptions);
+        }
+    }
+    //TODO still would prefer having a separate updateModel method. In the one above, handle cases where the Model doesn't need to be updated, and otherwise determine if it will modify a list or list item. Then call updateModel.
+    //TODO might be better if each case was handled individually, like in handleUpdatesFromModel
+
+    /**
+     * Handle any modifications or updates to checklist data received from the Model
+     * @param {string} action The action that has been initiated by the user or application (e.g. removing a List Item)
+     * @param {object} [renderOptions] [Optional] An optional object to pass containing any additional data needed to render updates. Possible properties: quantityType, swappedListItemId.
+     */
+    function handleUpdatesFromModel(action, renderOptions)
     {       
         //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
         //TODO Could use a switch/case here instead
         var actions = 
         {
-            AddList : function()
-            {
-                window.View.Render('AddList', {listId:checklistObject.id, listName:checklistObject.name, listType:self.checklistType});
-            },
+            // AddList : function()
+            // {
+            //     window.View.Render('AddList', {listId:checklistObject.id, listName:checklistObject.name, listType:self.checklistType});
+            // },
             AddListItem : function()
             {
-                window.View.Render('AddListItem', {listItemId:checklistObject.id, listItemName:checklistObject.name, quantityValues:checklistObject.quantities, listId:options.listId});                    
-                window.View.Render('UpdateListItemNameColor', {listItemId:checklistObject.id, quantityNeeded:checklistObject.quantities.needed, quantityBalance:(checklistObject.quantities.needed - checklistObject.quantities.luggage - checklistObject.quantities.wearing - checklistObject.quantities.backpack)});
+                window.View.Render('AddListItem', {listItemId:renderOptions.checklistObject.id, listItemName:renderOptions.checklistObject.name, quantityValues:renderOptions.checklistObject.quantities, listId:renderOptions.listId});                    
+                window.View.Render('UpdateListItemNameColor', {listItemId:renderOptions.checklistObject.id, quantityNeeded:renderOptions.checklistObject.quantities.needed, quantityBalance:(renderOptions.checklistObject.quantities.needed - renderOptions.checklistObject.quantities.luggage - renderOptions.checklistObject.quantities.wearing - renderOptions.checklistObject.quantities.backpack)});
             },
             UpdateName : function()
             {
-                window.View.Render('UpdateName', {id:checklistObject.id, updatedValue:checklistObject.name});
-            },
-            RemoveListItem : function()
-            {
-                window.View.Render('RemoveListItem', {listItemId:checklistObject.id}); 
+                window.View.Render('UpdateName', {id:renderOptions.checklistObject.id, updatedValue:renderOptions.checklistObject.name});
             },
             MoveUpwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:checklistObject.id, moveDownwardsId:options.swappedListItemId});
+                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.checklistObject.id, moveDownwardsId:renderOptions.swappedListItemId});
             },
             MoveDownwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedListItemId, moveDownwardsId:checklistObject.id});
+                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.swappedListItemId, moveDownwardsId:renderOptions.checklistObject.id});
             },
             DecrementQuantityValue : function()
             {
-                window.View.Render('UpdateListItemQuantityText', {listItemId:checklistObject.id, quantityType:options.quantityType, updatedValue:checklistObject.quantities[options.quantityType]});
-                window.View.Render('UpdateListItemNameColor', {listItemId:checklistObject.id, quantityNeeded:checklistObject.quantities.needed, quantityBalance:(checklistObject.quantities.needed - checklistObject.quantities.luggage - checklistObject.quantities.wearing - checklistObject.quantities.backpack)});
+                window.View.Render('UpdateListItemQuantityText', {listItemId:renderOptions.checklistObject.id, quantityType:renderOptions.quantityType, updatedValue:renderOptions.checklistObject.quantities[renderOptions.quantityType]});
+                window.View.Render('UpdateListItemNameColor', {listItemId:renderOptions.checklistObject.id, quantityNeeded:renderOptions.checklistObject.quantities.needed, quantityBalance:(renderOptions.checklistObject.quantities.needed - renderOptions.checklistObject.quantities.luggage - renderOptions.checklistObject.quantities.wearing - renderOptions.checklistObject.quantities.backpack)});
             },
             IncrementQuantityValue : function()
             {
-                window.View.Render('UpdateListItemQuantityText', {listItemId:checklistObject.id, quantityType:options.quantityType, updatedValue:checklistObject.quantities[options.quantityType]});
-                window.View.Render('UpdateListItemNameColor', {listItemId:checklistObject.id, quantityNeeded:checklistObject.quantities.needed, quantityBalance:(checklistObject.quantities.needed - checklistObject.quantities.luggage - checklistObject.quantities.wearing - checklistObject.quantities.backpack)});
+                window.View.Render('UpdateListItemQuantityText', {listItemId:renderOptions.checklistObject.id, quantityType:renderOptions.quantityType, updatedValue:renderOptions.checklistObject.quantities[renderOptions.quantityType]});
+                window.View.Render('UpdateListItemNameColor', {listItemId:renderOptions.checklistObject.id, quantityNeeded:renderOptions.checklistObject.quantities.needed, quantityBalance:(renderOptions.checklistObject.quantities.needed - renderOptions.checklistObject.quantities.luggage - renderOptions.checklistObject.quantities.wearing - renderOptions.checklistObject.quantities.backpack)});
             },
-            HideActiveSettingsView : function()
+            RemoveListItem : function()
             {
-                window.View.Render('HideActiveSettingsView');
-            }
+                window.View.Render('RemoveListItem', {listItemId:renderOptions.checklistObject.id}); 
+            },
+            // HideActiveSettingsView : function()
+            // {
+            //     window.View.Render('HideActiveSettingsView');
+            // }
         };
 
         //If an action is provided, execute the corresponding method
@@ -315,9 +426,11 @@ window.ListController = (function()
         }
         else
         {
-            window.DebugController.LogError("ERROR: Tried to update the View, but no action was provided.");
+            window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
         }
     }
+
+    //TODO maybe instead, we need handleUpdatesFromView and handleUpdatesFromModel (then this handling could include Controller logic)
 
     /**
      * Pass along to the Model any modifications or updates which need to be made to the checklist data
@@ -350,6 +463,7 @@ window.ListController = (function()
         /****/
         
         //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
+        //TODO this is also a bind that should use setupBinding method
         window.View.Bind('NewListItemButtonPressed', addNewListItem);
         //TODO note that this Bind calls ModifyList, not ModifyListItem
         //setupBinding(bindingReference.AddListItem, ListSelectionController.GetActiveListId());
@@ -453,7 +567,7 @@ window.ListController = (function()
         var _updateName = function(updatedValue) 
         {
             //Set up the callback method to execute once the Model has been updated
-            var updateView = function()
+            var _updateView = function()
             {
                 window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
             };
@@ -461,7 +575,7 @@ window.ListController = (function()
             //TODO updatedName/Value should be consistent
 
             //Update the Model
-            window.Model.ModifyList('EditName', data.id, updateView, {updatedName:updatedValue});
+            window.Model.ModifyList('EditName', data.id, _updateView, {updatedName:updatedValue});
         };
 
         //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.

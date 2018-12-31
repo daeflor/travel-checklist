@@ -149,7 +149,7 @@ window.View = (function()
     /**
      * @param {string} event The name used to identify the event being bound
      * @param {*} callback The function to call when the corresponding event has been triggered 
-     * @param {object} [parameters] An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id.
+     * @param {object} [parameters] An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id, listItemId, quantityType.
      */
     function bind(event, callback, parameters)
     {
@@ -173,10 +173,14 @@ window.View = (function()
             //Set the behavior for when the Add List Item button is pressed
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);      
         }
-        else if (event === 'DeleteButtonPressed') 
+        else if (event === 'NameEdited') //Expected parameters: id
         {
-            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
+            var eventTriggeredCallback = function(event)
+            {
+                callback({updatedValue:event.target.value});
+            }
+            
+            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
         }
         else if (event === 'MoveUpwardsButtonPressed') 
         {
@@ -188,12 +192,25 @@ window.View = (function()
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
         }
+        else if (event === 'DecrementQuantityButtonPressed') 
+        {
+            addListenerToChecklistElement({id:'buttonMinus'}, 'click', callback);
+        }
+        else if (event === 'IncrementQuantityButtonPressed')
+        {
+            addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
+        }
+        else if (event === 'DeleteButtonPressed') 
+        {
+            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
+            addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
+        }
         else if (event === 'QuantityPopoverShown') 
         {
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'shown.bs.popover', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
 
-            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.listItemId);
+            window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.id);
         }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
@@ -204,14 +221,6 @@ window.View = (function()
         {
             //Set the behavior for when a Clear button in the Header is pressed
             addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
-        }
-        else if (event === 'DecrementQuantityButtonPressed') 
-        {
-            addListenerToChecklistElement({id:'buttonMinus'}, 'click', callback);
-        }
-        else if (event === 'IncrementQuantityButtonPressed')
-        {
-            addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
@@ -234,15 +243,6 @@ window.View = (function()
             
             addListenerToChecklistElement({prefix:'SettingsView', id:parameters.id}, 'show.bs.collapse', eventTriggeredCallback); 
         }
-        else if (event === 'NameEdited') //Expected parameters: id
-        {
-            var eventTriggeredCallback = function(event)
-            {
-                callback({updatedValue:event.target.value});
-            }
-            
-            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
-        }
         else if (event === 'ClickDetectedOutsidePopover')
         {
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
@@ -251,7 +251,7 @@ window.View = (function()
         }
         else if (event === 'QuantityToggleSelected')
         {
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.listItemId}, 'click', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
         }
     }
 
