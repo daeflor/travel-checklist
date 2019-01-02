@@ -350,7 +350,7 @@ window.View = (function()
                 //Find the List toggle element which matches the given ID, and then remove it
                 findChecklistElement(parameters.listId, elementFoundCallback)
             },
-            AddListItem: function() //Expected parameters: listId, listItemId
+            AddListItem: function() //Expected parameters: listId
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 var elementFoundCallback = function(element)

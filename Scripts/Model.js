@@ -1,5 +1,6 @@
 window.Model = (function() 
 {
+    //TODO using 'self' makes it more obvious when accessing global variables
     var checklistData;
 
     //TODO Add JSDoc comments to each of the methods here/below, and add any other comments as needed
@@ -127,7 +128,7 @@ window.Model = (function()
                 //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
                 SwapElementsInArray(getLists(), listIndex, listIndex+1, commandSucceededCallback);
             },
-            AddListItem : function(listIndex, commandSucceededCallback)
+            AddNewListItem : function(listIndex, commandSucceededCallback)
             {
                 var newListItem = {
                     id : new Date().getTime(), 
@@ -144,7 +145,7 @@ window.Model = (function()
                 getLists()[listIndex].listItems.push(newListItem);
 
                 //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
-                commandSucceededCallback(newListItem);
+                commandSucceededCallback({checklistObject:newListItem});
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
@@ -172,7 +173,6 @@ window.Model = (function()
                 {
                     //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
                     commandSucceededCallback({modifiedListItems:modifiedListItems});
-                    //commandSucceededCallback({modifiedListItems:modifiedListItems});
                 }
             },
             Remove : function(listIndex, commandSucceededCallback)

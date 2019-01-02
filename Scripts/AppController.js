@@ -10,14 +10,14 @@
         //Force the initial page to be the travel list selection screen 
         location.href = '#/travel';
 
+        //Set the behavior for when the URL fragment identifier changes
+        window.onhashchange = urlHashChanged;
+
         //Initialize the View and the other Controllers
         window.View.Init();
         window.DebugController.Init();
         window.ListSelectionController.Init('travel');
         window.ListController.Init('travel');
-
-        //Set the behavior for when the URL fragment identifier changes
-        window.onhashchange = urlHashChanged;
 
         //Load the list data from storage
         loadAppData();
