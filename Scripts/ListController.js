@@ -146,21 +146,6 @@ window.ListController = (function()
         );
     }
 
-    function clearQuantitiesInView(listItems, quantityType)
-    {
-        //Traverse the array of List Items
-        for (var i = 0; i < listItems.length; i++)
-        {
-            //TODO THESE WON'T WORK RIGHT NOW
-
-            //Update the List Item's quantity value for the given type
-            updateListItemQuantityText(listItems[i], quantityType);
-            
-            //Update the List Item name's color
-            updateListItemNameColor(listItems[i]);
-        }
-    }
-
     /** Private Methods To Setup MVC Bindings For A New List Item **/
 
     //TODO this should be renamed
@@ -181,10 +166,6 @@ window.ListController = (function()
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
         //setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
         setupVcBinding(bindingReference.HideActiveSettingsView, listItem);
-
-        //var _checklistData = {listId:listId, listItem:listItem};
-
-        //TODO hmm could have a bindOptions property.. Maybe a property of the options param??
 
         var bindParams= {};
         bindParams.bindOptions = {id:listItem.id};
