@@ -7,6 +7,7 @@ window.ListController = (function()
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
+        //This would probably only work if handleUpdatesFromView gets split into individual sections, which may be clearer anyway
 
     //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList, params=MoveUpwards)
         //Maybe rename/add as such:
@@ -16,12 +17,12 @@ window.ListController = (function()
     //TODO remove the properties here that aren't being used
     var bindingReference = {
         /** MVC Bindings **/
-        AddList: {
+        AddNewList: {
             event: 'NewListButtonPressed', 
-            action: 'AddList',
+            action: 'AddNewList',
             bindOptions: [],
             modelOptions: [],
-            renderOptions: ['checklistObject']
+            renderOptions: ['listId', 'listName', 'listType'] //or just checklistObject instead?
         },
         AddNewListItem: {
             event: 'NewListItemButtonPressed', 
@@ -96,44 +97,15 @@ window.ListController = (function()
         }
     };
 
-    function renderUpdatesToListItemQuantity(listItem, quantityType)
+    function renderAndBindLoadedList(list)
     {
-        window.View.Render('UpdateListItemQuantityText', {listItemId:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
-        window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+        window.View.Render('AddList', {listId:list.id, listName:list.name, listType:self.checklistType});
     }
-
-    //TODO maybe separate data needed for the model and for the view (bind AND render maybe??)??
-        //e.g. model:       checklistObjectId, quantityType, listId
-        //     view-bind:   checklistObjectId, quantityType 
-        //     view-render: checklistObject, quantityType, listId, swappedListItemId
-        //Maybe these three are all properties of options, each with their own sub-properties? 
-            //Then there might just be two params: bindingType, bindingParams (hopefully with beter names)
-
-
-    //TODO this is hard to read
-    function bindQuantityHeaderToggleEvents(quantityType)
-    {
-        //TODO This is probably a case of setupVcBinding (if that still ends up being a separate function)
-        window.View.Bind(
-            'QuantityHeaderPopoverShown', 
-            function() {
-
-                var bindParams= {};
-                bindParams.modelOptions = {listId:ListSelectionController.GetActiveListId(), quantityType:quantityType};
-                bindParams.renderOptions = {quantityType:quantityType};
-                setupMvcBinding(bindingReference.ClearQuantityValues, bindParams);
-            },
-            {quantityType:quantityType}
-        );
-    }
-
-    /** Private Methods To Setup MVC Bindings For A New List Item **/
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
     function renderAndBindLoadedListItem(listId, listItem)
     {
         //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... Unsure...
-        //handleUpdatesFromModel('AddListItem', {listId:listId, checklistObject:listItem})
         window.View.Render('AddListItem', {listItemId:listItem.id, listItemName:listItem.name, quantityValues:listItem.quantities, listId:listId});                    
         window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
         
@@ -151,24 +123,44 @@ window.ListController = (function()
         bindParams.modelOptions = {listItemId:listItem.id};
         bindParams.renderOptions = {checklistObject:listItem};
 
+        //Setup the binds to update the list item name, move it upwards or downwards in the list, and remove it from the list
         setupMvcBinding(bindingReference.UpdateName, bindParams);
         setupMvcBinding(bindingReference.MoveUpwards, bindParams);
         setupMvcBinding(bindingReference.MoveDownwards, bindParams);
         setupMvcBinding(bindingReference.RemoveListItem, bindParams);
     }
 
-    //TODO Instead of the existing method below, setupBinding could take the following params
-    //function setupBinding(binding, checklistData, options)
-    //Where checklistData could have either:
-        //Just a List object
-        //OR a ListItem object AND a listID (or maybe a List object instead of just ID, for simplicity...)
+    function renderUpdatesToListItemQuantity(listItem, quantityType)
+    {
+        window.View.Render('UpdateListItemQuantityText', {listItemId:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
+        window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+    }
+
+    //TODO this is hard to read
+    function bindQuantityHeaderToggleEvents(quantityType)
+    {
+        //TODO This is probably a case of setupVcBinding (if that still ends up being a separate function)
+        window.View.Bind(
+            'QuantityHeaderPopoverShown', 
+            function() {
+
+                var bindParams= {};
+                bindParams.modelOptions = {listId:self.activeListId, quantityType:quantityType};
+                bindParams.renderOptions = {quantityType:quantityType};
+                setupMvcBinding(bindingReference.ClearQuantityValues, bindParams);
+            },
+            {quantityType:quantityType}
+        );
+    }
+
+    /** Private Methods To Setup MVC Bindings For A New List Item **/
 
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user, such as removing a List Item).
-     * @param {object} parameters An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
+     * @param {object} [parameters] [Optional] An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
      */
-    function setupMvcBinding(binding, parameters)
+    function setupMvcBinding(binding, parameters) //TODO having a parameter called "parameters" is confusing
     {
         //If a binding with the expected properties was provided, setup the binding. Otherwise throw an error message.
         if (binding != null && binding.action != null && binding.event != null)
@@ -301,19 +293,24 @@ window.ListController = (function()
      */
     function handleUpdatesFromView(action, modelOptions, callback)
     {       
+        //TODO should these use events instead of actions?
         if (action === 'HideActiveSettingsView')
         {
             window.View.Render('HideActiveSettingsView');
         }
         else if (action === 'AddNewListItem')
         {
-            window.Model.ModifyList(action, ListSelectionController.GetActiveListId(), callback);
+            window.Model.ModifyList(action, self.activeListId, callback);
+        }
+        else if (action === 'AddNewList')
+        {
+            window.Model.AddList(callback);
         }
         else if (modelOptions != null)
         {
             if (modelOptions.listItemId != null)
             {
-                window.Model.ModifyListItem(action, ListSelectionController.GetActiveListId(), modelOptions.listItemId, callback, modelOptions);
+                window.Model.ModifyListItem(action, self.activeListId, modelOptions.listItemId, callback, modelOptions);
             }
             else if (modelOptions.listId != null)
             {
@@ -340,14 +337,19 @@ window.ListController = (function()
         //TODO Could use a switch/case here instead
         var actions = 
         {
-            // AddList : function()
-            // {
-            //     window.View.Render('AddList', {listId:checklistObject.id, listName:checklistObject.name, listType:self.checklistType});
-            // },
+            AddList : function()
+            {
+                //Render the new List and setup its bindings
+                renderAndBindLoadedList(checklistObject);
+                //window.View.Render('AddList', {listId:renderOptions.checklistObject.id, listName:renderOptions.checklistObject.name, listType:self.checklistType});
+            
+                //Once the new List has been added to the DOM, expand its Settings View
+                window.View.Render('ExpandSettingsView', {id:renderOptions.checklistObject.id});
+            },
             AddNewListItem : function()
             {
                 //Render the new List Item and setup its bindings
-                renderAndBindLoadedListItem(ListSelectionController.GetActiveListId(), renderOptions.checklistObject);
+                renderAndBindLoadedListItem(self.activeListId, renderOptions.checklistObject);
                 
                 //Once the new List Item has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:renderOptions.checklistObject.id});
@@ -391,6 +393,49 @@ window.ListController = (function()
         action != null ? actions[action]() : window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
     }
 
+    /** Publicly Exposed Methods To Setup UI & Load List Data **/
+
+    function init(checklistType)
+    {            
+        self.checklistType = checklistType;
+        
+        //TODO THIS NEEDS TO BE UNCOMMENTED EVENTUALLY
+        //setupNewListBinding();
+
+        /****/
+
+        setupMvcBinding(bindingReference.AddNewList);
+        setupMvcBinding(bindingReference.AddNewListItem);
+        
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
+
+        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
+        window.View.Render('GenerateQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
+
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
+        for (var key in QuantityType)
+        {
+            bindQuantityHeaderToggleEvents(key);
+        }
+    }
+
+    function loadChecklistDataIntoView(loadedListData)
+    {
+        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
+
+        for (var i = 0; i < loadedListData.length; i++) 
+        {
+            renderAndBindLoadedList(loadedListData[i])
+            
+            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
+            {
+                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
+            }
+        }
+    }
+
+    /** Experimental & In Progress **/
+
     /**
      * Pass along to the Model any modifications or updates which need to be made to the checklist data
      * @param {string} action The action that has been initiated by the user or application (e.g. removing a List Item)
@@ -408,99 +453,6 @@ window.ListController = (function()
 
         //TODO MAKE THIS WORK
         //window["Model"][binding.modificationType](binding.action, checklistData.listId, checklistData.listItem.id, callback, options);
-    }
-
-    /** Publicly Exposed Methods To Setup UI & Load List Data **/
-
-    function init(checklistType)
-    {            
-        self.checklistType = checklistType;
-        
-        //TODO THIS NEEDS TO BE UNCOMMENTED EVENTUALLY
-        //setupNewListBinding();
-
-        /****/
-
-        setupMvcBinding(bindingReference.AddNewListItem);
-        
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-
-        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-        window.View.Render('GenerateQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
-
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (var key in QuantityType)
-        {
-            bindQuantityHeaderToggleEvents(key);
-        }
-    }
-
-    function loadListItemsIntoView(loadedListData)
-    {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
-
-        for (var i = 0; i < loadedListData.length; i++) 
-        {
-            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
-            {
-                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
-                //handleUpdatesFromModel(bindingReference.AddListItem.action, {listId:loadedListData[i].id, checklistObject:loadedListData[i].listItems[j]});
-                //addListItemToView(loadedListData[i].id, loadedListData[i].listItems[j]);
-            }
-        }
-    }
-
-    /** Experimental & In Progress **/
-
-    function loadListsIntoView(loadedListData)
-    {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
-
-        for (var i = 0; i < loadedListData.length; i++) 
-        {
-            addListToView(loadedListData[i]);
-
-            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
-            {
-                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
-                //handleUpdatesFromModel(bindingReference.AddListItem.action, {listId:loadedListData[i].id, checklistObject:loadedListData[i].listItems[j]});
-                //addListItemToView(loadedListData[i].id, loadedListData[i].listItems[j]);
-            }
-        }
-    }
-
-    function setupNewListBinding()
-    {
-        var _onUserInput = function()
-        {
-            //If a command was provided that can be sent to both the Model and the View...
-            if (binding.action != null)
-            {
-                //Set up the callback method to execute once the Model has been updated. 
-                var _modelUpdated = function(newList) 
-                {    
-                    addListToView(newList);
-
-                    //After the List is added to the DOM, expand its Settings View
-                    window.View.Render('ExpandSettingsView', {id:newList.id});
-
-                    /***/
-
-                    // //Update the View, passing along the updated listItem and any optional parameters as applicable
-                    // updateView(binding.modelViewCommand, listItem, options);
-                };
-
-                //Update the Model
-                window.Model.AddList(_modelUpdated);
-            }
-            else if (binding.viewCommand != null) //Else, if a command was provided that can be sent to only to the View...
-            {
-                //Update the View, passing along the updated listItem and any optional parameters as applicable
-                updateView(binding.viewCommand, listItem, options);
-            }
-        }
-
-        window.View.Bind('NewListButtonPressed', _onUserInput);
     }
 
     //TODO WORK ON THIS
@@ -614,12 +566,30 @@ window.ListController = (function()
         );
     }
 
+    //TODO Could this be in handleUpdatesFromView?
+    //TODO not sure I like this passive naming convention
+    function listSelected(listId)
+    {   
+        //If there is any active settings view, close it
+        window.View.Render('HideActiveSettingsView');
+
+        //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+            //Although, if this is the only place the Active List is hidden, then maybe it's fine
+            //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+        //Display the specified List Screen (and hide the Active List Screen, if applicable)
+        window.View.Render('DisplayList', {listId:listId, activeListId:self.activeListId});
+
+        //Set the newly selected List as the Active List
+        self.activeListId = listId;
+    }
+
     /** Publicly Exposed Methods **/
 
     return {
         Init : init,
-        LoadListItemsIntoView : loadListItemsIntoView
+        LoadChecklistDataIntoView : loadChecklistDataIntoView,
         //LoadListsIntoView : loadListsIntoView
+        ListSelected : listSelected
     };
 })();
 

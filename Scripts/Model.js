@@ -1,6 +1,6 @@
 window.Model = (function() 
 {
-    //TODO using 'self' makes it more obvious when accessing global variables
+    //TODO using 'self' makes it more obvious when accessing 'global' variables (even though these aren't actually global)
     var checklistData;
 
     //TODO Add JSDoc comments to each of the methods here/below, and add any other comments as needed
@@ -103,7 +103,7 @@ window.Model = (function()
 
         storeChecklistData();
 
-        callback(newList);
+        callback({checklistObject:newList});
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)

@@ -16,7 +16,6 @@
         //Initialize the View and the other Controllers
         window.View.Init();
         window.DebugController.Init();
-        window.ListSelectionController.Init('travel');
         window.ListController.Init('travel');
 
         //Load the list data from storage
@@ -25,10 +24,10 @@
 
     function loadAppData()
     {
+        //TODO no longer need this extra callback abstraction, I think
         var _loadListsIntoView = function(loadedListData) 
         {
-            window.ListSelectionController.LoadListsIntoView(loadedListData);
-            window.ListController.LoadListItemsIntoView(loadedListData);
+            window.ListController.LoadChecklistDataIntoView(loadedListData);
 
             // for (var i = 0; i < lists.length; i++) 
             // {
@@ -59,7 +58,7 @@
             //If a list ID is specified, inform the List Selection Controller that a List was selected
             if (currentScreenData.listId !== '')
             {
-                window.ListSelectionController.ListSelected(currentScreenData.listId);
+                window.ListController.ListSelected(currentScreenData.listId);
             }
             else //Else, if no list ID is specified...
             {

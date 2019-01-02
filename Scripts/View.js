@@ -318,7 +318,7 @@ window.View = (function()
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
             },
-            AddList: function() //Expected parameters: listId
+            AddList: function() //Expected parameters: listId, listName, listType
             {
                 //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
                 
