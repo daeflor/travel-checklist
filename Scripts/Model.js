@@ -171,7 +171,7 @@ window.Model = (function()
                 if (modifiedListItems.length > 0)
                 {
                     //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
-                    commandSucceededCallback(modifiedListItems);
+                    commandSucceededCallback({modifiedListItems:modifiedListItems});
                     //commandSucceededCallback({modifiedListItems:modifiedListItems});
                 }
             },

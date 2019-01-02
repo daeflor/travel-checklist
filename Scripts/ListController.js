@@ -96,6 +96,12 @@ window.ListController = (function()
         }
     };
 
+    function renderUpdatesToListItemQuantity(listItem, quantityType)
+    {
+        window.View.Render('UpdateListItemQuantityText', {listItemId:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
+        window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+    }
+
     //TODO maybe separate data needed for the model and for the view (bind AND render maybe??)??
         //e.g. model:       checklistObjectId, quantityType, listId
         //     view-bind:   checklistObjectId, quantityType 
@@ -131,24 +137,10 @@ window.ListController = (function()
             'QuantityHeaderPopoverShown', 
             function() {
 
-                //setupBinding(bindingReference.ClearQuantityValues, listId, listItem);
-
-                //TODO this bind isn't associated with a checklist Object ID... :/
-                window.View.Bind(
-                    'ClearButtonPressed', 
-                    function()
-                    {
-                        window.DebugController.Print("Clear button was clicked for quantity type: " + quantityType);
-
-                        //TODO this could be handled more efficiently 
-                        var _modelUpdated = function(modifiedListItems)
-                        {
-                            clearQuantitiesInView(modifiedListItems, quantityType);
-                        };
-
-                        window.Model.ModifyList('ClearQuantityValues', ListSelectionController.GetActiveListId(), _modelUpdated, {quantityType:quantityType});
-                    }
-                );
+                var bindParams= {};
+                bindParams.modelOptions = {listId:ListSelectionController.GetActiveListId(), quantityType:quantityType};
+                bindParams.renderOptions = {quantityType:quantityType};
+                setupMvcBinding(bindingReference.ClearQuantityValues, bindParams);
             },
             {quantityType:quantityType}
         );
@@ -214,7 +206,7 @@ window.ListController = (function()
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user, such as removing a List Item).
-     * @param {string} parameters An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
+     * @param {object} parameters An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
      */
     function setupMvcBinding(binding, parameters)
     {
@@ -322,10 +314,6 @@ window.ListController = (function()
 
             setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
             setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
-            
-            // var _checklistData = {listId:listId, listItem:listItem};
-            // setupMvcBinding(bindingReference.DecrementQuantityValue, _checklistData, {quantityType:quantityType});
-            // setupMvcBinding(bindingReference.IncrementQuantityValue, _checklistData, {quantityType:quantityType});
         };
         
         var _hideQuantityPopover = function() {
@@ -366,6 +354,7 @@ window.ListController = (function()
     }
     //TODO still would prefer having a separate updateModel method. In the one above, handle cases where the Model doesn't need to be updated, and otherwise determine if it will modify a list or list item. Then call updateModel.
     //TODO might be better if each case was handled individually, like in handleUpdatesFromModel
+    //TODO This method above can handle Controller logic
 
     /**
      * Handle any modifications or updates to checklist data received from the Model
@@ -401,22 +390,25 @@ window.ListController = (function()
             },
             DecrementQuantityValue : function()
             {
-                window.View.Render('UpdateListItemQuantityText', {listItemId:renderOptions.checklistObject.id, quantityType:renderOptions.quantityType, updatedValue:renderOptions.checklistObject.quantities[renderOptions.quantityType]});
-                window.View.Render('UpdateListItemNameColor', {listItemId:renderOptions.checklistObject.id, quantityNeeded:renderOptions.checklistObject.quantities.needed, quantityBalance:(renderOptions.checklistObject.quantities.needed - renderOptions.checklistObject.quantities.luggage - renderOptions.checklistObject.quantities.wearing - renderOptions.checklistObject.quantities.backpack)});
+                renderUpdatesToListItemQuantity(renderOptions.checklistObject, renderOptions.quantityType);
             },
             IncrementQuantityValue : function()
             {
-                window.View.Render('UpdateListItemQuantityText', {listItemId:renderOptions.checklistObject.id, quantityType:renderOptions.quantityType, updatedValue:renderOptions.checklistObject.quantities[renderOptions.quantityType]});
-                window.View.Render('UpdateListItemNameColor', {listItemId:renderOptions.checklistObject.id, quantityNeeded:renderOptions.checklistObject.quantities.needed, quantityBalance:(renderOptions.checklistObject.quantities.needed - renderOptions.checklistObject.quantities.luggage - renderOptions.checklistObject.quantities.wearing - renderOptions.checklistObject.quantities.backpack)});
+                renderUpdatesToListItemQuantity(renderOptions.checklistObject, renderOptions.quantityType);
             },
             RemoveListItem : function()
             {
                 window.View.Render('RemoveListItem', {listItemId:renderOptions.checklistObject.id}); 
             },
-            // HideActiveSettingsView : function()
-            // {
-            //     window.View.Render('HideActiveSettingsView');
-            // }
+            ClearQuantityValues : function()
+            {
+                //For each modified List Item...
+                for (var i = 0; i < renderOptions.modifiedListItems.length; i++)
+                {
+                    //Update the List Item's displayed quantity value for the given type, and then update the List Item name's color
+                    renderUpdatesToListItemQuantity(renderOptions.modifiedListItems[i], renderOptions.quantityType);
+                }                
+            }
         };
 
         //If an action is provided, execute the corresponding method
@@ -429,8 +421,6 @@ window.ListController = (function()
             window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
         }
     }
-
-    //TODO maybe instead, we need handleUpdatesFromView and handleUpdatesFromModel (then this handling could include Controller logic)
 
     /**
      * Pass along to the Model any modifications or updates which need to be made to the checklist data
