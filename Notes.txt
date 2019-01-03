@@ -1,15 +1,16 @@
 TO-DOs:
 	- index.html            : 3
-    - CustomTemplates.js    : 6
-    - DebugUtilities.js     : 5
-	- ListController.js     : 24
-    - Model.js              : 5
-    - StandardTemplates.js  : 3
-    - StorageManager.js     : 5
-    - Utilities.js          : 0
+    - AppController.js      : 4
+    - CustomTemplates.js    : 8
+    - DebugUtilities.js     : 4
+	- ListController.js     : 39
+    - Model.js              : 16
+    - StandardTemplates.js  : 6
+    - StorageManager.js     : 2
+    - Utilities.js          : 3
     - View.js               : 27
     - style_new.css         : 3
-    - - - Total             : 81
+    - - - Total             : 119
 
 Upcoming To-Do List:
 - BUG! : If you delete a List Item while its quantity popover is visible, you hit error.
