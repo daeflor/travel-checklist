@@ -255,40 +255,16 @@ window.ListController = (function()
             //Set up the callback method to execute for when the View recieves input from the user
             var _onUserInput = function(args) 
             {
-                //If there are any arguments passed in from the View
-                if (args !== undefined)
-                {
-                    //If the modelOptions parameter is undefined (i.e. none provided), assign an empty object to it
-                    if (parameters.modelOptions === undefined)
-                    {
-                        parameters.modelOptions = {};
-                    }
-
-                    //Merge any properties from the arguments passed from the View (from the user input) into the modelOptions object that gets passed to the Model
-                    Object.assign(parameters.modelOptions, args);
-                }
-
+                //Merge any properties from the arguments passed from the View (from the user input) into the modelOptions object that gets passed to the Model
+                parameters.modelOptions = MergeObjects(parameters.modelOptions, args);
 
                 //TODO perhaps move this small section out of here. (And then should only need ONE setupBinding method)
                     //Also rewrite these comments
                 //Set up the callback method to execute once the Model has been updated. 
                 var _modelUpdated = function(args) 
                 {    
-                    //If there are any arguments passed in from the Model
-                    if (args !== undefined)
-                    {
-                        //If the renderOptions parameter is undefined (i.e. none provided), assign an empty object to it
-                        if (parameters.renderOptions === undefined)
-                        {
-                            parameters.renderOptions = {};
-                        }
-
-                        //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
-                        Object.assign(parameters.renderOptions, args); //TODO might want a helper method to assign all arguments to an object
-
-                        window.DebugController.Print("Added the following arguments as properties of the renderOptions object: ");
-                        window.DebugController.Print(args);
-                    }
+                    //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
+                    parameters.renderOptions = MergeObjects(parameters.renderOptions, args);
                    
                     //Update the View, passing along the updated listItem and any optional parameters as applicable
                     handleUpdatesFromModel(binding.action, parameters.renderOptions);

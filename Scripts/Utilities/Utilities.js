@@ -69,6 +69,27 @@ function GetLocationHashRoute()
     return document.location.hash.split('/')[1];
 }
 
+function MergeObjects(target, source)
+{
+    //If a source object is provided
+    if (source !== undefined)
+    {
+        //If the target is undefined, assign an empty object to it
+        if (target === undefined)
+        {
+            target = {};
+        }
+
+        //Merge any properties from the source object to the target object
+        Object.assign(target, source);
+
+        window.DebugController.Print("Merged two objects into the following target object: ");
+        window.DebugController.Print(target);
+    }
+
+    return target;
+}
+
 /** Experimental & In Progress **/
 
 /** Unused Utilities **/
