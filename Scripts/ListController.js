@@ -43,14 +43,14 @@ window.ListController = (function()
             action: 'MoveUpwards',
             bindOptions: ['id'],
             modelOptions: ['listId', 'listItemId'],
-            renderOptions: ['checklistObject', 'swappedListItemId']
+            renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
         MoveDownwards: {
             event: 'MoveDownwardsButtonPressed', 
             action: 'MoveDownwards',
             bindOptions: ['id'],
             modelOptions: ['listId', 'listItemId'],
-            renderOptions: ['checklistObject', 'swappedListItemId']
+            renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
         DecrementQuantityValue: {
             event: 'DecrementQuantityButtonPressed', 
@@ -65,6 +65,13 @@ window.ListController = (function()
             bindOptions: [],
             modelOptions: ['listId', 'listItemId', 'quantityType'],
             renderOptions: ['checklistObject', 'quantityType']
+        },
+        RemoveList: {
+            event: 'DeleteButtonPressed', 
+            action: 'RemoveList',
+            bindOptions: ['id'],
+            modelOptions: ['listId'],
+            renderOptions: ['checklistObject']
         },
         RemoveListItem: {
             event: 'DeleteButtonPressed', 
@@ -97,6 +104,8 @@ window.ListController = (function()
         }
     };
 
+    /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
+
     function renderAndBindLoadedList(list)
     {
         //Add the List elements to the DOM
@@ -104,6 +113,21 @@ window.ListController = (function()
 
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
         setupVcBinding(bindingReference.HideActiveSettingsView, list);
+
+        //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
+        //TODO maybe standardize ID parameter names
+        var _bindParams= {};
+        _bindParams.bindOptions = {id:list.id};
+        _bindParams.modelOptions = {listId:list.id};
+        _bindParams.renderOptions = {checklistObject:list};
+
+        //Setup the binds to update the list name, move it upwards or downwards, and remove it from the list selection screen
+        setupMvcBinding(bindingReference.UpdateName, _bindParams);
+        setupMvcBinding(bindingReference.MoveUpwards, _bindParams);
+        setupMvcBinding(bindingReference.MoveDownwards, _bindParams);
+        setupMvcBinding(bindingReference.RemoveList, _bindParams); 
+        //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
+            //Then much of this (most of the bind setup) could be reused, for both List and List Item
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -122,16 +146,16 @@ window.ListController = (function()
         //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
         setupVcBinding(bindingReference.HideActiveSettingsView, listItem);
 
-        var bindParams= {};
-        bindParams.bindOptions = {id:listItem.id};
-        bindParams.modelOptions = {listItemId:listItem.id};
-        bindParams.renderOptions = {checklistObject:listItem};
+        var _bindParams= {};
+        _bindParams.bindOptions = {id:listItem.id};
+        _bindParams.modelOptions = {listItemId:listItem.id};
+        _bindParams.renderOptions = {checklistObject:listItem};
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, and remove it from the list
-        setupMvcBinding(bindingReference.UpdateName, bindParams);
-        setupMvcBinding(bindingReference.MoveUpwards, bindParams);
-        setupMvcBinding(bindingReference.MoveDownwards, bindParams);
-        setupMvcBinding(bindingReference.RemoveListItem, bindParams);
+        setupMvcBinding(bindingReference.UpdateName, _bindParams);
+        setupMvcBinding(bindingReference.MoveUpwards, _bindParams);
+        setupMvcBinding(bindingReference.MoveDownwards, _bindParams);
+        setupMvcBinding(bindingReference.RemoveListItem, _bindParams);
     }
 
     function renderUpdatesToListItemQuantity(listItem, quantityType)
@@ -157,7 +181,7 @@ window.ListController = (function()
         );
     }
 
-    /** Private Methods To Setup MVC Bindings For A New List Item **/
+    /** Private Helper Methods To Setup Bindings For Lists & List Items **/
 
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
@@ -308,7 +332,7 @@ window.ListController = (function()
         }
         else if (action === 'AddNewList')
         {
-            window.Model.AddList(callback);
+            window.Model.AddNewList(callback);
         }
         else if (modelOptions != null)
         {
@@ -333,7 +357,7 @@ window.ListController = (function()
     /**
      * Handle any modifications or updates to checklist data received from the Model
      * @param {string} action The action that has been initiated by the user or application (e.g. removing a List Item)
-     * @param {object} [renderOptions] [Optional] An optional object to pass containing any additional data needed to render updates. Possible properties: quantityType, swappedListItemId.
+     * @param {object} [renderOptions] [Optional] An optional object to pass containing any additional data needed to render updates. Possible properties: quantityType, swappedChecklistObjectId.
      */
     function handleUpdatesFromModel(action, renderOptions)
     {       
@@ -341,11 +365,10 @@ window.ListController = (function()
         //TODO Could use a switch/case here instead
         var actions = 
         {
-            AddList : function()
+            AddNewList : function()
             {
                 //Render the new List and setup its bindings
-                renderAndBindLoadedList(checklistObject);
-                //window.View.Render('AddList', {listId:renderOptions.checklistObject.id, listName:renderOptions.checklistObject.name, listType:self.checklistType});
+                renderAndBindLoadedList(renderOptions.checklistObject);
             
                 //Once the new List has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:renderOptions.checklistObject.id});
@@ -364,11 +387,11 @@ window.ListController = (function()
             },
             MoveUpwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.checklistObject.id, moveDownwardsId:renderOptions.swappedListItemId});
+                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.checklistObject.id, moveDownwardsId:renderOptions.swappedChecklistObjectId});
             },
             MoveDownwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.swappedListItemId, moveDownwardsId:renderOptions.checklistObject.id});
+                window.View.Render('SwapListObjects', {moveUpwardsId:renderOptions.swappedChecklistObjectId, moveDownwardsId:renderOptions.checklistObject.id});
             },
             DecrementQuantityValue : function()
             {
@@ -377,6 +400,16 @@ window.ListController = (function()
             IncrementQuantityValue : function()
             {
                 renderUpdatesToListItemQuantity(renderOptions.checklistObject, renderOptions.quantityType);
+            },
+            RemoveList : function()
+            {
+                //If the List that was removed was the most recently Active List, set the Active List ID to null                
+                if (self.activeListId == renderOptions.checklistObject.id)
+                {
+                    self.activeListId = null;
+                }
+
+                window.View.Render('RemoveList', {listId:renderOptions.checklistObject.id}); 
             },
             RemoveListItem : function()
             {
@@ -402,20 +435,15 @@ window.ListController = (function()
     function init(checklistType)
     {            
         self.checklistType = checklistType;
-        
-        //TODO THIS NEEDS TO BE UNCOMMENTED EVENTUALLY
-        //setupNewListBinding();
-
-        /****/
 
         setupMvcBinding(bindingReference.AddNewList);
         setupMvcBinding(bindingReference.AddNewListItem);
         
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-
         //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-        window.View.Render('GenerateQuantityHeader'); //TODO right now this assumes the header to display is the Travel type
+        //TODO right now this assumes the header to display is the Travel type
+        window.View.Render('GenerateQuantityHeader'); 
 
+        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
         for (var key in QuantityType)
         {
@@ -457,105 +485,6 @@ window.ListController = (function()
 
         //TODO MAKE THIS WORK
         //window["Model"][binding.modificationType](binding.action, checklistData.listId, checklistData.listItem.id, callback, options);
-    }
-
-    //TODO WORK ON THIS
-    function addListToView(list) //TODO rename this?
-    {
-        updateView('AddList', list);
-        
-    
-        
-
-        //TODO can this be merged with the corresponding method for List Item?
-        var _updateName = function(updatedValue) 
-        {
-            //Set up the callback method to execute once the Model has been updated
-            var _updateView = function()
-            {
-                window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
-            };
-
-            //TODO updatedName/Value should be consistent
-
-            //Update the Model
-            window.Model.ModifyList('EditName', data.id, _updateView, {updatedName:updatedValue});
-        };
-
-        //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
-        //Add an event listener for when the Text Area to edit the List Item name is modified
-        window.View.Bind('NameEdited', _updateName, {id:data.id});
-
-        // //When the Text Area to edit a list name gets modified, update the text in the List name toggle
-        // window.View.Bind(
-        //     'NameEdited', 
-        //     function(updatedValue) 
-        //     {
-        //         window.Model.EditListName(data.id, updatedValue);
-        //         window.View.Render('UpdateName', {id:data.id, updatedValue:updatedValue}); 
-        //     },
-        //     {id:data.id}
-        // );
-
-        //TODO standardize ID parameter names
-        //TODO it might be possible to merge this with the method to remove a ListItem at some point, once the middleman data (lists, rows, etc.) is cut out
-        var _removeList = function() 
-        {
-            //Set up the callback method to execute once the Model has been updated
-            var _modelUpdated = function()
-            {
-                //If the List that was removed was the most recently Active List, set the Active List ID to null
-                if (activeListId == data.id)
-                {
-                    activeListId = null;
-                }
-
-                window.View.Render('RemoveList', {listId:data.id}); 
-            };
-
-            //Update the Model
-            window.Model.ModifyList('Remove', data.id, _modelUpdated);
-        };
-
-        //Add an event listener for when the button to delete a List is pressed
-        window.View.Bind('DeleteButtonPressed', _removeList, {id:data.id});
-
-
-        //When the Go To List button is selected, navigate to that list
-        // window.View.Bind(
-        //     'GoToListButtonPressed', 
-        //     function() 
-        //     {
-        //         navigateToList(data.id);
-        //     },
-        //     {listId:data.id}
-        // );
-
-        //Add an event listener to the Move Upwards Button to move the List upwards by one position in the Lists array
-        window.View.Bind(
-            'MoveUpwardsButtonPressed', 
-            function() 
-            {
-                //TODO could probably just return the swapped list instead of specifically it's ID
-                window.Model.ModifyList('MoveUpwards', data.id, function(swappedList) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:data.id, moveDownwardsId:swappedList.id});
-                });
-            }, 
-            {id:data.id}
-        );
-
-        //Add an event listener to the Move Downwards Button to move the List downwards by one position in the Lists array
-        window.View.Bind(
-            'MoveDownwardsButtonPressed', 
-            function() 
-            {
-                //TODO could probably just return the swapped list instead of specifically it's ID
-                window.Model.ModifyList('MoveDownwards', data.id, function(swappedList) {
-                    window.View.Render('SwapListObjects', {moveUpwardsId:swappedList.id, moveDownwardsId:data.id});
-                });
-            }, 
-            {id:data.id}
-        );
     }
 
     //TODO Could this be in handleUpdatesFromView?

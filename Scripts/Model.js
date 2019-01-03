@@ -69,7 +69,9 @@ window.Model = (function()
         //If the swap succeeded, execute the callback method, passing the swapped checklist object ID as an argument
         if (swappedChecklistObject != null)
         {
-            callback({swappedListItemId:swappedChecklistObject.id}); //TODO this will need to be renamed to swappedChecklistObjectId
+            //TODO could possibly just return the swapped list instead of specifically it's ID
+                //The "SwapElementsInArray" helper method could also go back to using a callback, if desired
+            callback({swappedChecklistObjectId:swappedChecklistObject.id});
         }
         else
         {
@@ -90,7 +92,7 @@ window.Model = (function()
         callback(checklistData.lists);        
     }
 
-    function addList(callback)
+    function addNewList(callback)
     {
         var newList = {
 			id : new Date().getTime(), 
@@ -113,20 +115,20 @@ window.Model = (function()
     {       
         var commands = 
         {
-            EditName : function(listIndex, commandSucceededCallback)
+            UpdateName : function(listIndex, commandSucceededCallback)
             {
                 //Update the name of the List and then execute the provided callback method
-                editName(getLists()[listIndex], parameters.updatedName, commandSucceededCallback);
+                editName(getLists()[listIndex], parameters.updatedValue, commandSucceededCallback);
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
-                //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
-                SwapElementsInArray(getLists(), listIndex, listIndex-1, commandSucceededCallback);
+                //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
+                swapChecklistObjects(getLists(), listIndex, listIndex-1, commandSucceededCallback);
             },
             MoveDownwards : function(listIndex, commandSucceededCallback)
             {
-                //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List as an argument
-                SwapElementsInArray(getLists(), listIndex, listIndex+1, commandSucceededCallback);
+                //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
+                swapChecklistObjects(getLists(), listIndex, listIndex+1, commandSucceededCallback);
             },
             AddNewListItem : function(listIndex, commandSucceededCallback)
             {
@@ -175,7 +177,7 @@ window.Model = (function()
                     commandSucceededCallback({modifiedListItems:modifiedListItems});
                 }
             },
-            Remove : function(listIndex, commandSucceededCallback)
+            RemoveList : function(listIndex, commandSucceededCallback)
             {
                 //Remove the List object from the lists array and then execute the provided callback method
                 RemoveElementFromArray(getLists(), listIndex, commandSucceededCallback);
@@ -222,7 +224,7 @@ window.Model = (function()
             },
             MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+                //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
                 swapChecklistObjects(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
@@ -316,7 +318,7 @@ window.Model = (function()
         //Actually, having a type in the data object wouldn't really be necessary if the ID is modified as above. 
     return {
         RetrieveChecklistData : retrieveChecklistData,
-        AddList : addList,
+        AddNewList : addNewList,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem
     };
