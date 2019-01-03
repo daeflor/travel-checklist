@@ -99,7 +99,11 @@ window.ListController = (function()
 
     function renderAndBindLoadedList(list)
     {
+        //Add the List elements to the DOM
         window.View.Render('AddList', {listId:list.id, listName:list.name, listType:self.checklistType});
+
+        //When the animation to expand the Settings View starts, inform the View to hide the Active Settings View
+        setupVcBinding(bindingReference.HideActiveSettingsView, list);
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -460,20 +464,8 @@ window.ListController = (function()
     {
         updateView('AddList', list);
         
-        //TODO MAKE THIS WORK. SetupBinding only supports list items at the moment
-        //setupBinding(bindingReference.HideActiveSettingsView, listId, listItem);
-
-        //TODO this method could possibly be standardized and re-used for list item
-        //When the animation to expand the Settings View starts, change the Active Settings View
-        //bindSettingsViewExpansion(data.id);
-        window.View.Bind(
-            'SettingsViewExpansionStarted', 
-            function() 
-            {
-                window.View.Render('HideActiveSettingsView'); 
-            },
-            {id:data.id}
-        );
+    
+        
 
         //TODO can this be merged with the corresponding method for List Item?
         var _updateName = function(updatedValue) 
@@ -588,10 +580,14 @@ window.ListController = (function()
     return {
         Init : init,
         LoadChecklistDataIntoView : loadChecklistDataIntoView,
-        //LoadListsIntoView : loadListsIntoView
         ListSelected : listSelected
     };
 })();
+
+var ListType = {
+    Travel: 0,
+    Checklist: 1,
+};
 
 //TODO Consider moving this to a separate file?
 var QuantityType = {

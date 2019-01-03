@@ -3,60 +3,60 @@ window.ListSelectionController = (function()
     var self = this;
     
     var activeListId;
-    var checklistType;
+    //var checklistType;
 
     /** List & Button Setup **/
 
-    function init(checklistType)
-    {            
-        self.checklistType = checklistType;
+    // function init(checklistType)
+    // {            
+    //     self.checklistType = checklistType;
         
-        window.View.Bind('NewListButtonPressed', addNewList);
-    }
+    //     window.View.Bind('NewListButtonPressed', addNewList);
+    // }
 
-    function loadListsIntoView(loadedListData)
-    {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
+    // function loadListsIntoView(loadedListData)
+    // {
+    //     window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
 
-        for (var i = 0; i < loadedListData.length; i++) 
-        {
-            addListToView(loadedListData[i]);
-        }
-    }
+    //     for (var i = 0; i < loadedListData.length; i++) 
+    //     {
+    //         addListToView(loadedListData[i]);
+    //     }
+    // }
 
     /** List Management **/
 
-    function addNewList()
-    {
-        //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
+    // function addNewList()
+    // {
+    //     //TODO should there be error checking to ensure all the data needed is actually provided when the List is created?
 
-        window.Model.AddList(function(data)
-        {
-            addListToView(data);
+    //     window.Model.AddList(function(data)
+    //     {
+    //         addListToView(data);
 
-            //After the List is added to the DOM, expand its Settings View
-            window.View.Render('ExpandSettingsView', {id:data.id});
-        });
-    }
+    //         //After the List is added to the DOM, expand its Settings View
+    //         window.View.Render('ExpandSettingsView', {id:data.id});
+    //     });
+    // }
 
     function addListToView(data) //TODO don't really like using 'data' here
     {
-        window.View.Render(
-            'AddList', 
-            {listId:data.id, listName:data.name, listType:self.checklistType} //listType:document.location.hash.split('/')[0]
-        );
+        // window.View.Render(
+        //     'AddList', 
+        //     {listId:data.id, listName:data.name, listType:self.checklistType} //listType:document.location.hash.split('/')[0]
+        // );
 
         //TODO this method could possibly be standardized and re-used for list item
-        //When the animation to expand the Settings View starts, change the Active Settings View
-        //bindSettingsViewExpansion(data.id);
-        window.View.Bind(
-            'SettingsViewExpansionStarted', 
-            function() 
-            {
-                window.View.Render('HideActiveSettingsView'); 
-            },
-            {id:data.id}
-        );
+        // //When the animation to expand the Settings View starts, change the Active Settings View
+        // //bindSettingsViewExpansion(data.id);
+        // window.View.Bind(
+        //     'SettingsViewExpansionStarted', 
+        //     function() 
+        //     {
+        //         window.View.Render('HideActiveSettingsView'); 
+        //     },
+        //     {id:data.id}
+        // );
 
         //TODO can this be merged with the corresponding method for List Item?
         var _updateName = function(updatedValue) 
@@ -150,32 +150,27 @@ window.ListSelectionController = (function()
     }
 
     //TODO not sure I like this passive naming convention
-    function listSelected(listId)
-    {   
-        //If there is any active settings view, close it
-        window.View.Render('HideActiveSettingsView');
+    // function listSelected(listId)
+    // {   
+    //     //If there is any active settings view, close it
+    //     window.View.Render('HideActiveSettingsView');
 
-        //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-            //Although, if this is the only place the Active List is hidden, then maybe it's fine
-            //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-        //Display the specified List Screen (and hide the Active List Screen, if applicable)
-        window.View.Render('DisplayList', {listId:listId, activeListId:activeListId});
+    //     //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+    //         //Although, if this is the only place the Active List is hidden, then maybe it's fine
+    //         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+    //     //Display the specified List Screen (and hide the Active List Screen, if applicable)
+    //     window.View.Render('DisplayList', {listId:listId, activeListId:activeListId});
 
-        //Set the newly selected List as the Active List
-        activeListId = listId;
-    }
+    //     //Set the newly selected List as the Active List
+    //     activeListId = listId;
+    // }
 
     /** Experimental & In Progress **/
 
-    return {
-        Init : init,
-        LoadListsIntoView : loadListsIntoView,
-        ListSelected : listSelected,
-        GetActiveListId : function() {return activeListId;} //TODO Note that this is only used by calls to ModifyList, so maybe those should not be part of ListController...
-    };
+    // return {
+    //     Init : init,
+    //     LoadListsIntoView : loadListsIntoView,
+    //     ListSelected : listSelected,
+    //     GetActiveListId : function() {return activeListId;} //TODO Note that this is only used by calls to ModifyList, so maybe those should not be part of ListController...
+    // };
 })();
-
-var ListType = {
-    Travel: 0,
-    Checklist: 1,
-};

@@ -18,33 +18,13 @@
         window.DebugController.Init();
         window.ListController.Init('travel');
 
-        //Load the list data from storage
-        loadAppData();
-    }
-
-    function loadAppData()
-    {
-        //TODO no longer need this extra callback abstraction, I think
-        var _loadListsIntoView = function(loadedListData) 
-        {
-            window.ListController.LoadChecklistDataIntoView(loadedListData);
-
-            // for (var i = 0; i < lists.length; i++) 
-            // {
-            //     addListToView(lists[i]);
-    
-            //     for (var j = 0; j < lists[i].listItems.length; j++) 
-            //     {
-            //         addListItemToView(lists[i].id, lists[i].listItems[j]);
-            //     }
-            // }
-        };
-
-        window.Model.RetrieveChecklistData(_loadListsIntoView);
+        //Load the list data from storage and pass it along to the View
+        window.Model.RetrieveChecklistData(window.ListController.LoadChecklistDataIntoView);
     }
 
     //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
         //This seems fine, at least for the time being. The View is informed to Show the Home Screen and Hide the Active Settings View, unnecessarily. 
+        //Maybe it's possible to use the history to tell if the app was just launched...
 
     function urlHashChanged()
     {
