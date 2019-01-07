@@ -120,7 +120,15 @@ window.ListController = (function()
             modelUpdateRequired: false,
             bindOptions: ['id', 'quantityType'],
             modelOptions: [],
-            renderOptions: ['listItemId', 'quantityType']
+            renderOptions: ['checklistObject', 'quantityType']
+        },
+        SetupQuantityPopoverBindings: {
+            event: 'QuantityPopoverShown', 
+            action: 'SetupQuantityPopoverBindings',
+            modelUpdateRequired: false,
+            bindOptions: ['id', 'quantityType'],
+            modelOptions: [],
+            renderOptions: ['checklistObject', 'quantityType']
         },
         TODO: {
             event: 'QuantityHeaderPopoverShown', 
@@ -227,34 +235,34 @@ window.ListController = (function()
     //TODO Could possibly introduce a section for Controller logic to the setupBinding methods, to rid the need of having this separate method
     function setupPopoverBindings(listItem, quantityType)
     {
-        var _quantityPopoverShown = function() {
-            window.DebugController.Print("A Quantity Popover was shown.");
+        // var _quantityPopoverShown = function() {
+        //     window.DebugController.Print("A Quantity Popover was shown.");
 
-            //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-            window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
-            window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
+        //     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+        //     window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
+        //     window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
             
-            var bindParams= {};
-            bindParams.modelOptions = {listItemId:listItem.id, quantityType:quantityType};
-            bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
+        //     var bindParams= {};
+        //     bindParams.modelOptions = {listItemId:listItem.id, quantityType:quantityType};
+        //     bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
 
-            setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
-            setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
-        };
+        //     setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
+        //     setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
+        // };
         
-        var _hideQuantityPopover = function() {
-            window.DebugController.Print("A Quantity Popover will be hidden.");
+        // var _hideQuantityPopover = function() {
+        //     window.DebugController.Print("A Quantity Popover will be hidden.");
 
-            window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:quantityType} );
-            quantityPopoverActive = false;
-        };
+        //     window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:quantityType} );
+        //     quantityPopoverActive = false;
+        // };
 
         var bindParams= {};
         bindParams.bindOptions = {id:listItem.id, quantityType:quantityType};
-        bindParams.renderOptions = {listItemId:listItem.id, quantityType:quantityType};
+        bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
         setupMvcBinding(bindingReference.ShowQuantityPopover, bindParams);
-
-        window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {id:listItem.id, quantityType:quantityType});
+        setupMvcBinding(bindingReference.SetupQuantityPopoverBindings, bindParams);
+        //window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {id:listItem.id, quantityType:quantityType});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -355,9 +363,29 @@ window.ListController = (function()
 
                         inputArgument.stopPropagation();
 
-                        window.View.Render(binding.action, {listItemId:parameters.renderOptions.listItemId, quantityType:parameters.renderOptions.quantityType});   
+                        window.View.Render(binding.action, {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType});   
                         quantityPopoverActive = true;
                     }
+                }
+                else if (binding.action == 'SetupQuantityPopoverBindings')
+                {
+                    var _hideQuantityPopover = function() {
+                        window.DebugController.Print("A Quantity Popover will be hidden.");
+            
+                        window.View.Render('HideQuantityPopover', {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType} );
+                        quantityPopoverActive = false;
+                    };
+                    
+                    //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
+                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
+                    
+                    var bindParams= {};
+                    bindParams.modelOptions = {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType};
+                    bindParams.renderOptions = {checklistObject:parameters.renderOptions.checklistObject, quantityType:parameters.renderOptions.quantityType};
+
+                    setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
+                    setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
                 }
             }
         }

@@ -205,7 +205,11 @@ window.View = (function()
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
         }
-        else if (event === 'QuantityPopoverShown') 
+        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
+        {
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
+        }
+        else if (event === 'QuantityPopoverShown') //Expected parameters: id, quantityType
         {
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
@@ -248,10 +252,6 @@ window.View = (function()
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
 
             window.DebugController.Print("A onetime onclick listener was added to the checklist body");
-        }
-        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
-        {
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
         }
     }
 
