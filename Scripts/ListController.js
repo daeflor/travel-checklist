@@ -494,6 +494,9 @@ window.ListController = (function()
         {
             bindQuantityHeaderToggleEvents(key);
         }
+
+        //Load the list data from storage and pass it along to the View
+        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
     }
 
     function loadChecklistDataIntoView(loadedListData)
@@ -518,29 +521,11 @@ window.ListController = (function()
     //     //if (binding != null && bindingReference.hasOwnProperty())
     // }
 
-    // //TODO Could this be in handleUpdatesFromView?
-    // //TODO not sure I like this passive naming convention
-    // function listSelected(listId)
-    // {   
-    //     //If there is any active settings view, close it
-    //     window.View.Render('HideActiveSettingsView');
-
-    //     //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-    //         //Although, if this is the only place the Active List is hidden, then maybe it's fine
-    //         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-    //     //Display the specified List Screen (and hide the Active List Screen, if applicable)
-    //     window.View.Render('DisplayList', {listId:listId, activeListId:self.activeListId});
-
-    //     //Set the newly selected List as the Active List
-    //     self.activeListId = listId;
-    // }
-
     /** Publicly Exposed Methods **/
 
     return {
-        Init : init,
-        LoadChecklistDataIntoView : loadChecklistDataIntoView
-        //ListSelected : listSelected
+        Init : init
+        //LoadChecklistDataIntoView : loadChecklistDataIntoView
     };
 })();
 

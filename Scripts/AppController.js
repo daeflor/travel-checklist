@@ -18,8 +18,8 @@
         window.DebugController.Init();
         window.ListController.Init('travel');
 
-        //Load the list data from storage and pass it along to the View
-        window.Model.RetrieveChecklistData(window.ListController.LoadChecklistDataIntoView);
+        // //Load the list data from storage and pass it along to the View
+        // window.Model.RetrieveChecklistData(window.ListController.LoadChecklistDataIntoView);
     }
 
     //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
@@ -35,12 +35,6 @@
         //If the current screen data is valid and specifies a checklist type...
         if (currentScreenData.listType != null && currentScreenData.listId != null && currentScreenData.listType !== '')
         {
-            // //If a list ID is specified, inform the List Selection Controller that a List was selected
-            // if (currentScreenData.listId !== '')
-            // {
-            //     window.ListController.ListSelected(currentScreenData.listId);
-            // }
-            // else //Else, if no list ID is specified...
             //If a list ID is not specified, hide any active settings view, display the Home Screen, and, on mobile, clear the browser history log
             if (currentScreenData.listId == '')
             {
