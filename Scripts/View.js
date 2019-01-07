@@ -249,7 +249,7 @@ window.View = (function()
 
             window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
-        else if (event === 'QuantityToggleSelected')
+        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
         {
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
         }
@@ -436,7 +436,7 @@ window.View = (function()
 
                 elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             },
-            ShowQuantityPopover: function() 
+            ShowQuantityPopover: function() //Expected parameters: listItemId, quantityType
             {
                 //Show the popover element which matches the given ID and quantity type
                 var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
