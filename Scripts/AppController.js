@@ -35,12 +35,14 @@
         //If the current screen data is valid and specifies a checklist type...
         if (currentScreenData.listType != null && currentScreenData.listId != null && currentScreenData.listType !== '')
         {
-            //If a list ID is specified, inform the List Selection Controller that a List was selected
-            if (currentScreenData.listId !== '')
-            {
-                window.ListController.ListSelected(currentScreenData.listId);
-            }
-            else //Else, if no list ID is specified...
+            // //If a list ID is specified, inform the List Selection Controller that a List was selected
+            // if (currentScreenData.listId !== '')
+            // {
+            //     window.ListController.ListSelected(currentScreenData.listId);
+            // }
+            // else //Else, if no list ID is specified...
+            //If a list ID is not specified, hide any active settings view, display the Home Screen, and, on mobile, clear the browser history log
+            if (currentScreenData.listId == '')
             {
                 //If on Pixel 2, clear the browser history log
                 if (/Android 9; Pixel 2/i.test(navigator.userAgent))

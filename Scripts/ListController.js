@@ -106,6 +106,14 @@ window.ListController = (function()
             modelOptions: [],
             renderOptions: []
         },
+        GoToList: {
+            event: 'GoToListButtonPressed', 
+            action: 'GoToList',
+            modelUpdateRequired: false,
+            bindOptions: ['id'],
+            modelOptions: [],
+            renderOptions: ['checklistObject']
+        },
         ShowQuantityPopover: {
             event: 'QuantityToggleSelected', 
             action: 'ShowQuantityPopover',
@@ -146,6 +154,7 @@ window.ListController = (function()
 
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, or hide the Active Settings View when the animation to expand its Settings View starts
         setupMvcBinding(bindingReference.HideActiveSettingsView, _bindParams);
+        setupMvcBinding(bindingReference.GoToList, _bindParams);
         setupMvcBinding(bindingReference.UpdateName, _bindParams);
         setupMvcBinding(bindingReference.MoveUpwards, _bindParams);
         setupMvcBinding(bindingReference.MoveDownwards, _bindParams);
@@ -324,6 +333,20 @@ window.ListController = (function()
                     console.log(parameters);
                     window.View.Render(binding.action);
                 }
+                else if (binding.action === 'GoToList')
+                {
+                    //If there is any active settings view, close it
+                    window.View.Render('HideActiveSettingsView');
+
+                    //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+                        //Although, if this is the only place the Active List is hidden, then maybe it's fine
+                        //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+                    //Display the specified List Screen (and hide the Active List Screen, if applicable)
+                    window.View.Render('DisplayList', {listId:parameters.renderOptions.checklistObject.id, activeListId:self.activeListId});
+
+                    //Set the newly selected List as the Active List
+                    self.activeListId = parameters.renderOptions.checklistObject.id;
+                }
                 else if (binding.action == 'ShowQuantityPopover')
                 {
                     if (quantityPopoverActive == false)
@@ -495,29 +518,29 @@ window.ListController = (function()
     //     //if (binding != null && bindingReference.hasOwnProperty())
     // }
 
-    //TODO Could this be in handleUpdatesFromView?
-    //TODO not sure I like this passive naming convention
-    function listSelected(listId)
-    {   
-        //If there is any active settings view, close it
-        window.View.Render('HideActiveSettingsView');
+    // //TODO Could this be in handleUpdatesFromView?
+    // //TODO not sure I like this passive naming convention
+    // function listSelected(listId)
+    // {   
+    //     //If there is any active settings view, close it
+    //     window.View.Render('HideActiveSettingsView');
 
-        //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-            //Although, if this is the only place the Active List is hidden, then maybe it's fine
-            //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-        //Display the specified List Screen (and hide the Active List Screen, if applicable)
-        window.View.Render('DisplayList', {listId:listId, activeListId:self.activeListId});
+    //     //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+    //         //Although, if this is the only place the Active List is hidden, then maybe it's fine
+    //         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+    //     //Display the specified List Screen (and hide the Active List Screen, if applicable)
+    //     window.View.Render('DisplayList', {listId:listId, activeListId:self.activeListId});
 
-        //Set the newly selected List as the Active List
-        self.activeListId = listId;
-    }
+    //     //Set the newly selected List as the Active List
+    //     self.activeListId = listId;
+    // }
 
     /** Publicly Exposed Methods **/
 
     return {
         Init : init,
-        LoadChecklistDataIntoView : loadChecklistDataIntoView,
-        ListSelected : listSelected
+        LoadChecklistDataIntoView : loadChecklistDataIntoView
+        //ListSelected : listSelected
     };
 })();
 

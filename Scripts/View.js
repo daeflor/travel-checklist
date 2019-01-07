@@ -163,11 +163,11 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
-        // else if (event === 'GoToListButtonPressed') //Expected parameters: listId
-        // {
-        //     //Set the behavior for when a Go To List button is pressed
-        //     addListenerToChecklistElement({prefix:'GoToList', id:parameters.listId}, 'click', callback);
-        // }
+        else if (event === 'GoToListButtonPressed') //Expected parameters: id
+        {
+            //Set the behavior for when a Go To List button is pressed
+            addListenerToChecklistElement({prefix:'GoToList', id:parameters.id}, 'click', callback);
+        }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
