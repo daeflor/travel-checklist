@@ -218,20 +218,6 @@ window.ListController = (function()
     //TODO Could possibly introduce a section for Controller logic to the setupBinding methods, to rid the need of having this separate method
     function setupPopoverBindings(listItem, quantityType)
     {
-        // var _showQuantityPopover = function(event) {
-
-        //     console.log(arguments);
-
-        //     if (quantityPopoverActive == false)
-        //     {
-        //         window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
-        //         event.stopPropagation();
-        //         window.View.Render('ShowQuantityPopover', {listItemId:listItem.id, quantityType:quantityType});   
-        //         quantityPopoverActive = true;
-        //     }
-        // };
-
         var _quantityPopoverShown = function() {
             window.DebugController.Print("A Quantity Popover was shown.");
 
@@ -259,18 +245,19 @@ window.ListController = (function()
         bindParams.renderOptions = {listItemId:listItem.id, quantityType:quantityType};
         setupMvcBinding(bindingReference.ShowQuantityPopover, bindParams);
 
-        //window.View.Bind('QuantityToggleSelected', _showQuantityPopover, {id:listItem.id, quantityType:quantityType});
         window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {id:listItem.id, quantityType:quantityType});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
-
+    
+    //TODO having a parameter called "parameters" is confusing
+    //TODO maybe rename the method as well, possibly to createBind or something like that
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user, such as removing a List Item).
      * @param {object} [parameters] [Optional] An object containing any additional data needed to create the bind. The expected properties of this object are: bindOptions, modelOptions, renderOptions.
      */
-    function setupMvcBinding(binding, parameters) //TODO having a parameter called "parameters" is confusing
+    function setupMvcBinding(binding, parameters) 
     {
         //If a binding with the expected properties was provided, setup the binding. Otherwise throw an error message.
         if (binding != null && binding.action != null && binding.event != null)
@@ -286,25 +273,6 @@ window.ListController = (function()
 
                 //Handle the updates/input received from the View
                 handleUpdatesFromView(binding, parameters, inputArgument);
-
-                // //TODO If the below section moves out of here, then maybe this line should too. Then can instead pass the returned args and only merge them later if applicable
-                // //Merge any properties from the arguments passed from the View (from the user input) into the modelOptions object that gets passed to the Model
-                // parameters.modelOptions = MergeObjects(parameters.modelOptions, args);
-
-                // //TODO perhaps move this small section out of here. (And then should only need ONE setupBinding method)
-                //     //Also rewrite these comments
-                // //Set up the callback method to execute once the Model has been updated. 
-                // var _modelUpdated = function(args) 
-                // {    
-                //     //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
-                //     parameters.renderOptions = MergeObjects(parameters.renderOptions, args);
-                   
-                //     //Update the View, passing along the updated listItem and any optional parameters as applicable
-                //     handleUpdatesFromModel(binding.action, parameters.renderOptions);
-                // };
-
-                // //Update the Model
-                // handleUpdatesFromView(binding.action, parameters.modelOptions, _modelUpdated);
             };
 
             //Add an event listener to the specified element
@@ -315,89 +283,6 @@ window.ListController = (function()
             window.DebugController.LogError("ERROR: Invalid parameters provided when attempting to setup an MVC binding.");
         }
     }
-
-    // /**
-    //  * Create a binding between the View and Controller, so that when the app receives user input which would modify the UI of the checklist, the View renders those updates.
-    //  * @param {object} binding The binding type that has been triggered (i.e. the action that has been initiated by the user or application).
-    //  * @param {object} checklistObject The checklist object that is associated with the bind.
-    //  */
-    // function setupVcBinding(binding, checklistObject)
-    // {
-    //     //Set up the callback method to execute for when the View recieves input from the user
-    //     var _onUserInput = function() 
-    //     {
-    //         //TODO this currently does not accept args from the View
-
-    //         //If an action was provided that can be sent to the View, update the View accordingly...
-    //         if (binding.action != null) 
-    //         {
-    //             handleUpdatesFromView(binding.action);
-    //             //updateView(binding.action, checklistObject); //TODO checklistObject isn't actually being used right now
-    //         }
-    //     };
-
-    //     //Add an event listener to the specified element
-    //     window.View.Bind(binding.event, _onUserInput, {id:checklistObject.id});
-    // }
-
-    // /**
-    //  * Handle any user-initiated updates to the checklist, received from the View. These updates may be passed along to the Model or directly back to the View to be rendered.
-    //  * @param {string} action The action that has been initiated by the user or application
-    //  * @param {object} [modelOptions] [Optional] An optional object to pass containing any data needed to pass along updates to the Model
-    //  * @param {Function} [callback] [Optional] The method to call once the Model has been successfully updated
-    //  */
-    // function handleUpdatesFromView(action, modelOptions, callback) //TODO probably also need to pass renderOptions here (or just everything)
-    // {       
-    //     //TODO should these use events instead of actions?
-    //     if (action === 'HideActiveSettingsView')
-    //     {
-    //         window.View.Render(action);
-    //     }
-    //     else if (action == 'ShowQuantityPopover')
-    //     {
-    //         console.log(modelOptions);
-
-    //         //TODO would have to contain the MouseEvent in a parent object for this to work
-
-    //         if (quantityPopoverActive == false)
-    //         {
-    //             window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
-    //             //TODO doesn't seem right that this is called Model Options when it's being used for things that have nothing to do with the Model
-    //             //TODO would actually be renderOptions.. though that still doesn't make much sense
-    //             modelOptions.MouseEvent.stopPropagation();
-
-    //             window.View.Render(action, {listItemId:renderOptions.listItemId, quantityType:renderOptions.quantityType});   
-    //             quantityPopoverActive = true;
-    //         }
-    //     }
-    //     else if (action === 'AddNewListItem')
-    //     {
-    //         window.Model.ModifyList(action, self.activeListId, callback);
-    //     }
-    //     else if (action === 'AddNewList')
-    //     {
-    //         window.Model.AddNewList(callback);
-    //     }
-    //     else if (modelOptions != null)
-    //     {
-    //         if (modelOptions.listItemId != null)
-    //         {
-    //             window.Model.ModifyListItem(action, self.activeListId, modelOptions.listItemId, callback, modelOptions);
-    //         }
-    //         else if (modelOptions.listId != null)
-    //         {
-    //             window.Model.ModifyList(action, modelOptions.listId, callback, modelOptions);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         window.DebugController.LogError("ERROR: Unable to handle updates received from the View. Action: " + action + "; Model Options: " + modelOptions);
-    //     }
-    // }
-    //TODO still would prefer having a separate updateModel method. In the one above, handle cases where the Model doesn't need to be updated, and otherwise determine if it will modify a list or list item. Then call updateModel.
-    //TODO might be better if instead each case is handled individually here, like in handleUpdatesFromModel
-    //TODO This method above can handle Controller logic
 
     /**
      * Handle any input or updates to the checklist, received from the View. These updates may be passed along to the Model or directly back to the View to be rendered as needed.
@@ -413,16 +298,19 @@ window.ListController = (function()
             //If the triggered event requires the Model to be updated
             if (binding != null && binding.modelUpdateRequired == true)
             {
+
                 //Merge any properties from the arguments passed from the View (from the user input) into the modelOptions object that gets passed to the Model
                 parameters.modelOptions = MergeObjects(parameters.modelOptions, inputArgument);
     
+                //TODO This section (below) could be in updateModel, but not sure it makes much difference
+
                 //Set up the callback method to execute once the Model has been updated. 
                 var _modelUpdated = function(inputArgument) 
                 {    
                     //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
                     parameters.renderOptions = MergeObjects(parameters.renderOptions, inputArgument);
                     
-                    //Update the View, passing along the updated listItem and any optional parameters as applicable
+                    //Update the View, passing along any optional parameters as applicable
                     handleUpdatesFromModel(binding.action, parameters.renderOptions);
                 };
                 
@@ -460,15 +348,7 @@ window.ListController = (function()
      */
     function updateModel(action, callback, modelOptions)
     {
-        //TODO actually probably better to pass the full binding
-
-        //Update the Model
-        //window.Model.ModifyListItem(action, listId, listItemId, callback, options);
-
-        //TODO MAKE THIS WORK
         //window["Model"][binding.modificationType](binding.action, checklistData.listId, checklistData.listItem.id, callback, options);
-   
-        //////
 
         if (action === 'AddNewListItem')
         {
