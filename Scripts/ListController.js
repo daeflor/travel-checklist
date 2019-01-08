@@ -235,34 +235,11 @@ window.ListController = (function()
     //TODO Could possibly introduce a section for Controller logic to the setupBinding methods, to rid the need of having this separate method
     function setupPopoverBindings(listItem, quantityType)
     {
-        // var _quantityPopoverShown = function() {
-        //     window.DebugController.Print("A Quantity Popover was shown.");
-
-        //     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-        //     window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
-        //     window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
-            
-        //     var bindParams= {};
-        //     bindParams.modelOptions = {listItemId:listItem.id, quantityType:quantityType};
-        //     bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
-
-        //     setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
-        //     setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
-        // };
-        
-        // var _hideQuantityPopover = function() {
-        //     window.DebugController.Print("A Quantity Popover will be hidden.");
-
-        //     window.View.Render('HideQuantityPopover', {listItemId:listItem.id, quantityType:quantityType} );
-        //     quantityPopoverActive = false;
-        // };
-
         var bindParams= {};
         bindParams.bindOptions = {id:listItem.id, quantityType:quantityType};
         bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
         setupMvcBinding(bindingReference.ShowQuantityPopover, bindParams);
         setupMvcBinding(bindingReference.SetupQuantityPopoverBindings, bindParams);
-        //window.View.Bind('QuantityPopoverShown', _quantityPopoverShown, {id:listItem.id, quantityType:quantityType});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
