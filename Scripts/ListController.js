@@ -130,6 +130,14 @@ window.ListController = (function()
             modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
+        HideQuantityPopover: {
+            event: 'ClickDetectedOutsidePopover', 
+            action: 'HideQuantityPopover',
+            modelUpdateRequired: false,
+            bindOptions: [],
+            modelOptions: [],
+            renderOptions: ['checklistObject', 'quantityType']
+        },
         TODO: {
             event: 'QuantityHeaderPopoverShown', 
             action: '??',
@@ -345,17 +353,8 @@ window.ListController = (function()
                     }
                 }
                 else if (binding.action == 'SetupQuantityPopoverBindings')
-                {
-                    var _hideQuantityPopover = function() {
-                        window.DebugController.Print("A Quantity Popover will be hidden.");
-            
-                        window.View.Render('HideQuantityPopover', {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType} );
-                        quantityPopoverActive = false;
-                    };
-                    
+                {   
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-                    window.View.Bind('ClickDetectedOutsidePopover', _hideQuantityPopover);   
-                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
                     
                     var bindParams= {};
                     bindParams.modelOptions = {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType};
@@ -363,6 +362,20 @@ window.ListController = (function()
 
                     setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
                     setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
+                    setupMvcBinding(bindingReference.HideQuantityPopover, bindParams);
+
+                    //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
+                    var _hideQuantityPopover = function() {
+                        handleUpdatesFromView(bindingReference.HideQuantityPopover, bindParams);
+                    };
+                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); 
+                    //TODO maybe event listeners should be handled in the View as well
+                }
+                else if (binding.action == 'HideQuantityPopover')
+                {
+                    //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
+                    window.View.Render(binding.action, {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType} );
+                    quantityPopoverActive = false;
                 }
             }
         }

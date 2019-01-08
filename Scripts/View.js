@@ -442,7 +442,7 @@ window.View = (function()
                 var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
-            HideQuantityPopover: function() 
+            HideQuantityPopover: function() //Expected parameters: listItemId, quantityType
             {
                 //TODO should this be merged with the method above, into a 'Toggle' method that takes an additional param?
 
