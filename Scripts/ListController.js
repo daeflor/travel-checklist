@@ -1,9 +1,12 @@
 window.ListController = (function()
 {    
+    //TODO replace with let or const?
     var self = this, //TODO Is this really necessary?
         activeListId = "",
         checklistType = "",
         quantityPopoverActive = false;
+
+    //TODO I think using 'this' might actually be worse because it adds them to 'window'...
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -15,7 +18,7 @@ window.ListController = (function()
             //modelViewCommand = action
             //modificationType (AddList, ModifyList, and ModifyListItem being the options)
     //TODO remove the properties here that aren't being used, but document them elsewhere (e.g. in the Model's Modify methods or the View's Bind and Render methods) - i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
-    var bindingReference = {
+    const bindingReference = {
         /** MVC Bindings **/
         AddNewList: {
             event: 'NewListButtonPressed', 
@@ -163,7 +166,7 @@ window.ListController = (function()
 
         //TODO maybe standardize ID parameter names
         //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
-        var _bindParams= {};
+        const _bindParams= {};
         _bindParams.bindOptions = {id:list.id};
         _bindParams.modelOptions = {listId:list.id};
         _bindParams.renderOptions = {checklistObject:list};
@@ -192,12 +195,16 @@ window.ListController = (function()
         window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
         
         //Bind user interaction with the quantity toggles to corresponding behavior
-        for (var key in listItem.quantities)
+        for (let quantityType in listItem.quantities)
         {
-            setupPopoverBindings(listItem, key);
+            const _bindParams = {};
+            _bindParams.bindOptions = {id:listItem.id, quantityType:quantityType};
+            _bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
+            setupMvcBinding(bindingReference.ShowQuantityPopover, _bindParams);
+            setupMvcBinding(bindingReference.SetupQuantityPopoverBindings, _bindParams);
         }
 
-        var _bindParams= {};
+        const _bindParams= {};
         _bindParams.bindOptions = {id:listItem.id};
         _bindParams.modelOptions = {listItemId:listItem.id};
         _bindParams.renderOptions = {checklistObject:listItem};
@@ -231,23 +238,13 @@ window.ListController = (function()
             'QuantityHeaderPopoverShown', 
             function() {
 
-                var bindParams= {};
+                const bindParams= {};
                 bindParams.modelOptions = {listId:self.activeListId, quantityType:quantityType};
                 bindParams.renderOptions = {quantityType:quantityType};
                 setupMvcBinding(bindingReference.ClearQuantityValues, bindParams);
             },
             {quantityType:quantityType}
         );
-    }
-
-    //TODO Could possibly introduce a section for Controller logic to the setupBinding methods, to rid the need of having this separate method
-    function setupPopoverBindings(listItem, quantityType)
-    {
-        var bindParams= {};
-        bindParams.bindOptions = {id:listItem.id, quantityType:quantityType};
-        bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
-        setupMvcBinding(bindingReference.ShowQuantityPopover, bindParams);
-        setupMvcBinding(bindingReference.SetupQuantityPopoverBindings, bindParams);
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -265,10 +262,10 @@ window.ListController = (function()
         if (binding != null && binding.action != null && binding.event != null)
         {
             //If no parameters were provided, create an empty parameters object
-            var parameters = parameters || {};
+            parameters = parameters || {}; 
 
             //Set up the callback method to execute for when the View recieves input from the user
-            var _onUserInput = function(inputArgument) 
+            const _onUserInput = function(inputArgument) 
             {
                 console.log("The argument from the user input: ");
                 console.log(inputArgument);
@@ -307,7 +304,7 @@ window.ListController = (function()
                 //TODO This section (below) could be in updateModel, but not sure it makes much difference
 
                 //Set up the callback method to execute once the Model has been updated. 
-                var _modelUpdated = function(inputArgument) 
+                const _modelUpdated = function(inputArgument) 
                 {    
                     //Merge any properties from the arguments passed from the Model into the renderOptions object that gets passed to the View
                     parameters.renderOptions = MergeObjects(parameters.renderOptions, inputArgument);
@@ -321,6 +318,8 @@ window.ListController = (function()
             else //Else, if the triggered event does not require the Model to be updated
             {
                 //TODO should these use events instead of actions?
+                    //I think that would be easier to read. Would then see the triggered event, followed by the action (e.g. listed in the render call).
+
                 if (binding.action === 'HideActiveSettingsView')
                 {
                     console.log(parameters);
@@ -356,7 +355,7 @@ window.ListController = (function()
                 {   
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
                     
-                    var bindParams= {};
+                    const bindParams= {};
                     bindParams.modelOptions = {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType};
                     bindParams.renderOptions = {checklistObject:parameters.renderOptions.checklistObject, quantityType:parameters.renderOptions.quantityType};
 
@@ -365,7 +364,7 @@ window.ListController = (function()
                     setupMvcBinding(bindingReference.HideQuantityPopover, bindParams);
 
                     //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
-                    var _hideQuantityPopover = function() {
+                    const _hideQuantityPopover = function() {
                         handleUpdatesFromView(bindingReference.HideQuantityPopover, bindParams);
                     };
                     window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); 
@@ -426,7 +425,7 @@ window.ListController = (function()
     {       
         //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
         //TODO Could use a switch/case here instead
-        var actions = 
+        const actions = 
         {
             AddNewList : function()
             {
@@ -481,7 +480,7 @@ window.ListController = (function()
             ClearQuantityValues : function()
             {
                 //For each modified List Item...
-                for (var i = 0; i < renderOptions.modifiedListItems.length; i++)
+                for (let i = 0; i < renderOptions.modifiedListItems.length; i++)
                 {
                     //Update the List Item's displayed quantity value for the given type, and then update the List Item name's color
                     renderUpdatesToListItemQuantity(renderOptions.modifiedListItems[i], renderOptions.quantityType);
@@ -496,7 +495,7 @@ window.ListController = (function()
     /** Publicly Exposed Methods To Setup UI & Load List Data **/
 
     function init(checklistType)
-    {            
+    {     
         self.checklistType = checklistType;
 
         setupMvcBinding(bindingReference.AddNewList);
@@ -508,7 +507,7 @@ window.ListController = (function()
 
         //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (var key in QuantityType)
+        for (let key in QuantityType)
         {
             bindQuantityHeaderToggleEvents(key);
         }
@@ -521,11 +520,11 @@ window.ListController = (function()
     {
         window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
 
-        for (var i = 0; i < loadedListData.length; i++) 
+        for (let i = 0; i < loadedListData.length; i++) 
         {
             renderAndBindLoadedList(loadedListData[i])
             
-            for (var j = 0; j < loadedListData[i].listItems.length; j++) 
+            for (let j = 0; j < loadedListData[i].listItems.length; j++) 
             {
                 renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
             }
@@ -547,13 +546,13 @@ window.ListController = (function()
     };
 })();
 
-var ListType = {
+const ListType = {
     Travel: 0,
     Checklist: 1,
 };
 
 //TODO Consider moving this to a separate file?
-var QuantityType = {
+const QuantityType = {
     needed: {
         type: 'needed', //TODO this should be temp. Can the same be accomplished using 'key'?
         //index: 0,

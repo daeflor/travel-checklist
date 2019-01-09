@@ -13,6 +13,7 @@ TO-DOs:
     - - - Total             : 119
 
 Upcoming To-Do List:
+- Replace var with const and let
 - Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
 - BUG! : If you delete a List Item while its quantity popover is visible, you hit error.
 - BUG! : If you modify a quantity, then delete the List Item, then navigate Home, you hit an error.
