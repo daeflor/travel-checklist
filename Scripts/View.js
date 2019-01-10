@@ -249,9 +249,13 @@ window.View = (function()
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
+            //If a click is detected anywhere in the body but outside the popover, execute the callback method
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
 
-            window.DebugController.Print("A onetime onclick listener was added to the checklist body");
+            //If the hash location changes, execute the callback method
+            window.addEventListener("hashchange", callback, {once:true});
+
+            //window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
     }
 

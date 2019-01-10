@@ -12,6 +12,10 @@ window.ListController = (function()
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
         //This would probably only work if handleUpdatesFromView gets split into individual sections, which may be clearer anyway
 
+    //TODO The binding reference could have actions and reactions
+        //e.g. event -> action -> reaction (optional)
+        //In most cases, reaction might be the same as action, but in other cases it might not be (e.g. DecrementQuantityValue/IncrementQuantityValue)
+
     //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList, params=MoveUpwards)
         //Maybe rename/add as such:
             //bindingName = event
@@ -362,13 +366,6 @@ window.ListController = (function()
                     setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
                     setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
                     setupMvcBinding(bindingReference.HideQuantityPopover, bindParams);
-
-                    //If the hash location changes (e.g. the Back button is pressed), the popover should be hidden.
-                    const _hideQuantityPopover = function() {
-                        handleUpdatesFromView(bindingReference.HideQuantityPopover, bindParams);
-                    };
-                    window.addEventListener("hashchange", _hideQuantityPopover, {once:true}); 
-                    //TODO maybe event listeners should be handled in the View as well
                 }
                 else if (binding.action == 'HideQuantityPopover')
                 {
