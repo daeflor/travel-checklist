@@ -1,12 +1,8 @@
 window.ListController = (function()
 {    
-    //TODO replace with let or const?
-    var self = this, //TODO Is this really necessary?
-        activeListId = "",
-        checklistType = "",
+    let activeListId = '',
+        checklistType = '',
         quantityPopoverActive = false;
-
-    //TODO I think using 'this' might actually be worse because it adds them to 'window'...
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -182,7 +178,7 @@ window.ListController = (function()
     function renderAndBindLoadedList(list)
     {
         //Add the List elements to the DOM
-        window.View.Render('AddList', {listId:list.id, listName:list.name, listType:self.checklistType});
+        window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
 
         //TODO maybe standardize ID parameter names
         //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
@@ -318,7 +314,6 @@ window.ListController = (function()
 
                 if (binding.action === 'HideActiveSettingsView')
                 {
-                    console.log(parameters);
                     window.View.Render(binding.action);
                 }
                 else if (binding.action === 'GoToList')
@@ -330,10 +325,10 @@ window.ListController = (function()
                         //Although, if this is the only place the Active List is hidden, then maybe it's fine
                         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
                     //Display the specified List Screen (and hide the Active List Screen, if applicable)
-                    window.View.Render('DisplayList', {listId:parameters.renderOptions.checklistObject.id, activeListId:self.activeListId});
+                    window.View.Render('DisplayList', {listId:parameters.renderOptions.checklistObject.id, activeListId:activeListId});
 
                     //Set the newly selected List as the Active List
-                    self.activeListId = parameters.renderOptions.checklistObject.id;
+                    activeListId = parameters.renderOptions.checklistObject.id;
                 }
                 else if (binding.action == 'ShowQuantityPopover')
                 {
@@ -368,7 +363,7 @@ window.ListController = (function()
                 else if (binding.action == 'SetupHeaderPopoverBindings')
                 {
                     const _bindParams= {};
-                    _bindParams.modelOptions = {listId:self.activeListId, quantityType:parameters.renderOptions.quantityType};
+                    _bindParams.modelOptions = {listId:activeListId, quantityType:parameters.renderOptions.quantityType};
                     _bindParams.renderOptions = {quantityType:parameters.renderOptions.quantityType};
                     setupMvcBinding(bindingReference.ClearQuantityValues, _bindParams);
                 }
@@ -388,7 +383,7 @@ window.ListController = (function()
 
         if (action === 'AddNewListItem')
         {
-            window.Model.ModifyList(action, self.activeListId, callback);
+            window.Model.ModifyList(action, activeListId, callback);
         }
         else if (action === 'AddNewList')
         {
@@ -399,7 +394,7 @@ window.ListController = (function()
             if (modelOptions.listItemId != null)
             {
                 //TODO using modelOptions twice within the params here seems silly
-                window.Model.ModifyListItem(action, self.activeListId, modelOptions.listItemId, callback, modelOptions);
+                window.Model.ModifyListItem(action, activeListId, modelOptions.listItemId, callback, modelOptions);
             }
             else if (modelOptions.listId != null)
             {
@@ -434,7 +429,7 @@ window.ListController = (function()
             AddNewListItem : function()
             {
                 //Render the new List Item and setup its bindings
-                renderAndBindLoadedListItem(self.activeListId, renderOptions.checklistObject);
+                renderAndBindLoadedListItem(activeListId, renderOptions.checklistObject);
                 
                 //Once the new List Item has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:renderOptions.checklistObject.id});
@@ -462,9 +457,9 @@ window.ListController = (function()
             RemoveList : function()
             {
                 //If the List that was removed was the most recently Active List, set the Active List ID to null                
-                if (self.activeListId == renderOptions.checklistObject.id)
+                if (activeListId == renderOptions.checklistObject.id)
                 {
-                    self.activeListId = null;
+                    activeListId = null;
                 }
 
                 window.View.Render('RemoveList', {listId:renderOptions.checklistObject.id}); 
@@ -493,7 +488,7 @@ window.ListController = (function()
     function init(checklistType)
     {     
         //Set the checklist type
-        self.checklistType = checklistType;
+        checklistType = checklistType;
 
         //Setup the binds for interactions with the quantity header row
         renderAndBindQuantityHeader();

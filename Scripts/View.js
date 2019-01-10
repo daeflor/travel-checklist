@@ -307,7 +307,7 @@ window.View = (function()
                 findChecklistElement(parameters.listId, elementFoundCallback, 'NameButton');
 
                 //If a valid Active List ID was provided...
-                if (parameters.activeListId != null)
+                if (parameters.activeListId != null && parameters.activeListId != '')
                 {
                     //Hide the wrapper element for the Active List
                     updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.activeListId});
