@@ -102,7 +102,7 @@ window.ListController = (function()
             modelUpdateRequired: true,
             bindOptions: [],
             modelOptions: ['listId', 'quantityType'],
-            renderOptions: ['checklistObject', 'quantityType']
+            renderOptions: ['quantityType']
         },
         /** VC Bindings **/
         HideActiveSettingsView: {
@@ -145,19 +145,35 @@ window.ListController = (function()
             modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
-        TODO: {
+        SetupHeaderPopoverBindings: {
             event: 'QuantityHeaderPopoverShown', 
-            action: '??',
+            action: 'SetupHeaderPopoverBindings',
+            modelUpdateRequired: false,
             bindOptions: ['quantityType'],
             modelOptions: [],
-            renderOptions: []
+            renderOptions: ['listId', 'quantityType']
         }
 
         //TODO could have error checking on startup to ensure that these bidndings are all set correctly here (e.g. that an event and action is provided)
-        
     };
 
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
+
+    function renderAndBindQuantityHeader()
+    {
+        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
+        //TODO right now this assumes the header to display is the Travel type
+        window.View.Render('GenerateQuantityHeader'); 
+        
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
+        for (var key in QuantityType)
+        {
+            const _bindParams= {};
+            _bindParams.bindOptions = {quantityType:key};
+            _bindParams.renderOptions = {quantityType:key};    
+            setupMvcBinding(bindingReference.SetupHeaderPopoverBindings, _bindParams);
+        }
+    }
 
     /**
      * Sends to the View any data needed to render the specified List, and then sets up all applicable bindings
@@ -225,30 +241,6 @@ window.ListController = (function()
     {
         window.View.Render('UpdateListItemQuantityText', {listItemId:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
         window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
-    }
-
-    //TODO this is hard to read
-    function bindQuantityHeaderToggleEvents(quantityType)
-    {
-        //TODO continue to clean this up
-        // //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        // for (var key in QuantityType)
-        // {
-        //     bindQuantityHeaderToggleEvents(key);
-        // }
-
-        //TODO This is probably a case of setupVcBinding (if that still ends up being a separate function)
-        window.View.Bind(
-            'QuantityHeaderPopoverShown', 
-            function() {
-
-                const bindParams= {};
-                bindParams.modelOptions = {listId:self.activeListId, quantityType:quantityType};
-                bindParams.renderOptions = {quantityType:quantityType};
-                setupMvcBinding(bindingReference.ClearQuantityValues, bindParams);
-            },
-            {quantityType:quantityType}
-        );
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -359,19 +351,26 @@ window.ListController = (function()
                 {   
                     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
                     
-                    const bindParams= {};
-                    bindParams.modelOptions = {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType};
-                    bindParams.renderOptions = {checklistObject:parameters.renderOptions.checklistObject, quantityType:parameters.renderOptions.quantityType};
+                    const _bindParams= {};
+                    _bindParams.modelOptions = {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType};
+                    _bindParams.renderOptions = {checklistObject:parameters.renderOptions.checklistObject, quantityType:parameters.renderOptions.quantityType};
 
-                    setupMvcBinding(bindingReference.DecrementQuantityValue, bindParams);
-                    setupMvcBinding(bindingReference.IncrementQuantityValue, bindParams);
-                    setupMvcBinding(bindingReference.HideQuantityPopover, bindParams);
+                    setupMvcBinding(bindingReference.DecrementQuantityValue, _bindParams);
+                    setupMvcBinding(bindingReference.IncrementQuantityValue, _bindParams);
+                    setupMvcBinding(bindingReference.HideQuantityPopover, _bindParams);
                 }
                 else if (binding.action == 'HideQuantityPopover')
                 {
                     //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
                     window.View.Render(binding.action, {listItemId:parameters.renderOptions.checklistObject.id, quantityType:parameters.renderOptions.quantityType} );
                     quantityPopoverActive = false;
+                }
+                else if (binding.action == 'SetupHeaderPopoverBindings')
+                {
+                    const _bindParams= {};
+                    _bindParams.modelOptions = {listId:self.activeListId, quantityType:parameters.renderOptions.quantityType};
+                    _bindParams.renderOptions = {quantityType:parameters.renderOptions.quantityType};
+                    setupMvcBinding(bindingReference.ClearQuantityValues, _bindParams);
                 }
             }
         }
@@ -493,22 +492,16 @@ window.ListController = (function()
 
     function init(checklistType)
     {     
+        //Set the checklist type
         self.checklistType = checklistType;
 
+        //Setup the binds for interactions with the quantity header row
+        renderAndBindQuantityHeader();
+
+        //Set up the binds for the buttons to add a new List or List Item
         setupMvcBinding(bindingReference.AddNewList);
         setupMvcBinding(bindingReference.AddNewListItem);
-        
-        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-        //TODO right now this assumes the header to display is the Travel type
-        window.View.Render('GenerateQuantityHeader'); 
-
-        //TODO would like all binds to be one-liners. (For-loops can be done in the methods instead of here). 
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (let key in QuantityType)
-        {
-            bindQuantityHeaderToggleEvents(key);
-        }
-
+    
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
     }
@@ -517,23 +510,22 @@ window.ListController = (function()
     {
         window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
 
+        //For each List loaded from Storage...
         for (let i = 0; i < loadedListData.length; i++) 
         {
+            //Add the List elements to the DOM and set up the binds for interactions with them
             renderAndBindLoadedList(loadedListData[i])
             
+            //For each List Item in the List...
             for (let j = 0; j < loadedListData[i].listItems.length; j++) 
             {
+                //Add the List Item's elements to the DOM and set up the binds for interactions with them
                 renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
             }
         }
     }
 
     /** Experimental & In Progress **/
-
-    // function isValidBinding(binding)
-    // {
-    //     //if (binding != null && bindingReference.hasOwnProperty())
-    // }
 
     /** Publicly Exposed Methods **/
 
