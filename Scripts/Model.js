@@ -111,14 +111,14 @@ window.Model = (function()
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
         //Maybe keep ModifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
         //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
-    function modifyList(command, listId, callback, parameters)
+    function modifyList(command, listId, callback, options)
     {       
         var commands = 
         {
             UpdateName : function(listIndex, commandSucceededCallback)
             {
                 //Update the name of the List and then execute the provided callback method
-                editName(getLists()[listIndex], parameters.updatedValue, commandSucceededCallback);
+                editName(getLists()[listIndex], options.updatedValue, commandSucceededCallback);
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
@@ -157,10 +157,10 @@ window.Model = (function()
                 var clearQuantityValue = function(listItem)
                 {
                     //If the quantity value for the given quantity type is not already set to zero...
-                    if (listItem.quantities[parameters.quantityType] != 0)
+                    if (listItem.quantities[options.quantityType] != 0)
                     {
                         //Set the quantity value to zero
-                        listItem.quantities[parameters.quantityType] = 0;
+                        listItem.quantities[options.quantityType] = 0;
 
                         //Add the List Item to the array of modified List Items
                         modifiedListItems.push(listItem);
@@ -237,7 +237,8 @@ window.Model = (function()
                     getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]--;
 
                     //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                    commandSucceededCallback({quantityType:options.quantityType});
+                    //commandSucceededCallback({quantityType:options.quantityType});
+                    commandSucceededCallback();
                 }
             },
             IncrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
@@ -246,7 +247,8 @@ window.Model = (function()
                 getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]++;
                 
                 //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                commandSucceededCallback({quantityType:options.quantityType});
+                //commandSucceededCallback({quantityType:options.quantityType});
+                commandSucceededCallback();
             },
             RemoveListItem : function(listIndex, listItemIndex, commandSucceededCallback)
             {
