@@ -11,6 +11,7 @@ window.ListController = (function()
     //TODO The binding reference could have actions and reactions
         //e.g. event -> action -> reaction (optional)
         //In most cases, reaction might be the same as action, but in other cases it might not be (e.g. DecrementQuantityValue/IncrementQuantityValue)
+        //HandleEvent(), HandleAction(), HandleReaction()?
 
     //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList, params=MoveUpwards)
         //Maybe rename/add as such:
@@ -141,9 +142,9 @@ window.ListController = (function()
             modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
-        SetupHeaderPopoverBindings: {
+        SetupHeaderPopoverBinds: {
             event: 'QuantityHeaderPopoverShown', 
-            action: 'SetupHeaderPopoverBindings',
+            action: 'SetupHeaderPopoverBinds',
             modelUpdateRequired: false,
             bindOptions: ['quantityType'],
             modelOptions: [],
@@ -167,10 +168,10 @@ window.ListController = (function()
             // const _bindParams= {};
             // _bindParams.bindOptions = {quantityType:key};
             // _bindParams.renderOptions = {quantityType:key};    
-            // setupMvcBinding(bindingReference.SetupHeaderPopoverBindings, _bindParams);
+            // setupMvcBinding(bindingReference.SetupHeaderPopoverBinds, _bindParams);
 
             const _options = {quantityType:key};
-            createBind(bindReference.SetupHeaderPopoverBindings, _options);
+            createBind(bindReference.SetupHeaderPopoverBinds, _options);
         }
     }
 
@@ -182,7 +183,7 @@ window.ListController = (function()
     {
         //Add the List elements to the DOM
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
-        window.View.Render('AddList', {checklistObject:list});
+        window.View.Render('AddList', {list:list});
 
         //TODO maybe standardize ID parameter names
 
@@ -201,7 +202,7 @@ window.ListController = (function()
         // setupMvcBinding(bindReference.RemoveList, _bindParams); 
 
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
-        const _options = {checklistObject:list};
+        const _options = {id:list.id, name:list.name};
         createBind(bindReference.HideActiveSettingsView, _options);
         createBind(bindReference.GoToList, _options);
         createBind(bindReference.UpdateName, _options);
@@ -220,12 +221,11 @@ window.ListController = (function()
      */
     function renderAndBindLoadedListItem(listId, listItem)
     {
-        // //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... Unsure...
-         window.View.Render('AddListItem', {listItemId:listItem.id, listItemName:listItem.name, quantityValues:listItem.quantities, listId:listId});                    
-         window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
-        //TODO Could replace the two above with the two below, but not yet.
-        //window.View.Render('AddListItem', {listId:listId, checklistObject:listItem});                    
-        //window.View.Render('UpdateListItemNameColor', {checklistObject:listItem});
+        //TODO would it be better to just pass a ListItem object and let the View parse it, rather than splitting up the params here?... Unsure...
+            //I think it depends on the case. As it is currently may be fine
+        //window.View.Render('AddListItem', {id:listItem.id, name:listItem.name, quantities:listItem.quantities, listId:listId});                    
+        window.View.Render('AddListItem', {listId:listId, listItem:listItem});                    
+        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
 
 
         //Bind user interaction with the quantity toggles to corresponding behavior
@@ -261,7 +261,7 @@ window.ListController = (function()
             //const _options = {checklistObject:listItem, id:checklistObject.id};
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
-        const _options = {checklistObject:listItem};
+        const _options = {id:listItem.id, name:listItem.name};
         createBind(bindReference.HideActiveSettingsView, _options);
         createBind(bindReference.UpdateName, _options);
         createBind(bindReference.MoveUpwards, _options);
@@ -271,11 +271,8 @@ window.ListController = (function()
 
     function renderUpdatesToListItemQuantity(listItem, quantityType)
     {
-        window.View.Render('UpdateListItemQuantityText', {listItemId:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
-        window.View.Render('UpdateListItemNameColor', {listItemId:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
-        //TODO Could replace the two above with the two below, but not yet.
-        //window.View.Render('UpdateListItemQuantityText', {checklistObject:listItem, quantityType:quantityType});
-        //window.View.Render('UpdateListItemNameColor', {checklistObject:listItem});
+        window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
+        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -366,10 +363,10 @@ window.ListController = (function()
                     //Although, if this is the only place the Active List is hidden, then maybe it's fine
                     //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
                 //Display the specified List Screen (and hide the Active List Screen, if applicable)
-                window.View.Render('DisplayList', {listId:options.checklistObject.id, activeListId:activeListId});
+                window.View.Render('DisplayList', {id:options.id, activeListId:activeListId});
 
                 //Set the newly selected List as the Active List
-                activeListId = options.checklistObject.id;
+                activeListId = options.id;
             }
             else if (bind.action == 'ShowQuantityPopover')
             {
@@ -379,7 +376,7 @@ window.ListController = (function()
 
                     inputArgument.stopPropagation();
 
-                    window.View.Render(bind.action, {listItemId:options.checklistObject.id, quantityType:options.quantityType});   
+                    window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
                     quantityPopoverActive = true;
                 }
             }
@@ -404,10 +401,10 @@ window.ListController = (function()
             else if (bind.action == 'HideQuantityPopover')
             {
                 //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
-                window.View.Render(bind.action, {listItemId:options.checklistObject.id, quantityType:options.quantityType} );
+                window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType} );
                 quantityPopoverActive = false;
             }
-            else if (bind.action == 'SetupHeaderPopoverBindings')
+            else if (bind.action == 'SetupHeaderPopoverBinds')
             {
                 // const _bindParams= {};
                 // _bindParams.modelOptions = {listId:activeListId, quantityType:options.renderOptions.quantityType};
@@ -415,7 +412,7 @@ window.ListController = (function()
                 // setupMvcBinding(bindingReference.ClearQuantityValues, _bindParams);
 
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-                options = MergeObjects(options, {listId:activeListId}); //TODO this won't work
+                options = MergeObjects(options, {id:activeListId}); //TODO this won't work
                 createBind(bindReference.ClearQuantityValues, options);
             }
         }
@@ -441,6 +438,7 @@ window.ListController = (function()
         }
         else if (options != null && options.checklistObject != null)
         {
+            //If the ... TODO (might have to go back to passing listId and listItemId :( )
             if (options.checklistObject.hasOwnProperty('quantities') == true)
             {
                 //TODO using options twice within the params here seems silly
@@ -452,6 +450,14 @@ window.ListController = (function()
             {
                 window.Model.ModifyList(action, options.checklistObject.id, callback, options);
             }
+
+
+            //TODO 5 bad ideas to make this work
+                // 1) Change it back to how it was, using listId and listItemId
+                // 2) Pass activeListId in the options in such a way that it references its most up to date value
+                // 3) Pass listId in the options for any List Item modifications - (Likely best short term solution)
+                // 4) Add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item - (This would likely run into the same problem)
+                // 5) Change List Item IDs to be prefixed by the listId, and then do #4 above. - (More of a long term solution)
         }
         else
         {
@@ -489,15 +495,15 @@ window.ListController = (function()
             },
             UpdateName : function()
             {
-                window.View.Render('UpdateName', {id:options.checklistObject.id, updatedValue:options.checklistObject.name});
+                window.View.Render('UpdateName', {id:options.id, updatedValue:options.name});
             },
             MoveUpwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:options.checklistObject.id, moveDownwardsId:options.swappedChecklistObjectId});
+                window.View.Render('SwapListObjects', {moveUpwardsId:options.id, moveDownwardsId:options.swappedChecklistObjectId});
             },
             MoveDownwards : function()
             {
-                window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedChecklistObjectId, moveDownwardsId:options.checklistObject.id});
+                window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedChecklistObjectId, moveDownwardsId:options.id});
             },
             DecrementQuantityValue : function()
             {
@@ -509,17 +515,19 @@ window.ListController = (function()
             },
             RemoveList : function()
             {
+                //TODO Instead, activeListId should be nullified when returning to the Home Screen
+
                 //If the List that was removed was the most recently Active List, set the Active List ID to null                
-                if (activeListId == options.checklistObject.id)
+                if (activeListId == options.id)
                 {
                     activeListId = null;
                 }
 
-                window.View.Render('RemoveList', {listId:options.checklistObject.id}); 
+                window.View.Render('RemoveList', {id:options.id}); 
             },
             RemoveListItem : function()
             {
-                window.View.Render('RemoveListItem', {listItemId:options.checklistObject.id}); 
+                window.View.Render('RemoveListItem', {id:options.id}); 
             },
             ClearQuantityValues : function()
             {

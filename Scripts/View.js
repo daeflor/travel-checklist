@@ -149,7 +149,7 @@ window.View = (function()
     /**
      * @param {string} event The name used to identify the event being bound
      * @param {*} callback The function to call when the corresponding event has been triggered 
-     * @param {object} [parameters] An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id, listItemId, quantityType.
+     * @param {object} [parameters] An optional object to pass containing any additional data needed to perform the bind. Possible parameters: id, quantityType.
      */
     function bind(event, callback, parameters)
     {
@@ -182,12 +182,12 @@ window.View = (function()
             
             addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
         }
-        else if (event === 'MoveUpwardsButtonPressed') 
+        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
         }
-        else if (event === 'MoveDownwardsButtonPressed') 
+        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
@@ -200,7 +200,7 @@ window.View = (function()
         {
             addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
         }
-        else if (event === 'DeleteButtonPressed') 
+        else if (event === 'DeleteButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
             addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
@@ -214,7 +214,7 @@ window.View = (function()
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
 
-            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and listItemId: " + parameters.id);
+            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and list Item Id: " + parameters.id);
         }
         else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
         {
@@ -286,7 +286,7 @@ window.View = (function()
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
             },
-            DisplayList: function() //Expected parameters: listId, activeListId
+            DisplayList: function() //Expected parameters: id, activeListId
             {
                 //Hide the Home Header when an individual List is displayed
                 elements.homeHeader.hidden = true;
@@ -304,7 +304,7 @@ window.View = (function()
                 };
 
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
-                findChecklistElement(parameters.listId, elementFoundCallback, 'NameButton');
+                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
 
                 //If a valid Active List ID was provided...
                 if (parameters.activeListId != null && parameters.activeListId != '')
@@ -314,7 +314,7 @@ window.View = (function()
                 }
 
                 //Show the wrapper element for the List matching the given ID
-                updateChecklistElement('Show', {type:'ListWrapper', id:parameters.listId});
+                updateChecklistElement('Show', {type:'ListWrapper', id:parameters.id});
                 
                 //Show the List Header when an individual List is displayed
                 elements.listHeader.hidden = false;
@@ -322,24 +322,24 @@ window.View = (function()
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
             },
-            AddList: function() //Expected parameters: listId, listName, listType
+            AddList: function() //Expected parameters: list
             {
                 //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
                 
                 //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters));
+                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.list));
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
-                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
+                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.list.id));
 
                 //Update the reorder buttons for all the List toggles in the Home Screen
                 updateReorderButtons(elements.homeScreenListElements);
             },
-            RemoveList: function() //Expected parameters: listId
+            RemoveList: function() //Expected parameters: id
             {
                 //Remove the List wrapper element which matches the given ID
-                updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.listId});
+                updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.id});
 
                 //Set up the callback method to execute when the List toggle element is found which matches the given ID
                 var elementFoundCallback = function(element)
@@ -352,15 +352,15 @@ window.View = (function()
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
-                findChecklistElement(parameters.listId, elementFoundCallback)
+                findChecklistElement(parameters.id, elementFoundCallback)
             },
-            AddListItem: function() //Expected parameters: listId
+            AddListItem: function() //Expected parameters: listId, listItem
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 var elementFoundCallback = function(element)
                 {          
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItem));
 
                     //Update the reorder buttons for all the List Items in the added element's parent List
                     updateReorderButtons(element);
@@ -369,7 +369,7 @@ window.View = (function()
                 //Find the List wrapper element which matches the given ID, and then add a new List Item to it
                 findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
             },
-            RemoveListItem: function() //Expected parameters: listItemId
+            RemoveListItem: function() //Expected parameters: id
             {
                 //Set up the callback method to execute when the List Item element is found which matches the given ID
                 var elementFoundCallback = function(element)
@@ -385,24 +385,24 @@ window.View = (function()
                 };
 
                 //Find the List Item element which matches the given ID, and then remove it
-                findChecklistElement(parameters.listItemId, elementFoundCallback);
+                findChecklistElement(parameters.id, elementFoundCallback);
             },
-            UpdateListItemQuantityText: function() //Expected parameters: listItemId, quantityType, updatedValue
+            UpdateListItemQuantityText: function() //Expected parameters: id, quantityType, updatedValue
             {
-                window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.listItemId + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
+                window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.id + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                 
                 //TODO could we not just update everything related to a list item in one go? Or does that not make this any easier?
 
-                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, {updatedValue:parameters.updatedValue});
             },
-            UpdateListItemNameColor: function() //Expected parameters: listItemId, quantityBalance, quantityNeeded
+            UpdateListItemNameColor: function() //Expected parameters: id, quantityBalance, quantityNeeded
             {
-                //window.DebugController.Print("Request to update color of list item with id: " + parameters.listItemId);
+                //window.DebugController.Print("Request to update color of list item with id: " + parameters.id);
 
                 var elementFoundCallback = function(element)
                 {                    
@@ -411,7 +411,7 @@ window.View = (function()
                                               :                                     'rgb(77, 77, 77)'; //"darkgrey";
                 };
 
-                findChecklistElement(parameters.listItemId, elementFoundCallback, 'NameButton');
+                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
             },
             ExpandSettingsView: function() 
             {
@@ -440,20 +440,20 @@ window.View = (function()
 
                 elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             },
-            ShowQuantityPopover: function() //Expected parameters: listItemId, quantityType
+            ShowQuantityPopover: function() //Expected parameters: id, quantityType
             {
                 //Show the popover element which matches the given ID and quantity type
-                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
-            HideQuantityPopover: function() //Expected parameters: listItemId, quantityType
+            HideQuantityPopover: function() //Expected parameters: id, quantityType
             {
                 //TODO should this be merged with the method above, into a 'Toggle' method that takes an additional param?
 
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                
                 //Hide the popover element which matches the given ID and quantity type
-                var elementData = {type:'QuantityToggle', id:parameters.listItemId, quantityType:parameters.quantityType};
+                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('HidePopover', elementData);
             },
             SwapListObjects: function()

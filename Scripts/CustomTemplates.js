@@ -2,13 +2,13 @@ window.CustomTemplates = (function ()
 {   
     //TODO re-order these methods for better readability
 
-    function createListItemFromTemplate(data)
+    function createListItemFromTemplate(listItem)
     {
         //Create the div wrapper for the entire List Item
-        var wrapper = CreateNewElement('div', [ ['id',data.listItemId], ['class','row divItemRow'] ]);
+        var wrapper = CreateNewElement('div', [ ['id',listItem.id], ['class','row divItemRow'] ]);
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(data.listItemId), 'buttonListItem buttonListItemName', data.listItemName, 'NameButton-'.concat(data.listItemId));
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listItem.id), 'buttonListItem buttonListItemName', listItem.name, 'NameButton-'.concat(listItem.id));
         
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
@@ -17,15 +17,15 @@ window.CustomTemplates = (function ()
         wrapper.appendChild(nameWrapper);
 
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
-        for (var key in data.quantityValues)
+        for (var key in listItem.quantities)
         {
-            wrapper.appendChild(createListItemModifierFromTemplate(data.listItemId, key, data.quantityValues[key])); 
+            wrapper.appendChild(createListItemModifierFromTemplate(listItem.id, key, listItem.quantities[key])); 
         }
 
         //Create the Settings View for the List Item
         var settingsWrapper = createSettingsViewFromTemplate(
-            data.listItemId, 
-            data.listItemName, 
+            listItem.id, 
+            listItem.name, 
             'row', 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );
@@ -41,16 +41,16 @@ window.CustomTemplates = (function ()
         return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
     }
 
-    function createListToggleFromTemplate(data)
+    function createListToggleFromTemplate(list)
     {
-        window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + data.listId);
+        window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
 
-        var wrapper = CreateNewElement('div', [ ['id',data.listId], ['class','row divItemRow divListToggleWrapper'] ]);
+        var wrapper = CreateNewElement('div', [ ['id',list.id], ['class','row divItemRow divListToggleWrapper'] ]);
 
         /* Name Toggle/Button */
 
         //Create the name button/toggle that can be selected to open or close the settings view for the List
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(data.listId), 'buttonListItem buttonListToggle', data.listName, 'NameButton-'.concat(data.listId));
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonListItem buttonListToggle', list.name, 'NameButton-'.concat(list.id));
         
         //Create the div wrapper for the List Name button/toggle
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
@@ -64,7 +64,7 @@ window.CustomTemplates = (function ()
         //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
         
         //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
-        var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(data.listType).concat('/').concat(data.listId)}); 
+        var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(list.type).concat('/').concat(list.id)}); 
         
         //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
 
@@ -75,8 +75,8 @@ window.CustomTemplates = (function ()
 
         //Create the Settings View for the List
         var settingsWrapper = createSettingsViewFromTemplate(
-            data.listId, 
-            data.listName, 
+            list.id, 
+            list.name, 
             'list', 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );

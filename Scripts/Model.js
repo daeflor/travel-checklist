@@ -237,7 +237,6 @@ window.Model = (function()
                     getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]--;
 
                     //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                    //commandSucceededCallback({quantityType:options.quantityType});
                     commandSucceededCallback();
                 }
             },
@@ -247,7 +246,6 @@ window.Model = (function()
                 getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]++;
                 
                 //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                //commandSucceededCallback({quantityType:options.quantityType});
                 commandSucceededCallback();
             },
             RemoveListItem : function(listIndex, listItemIndex, commandSucceededCallback)

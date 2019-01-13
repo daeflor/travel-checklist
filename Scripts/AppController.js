@@ -47,6 +47,8 @@
                 //Hide any active settings view and display the Home Screen
                 window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
                 window.View.Render('showHomeScreen'); 
+                //TODO should this be done in controller?
+                //TODO should this also hide and nullify the activeListId?
             }
         }
     }
