@@ -105,7 +105,7 @@ window.Model = (function()
 
         storeChecklistData();
 
-        callback({checklistObject:newList});
+        callback({list:newList});
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
@@ -147,7 +147,7 @@ window.Model = (function()
                 getLists()[listIndex].listItems.push(newListItem);
 
                 //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
-                commandSucceededCallback({checklistObject:newListItem});
+                commandSucceededCallback({listItem:newListItem});
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {

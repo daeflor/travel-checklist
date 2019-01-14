@@ -163,34 +163,34 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
-        else if (event === 'GoToListButtonPressed') //Expected parameters: id
+        else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when a Go To List button is pressed
-            addListenerToChecklistElement({prefix:'GoToList', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'GoToList', id:parameters.checklistObject.id}, 'click', callback);
         }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);      
         }
-        else if (event === 'NameEdited') //Expected parameters: id
+        else if (event === 'NameEdited') //Expected parameters: checklistObject
         {
             var eventTriggeredCallback = function(event)
             {
                 callback({updatedValue:event.target.value});
             }
             
-            addListenerToChecklistElement({prefix:'EditName', id:parameters.id}, 'change', eventTriggeredCallback);            
+            addListenerToChecklistElement({prefix:'EditName', id:parameters.checklistObject.id}, 'change', eventTriggeredCallback);            
         }
-        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: id
+        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.checklistObject.id}, 'click', callback);
         }
-        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: id
+        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.checklistObject.id}, 'click', callback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -200,19 +200,19 @@ window.View = (function()
         {
             addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
         }
-        else if (event === 'DeleteButtonPressed') //Expected parameters: id
+        else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'Delete', id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:'Delete', id:parameters.checklistObject.id}, 'click', callback);
         }
-        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
+        else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
         {
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'click', callback);
         }
-        else if (event === 'QuantityPopoverShown') //Expected parameters: id, quantityType
+        else if (event === 'QuantityPopoverShown') //Expected parameters: checklistObject, quantityType
         {
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'shown.bs.popover', callback);
 
             //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and list Item Id: " + parameters.id);
         }
@@ -226,7 +226,7 @@ window.View = (function()
             //Set the behavior for when a Clear button in the Header is pressed
             addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
         }
-        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
+        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: checklistObject
         {
             var eventTriggeredCallback = function(event)
             {
@@ -245,12 +245,16 @@ window.View = (function()
                 //elements.activeSettingsView = event.target;
             }
             
-            addListenerToChecklistElement({prefix:'SettingsView', id:parameters.id}, 'show.bs.collapse', eventTriggeredCallback); 
+            addListenerToChecklistElement({prefix:'SettingsView', id:parameters.checklistObject.id}, 'show.bs.collapse', eventTriggeredCallback); 
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
             //If a click is detected anywhere in the body but outside the popover, execute the callback method
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
+
+
+            //TODO this event listener should be removed when the popover is hidden
+                //Currently, when pressing the home button a hash change event will fire once for each popover that had been opened. 
 
             //If the hash location changes, execute the callback method
             window.addEventListener("hashchange", callback, {once:true});
