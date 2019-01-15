@@ -1,7 +1,6 @@
 window.ListController = (function()
 {    
     let activeListId = '',
-        checklistType = '',
         quantityPopoverActive = false;
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
@@ -165,11 +164,6 @@ window.ListController = (function()
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
         for (var key in QuantityType)
         {
-            // const _bindParams= {};
-            // _bindParams.bindOptions = {quantityType:key};
-            // _bindParams.renderOptions = {quantityType:key};    
-            // setupMvcBinding(bindingReference.SetupHeaderPopoverBinds, _bindParams);
-
             const _options = {quantityType:key};
             createBind(bindReference.SetupHeaderPopoverBinds, _options);
         }
@@ -185,21 +179,28 @@ window.ListController = (function()
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
         window.View.Render('AddList', {list:list});
 
-        //TODO maybe standardize ID parameter names
+            // var myObj = {myKey:"myVar", fruit:'banana'};
+            // for (let key in myObj)
+            // {
+            //     if (myObj[key] == "myVar")
+            //     { 
+            //         console.log(key.toString());
+            //     }
+            //     else
+            //     {
+            //         console.log("Nope");
+            //         console.log(myObj[key]);
+            //     }
+            // }
 
-        // //TODO wouldn't it be simpler to just always pass the full object (list or list item) and then from that you can get the most up to date name, ID, etc.
-        // const _bindParams= {};
-        // _bindParams.bindOptions = {id:list.id};
-        // _bindParams.modelOptions = {listId:list.id};
-        // _bindParams.renderOptions = {checklistObject:list};
+            //TODO I can't remember why I wanted property names, but it seems possible to get after all...
+                //Oh one reason was because the bindReference has a lot of duplication between the reference name and the action
+    
+                //Would it help at all to send a string (e.g. 'HideSettingsView') as a param instead of the bindReference property object (e.g. bindReference.HideSettingsView)?
+                    //Rename to bindActions, and each property has a sub property called event? And then that's all it has?
+                    //bind.event would become bindActions[action].event
 
-        // //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, or hide the Active Settings View when the animation to expand its Settings View starts
-        // setupMvcBinding(bindReference.HideActiveSettingsView, _bindParams);
-        // setupMvcBinding(bindReference.GoToList, _bindParams);
-        // setupMvcBinding(bindReference.UpdateName, _bindParams);
-        // setupMvcBinding(bindReference.MoveUpwards, _bindParams);
-        // setupMvcBinding(bindReference.MoveDownwards, _bindParams);
-        // setupMvcBinding(bindReference.RemoveList, _bindParams); 
+        //TODO continue to standardize ID parameter names as applicable
 
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:list};
@@ -224,38 +225,14 @@ window.ListController = (function()
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});                    
         window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
 
-
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (let quantityType in listItem.quantities)
         {
-            // const _bindParams = {};
-            // _bindParams.bindOptions = {id:listItem.id, quantityType:quantityType};
-            // _bindParams.renderOptions = {checklistObject:listItem, quantityType:quantityType};
-            // setupMvcBinding(bindingReference.ShowQuantityPopover, _bindParams);
-            // setupMvcBinding(bindingReference.SetupQuantityPopoverBinds, _bindParams);
-
             //Setup the binds to display the quantity popover, and create its own elements' binds once it has been added to the DOM
             const _options = {checklistObject:listItem, quantityType:quantityType};
             createBind(bindReference.ShowQuantityPopover, _options);
             createBind(bindReference.SetupQuantityPopoverBinds, _options);
         }
-
-        // const _bindParams= {};
-        // _bindParams.bindOptions = {id:listItem.id};
-        // _bindParams.modelOptions = {listItemId:listItem.id};
-        // _bindParams.renderOptions = {checklistObject:listItem};
-
-        // //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
-        // setupMvcBinding(bindingReference.HideActiveSettingsView, _bindParams);
-        // setupMvcBinding(bindingReference.UpdateName, _bindParams);
-        // setupMvcBinding(bindingReference.MoveUpwards, _bindParams);
-        // setupMvcBinding(bindingReference.MoveDownwards, _bindParams);
-        // setupMvcBinding(bindingReference.RemoveListItem, _bindParams);
-
-        //TODO Finish this and all others! The bind (in this case) expects an id. The Model (in this case) expects a listItemId. Neither of them will find what they're looking for.
-
-            //TODO Instead, could do this, but it's a bit unnecessary
-            //const _options = {checklistObject:listItem, id:checklistObject.id};
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:listItem}; //TODO if this is the only param needed, could _options = listItem? Not unless for List it also only needs the List object...
@@ -279,11 +256,12 @@ window.ListController = (function()
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
      * @param {object} bind The bind object associated with the type of application interaction has been triggered (i.e. the action that has been initiated by the user or app, such as removing a List Item).
-     * @param {object} [options] [Optional] An object containing any additional data needed to create the bind. The expected properties of this object are: 
-     * bindOptions, modelOptions, renderOptions. //TODO!
+     * @param {object} [options] [Optional] An object containing any additional data needed to create the bind. The expected properties of this object are: TODO
      */
     function createBind(bind, options) 
     {
+        console.log(bind.toString());
+
         //If a bind with the expected properties was provided, setup the bind. Otherwise throw an error message.
         if (bind != null && bind.action != null && bind.event != null)
         {
@@ -325,7 +303,7 @@ window.ListController = (function()
         if (bind.modelUpdateRequired == true)
         {
             //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-            options = MergeObjects(options, inputArgument); //TODO is it necessary to assign options here, or is it fine to simply call MergeObjects?
+            MergeObjects(options, inputArgument); 
 
             //TODO This section (below) could be in updateModel, but not sure it makes much difference
 
@@ -334,7 +312,7 @@ window.ListController = (function()
             const _modelUpdated = function(argument) 
             {    
                 //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
-                options = MergeObjects(options, argument);
+                MergeObjects(options, argument);
                 
                 //Update the View, passing along any options  as applicable
                 handleUpdatesFromModel(bind.action, options);
@@ -550,10 +528,10 @@ window.ListController = (function()
 
     /** Publicly Exposed Methods To Setup UI & Load List Data **/
 
-    function init(checklistType)
+    function init()
     {     
         //Set the checklist type
-        checklistType = checklistType;
+        //checklistType = checklistType;
 
         //Setup the binds for interactions with the quantity header row
         renderAndBindQuantityHeader();
@@ -599,8 +577,8 @@ window.ListController = (function()
 })();
 
 const ListType = {
-    Travel: 0,
-    Checklist: 1,
+    Travel: 'travel',
+    Checklist: 'shopping'
 };
 
 //TODO Consider moving this to a separate file?

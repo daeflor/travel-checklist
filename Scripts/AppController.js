@@ -16,7 +16,7 @@
         //Initialize the View and the other Controllers
         window.View.Init();
         window.DebugController.Init();
-        window.ListController.Init('travel');
+        window.ListController.Init();
 
         // //Load the list data from storage and pass it along to the View
         // window.Model.RetrieveChecklistData(window.ListController.LoadChecklistDataIntoView);

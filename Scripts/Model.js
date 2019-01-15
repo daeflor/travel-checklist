@@ -97,7 +97,7 @@ window.Model = (function()
         var newList = {
 			id : new Date().getTime(), 
             name : '',
-            type: ListType.Travel,
+            type: ListType.Travel, //TODO this is currently hard-coded
             listItems : []
         };
         
