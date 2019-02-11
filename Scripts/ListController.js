@@ -362,17 +362,8 @@ window.ListController = (function()
             else if (bind.action == 'SetupQuantityPopoverBinds')
             {   
                 //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-                
-                // const _bindParams= {};
-                // _bindParams.modelOptions = {listItemId:options.renderOptions.checklistObject.id, quantityType:options.renderOptions.quantityType};
-                // _bindParams.renderOptions = {checklistObject:options.renderOptions.checklistObject, quantityType:options.renderOptions.quantityType};
-
-                // setupMvcBinding(bindingReference.DecrementQuantityValue, _bindParams);
-                // setupMvcBinding(bindingReference.IncrementQuantityValue, _bindParams);
-                // setupMvcBinding(bindingReference.HideQuantityPopover, _bindParams);
 
                 //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-                //const _options = {checklistObject:options.checklistObject, quantityType:options.quantityType};
                 createBind(bindReference.DecrementQuantityValue, options);
                 createBind(bindReference.IncrementQuantityValue, options);
                 createBind(bindReference.HideQuantityPopover, options);
@@ -385,13 +376,7 @@ window.ListController = (function()
             }
             else if (bind.action == 'SetupHeaderPopoverBinds')
             {
-                // const _bindParams= {};
-                // _bindParams.modelOptions = {listId:activeListId, quantityType:options.renderOptions.quantityType};
-                // _bindParams.renderOptions = {quantityType:options.renderOptions.quantityType};
-                // setupMvcBinding(bindingReference.ClearQuantityValues, _bindParams);
-
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-                //options = MergeObjects(options, {listId:activeListId}); //TODO this won't work, needs to be id
                 createBind(bindReference.ClearQuantityValues, options);
             }
         }
@@ -537,9 +522,6 @@ window.ListController = (function()
         renderAndBindQuantityHeader();
 
         //Set up the binds for the buttons to add a new List or List Item
-        // setupMvcBinding(bindingReference.AddNewList);
-        // setupMvcBinding(bindingReference.AddNewListItem);
-
         createBind(bindReference.AddNewList);
         createBind(bindReference.AddNewListItem);
         
