@@ -12,7 +12,8 @@ window.ListController = (function()
         //In most cases, reaction might be the same as action, but in other cases it might not be (e.g. DecrementQuantityValue/IncrementQuantityValue)
         //HandleEvent(), HandleAction(), HandleReaction()?
 
-    //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList, params=MoveUpwards)
+    //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList/ModifyListItem/None, params=MoveUpwards)
+        //Then the modelUpdateRequired field wouldn't be needed
         //Maybe rename/add as such:
             //bindingName = event
             //modelViewCommand = action
@@ -25,7 +26,7 @@ window.ListController = (function()
             action: 'AddNewList',
             modelUpdateRequired: true,
             bindOptions: [],
-            modelOptions: [],
+            //modelOptions: [],
             renderOptions: ['listId', 'listName', 'listType'] //or just checklistObject instead?
         },
         AddNewListItem: {
@@ -33,7 +34,7 @@ window.ListController = (function()
             action: 'AddNewListItem',
             modelUpdateRequired: true,
             bindOptions: [],
-            modelOptions: ['listId'],
+            //modelOptions: ['listId'],
             renderOptions: ['listId', 'checklistObject']
         },
         UpdateName: {
@@ -41,7 +42,7 @@ window.ListController = (function()
             action: 'UpdateName',
             modelUpdateRequired: true,
             bindOptions: ['id'], //TODO would it be better to have a more generic optionsRequired array, and then check against all of those when setting up the binding?
-            modelOptions: ['listId', 'listItemId', 'updatedValue'],
+            //modelOptions: ['listId', 'listItemId', 'updatedValue'],
             renderOptions: ['checklistObject']
         },
         MoveUpwards: {
@@ -49,7 +50,7 @@ window.ListController = (function()
             action: 'MoveUpwards',
             modelUpdateRequired: true,
             bindOptions: ['id'],
-            modelOptions: ['listId', 'listItemId'],
+            //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
         MoveDownwards: {
@@ -57,7 +58,7 @@ window.ListController = (function()
             action: 'MoveDownwards',
             modelUpdateRequired: true,
             bindOptions: ['id'],
-            modelOptions: ['listId', 'listItemId'],
+            //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
         DecrementQuantityValue: {
@@ -65,7 +66,7 @@ window.ListController = (function()
             action: 'DecrementQuantityValue',
             modelUpdateRequired: true,
             bindOptions: [],
-            modelOptions: ['listId', 'listItemId', 'quantityType'],
+            //modelOptions: ['listId', 'listItemId', 'quantityType'],
             renderOptions: ['checklistObject', 'quantityType']
         },
         IncrementQuantityValue: {
@@ -73,7 +74,7 @@ window.ListController = (function()
             action: 'IncrementQuantityValue',
             modelUpdateRequired: true,
             bindOptions: [],
-            modelOptions: ['listId', 'listItemId', 'quantityType'],
+            //modelOptions: ['listId', 'listItemId', 'quantityType'],
             renderOptions: ['checklistObject', 'quantityType']
         },
         RemoveList: {
@@ -81,7 +82,7 @@ window.ListController = (function()
             action: 'RemoveList',
             modelUpdateRequired: true,
             bindOptions: ['id'],
-            modelOptions: ['listId'],
+            //modelOptions: ['listId'],
             renderOptions: ['checklistObject']
         },
         RemoveListItem: {
@@ -89,7 +90,7 @@ window.ListController = (function()
             action: 'RemoveListItem',
             modelUpdateRequired: true,
             bindOptions: ['id'],
-            modelOptions: ['listId', 'listItemId'],
+            //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject']
         },
         ClearQuantityValues: {
@@ -97,7 +98,7 @@ window.ListController = (function()
             action: 'ClearQuantityValues',
             modelUpdateRequired: true,
             bindOptions: [],
-            modelOptions: ['listId', 'quantityType'],
+            //modelOptions: ['listId', 'quantityType'],
             renderOptions: ['quantityType']
         },
         /** VC Bindings **/
@@ -162,7 +163,7 @@ window.ListController = (function()
         window.View.Render('GenerateQuantityHeader'); 
         
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (var key in QuantityType)
+        for (let key in QuantityType)
         {
             const _options = {quantityType:key};
             createBind(bindReference.SetupHeaderPopoverBinds, _options);
@@ -260,7 +261,7 @@ window.ListController = (function()
      */
     function createBind(bind, options) 
     {
-        console.log(bind.toString());
+        //console.log(bind.toString());
 
         //If a bind with the expected properties was provided, setup the bind. Otherwise throw an error message.
         if (bind != null && bind.action != null && bind.event != null)

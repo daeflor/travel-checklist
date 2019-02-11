@@ -26,6 +26,7 @@ Upcoming To-Do List:
 - Clean up and document Model
 - Every time an unreported error is hit, add error handling for it
 - Revamp CreateNewElement
+- Disallow refresh gesture in List view
 
 Features:
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')

@@ -117,8 +117,17 @@ window.Model = (function()
         {
             UpdateName : function(listIndex, commandSucceededCallback)
             {
-                //Update the name of the List and then execute the provided callback method
-                editName(getLists()[listIndex], options.updatedValue, commandSucceededCallback);
+                let updatedValue = options.updatedValue;
+
+                if (updatedValue != null)
+                {
+                    //Update the name of the List and then execute the provided callback method
+                    editName(getLists()[listIndex], updatedValue, commandSucceededCallback);
+                }
+                else
+                {
+                    DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+                }
             },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
@@ -151,31 +160,40 @@ window.Model = (function()
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
-                //Initialize an array to keep track of any List Items that will have a quantity value be modified
-                var modifiedListItems = [];
+                let quantityType = options.quantityType;
 
-                var clearQuantityValue = function(listItem)
+                if (quantityType != null)
                 {
-                    //If the quantity value for the given quantity type is not already set to zero...
-                    if (listItem.quantities[options.quantityType] != 0)
+                    //Initialize an array to keep track of any List Items that will have a quantity value be modified
+                    var modifiedListItems = [];
+
+                    var clearQuantityValue = function(listItem)
                     {
-                        //Set the quantity value to zero
-                        listItem.quantities[options.quantityType] = 0;
+                        //If the quantity value for the given quantity type is not already set to zero...
+                        if (listItem.quantities[quantityType] != 0)
+                        {
+                            //Set the quantity value to zero
+                            listItem.quantities[quantityType] = 0;
 
-                        //Add the List Item to the array of modified List Items
-                        modifiedListItems.push(listItem);
+                            //Add the List Item to the array of modified List Items
+                            modifiedListItems.push(listItem);
+                        }
+                    };
+
+                    //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
+                    getLists()[listIndex].listItems.forEach(clearQuantityValue);
+            
+                    //If the quantity value of any List Item was actually changed...
+                    if (modifiedListItems.length > 0)
+                    {
+                        //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
+                        commandSucceededCallback({modifiedListItems:modifiedListItems});
                     }
-                };
-
-                //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
-                getLists()[listIndex].listItems.forEach(clearQuantityValue);
-           
-                //If the quantity value of any List Item was actually changed...
-                if (modifiedListItems.length > 0)
-                {
-                    //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
-                    commandSucceededCallback({modifiedListItems:modifiedListItems});
                 }
+                else
+                {
+                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+                }     
             },
             RemoveList : function(listIndex, commandSucceededCallback)
             {
@@ -214,8 +232,17 @@ window.Model = (function()
         {
             UpdateName : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Update the name of the List Item and then execute the provided callback method
-                editName(getLists()[listIndex].listItems[listItemIndex], options.updatedValue, commandSucceededCallback);
+                let updatedValue = options.updatedValue;
+
+                if (updatedValue != null)
+                {
+                    //Update the name of the List Item and then execute the provided callback method
+                    editName(getLists()[listIndex].listItems[listItemIndex], updatedValue, commandSucceededCallback);
+                }
+                else
+                {
+                    DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+                }                
             },
             MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -230,23 +257,41 @@ window.Model = (function()
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
             DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //If the quantity value for the given quantity type is greater than zero...
-                if (getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType] > 0)
-                {
-                    //Decrement the quantity value by one
-                    getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]--;
+                let quantityType = options.quantityType;
 
-                    //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                    commandSucceededCallback();
+                if (quantityType != null)
+                {
+                    //If the quantity value for the given quantity type is greater than zero...
+                    if (getLists()[listIndex].listItems[listItemIndex].quantities[quantityType] > 0)
+                    {
+                        //Decrement the quantity value by one
+                        getLists()[listIndex].listItems[listItemIndex].quantities[quantityType]--;
+
+                        //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
+                        commandSucceededCallback();
+                    }
+                }
+                else
+                {
+                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
                 }
             },
             IncrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
             {
-                //Increment the quantity value for the given quantity type by one
-                getLists()[listIndex].listItems[listItemIndex].quantities[options.quantityType]++;
-                
-                //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                commandSucceededCallback();
+                let quantityType = options.quantityType;
+
+                if (quantityType != null)
+                {
+                    //Increment the quantity value for the given quantity type by one
+                    getLists()[listIndex].listItems[listItemIndex].quantities[quantityType]++;
+                    
+                    //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
+                    commandSucceededCallback();
+                }
+                else
+                {
+                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+                }
             },
             RemoveListItem : function(listIndex, listItemIndex, commandSucceededCallback)
             {
