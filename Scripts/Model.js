@@ -52,10 +52,10 @@ window.Model = (function()
         findList(listId, listFoundCallback);
     }
 
-    function editName(dataObject, updatedName, callback)
+    function editName(checklistObject, updatedName, callback)
     {
         //Update the name of the List or List Item data object
-        dataObject.name = updatedName;
+        checklistObject.name = updatedName;
 
         //Execute the provided callback method once the name has been updated
         callback();
@@ -79,6 +79,55 @@ window.Model = (function()
         }
     }
 
+    function clearQuantityValues(listObject, quantityType, callback)
+    {
+        //Initialize an array to keep track of any List Items that will have a quantity value be modified
+        var modifiedListItems = [];
+
+        var clearQuantityValue = function(listItem)
+        {
+            //If the quantity value for the given quantity type is not already set to zero...
+            if (listItem.quantities[quantityType] != 0)
+            {
+                //Set the quantity value to zero
+                listItem.quantities[quantityType] = 0;
+
+                //Add the List Item to the array of modified List Items
+                modifiedListItems.push(listItem);
+            }
+        };
+
+        //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
+        listObject.listItems.forEach(clearQuantityValue);
+
+        //If the quantity value of any List Item was actually changed...
+        if (modifiedListItems.length > 0)
+        {
+            //Execute the provided callback method once the quantity values have been cleared, passing the array of modified List Items as an argument
+            callback({modifiedListItems:modifiedListItems});
+        }
+    }
+
+    function addNewListItem(listObject, callback)
+    {
+        let newListItem = {
+            id : new Date().getTime(), 
+            name : '',
+            quantities : {
+                needed: 0,
+                luggage: 0,
+                wearing: 0,
+                backpack: 0
+            }
+        };
+        
+        //Add the new List Item to the given List object
+        listObject.listItems.push(newListItem);
+
+        //Execute the provided callback method once the new List Item has been added to the List, passing the List Item object as an argument
+        callback({listItem:newListItem});
+    }
+
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
@@ -94,7 +143,7 @@ window.Model = (function()
 
     function addNewList(callback)
     {
-        var newList = {
+        let newList = {
 			id : new Date().getTime(), 
             name : '',
             type: ListType.Travel, //TODO this is currently hard-coded
@@ -141,22 +190,8 @@ window.Model = (function()
             },
             AddNewListItem : function(listIndex, commandSucceededCallback)
             {
-                var newListItem = {
-                    id : new Date().getTime(), 
-                    name : '',
-                    quantities : {
-                        needed: 0,
-                        luggage: 0,
-                        wearing: 0,
-                        backpack: 0
-                    }
-                };
-                
-                //Add the new List Item to the returned List object
-                getLists()[listIndex].listItems.push(newListItem);
-
-                //Execute the provided callback method once the command has been successfully executed, passing the new List Item object as an argument
-                commandSucceededCallback({listItem:newListItem});
+                //Add a new List Item to the given List and then execute the provided callback method
+                addNewListItem(getLists()[listIndex], commandSucceededCallback); 
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
@@ -164,31 +199,8 @@ window.Model = (function()
 
                 if (quantityType != null)
                 {
-                    //Initialize an array to keep track of any List Items that will have a quantity value be modified
-                    var modifiedListItems = [];
-
-                    var clearQuantityValue = function(listItem)
-                    {
-                        //If the quantity value for the given quantity type is not already set to zero...
-                        if (listItem.quantities[quantityType] != 0)
-                        {
-                            //Set the quantity value to zero
-                            listItem.quantities[quantityType] = 0;
-
-                            //Add the List Item to the array of modified List Items
-                            modifiedListItems.push(listItem);
-                        }
-                    };
-
-                    //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
-                    getLists()[listIndex].listItems.forEach(clearQuantityValue);
-            
-                    //If the quantity value of any List Item was actually changed...
-                    if (modifiedListItems.length > 0)
-                    {
-                        //Execute the provided callback method once the command has been successfully executed, passing the array of modified List Items as an argument
-                        commandSucceededCallback({modifiedListItems:modifiedListItems});
-                    }
+                    //Clear the List's quantity values for the given quantity type, and then execute the provided callback method
+                    clearQuantityValues(getLists()[listIndex], quantityType, commandSucceededCallback)
                 }
                 else
                 {
