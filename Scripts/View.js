@@ -141,6 +141,18 @@ window.View = (function()
         findChecklistElement(elementData.id, elementFoundCallback, elementData.type, elementData.quantityType);
     }
 
+    function createBindWithChecklistObjectParameter(prefix, eventType, callback, parameters)
+    {
+        let listObject = parameters.checklistObject;
+
+        if (listObject != null && listObject.id != null)
+        {
+            //Set the behavior for when a Go To List button is pressed
+            addListenerToChecklistElement({prefix:prefix, id:listObject.id}, eventType, callback);
+        }
+        else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }
+    }
+
     //TODO Bind and Render events should probably have distinct names. 
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
@@ -166,7 +178,16 @@ window.View = (function()
         else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when a Go To List button is pressed
-            addListenerToChecklistElement({prefix:'GoToList', id:parameters.checklistObject.id}, 'click', callback);
+            createBindWithChecklistObjectParameter('GoToList', 'click', callback, parameters);
+
+            // let listObject = parameters.checklistObject;
+
+            // if (listObject != null && listObject.id != null)
+            // {
+            //     //Set the behavior for when a Go To List button is pressed
+            //     addListenerToChecklistElement({prefix:'GoToList', id:listObject.id}, 'click', callback);
+            // }
+            // else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }
         }
         else if (event === 'NewListItemButtonPressed') 
         {
@@ -175,22 +196,48 @@ window.View = (function()
         }
         else if (event === 'NameEdited') //Expected parameters: checklistObject
         {
-            var eventTriggeredCallback = function(event)
+            let eventTriggeredCallback = function(event)
             {
                 callback({updatedValue:event.target.value});
             }
             
-            addListenerToChecklistElement({prefix:'EditName', id:parameters.checklistObject.id}, 'change', eventTriggeredCallback);            
+            createBindWithChecklistObjectParameter('EditName', 'change', eventTriggeredCallback, parameters);
+            
+            // let listObject = parameters.checklistObject;
+
+            // if (listObject != null && listObject.id != null)
+            // {
+            //     let eventTriggeredCallback = function(event)
+            //     {
+            //         callback({updatedValue:event.target.value});
+            //     }
+                
+            //     addListenerToChecklistElement({prefix:'EditName', id:listObject.id}, 'change', eventTriggeredCallback); 
+            // }
+            // else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }  
         }
         else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'MoveUpwards', id:parameters.checklistObject.id}, 'click', callback);
+            createBindWithChecklistObjectParameter('MoveUpwards', 'click', callback, parameters);
+            //TODO these binds with error checking follow the same pattern, so this logic could be abstracted
+
+            // let listObject = parameters.checklistObject;
+
+            // if (listObject != null && listObject.id != null)
+            // {
+            //     //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
+            //     addListenerToChecklistElement({prefix:'MoveUpwards', id:listObject.id}, 'click', callback);
+            // }
+            // else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }
         }
         else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.checklistObject.id}, 'click', callback);
+            createBindWithChecklistObjectParameter('MoveDownwards', 'click', callback, parameters);
+
+            // //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
+            // addListenerToChecklistElement({prefix:'MoveDownwards', id:parameters.checklistObject.id}, 'click', callback);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -203,10 +250,15 @@ window.View = (function()
         else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            addListenerToChecklistElement({prefix:'Delete', id:parameters.checklistObject.id}, 'click', callback);
+            createBindWithChecklistObjectParameter('Delete', 'click', callback, parameters);
+            
+            // //Set the behavior for when the Delete button is pressed in a List Item's Settings View
+            // addListenerToChecklistElement({prefix:'Delete', id:parameters.checklistObject.id}, 'click', callback);
         }
         else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
         {
+            //TODO modify createBindWithChecklistObjectParameter so that it can support multiple parameters, incl. quantityType
+
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'click', callback);
         }
         else if (event === 'QuantityPopoverShown') //Expected parameters: checklistObject, quantityType
@@ -228,7 +280,7 @@ window.View = (function()
         }
         else if (event === 'SettingsViewExpansionStarted') //Expected parameters: checklistObject
         {
-            var eventTriggeredCallback = function(event)
+            let eventTriggeredCallback = function(event)
             {
                 //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
                     //then maybe this doesn't make sense for a BIND...?
@@ -244,8 +296,10 @@ window.View = (function()
                 //HideActiveSettingsView();
                 //elements.activeSettingsView = event.target;
             }
+
+            createBindWithChecklistObjectParameter('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters);
             
-            addListenerToChecklistElement({prefix:'SettingsView', id:parameters.checklistObject.id}, 'show.bs.collapse', eventTriggeredCallback); 
+            //addListenerToChecklistElement({prefix:'SettingsView', id:parameters.checklistObject.id}, 'show.bs.collapse', eventTriggeredCallback); 
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {

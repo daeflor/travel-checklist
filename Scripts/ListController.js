@@ -25,7 +25,7 @@ window.ListController = (function()
             event: 'NewListButtonPressed', 
             action: 'AddNewList',
             modelUpdateRequired: true,
-            bindOptions: [],
+            //bindOptions: [],
             //modelOptions: [],
             renderOptions: ['listId', 'listName', 'listType'] //or just checklistObject instead?
         },
@@ -33,15 +33,16 @@ window.ListController = (function()
             event: 'NewListItemButtonPressed', 
             action: 'AddNewListItem',
             modelUpdateRequired: true,
-            bindOptions: [],
+            //bindOptions: [],
             //modelOptions: ['listId'],
             renderOptions: ['listId', 'checklistObject']
         },
         UpdateName: {
+            //TODO would it be better to have a more generic optionsRequired array, and then check against all of those when setting up the binding?
             event: 'NameEdited', 
             action: 'UpdateName',
             modelUpdateRequired: true,
-            bindOptions: ['id'], //TODO would it be better to have a more generic optionsRequired array, and then check against all of those when setting up the binding?
+            //bindOptions: ['id'], 
             //modelOptions: ['listId', 'listItemId', 'updatedValue'],
             renderOptions: ['checklistObject']
         },
@@ -49,7 +50,7 @@ window.ListController = (function()
             event: 'MoveUpwardsButtonPressed', 
             action: 'MoveUpwards',
             modelUpdateRequired: true,
-            bindOptions: ['id'],
+            //bindOptions: ['id'],
             //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
@@ -57,7 +58,7 @@ window.ListController = (function()
             event: 'MoveDownwardsButtonPressed', 
             action: 'MoveDownwards',
             modelUpdateRequired: true,
-            bindOptions: ['id'],
+            //bindOptions: ['id'],
             //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject', 'swappedChecklistObjectId']
         },
@@ -65,7 +66,7 @@ window.ListController = (function()
             event: 'DecrementQuantityButtonPressed', 
             action: 'DecrementQuantityValue',
             modelUpdateRequired: true,
-            bindOptions: [],
+            //bindOptions: [],
             //modelOptions: ['listId', 'listItemId', 'quantityType'],
             renderOptions: ['checklistObject', 'quantityType']
         },
@@ -73,7 +74,7 @@ window.ListController = (function()
             event: 'IncrementQuantityButtonPressed', 
             action: 'IncrementQuantityValue',
             modelUpdateRequired: true,
-            bindOptions: [],
+            //bindOptions: [],
             //modelOptions: ['listId', 'listItemId', 'quantityType'],
             renderOptions: ['checklistObject', 'quantityType']
         },
@@ -81,7 +82,7 @@ window.ListController = (function()
             event: 'DeleteButtonPressed', 
             action: 'RemoveList',
             modelUpdateRequired: true,
-            bindOptions: ['id'],
+            //bindOptions: ['id'],
             //modelOptions: ['listId'],
             renderOptions: ['checklistObject']
         },
@@ -89,7 +90,7 @@ window.ListController = (function()
             event: 'DeleteButtonPressed', 
             action: 'RemoveListItem',
             modelUpdateRequired: true,
-            bindOptions: ['id'],
+            //bindOptions: ['id'],
             //modelOptions: ['listId', 'listItemId'],
             renderOptions: ['checklistObject']
         },
@@ -97,7 +98,7 @@ window.ListController = (function()
             event: 'ClearButtonPressed', 
             action: 'ClearQuantityValues',
             modelUpdateRequired: true,
-            bindOptions: [],
+            //bindOptions: [],
             //modelOptions: ['listId', 'quantityType'],
             renderOptions: ['quantityType']
         },
@@ -106,16 +107,16 @@ window.ListController = (function()
             event: 'SettingsViewExpansionStarted', 
             action: 'HideActiveSettingsView',
             modelUpdateRequired: false,
-            bindOptions: ['id'],
-            modelOptions: [],
+            //bindOptions: ['id'],
+            //modelOptions: [],
             renderOptions: []
         },
         GoToList: {
             event: 'GoToListButtonPressed', 
             action: 'GoToList',
             modelUpdateRequired: false,
-            bindOptions: ['id'],
-            modelOptions: [],
+            //bindOptions: ['id'],
+            //modelOptions: [],
             renderOptions: ['checklistObject']
         },
         ShowQuantityPopover: {
@@ -123,7 +124,7 @@ window.ListController = (function()
             action: 'ShowQuantityPopover',
             modelUpdateRequired: false,
             bindOptions: ['id', 'quantityType'],
-            modelOptions: [],
+            //modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
         SetupQuantityPopoverBinds: {
@@ -131,15 +132,15 @@ window.ListController = (function()
             action: 'SetupQuantityPopoverBinds',
             modelUpdateRequired: false,
             bindOptions: ['id', 'quantityType'],
-            modelOptions: [],
+            //modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
         HideQuantityPopover: {
             event: 'ClickDetectedOutsidePopover', 
             action: 'HideQuantityPopover',
             modelUpdateRequired: false,
-            bindOptions: [],
-            modelOptions: [],
+            //bindOptions: [],
+            //modelOptions: [],
             renderOptions: ['checklistObject', 'quantityType']
         },
         SetupHeaderPopoverBinds: {
@@ -147,7 +148,7 @@ window.ListController = (function()
             action: 'SetupHeaderPopoverBinds',
             modelUpdateRequired: false,
             bindOptions: ['quantityType'],
-            modelOptions: [],
+            //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
         }
 
