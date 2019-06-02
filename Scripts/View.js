@@ -50,10 +50,11 @@ window.View = (function()
 
     //TODO There could even be an optional options param that takes a quantity type
     /**
+     * Finds an element in the DOM based on its ID and, optionally, some other parameters, and then executes the specified callback method
      * @param {string} id - The identifier of the element to search for
      * @param {function} callback - The method to call if and when the element is found
-     * @param {string} [elementType] - The type of checklist element to search for
-     * @param {string} [quantityType] - The quantity type of the checklist element to search for
+     * @param {string} [elementType] - [Optional] The type of checklist element to search for
+     * @param {string} [quantityType] - [Optional] The quantity type of the checklist element to search for
      */
     function findChecklistElement(id, callback, elementType, quantityType)
     {
@@ -87,6 +88,10 @@ window.View = (function()
         findChecklistElement(elementOptions.id, elementFoundCallback, elementOptions.prefix);
     }
 
+    /**
+     * Updates the 'Reorder' buttons for all the checklist objects (List Toggles or List Items) to match their current location in their parent list 
+     * @param {element} wrapper - The parent DOM element of the checklist objects which need to be updated
+     */
     function updateReorderButtons(wrapper)
     {
         //Traverse the array of List toggle or List Item elements
