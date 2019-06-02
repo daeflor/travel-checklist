@@ -144,8 +144,14 @@ window.View = (function()
         findChecklistElement(elementData.id, elementFoundCallback, elementData.type, elementData.quantityType);
     }
 
-    //TODO This function name could be clearer
-    function createBindWithChecklistObjectParameter(prefix, eventType, callback, parameters)
+    /**
+     * Creates a bind for an element belonging to a Checklist Object (List Toggle or List Item)
+     * @param {string} prefix - The prefix denoting the type of checklist element being bound
+     * @param {string} eventType - The type of event listener to add to the element
+     * @param {function} callback - The callback to execute when the event listener is triggered
+     * @param {object} parameters - An object containing additional parameters necessary to identify and locate the element being bound
+     */
+    function bindChecklistObjectElement(prefix, eventType, callback, parameters)
     {
         let listObject = parameters.checklistObject;
 
@@ -182,7 +188,7 @@ window.View = (function()
         else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when a Go To List button is pressed
-            createBindWithChecklistObjectParameter('GoToList', 'click', callback, parameters);
+            bindChecklistObjectElement('GoToList', 'click', callback, parameters);
         }
         else if (event === 'NewListItemButtonPressed') 
         {
@@ -196,17 +202,17 @@ window.View = (function()
                 callback({updatedValue:event.target.value});
             }
             
-            createBindWithChecklistObjectParameter('EditName', 'change', eventTriggeredCallback, parameters);
+            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters);
         }
         else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            createBindWithChecklistObjectParameter('MoveUpwards', 'click', callback, parameters);
+            bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters);
         }
         else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            createBindWithChecklistObjectParameter('MoveDownwards', 'click', callback, parameters);
+            bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -219,11 +225,11 @@ window.View = (function()
         else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            createBindWithChecklistObjectParameter('Delete', 'click', callback, parameters);
+            bindChecklistObjectElement('Delete', 'click', callback, parameters);
         }
         else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
         {
-            //TODO modify createBindWithChecklistObjectParameter so that it can support multiple parameters, incl. quantityType
+            //TODO modify bindChecklistObjectElement so that it can support multiple parameters, incl. quantityType
 
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'click', callback);
         }
@@ -263,7 +269,7 @@ window.View = (function()
                 //elements.activeSettingsView = event.target;
             }
 
-            createBindWithChecklistObjectParameter('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters);            
+            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters);            
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
