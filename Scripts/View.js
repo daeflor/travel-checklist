@@ -102,11 +102,11 @@ window.View = (function()
             
             //If the element is first one in the array, set the Move Upwards button to be gray, otherwise set it to be black
             color = (i == 0) ? '#606060' : 'black';
-            updateChecklistElement('SetIconColor', {type:'MoveUpwards', id:id}, {updatedValue:color}); 
+            updateChecklistElement('SetIconColor', {type:'MoveUpwards', id:id}, color); 
 
             //If the element is last one in the array, set the Move Downwards button to be gray, otherwise set it to be black
             color = (i == wrapper.children.length-1) ? '#606060' : 'black';
-            updateChecklistElement('SetIconColor', {type:'MoveDownwards', id:id}, {updatedValue:color});
+            updateChecklistElement('SetIconColor', {type:'MoveDownwards', id:id}, color);
         }
     }
 
@@ -122,6 +122,12 @@ window.View = (function()
     //TODO Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
     
     //TODO make other methods above match the format used here
+    /**
+     * Updates a given checklist element as specified
+     * @param {string} action - The type of action to perform on the checklist element
+     * @param {object} elementData An object containing parameters necessary to identify and locate the element being updated
+     * @param {string} [updatedValue] - [Optional] The updated value of the checklist element, if applicable
+     */
     function updateChecklistElement(action, elementData, updatedValue)
     {
         //Set up the callback method to execute when the element matching the given ID is found
@@ -426,7 +432,7 @@ window.View = (function()
                 var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
-                updateChecklistElement('SetText', elementData, {updatedValue:parameters.updatedValue});
+                updateChecklistElement('SetText', elementData, parameters.updatedValue);
             },
             UpdateListItemNameColor: function() //Expected parameters: id, quantityBalance, quantityNeeded
             {
@@ -460,7 +466,7 @@ window.View = (function()
             UpdateName: function() //Expected parameters: id, updatedValue
             {
                 //Update the text value of the name toggle/button element which matches the given ID
-                updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, {updatedValue:parameters.updatedValue});
+                updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, parameters.updatedValue);
             },
             GenerateQuantityHeader: function() //TODO not a consistent naming convention for creating/adding elements to the DOM
             {
