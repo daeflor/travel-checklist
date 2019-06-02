@@ -122,19 +122,17 @@ window.View = (function()
     //TODO Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
     
     //TODO make other methods above match the format used here
-    //TODO if the only optional param is 'updatedValue', then it could be its own param instead of within a data object
-    function updateChecklistElement(action, elementData, options)
+    function updateChecklistElement(action, elementData, updatedValue)
     {
         //Set up the callback method to execute when the element matching the given ID is found
         var elementFoundCallback = function(element)
         {          
-            //TODO could use error handling wherever 'options' is referenced, to ensure it's not null
             //Update the element based on the action and options provided       
             action == 'Hide'          ? element.hidden = true : 
             action == 'Show'          ? element.hidden = false :
-            action == 'SetText'       ? element.textContent = options.updatedValue : 
+            action == 'SetText'       ? element.textContent = updatedValue : 
             action == 'Remove'        ? element.remove() :
-            action == 'SetIconColor'  ? element.firstChild.style.color = options.updatedValue :
+            action == 'SetIconColor'  ? element.firstChild.style.color = updatedValue :
             action == 'Focus'         ? element.focus() :
             action == 'Expand'        ? $(element).collapse('show') :
             action == 'ShowPopover'   ? $(element).popover('show') :
