@@ -58,7 +58,7 @@ window.View = (function()
      */
     function findChecklistElement(id, callback, elementType, quantityType)
     {
-        var elementId = (elementType == null)  ? id
+        let elementId = (elementType == null)  ? id
                       : (quantityType == null) ? elementType.concat('-').concat(id)
                                                : quantityType.concat(elementType).concat('-').concat(id);
         
@@ -69,7 +69,7 @@ window.View = (function()
         //Or is that too much overhead?
     function addListenerToChecklistElement(elementOptions, eventType, listener, options)
     {        
-        var elementFoundCallback = function(element)
+        let elementFoundCallback = function(element)
         {
             //If the event type is one of the used Bootstrap events...
             if (eventType.includes('collapse') || eventType.includes('popover'))
@@ -95,10 +95,10 @@ window.View = (function()
     function updateReorderButtons(wrapper)
     {
         //Traverse the array of List toggle or List Item elements
-        for (var i = 0; i < wrapper.children.length; i++) 
+        for (let i = 0; i < wrapper.children.length; i++) 
         {
-            var id = wrapper.children[i].id;
-            var color;
+            let id = wrapper.children[i].id;
+            let color;
             
             //If the element is first one in the array, set the Move Upwards button to be gray, otherwise set it to be black
             color = (i == 0) ? '#606060' : 'black';
@@ -131,7 +131,7 @@ window.View = (function()
     function updateChecklistElement(action, elementData, updatedValue)
     {
         //Set up the callback method to execute when the element matching the given ID is found
-        var elementFoundCallback = function(element)
+        let elementFoundCallback = function(element)
         {          
             //Update the element based on the action and options provided       
             action == 'Hide'          ? element.hidden = true : 
@@ -301,7 +301,7 @@ window.View = (function()
     //TODO could split out rendering things (showing/hiding) from adding them to the view/DOM (regardless of whether they are actually visible yet/currently)
     function render(command, parameters)
     {
-        var viewCommands = 
+        let viewCommands = 
         {
             showHomeScreen: function() 
             {
@@ -331,7 +331,7 @@ window.View = (function()
                 //TODO might be worth renaming the callback function variables below to improve readability
 
                 //Set up the callback method to execute when a name button matching the given ID is found
-                var elementFoundCallback = function(element)
+                let elementFoundCallback = function(element)
                 {                    
                     //Set the List title to match the text content of the name button element
                     elements.listTitle.textContent = element.textContent;
@@ -376,7 +376,7 @@ window.View = (function()
                 updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.id});
 
                 //Set up the callback method to execute when the List toggle element is found which matches the given ID
-                var elementFoundCallback = function(element)
+                let elementFoundCallback = function(element)
                 {                    
                     //Remove the List toggle element
                     element.remove();
@@ -391,7 +391,7 @@ window.View = (function()
             AddListItem: function() //Expected parameters: listId, listItem
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                var elementFoundCallback = function(element)
+                let elementFoundCallback = function(element)
                 {          
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
                     element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItem));
@@ -406,10 +406,10 @@ window.View = (function()
             RemoveListItem: function() //Expected parameters: id
             {
                 //Set up the callback method to execute when the List Item element is found which matches the given ID
-                var elementFoundCallback = function(element)
+                let elementFoundCallback = function(element)
                 {     
                     //Store a reference to the List Item's parent List wrapper element
-                    var listWrapper = element.parentElement;     
+                    let listWrapper = element.parentElement;     
 
                     //Remove the List Item element
                     element.remove();
@@ -429,7 +429,7 @@ window.View = (function()
                 
                 //TODO could we not just update everything related to a list item in one go? Or does that not make this any easier?
 
-                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
+                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, parameters.updatedValue);
@@ -438,7 +438,7 @@ window.View = (function()
             {
                 //window.DebugController.Print("Request to update color of list item with id: " + parameters.id);
 
-                var elementFoundCallback = function(element)
+                let elementFoundCallback = function(element)
                 {                    
                     element.style.borderColor = (parameters.quantityBalance != 0) ? 'peru' //lightsalmon is also good
                                               : (parameters.quantityNeeded != 0)  ? 'mediumseagreen'
@@ -477,7 +477,7 @@ window.View = (function()
             ShowQuantityPopover: function() //Expected parameters: id, quantityType
             {
                 //Show the popover element which matches the given ID and quantity type
-                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
+                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
             HideQuantityPopover: function() //Expected parameters: id, quantityType
@@ -487,19 +487,19 @@ window.View = (function()
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                
                 //Hide the popover element which matches the given ID and quantity type
-                var elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
+                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('HidePopover', elementData);
             },
             SwapListObjects: function()
             {
                 //TODO Should this use findChecklistElement or other helpers with error handling?
 
-                var elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
-                var elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
+                let elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
+                let elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
 
                 if (elementToMoveUpwards != null && elementToMoveDownwards != null)
                 {
-                    var wrapper = elementToMoveUpwards.parentElement;
+                    let wrapper = elementToMoveUpwards.parentElement;
 
                     wrapper.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
     
