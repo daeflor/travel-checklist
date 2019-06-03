@@ -171,6 +171,7 @@ window.ListController = (function()
         }
     }
 
+    //TODO why the name "loaded"? Seems unnecessary. And should rendering / adding the list to the DOM be done separately than creating the binds?
     /**
      * Sends to the View any data needed to render the specified List, and then sets up all applicable bindings
      * @param {object} list The object containing the data for the List to be rendered and bound
@@ -195,7 +196,7 @@ window.ListController = (function()
             //     }
             // }
 
-            //TODO I can't remember why I wanted property names, but it seems possible to get after all...
+            //TODO I can't remember why I wanted property names, but it seems possible to get after all... ^ ^ ^
                 //Oh one reason was because the bindReference has a lot of duplication between the reference name and the action
     
                 //Would it help at all to send a string (e.g. 'HideSettingsView') as a param instead of the bindReference property object (e.g. bindReference.HideSettingsView)?
@@ -254,6 +255,7 @@ window.ListController = (function()
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
 
     //TODO options might not be the best name since in some cases the values provided are not optional
+        //The 'correct' approach may be to split it into two functions, rather than having a parameter that is sometimes required and sometimes optional
 
     /**
      * Create a binding between the Model, View, and Controller, so that when the app receives user input which would modify the underlying data and UI of the checklist, the Model is updated accordingly, and then the View renders those updates.
@@ -316,7 +318,7 @@ window.ListController = (function()
                 //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
                 MergeObjects(options, argument);
                 
-                //Update the View, passing along any options  as applicable
+                //Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
                 handleUpdatesFromModel(bind.action, options);
             };
             

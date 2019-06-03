@@ -1,8 +1,6 @@
 'use strict';
 window.View = (function() 
 {
-    //var self = this;
-
     //TODO The Bind and Render calls could all use error handling
 
     //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityType)
@@ -150,6 +148,7 @@ window.View = (function()
         findChecklistElement(elementData.id, elementFoundCallback, elementData.type, elementData.quantityType);
     }
 
+    //TODO Would it be possible to have all 'addListenerToChecklistElement' calls go through this function?
     /**
      * Creates a bind for an element belonging to a Checklist Object (List Toggle or List Item)
      * @param {string} prefix - The prefix denoting the type of checklist element being bound
