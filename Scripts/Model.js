@@ -32,8 +32,6 @@ window.Model = (function()
 
     function findListItem(listId, listItemId, callback)
     {
-        //TODO This change doesn't really make this any simpler
-
         //Set up the callback method to execute when a List matching the given ID is found
         var listFoundCallback = function(listIndex)
         {
@@ -226,8 +224,6 @@ window.Model = (function()
 
                 //Execute the provided callback method, passing the returned arguments if not null
                 args != null ? callback(args) : callback();
-
-                //TODO it might be better to loop through the arguments array and then return all existing ones through the callback
             };
 
             //Execute the method matching the given command
@@ -367,7 +363,7 @@ window.Model = (function()
 
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
-    //TODO Update this file to use methods similar to Render or Bind in the View
+    //TODO Update this file to use methods similar to Render or Bind in the View, maybe
     //TODO could just have an Update method...
     //TODO Lists and List Items could have a type value associated with them, then no extra type info would need to be passed from the Controller to a method such as 'Update', for example
         //However, the additional data stored in Storage is a bit wasteful, and not really necessary, as it can be avoided with some extra code. 
