@@ -1,9 +1,9 @@
 window.DebugController = (function()
 {
-    var debugModeEnabled = false;
-    var VERSION = '0.0.12';
+    var debugModeEnabled = true;
+    var VERSION = '0.0.13';
 
-    function setup()
+    function init()
     {
         window.DebugView.Init(VERSION);
 
@@ -70,7 +70,7 @@ window.DebugController = (function()
     }
 
     return {
-        Setup : setup,
+        Init : init,
         Print : print,
         LogWarning : logWarning,
         LogError: logError

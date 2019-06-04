@@ -1,36 +1,37 @@
 TO-DOs:
 	- index.html            : 3
-    - CustomTemplates.js    : 6
-    - DebugUtilities.js     : 5
-	- ListController.js     : 24
-    - Model.js              : 5
-    - StandardTemplates.js  : 3
-    - StorageManager.js     : 5
-    - Utilities.js          : 0
+    - AppController.js      : 4
+    - CustomTemplates.js    : 8
+    - DebugUtilities.js     : 4
+	- ListController.js     : 39
+    - Model.js              : 16
+    - StandardTemplates.js  : 6
+    - StorageManager.js     : 2
+    - Utilities.js          : 3
     - View.js               : 27
     - style_new.css         : 3
-    - - - Total             : 81
+    - - - Total             : 119
 
 Upcoming To-Do List:
-- What needs to be done with the Warnings? Turned to prints or errors? Figure out what needs to be a Warning and what shouldn't be, and when they appear.
-- Find some way to force the PWA to update to the latest version
+- The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
+    May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
+- Add error handling at the beginning of functions to ensure any required parameters are provided.
+    - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
+- Replace var with const and let
+- Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
+- BUG! : If you delete a List Item while its quantity popover is visible, you hit an error.
+- BUG! : If you modify a quantity, then delete the List Item, then navigate Home, you hit an error.
+- BUG! : The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
 - Backup or cloud storage functionality
-- Clean up ListController
-- Cleanup and document Model
-- Could consider changing UI/DOM structure so that different screens are handled together (e.g. All Home Screen elements in one div, all List screen elements in another, instead of Headers together in their own div. And then, similar elements like headers would still share a class).
+- Clean up and document Model
 - Every time an unreported error is hit, add error handling for it
-- Look into IIFEs vs ActivePopover and ActiveSettings, etc.
 - Revamp CreateNewElement
+- Disallow refresh gesture in List view
 
 Features:
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
-- Could add the Pre-Travel 'To-Do' list to the Travel Checklist
-- Ability to move items up or down in a list. Create 'move' buttons to move an item up or down the grid/list
-    - Grid state would need to be stored when Rows get moved up or down in the grid
+- Could/Should add the Pre-Travel 'To-Do' list to the Travel Checklist
 - Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
-    Should have items/rows have a state, which dictates their color, rather than just keep track of the color. 
-- The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
-    May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
 - Consider using MusicExtension's ExportLocalStorageToFile method, as a backup in case localstorage gets erased. 
     - Would need an import option for this to be useful. Could possibly have an option to load a list from a specific folder which is part of the project, and in which exports have been manually placed. 
     - (Does this even work on phone? Should I pull the code out from either project and create a separate library/utility file?)
@@ -44,43 +45,43 @@ Features:
 - A feature that guesses clothing quantities based on the number of nights provided. 
 
 Usability & Appearance (UX & UI):
-- BUG: The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
-- Would be nice for a list's toggle to be orange if any of the list items for that list are orange
+- ! BUG: The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
+- ! Would be nice for a list's toggle to be orange if any of the list items for that list are orange. (Generally the colors should match - black, orange, and green)
 - It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list
 - Make the Progressive Web App prettier with an icon and other things
-- Is it possible to make the Android Back button work in the app (e.g. to go back to the Home Screen from the List Screen)?
-    Might require having the different screens (e.g. Home vs List) actually use different pages hashes (e.g. travel-checklist/#/List)
 - May want to change back the Add New Item Row to being left-aligned with a light background again
 - May want to change back to having the List Toggle open a List, and a settings button to open the Settings View
 - When focus is brought to a text area, it would be nice to scroll to it. (i.e. when tapping in a text area in Settings View, it doesn't always scroll into view above the keyboard, currently)
 - Color palette of popovers (incl. background) could be better
 
 Code Cleanup:
+- It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions (IIFEs)
 - All instances of document.getElementById should be replaced with a custom one that includes error handling
 - View.cs is pretty long and could possibly be broken up, perhaps between HomeScreenView and ListScreenView, or something alone those lines.
 - Would it help to use listId as prefix in listItemId? (e.g. xxx.yyy)
+    - This might be nice, because then only one param would need to be passed when editing the model (or at least one fewer)
 - Consider other options for Storage, such as IndexedDB or LocalForage
 - Consider having two separate websites for travel and shopping lists, since they aren't directly related. They can still share some common utility files. 
 - Would it help to use data-* attributes instead of Element IDs?
-- Consider removing reliance on Popovers (popper.js) and re-create this functionality myself in JavaScript and CSS
+- Consider removing reliance on Popovers (popper.js) and re-create this functionality myself in vanilla JavaScript and CSS
 - There are probably some GetElementByID calls that could be called on other elements instead of the document
 - Standardize bracket/spacing/parameter/callback usage and format
 - In the future, calls to the View may need to be a callback passed to the model (e.g. if it interacts with Storage), but for now it isn't necessary
-- It might be nice if List Item IDs were prefixed by the List ID, so only one param would need to be passed when editing the model
-- It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions
 - Would it help to remove eventlisteners that aren't being used?
 - List & List Item might not be the best terms to use, since a list toggle is sort of a list item...
 - Standardize between " and '
 - Could use objects/properties (e.g. { ... }) for certain function parameters (e.g. NewRow) instead of many different individual parameters
-    But for functions that always require exact parameters, maybe should just have them explicitly stated instead of passing a single object
+    - But for functions that always require exact parameters, maybe should just have them explicitly stated instead of passing a single object
+    - Either way, error handling at the beginning of functions is probably the best route, to ensure that any expected parameters are defined.
 - Should get away from concept of grid, rows, and columns, since they are not being used that way exactly
 - Might be useful to have a helper function which turns elements into html tags
-- Need a manager for the whole page, not just grids. For example, app.js. 
 - Replace any jquery with pure javascript where possible (currently there is nothing that can be easily replaced).
 - Could use _ and $ to organize functions/methods
 
 Testing, Debug Tools, & Performance:
-- Should have a good way to test backwards compatibility
+- Find some way to force the PWA to update to the latest version 
+    - USB Debugging is the best current solution for this
+- Should have a good way to test backwards compatibility (assuming backwards compatibility support still exists and is desired)
 - Figure out what's causing poor performance with collapsible settings view
 - Debug mode could also dictate storage location, among other things
 

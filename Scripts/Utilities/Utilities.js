@@ -1,6 +1,8 @@
 /** General Utilities **/
 
-function SwapElementsInArray(array, index, indexToSwap, callback)
+//TODO Utilities should probably have its own namespace, for clarity
+
+function SwapElementsInArray(array, index, indexToSwap, callback) //TODO these are not DOM elements. Is this confusing?
 {
     //Assign the element in the array that should be swapped with the one selected
     var elementToSwap = array[indexToSwap];
@@ -12,8 +14,8 @@ function SwapElementsInArray(array, index, indexToSwap, callback)
         array[indexToSwap] = array[index];
         array[index] = elementToSwap;
 
-        //Execute the provided callback method once the swap has been executed, passing the swapped element as an argument
-        callback(elementToSwap);
+        //Return the swapped element once the swap has been executed
+        return elementToSwap;
     }
     else
     {
@@ -50,20 +52,42 @@ function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
     //Traverse the array, searching for an object that has a key matching the given value
     for (var i = array.length-1; i >= 0; i--)
     {
-        //If the List IDs match, call the passed callback method and end execution of this method
+        //If a match is found, call the passed callback method and end execution of this method
         if (array[i][key] == value)
         {
+            window.DebugController.Print("Returned object with Key: " + key + ", Value: " + value);
             callback(i);
             return;
         }
     } 
 
-    window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value");
+    window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
 function GetLocationHashRoute()
 {
     return document.location.hash.split('/')[1];
+}
+
+function MergeObjects(target, source)
+{
+    //If a source object is provided
+    if (source !== undefined)
+    {
+        //If the target is undefined, assign an empty object to it
+        if (target === undefined)
+        {
+            target = {};
+        }
+
+        //Merge any properties from the source object to the target object
+        Object.assign(target, source);
+
+        window.DebugController.Print("Merged two objects into the following target object: ");
+        window.DebugController.Print(target);
+    }
+
+    return target;
 }
 
 /** Experimental & In Progress **/

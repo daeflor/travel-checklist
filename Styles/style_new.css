@@ -1,9 +1,15 @@
 /** General **/
 
+html {
+    height: 100%;
+}
+
 body {
     font-family: system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
 
     background-color: aliceblue;
+
+    height: 100%;
 }
 
 a, a:visited, a:hover {
@@ -159,6 +165,10 @@ button {
 }
 
 /** Item & List Rows **/
+
+#divChecklistBody {
+    min-height: 100%;
+}
 
 .divItemRow {
     border-left-width: 0px;
