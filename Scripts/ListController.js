@@ -350,6 +350,8 @@ window.ListController = (function()
 
                 //Set the newly selected List as the Active List
                 activeListId = options.checklistObject.id;
+
+                window.DebugController.Print("Active List ID: " + activeListId);
             }
             else if (bind.action == 'ShowQuantityPopover')
             {
@@ -421,6 +423,8 @@ window.ListController = (function()
                     //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
                     //Maybe have a ValidateParameters utility function
                 window.Model.ModifyListItem(action, activeListId, options.checklistObject.id, callback, options);
+                
+                window.DebugController.Print("Active List ID: " + activeListId);
             }
 
             //TODO 5 meh ideas to make this work
