@@ -2,7 +2,6 @@ window.ListController = (function()
 {    
     let activeListId = '',
         quantityPopoverActive = false;
-        settingsViewActive = false;
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -338,7 +337,6 @@ window.ListController = (function()
 
             if (bind.action === 'HideActiveSettingsView')
             {
-                settingsViewActive = true;
                 window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
             }
             else if (bind.action === 'GoToList')
