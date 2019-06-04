@@ -523,9 +523,29 @@ window.View = (function()
         }
     }
 
+    //function isListItemSettingsViewActive()
+    function isSettingsViewActive()
+    {
+        //return document.getElementById('divListScreenListElements').querySelector(".collapse.show") != null ? true : false;
+        
+        return document.getElementsByClassName("collapse show").length > 0 ? true : false;
+
+        // if (document.getElementById('divListScreenListElements').querySelector(".collapse.show") != null)
+        // {
+        //     return true;
+        // }
+        // else
+        // {
+        //     return false;
+        // }
+    }
+
+
     return {
         Init : init,
         Bind: bind,
-        Render: render
+        Render: render,
+        IsSettingsViewActive: isSettingsViewActive
+        //IsListItemSettingsViewActive: isListItemSettingsViewActive
     };
 })();

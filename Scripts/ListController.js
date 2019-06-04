@@ -2,6 +2,7 @@ window.ListController = (function()
 {    
     let activeListId = '',
         quantityPopoverActive = false;
+        settingsViewActive = false;
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -202,6 +203,8 @@ window.ListController = (function()
                 //Would it help at all to send a string (e.g. 'HideSettingsView') as a param instead of the bindReference property object (e.g. bindReference.HideSettingsView)?
                     //Rename to bindActions, and each property has a sub property called event? And then that's all it has?
                     //bind.event would become bindActions[action].event
+                    
+                    //Actually I think I prefer reversing this so it's done based on event instead of action. Seems more readable that way, since the event is the first trigger in the chain of occurences
 
         //TODO continue to standardize ID parameter names as applicable
 
@@ -335,7 +338,8 @@ window.ListController = (function()
 
             if (bind.action === 'HideActiveSettingsView')
             {
-                window.View.Render(bind.action);
+                settingsViewActive = true;
+                window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
             }
             else if (bind.action === 'GoToList')
             {
@@ -355,7 +359,7 @@ window.ListController = (function()
             }
             else if (bind.action == 'ShowQuantityPopover')
             {
-                if (quantityPopoverActive == false)
+                if (window.View.IsSettingsViewActive() == false && quantityPopoverActive == false)
                 {
                     window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 

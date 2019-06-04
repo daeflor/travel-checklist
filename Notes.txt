@@ -29,6 +29,8 @@ Upcoming To-Do List:
 - Disallow refresh gesture in List view
 
 Features:
+- ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
+- A bar at the bottom of the list screen that tells you if there are any orange/incomplete items remaining (so that you don't need to scroll)
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - Could/Should add the Pre-Travel 'To-Do' list to the Travel Checklist
 - Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
