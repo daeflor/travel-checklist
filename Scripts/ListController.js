@@ -152,6 +152,8 @@ window.ListController = (function()
             renderOptions: ['listId', 'quantityType']
         }
 
+        //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
+
         //TODO could have error checking on startup to ensure that these bidndings are all set correctly here (e.g. that an event and action is provided)
     };
 
@@ -379,6 +381,7 @@ window.ListController = (function()
             else if (bind.action == 'HideQuantityPopover')
             {
                 //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
+                    //Seems like it would be possible to get the active one similar to 'isSettingsViewActive'
                 window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType} );
                 quantityPopoverActive = false;
             }
