@@ -44,22 +44,6 @@ window.View = (function()
         elements.listTitle = document.getElementById('headerCurrentListName');
         elements.listScreen = document.getElementById('divListScreen'); 
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
-
-        window.addEventListener("hashchange", hideActivePopover, {once:false});
-    }
-
-    function hideActivePopover()
-    {   
-        //TODO Technically this logic should still be routed through the controller to some extent, I think
-            //Should there be a ViewController? Maybe eventually
-
-        let activePopover = getActivePopover();
-
-        if (activePopover != null)
-        {
-            window.DebugController.Print("Hiding the active popover");
-            $(activePopover).popover('hide');
-        }
     }
 
     //TODO There could even be an optional options param that takes a quantity type
@@ -299,15 +283,11 @@ window.View = (function()
             //TODO this could probably also use the new method to get the active Popover, though it isn't necessary to change it, since it is working currently the way it is.
                 //Although, if we do change it, we'd no longer have to keep track of 'quantityPopoverActive'
 
-            //TODO the event listener below should be removed when the popover is hidden
-                //Currently, when pressing the home button the callback will fire once for each popover that had been opened. 
-
-            //If the hash location changes, execute the callback method
-            //window.addEventListener("hashchange", callback, {once:true});
-            //TODO maybe it's possible to just add a single hashchange eventlistener that will always hide the active popover, if applicable, rather than setting one up per popover.
-                //That way we don't have to worry about removing the event listener, which is difficult in the current system
-
             //window.DebugController.Print("A onetime onclick listener was added to the checklist body");
+        }
+        else if (event === 'HashChanged')
+        {
+            window.addEventListener("hashchange", callback, {once:false});
         }
     }
 
@@ -509,8 +489,16 @@ window.View = (function()
                 //Hide the popover element which matches the given ID and quantity type
                 let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('HidePopover', elementData);
+            },
+            HideActivePopover: function()
+            {
+                let activePopover = getActivePopover();
 
-                //window.removeEventListener("hashchange", callback, {once:true});
+                if (activePopover != null)
+                {
+                    window.DebugController.Print("Hiding the active popover");
+                    $(activePopover).popover('hide');
+                }
             },
             SwapListObjects: function()
             {

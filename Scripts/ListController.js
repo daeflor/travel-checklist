@@ -150,6 +150,14 @@ window.ListController = (function()
             bindOptions: ['quantityType'],
             //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
+        },
+        HideActivePopover: {
+            event: 'HashChanged', 
+            action: 'HideActivePopover',
+            modelUpdateRequired: false,
+            //bindOptions: [],
+            //modelOptions: [],
+            renderOptions: []
         }
 
         //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
@@ -390,6 +398,10 @@ window.ListController = (function()
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
                 createBind(bindReference.ClearQuantityValues, options);
             }
+            else if (bind.action === 'HideActivePopover')
+            {
+                window.View.Render(bind.action); 
+            }
         }
     }
 
@@ -540,6 +552,8 @@ window.ListController = (function()
         
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+
+        createBind(bindReference.HideActivePopover);
     }
 
     function loadChecklistDataIntoView(loadedListData)
