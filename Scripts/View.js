@@ -492,7 +492,7 @@ window.View = (function()
             },
             HideActivePopover: function()
             {
-                let activePopover = getActivePopover();
+                let activePopover = document.querySelector("a[aria-describedby]");
 
                 if (activePopover != null)
                 {
@@ -537,11 +537,6 @@ window.View = (function()
     function isSettingsViewActive()
     {        
         return document.getElementsByClassName("collapse show").length > 0 ? true : false;
-    }
-
-    function getActivePopover()
-    {        
-        return document.querySelector("a[aria-describedby]");
     }
 
     return {
