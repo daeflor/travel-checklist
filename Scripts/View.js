@@ -140,7 +140,7 @@ window.View = (function()
             action == 'Focus'         ? element.focus() :
             action == 'Expand'        ? $(element).collapse('show') :
             action == 'ShowPopover'   ? $(element).popover('show') :
-            action == 'HidePopover'   ? $(element).popover('hide') :
+            //action == 'HidePopover'   ? $(element).popover('hide') :
             window.DebugController.LogError("Tried to perform an invalid update action on a checklist element");
         };
 
@@ -281,14 +281,11 @@ window.View = (function()
             //If a click is detected anywhere in the body but outside the popover, execute the callback method
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
 
-
-            //TODO this event listener should be removed when the popover is hidden
-                //Currently, when pressing the home button a hash change event will fire once for each popover that had been opened. 
-
-            //If the hash location changes, execute the callback method
-            window.addEventListener("hashchange", callback, {once:true});
-
             //window.DebugController.Print("A onetime onclick listener was added to the checklist body");
+        }
+        else if (event === 'HashChanged')
+        {
+            window.addEventListener("hashchange", callback, {once:false});
         }
     }
 
@@ -479,15 +476,15 @@ window.View = (function()
                 let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
-            HideQuantityPopover: function() //Expected parameters: id, quantityType
+            HideActiveQuantityPopover: function()
             {
-                //TODO should this be merged with the method above, into a 'Toggle' method that takes an additional param?
+                let activePopover = getActiveQuantityPopover();
 
-                //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
-               
-                //Hide the popover element which matches the given ID and quantity type
-                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
-                updateChecklistElement('HidePopover', elementData);
+                if (activePopover != null)
+                {
+                    window.DebugController.Print("Hiding the active quantity popover");
+                    $(activePopover).popover('hide');
+                }
             },
             SwapListObjects: function()
             {
@@ -523,9 +520,28 @@ window.View = (function()
         }
     }
 
+    //TODO Re-order all these functions so they are better organized
+
+    function getActiveQuantityPopover()
+    {        
+        return document.querySelector("a.buttonQuantity[aria-describedby]");
+    }
+
+    function isSettingsViewActive()
+    {        
+        return document.getElementsByClassName("collapse show").length > 0 ? true : false;
+    }
+
+    function isQuantityPopoverActive()
+    {        
+        return getActiveQuantityPopover() != null ? true : false;
+    }
+
     return {
         Init : init,
         Bind: bind,
-        Render: render
+        Render: render,
+        IsSettingsViewActive: isSettingsViewActive,
+        IsQuantityPopoverActive: isQuantityPopoverActive
     };
 })();

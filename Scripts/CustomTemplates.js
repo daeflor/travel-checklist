@@ -140,7 +140,7 @@ window.CustomTemplates = (function ()
         );
 
         /* Create Element Wrappers */
-        var divTextareaName = CreateNewElement('div', [ ['class','col-5 divEditName'] ], editNameTextarea);
+        var divTextareaName = CreateNewElement('div', [ ['class','col-6 divEditName'] ], editNameTextarea);
         var divButtonDelete = CreateNewElement('div', [ ['class','col-2'] ], buttonDelete);
         var divButtonMoveUpwards = CreateNewElement('div', [ ['class','col-2'] ], buttonMoveUpwards);
         var divButtonMoveDownwards = CreateNewElement('div', [ ['class','col-2'] ], buttonMoveDownwards);

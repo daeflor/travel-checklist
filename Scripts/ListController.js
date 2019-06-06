@@ -1,7 +1,6 @@
 window.ListController = (function()
 {    
-    let activeListId = '',
-        quantityPopoverActive = false;
+    let activeListId = '';
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -137,11 +136,19 @@ window.ListController = (function()
         },
         HideQuantityPopover: {
             event: 'ClickDetectedOutsidePopover', 
-            action: 'HideQuantityPopover',
+            action: 'HideActiveQuantityPopover',
             modelUpdateRequired: false,
             //bindOptions: [],
             //modelOptions: [],
-            renderOptions: ['checklistObject', 'quantityType']
+            renderOptions: [] //['checklistObject', 'quantityType']
+        },
+        HideActivePopover: {
+            event: 'HashChanged', 
+            action: 'HideActiveQuantityPopover',
+            modelUpdateRequired: false,
+            //bindOptions: [],
+            //modelOptions: [],
+            renderOptions: []
         },
         SetupHeaderPopoverBinds: {
             event: 'QuantityHeaderPopoverShown', 
@@ -151,6 +158,8 @@ window.ListController = (function()
             //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
         }
+
+        //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
 
         //TODO could have error checking on startup to ensure that these bidndings are all set correctly here (e.g. that an event and action is provided)
     };
@@ -202,6 +211,8 @@ window.ListController = (function()
                 //Would it help at all to send a string (e.g. 'HideSettingsView') as a param instead of the bindReference property object (e.g. bindReference.HideSettingsView)?
                     //Rename to bindActions, and each property has a sub property called event? And then that's all it has?
                     //bind.event would become bindActions[action].event
+                    
+                    //Actually I think I prefer reversing this so it's done based on event instead of action. Seems more readable that way, since the event is the first trigger in the chain of occurences
 
         //TODO continue to standardize ID parameter names as applicable
 
@@ -275,8 +286,8 @@ window.ListController = (function()
             //Set up the callback method to execute for when the View recieves input from the user
             const _onUserInput = function(inputArgument) 
             {
-                console.log("The argument from the user input: ");
-                console.log(inputArgument);
+                //console.log("The argument from the user input: ");
+                //console.log(inputArgument);
 
                 //Handle the updates/input received from the View
                 handleUpdatesFromView(bind, options, inputArgument);
@@ -335,7 +346,7 @@ window.ListController = (function()
 
             if (bind.action === 'HideActiveSettingsView')
             {
-                window.View.Render(bind.action);
+                window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
             }
             else if (bind.action === 'GoToList')
             {
@@ -355,14 +366,13 @@ window.ListController = (function()
             }
             else if (bind.action == 'ShowQuantityPopover')
             {
-                if (quantityPopoverActive == false)
+                if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
                 {
                     window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 
                     inputArgument.stopPropagation();
 
                     window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
-                    quantityPopoverActive = true;
                 }
             }
             else if (bind.action == 'SetupQuantityPopoverBinds')
@@ -372,13 +382,15 @@ window.ListController = (function()
                 //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
                 createBind(bindReference.DecrementQuantityValue, options);
                 createBind(bindReference.IncrementQuantityValue, options);
-                createBind(bindReference.HideQuantityPopover, options);
+                createBind(bindReference.HideQuantityPopover);
             }
-            else if (bind.action == 'HideQuantityPopover')
+            // else if (bind.action == 'HideQuantityPopover')
+            // {
+            //     window.View.Render(bind.action);
+            // }
+            else if (bind.action === 'HideActiveQuantityPopover')
             {
-                //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
-                window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType} );
-                quantityPopoverActive = false;
+                window.View.Render(bind.action); 
             }
             else if (bind.action == 'SetupHeaderPopoverBinds')
             {
@@ -535,6 +547,8 @@ window.ListController = (function()
         
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+
+        createBind(bindReference.HideActivePopover);
     }
 
     function loadChecklistDataIntoView(loadedListData)

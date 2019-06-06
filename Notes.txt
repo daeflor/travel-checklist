@@ -13,14 +13,13 @@ TO-DOs:
     - - - Total             : 119
 
 Upcoming To-Do List:
+- handleUpdatesFromView should use event name instead of action name
 - The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
     May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
 - Replace var with const and let
 - Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
-- BUG! : If you delete a List Item while its quantity popover is visible, you hit an error.
-- BUG! : If you modify a quantity, then delete the List Item, then navigate Home, you hit an error.
 - BUG! : The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
 - Backup or cloud storage functionality
 - Clean up and document Model
@@ -29,6 +28,8 @@ Upcoming To-Do List:
 - Disallow refresh gesture in List view
 
 Features:
+- ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
+- A bar at the bottom of the list screen that tells you if there are any orange/incomplete items remaining (so that you don't need to scroll)
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - Could/Should add the Pre-Travel 'To-Do' list to the Travel Checklist
 - Ability to sort by state (e.g. 'Completed' items at the bottom of the list).
