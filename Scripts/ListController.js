@@ -1,7 +1,6 @@
 window.ListController = (function()
 {    
-    let activeListId = '',
-        quantityPopoverActive = false;
+    let activeListId = '';
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -287,8 +286,8 @@ window.ListController = (function()
             //Set up the callback method to execute for when the View recieves input from the user
             const _onUserInput = function(inputArgument) 
             {
-                console.log("The argument from the user input: ");
-                console.log(inputArgument);
+                //console.log("The argument from the user input: ");
+                //console.log(inputArgument);
 
                 //Handle the updates/input received from the View
                 handleUpdatesFromView(bind, options, inputArgument);
@@ -367,14 +366,13 @@ window.ListController = (function()
             }
             else if (bind.action == 'ShowQuantityPopover')
             {
-                if (window.View.IsSettingsViewActive() == false && quantityPopoverActive == false)
+                if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
                 {
                     window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
 
                     inputArgument.stopPropagation();
 
                     window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
-                    quantityPopoverActive = true;
                 }
             }
             else if (bind.action == 'SetupQuantityPopoverBinds')
@@ -384,23 +382,20 @@ window.ListController = (function()
                 //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
                 createBind(bindReference.DecrementQuantityValue, options);
                 createBind(bindReference.IncrementQuantityValue, options);
-                createBind(bindReference.HideQuantityPopover, options);
+                createBind(bindReference.HideQuantityPopover);
             }
             else if (bind.action == 'HideQuantityPopover')
             {
-                //TODO would it not be possible to just keep track of the active quantity popover? I guess that isn't necessarily a better or more scalable solution...
-                    //Seems like it would be possible to get the active one similar to 'isSettingsViewActive'
-                window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType} );
-                quantityPopoverActive = false;
+                window.View.Render('HideActivePopover');
+            }
+            else if (bind.action === 'HideActivePopover')
+            {
+                window.View.Render('HideActivePopover'); 
             }
             else if (bind.action == 'SetupHeaderPopoverBinds')
             {
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
                 createBind(bindReference.ClearQuantityValues, options);
-            }
-            else if (bind.action === 'HideActivePopover')
-            {
-                window.View.Render(bind.action); 
             }
         }
     }
