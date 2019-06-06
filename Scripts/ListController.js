@@ -136,11 +136,19 @@ window.ListController = (function()
         },
         HideQuantityPopover: {
             event: 'ClickDetectedOutsidePopover', 
-            action: 'HideQuantityPopover',
+            action: 'HideActiveQuantityPopover',
             modelUpdateRequired: false,
             //bindOptions: [],
             //modelOptions: [],
-            renderOptions: ['checklistObject', 'quantityType']
+            renderOptions: [] //['checklistObject', 'quantityType']
+        },
+        HideActivePopover: {
+            event: 'HashChanged', 
+            action: 'HideActiveQuantityPopover',
+            modelUpdateRequired: false,
+            //bindOptions: [],
+            //modelOptions: [],
+            renderOptions: []
         },
         SetupHeaderPopoverBinds: {
             event: 'QuantityHeaderPopoverShown', 
@@ -149,14 +157,6 @@ window.ListController = (function()
             bindOptions: ['quantityType'],
             //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
-        },
-        HideActivePopover: {
-            event: 'HashChanged', 
-            action: 'HideActivePopover',
-            modelUpdateRequired: false,
-            //bindOptions: [],
-            //modelOptions: [],
-            renderOptions: []
         }
 
         //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
@@ -384,13 +384,13 @@ window.ListController = (function()
                 createBind(bindReference.IncrementQuantityValue, options);
                 createBind(bindReference.HideQuantityPopover);
             }
-            else if (bind.action == 'HideQuantityPopover')
+            // else if (bind.action == 'HideQuantityPopover')
+            // {
+            //     window.View.Render(bind.action);
+            // }
+            else if (bind.action === 'HideActiveQuantityPopover')
             {
-                window.View.Render('HideActivePopover');
-            }
-            else if (bind.action === 'HideActivePopover')
-            {
-                window.View.Render('HideActivePopover'); 
+                window.View.Render(bind.action); 
             }
             else if (bind.action == 'SetupHeaderPopoverBinds')
             {

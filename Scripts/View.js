@@ -476,7 +476,7 @@ window.View = (function()
                 let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
-            HideActivePopover: function()
+            HideActiveQuantityPopover: function()
             {
                 let activePopover = getActiveQuantityPopover();
 
