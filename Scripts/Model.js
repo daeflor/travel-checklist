@@ -33,21 +33,21 @@ window.Model = (function()
     function findListItem(listId, listItemId, callback)
     {
         //Set up the callback method to execute when a List matching the given ID is found
-        var listFoundCallback = function(listIndex)
+        let _listFoundCallback = function(listIndex)
         {
             //Set up the callback method to execute when a List Item matching the given ID is found
-            var listItemFoundCallback = function(listItemIndex)
+            let _listItemFoundCallback = function(listItemIndex)
             {
                 //Execute the provided callback method, passing both the List index and List Item index as arguments
                 callback(listIndex, listItemIndex);
             };
             
             //Search for the List Item and, if it's found, execute the callback method
-            GetArrayIndexOfObjectWithKVP(getLists()[listIndex].listItems, 'id', listItemId, listItemFoundCallback);
+            GetArrayIndexOfObjectWithKVP(getLists()[listIndex].listItems, 'id', listItemId, _listItemFoundCallback);
         };
         
         //Search for the List and, if it's found, execute the callback method
-        findList(listId, listFoundCallback);
+        findList(listId, _listFoundCallback);
     }
 
     function editName(checklistObject, updatedName, callback)
@@ -62,7 +62,7 @@ window.Model = (function()
     function swapChecklistObjects(array, index, indexToSwapWith, callback)
     {
         //Try to swap the object at one index with the object at another index in the array and, if successful, get the swapped object
-        var swappedChecklistObject = SwapElementsInArray(array, index, indexToSwapWith);
+        let swappedChecklistObject = SwapElementsInArray(array, index, indexToSwapWith);
             
         //If the swap succeeded, execute the callback method, passing the swapped checklist object ID as an argument
         if (swappedChecklistObject != null)
@@ -80,9 +80,9 @@ window.Model = (function()
     function clearQuantityValues(listObject, quantityType, callback)
     {
         //Initialize an array to keep track of any List Items that will have a quantity value be modified
-        var modifiedListItems = [];
+        let modifiedListItems = [];
 
-        var clearQuantityValue = function(listItem)
+        let _clearQuantityValue = function(listItem)
         {
             //If the quantity value for the given quantity type is not already set to zero...
             if (listItem.quantities[quantityType] != 0)
@@ -96,7 +96,7 @@ window.Model = (function()
         };
 
         //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
-        listObject.listItems.forEach(clearQuantityValue);
+        listObject.listItems.forEach(_clearQuantityValue);
 
         //If the quantity value of any List Item was actually changed...
         if (modifiedListItems.length > 0)
@@ -160,7 +160,7 @@ window.Model = (function()
         //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
     function modifyList(command, listId, callback, options)
     {       
-        var commands = 
+        let commands = 
         {
             UpdateName : function(listIndex, commandSucceededCallback)
             {
@@ -214,10 +214,10 @@ window.Model = (function()
 
         //TODO Is it possible to somehow merge this with the same method in modifyListItem?... Maybe at least the commandSucceededCallback can be abstracted? But it wouldn't help much
         //Set up the callback method to execute when a List matching the given ID is found
-        var runCommand = function(listIndex)
+        let runCommand = function(listIndex)
         {
             //Set up the callback method to execute once the given command has been executed successfully 
-            var commandSucceededCallback = function(args)
+            let commandSucceededCallback = function(args)
             {       
                 //Store the updated checklist data
                 storeChecklistData();
@@ -236,7 +236,7 @@ window.Model = (function()
 
     function modifyListItem(command, listId, listItemId, callback, options)
     {       
-        var commands = 
+        let commands = 
         {
             UpdateName : function(listIndex, listItemIndex, commandSucceededCallback)
             {
@@ -309,10 +309,10 @@ window.Model = (function()
         };
 
         //Set up the callback method to execute when a List Item matching the given ID is found
-        var runCommand = function(listIndex, listItemIndex)
+        let runCommand = function(listIndex, listItemIndex)
         {
             //Set up the callback method to execute once the given command has been executed successfully 
-            var commandSucceededCallback = function(args)
+            let commandSucceededCallback = function(args)
             {       
                 //Store the updated checklist data object
                 storeChecklistData();
@@ -333,6 +333,55 @@ window.Model = (function()
 
         //Search for the List Item and, if it's found, execute the method matching the given command
         findListItem(listId, listItemId, runCommand);
+    }
+
+    //TODO This isn't being used when the app is launched, so all the List Toggles will be gray
+    //TODO should this be in a method like ModifyList? maybe AccessList?
+    function getListBalance(listId, callback)
+    {
+        //Setup the callback to execute once the List has been found
+        let _listFoundCallback = function(listIndex)
+        {
+            //Set the List's balance as None by default
+            let _listBalance = ChecklistObjectBalance.None;
+            
+            let _listObject = getLists()[listIndex];
+
+            //For each List Item in the List...
+            for (let i = 0; i < _listObject.listItems.length; i++)
+            {
+                let _listItem = _listObject.listItems[i];
+
+                //Calculate the List Item's balance based on its different quantity values
+                let _listItemBalance = _listItem.quantities.needed - _listItem.quantities.luggage - _listItem.quantities.wearing - _listItem.quantities.backpack;
+
+                //If the balance is not equal to zero, then set the List's balance as Unbalanced
+                if (_listItemBalance !== 0)
+                {
+                    _listBalance = ChecklistObjectBalance.Unbalanced;
+                    break;
+                } 
+                //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
+                else if (_listItem.quantities.needed !== 0)
+                {
+                    _listBalance = ChecklistObjectBalance.Balanced;
+                }
+            }
+
+            //Execute the callback method passed in from the Controller, passing back the calculated List balance as an argument
+            callback(_listBalance);
+
+            //Set a temporary balanceState variable to None
+            //For each ListItem in the List
+                //Calculate the List Item's Balance - Probably need a separate method for this
+                    //If the Balance is Unbalanced, set the balanceState variable to Unbalanced and break (or just return Unbalanced?)
+                    //If the Balance is Balanced, set the balanceState variable to Balanced, then continue
+                    //If the Balance is None, continue
+            //Execute the callback, passing the balanceState as a parameter
+        }
+
+        //Search for the List and, if it's found, execute the method matching the given command
+        findList(listId, _listFoundCallback);
     }
 
     // function modelUpdated(callback, args)
@@ -373,6 +422,13 @@ window.Model = (function()
         RetrieveChecklistData : retrieveChecklistData,
         AddNewList : addNewList,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem
+        ModifyListItem : modifyListItem,
+        GetListBalance: getListBalance
     };
 })();
+
+const ChecklistObjectBalance = {
+    None: 'None',
+    Balanced: 'Balanced',
+    Unbalanced: 'Unbalanced'
+};

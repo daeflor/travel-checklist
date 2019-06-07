@@ -157,6 +157,14 @@ window.ListController = (function()
             bindOptions: ['quantityType'],
             //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
+        },
+        UpdateListToggleColor: {
+            event: 'HashChanged', 
+            action: 'UpdateListToggleColor',
+            modelUpdateRequired: false,
+            //bindOptions: [],
+            //modelOptions: [],
+            renderOptions: []
         }
 
         //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
@@ -260,6 +268,8 @@ window.ListController = (function()
     function renderUpdatesToListItemQuantity(listItem, quantityType)
     {
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
+        
+        //TODO can this use the new ChecklistObjectBalance system?
         window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
     }
 
@@ -396,6 +406,35 @@ window.ListController = (function()
             {
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
                 createBind(bindReference.ClearQuantityValues, options);
+            }
+            else if (bind.action === 'UpdateListToggleColor')
+            {
+                //Determine the anchor part of the URL of the page that was navigated to
+                let _newUrlAnchor = inputArgument.newURL.split('#/')[1];
+
+                //If the new page is the Home page for the Travel Checklist...
+                if (_newUrlAnchor === "travel")
+                {
+                    //Determine the anchor part of the URL of the page that was navigated from
+                    let _oldUrlAnchor = inputArgument.oldURL.split('#/')[1];
+
+                    if (_oldUrlAnchor != null)
+                    {
+                        //Determine the ID of the List from the previous page
+                        let _listId = _oldUrlAnchor.split('/')[1];
+
+                        //TODO this completely breaks the existing pattern.
+                        let _updateView = function(listBalance)
+                        {
+                            window.View.Render('UpdateListNameColor', {id:_listId, balance:listBalance});
+                        }
+
+                        //TODO this completely breaks the existing pattern. 
+                            //This doesn't require updates to the model but it does access the model to get information. 
+                            //Calling this here is completely different to how the rest of the actions are performed
+                        window.Model.GetListBalance(_listId, _updateView); 
+                    }
+                }
             }
         }
     }
@@ -549,6 +588,7 @@ window.ListController = (function()
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
 
         createBind(bindReference.HideActivePopover);
+        createBind(bindReference.UpdateListToggleColor);
     }
 
     function loadChecklistDataIntoView(loadedListData)
