@@ -49,8 +49,18 @@ window.Model = (function()
         if (_listIndex != null) //TODO replace this with try catch 
         {
             //Search for the List Item and return its index
-            return _listItemIndex = GetArrayIndexOfObjectWithKVP(getLists()[_listIndex].listItems, 'id', listItemId); 
+            return _listItemIndex = GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
         }
+    }
+
+    /**
+     * Get the array of List Items for the List matching the provided ID
+     * @param {string} listId The ID of the List
+     * @returns the array of List Items
+     */
+    function getListItems(listId)
+    {
+        return getLists()[getListIndexFromId(listId)].listItems;
     }
 
     function editName(checklistObject, updatedName, callback)
@@ -234,42 +244,42 @@ window.Model = (function()
     {       
         let commands = 
         {
-            UpdateName : function(listIndex, listItemIndex, commandSucceededCallback)
+            UpdateName : function(listItemIndex, commandSucceededCallback)
             {
                 let updatedValue = options.updatedValue;
 
                 if (updatedValue != null)
                 {
                     //Update the name of the List Item and then execute the provided callback method
-                    editName(getLists()[listIndex].listItems[listItemIndex], updatedValue, commandSucceededCallback);
+                    editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
                 }
                 else
                 {
                     DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
                 }                
             },
-            MoveUpwards : function(listIndex, listItemIndex, commandSucceededCallback)
+            MoveUpwards : function(listItemIndex, commandSucceededCallback)
             {
                 //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-                swapChecklistObjects(getLists()[listIndex].listItems, listItemIndex, listItemIndex-1, commandSucceededCallback);
+                swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex-1, commandSucceededCallback);
             },
-            MoveDownwards : function(listIndex, listItemIndex, commandSucceededCallback)
+            MoveDownwards : function(listItemIndex, commandSucceededCallback)
             {
                 //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-                swapChecklistObjects(getLists()[listIndex].listItems, listItemIndex, listItemIndex+1, commandSucceededCallback);
+                swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
             },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
-            DecrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
+            DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
             {
                 let quantityType = options.quantityType;
 
                 if (quantityType != null)
                 {
                     //If the quantity value for the given quantity type is greater than zero...
-                    if (getLists()[listIndex].listItems[listItemIndex].quantities[quantityType] > 0)
+                    if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
                     {
                         //Decrement the quantity value by one
-                        getLists()[listIndex].listItems[listItemIndex].quantities[quantityType]--;
+                        getListItems(listId)[listItemIndex].quantities[quantityType]--;
 
                         //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
                         commandSucceededCallback();
@@ -280,14 +290,14 @@ window.Model = (function()
                     DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
                 }
             },
-            IncrementQuantityValue : function(listIndex, listItemIndex, commandSucceededCallback)
+            IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
             {
                 let quantityType = options.quantityType;
 
                 if (quantityType != null)
                 {
                     //Increment the quantity value for the given quantity type by one
-                    getLists()[listIndex].listItems[listItemIndex].quantities[quantityType]++;
+                    getListItems(listId)[listItemIndex].quantities[quantityType]++;
                     
                     //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
                     commandSucceededCallback();
@@ -297,10 +307,10 @@ window.Model = (function()
                     DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
                 }
             },
-            RemoveListItem : function(listIndex, listItemIndex, commandSucceededCallback)
+            RemoveListItem : function(listItemIndex, commandSucceededCallback)
             {
                 //Remove the List Item object from the listItems array and then execute the provided callback method
-                RemoveElementFromArray(getLists()[listIndex].listItems, listItemIndex, commandSucceededCallback);
+                RemoveElementFromArray(getListItems(listId), listItemIndex, commandSucceededCallback);
             }
         };
 
@@ -318,7 +328,7 @@ window.Model = (function()
         };
 
         //Execute the method matching the given command
-        commands[command](getListIndexFromId(listId), getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
+        commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
     }
 
     //TODO should this be in a method like ModifyList? maybe AccessList?
@@ -326,20 +336,22 @@ window.Model = (function()
     function getListBalance(listId, callback)
     {
         //Get the index of the list in the Lists array
-        let _listIndex = getListIndexFromId(listId);
+        //let _listIndex = getListIndexFromId(listId);
 
-        let _listObject = getLists()[_listIndex];
+        //let _listObject = getLists()[_listIndex];
+
+        let _listItems = getListItems(listId)
         
         //Set the List's balance as None by default
         let _listBalance = ChecklistObjectBalance.None;
 
         //For each List Item in the List...
-        for (let i = 0; i < _listObject.listItems.length; i++)
+        for (let i = 0; i < _listItems.length; i++)
         {
-            let _listItem = _listObject.listItems[i];
+            //let _listItem = _listItems[i];
 
             //Calculate the List Item's balance based on its different quantity values
-            let _listItemBalance = _listItem.quantities.needed - _listItem.quantities.luggage - _listItem.quantities.wearing - _listItem.quantities.backpack;
+            let _listItemBalance = _listItems[i].quantities.needed - _listItems[i].quantities.luggage - _listItems[i].quantities.wearing - _listItems[i].quantities.backpack;
 
             //If the balance is not equal to zero, then set the List's balance as Unbalanced
             if (_listItemBalance !== 0)
@@ -348,7 +360,7 @@ window.Model = (function()
                 break;
             } 
             //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
-            else if (_listItem.quantities.needed !== 0)
+            else if (_listItems[i].quantities.needed !== 0)
             {
                 _listBalance = ChecklistObjectBalance.Balanced;
             }
@@ -395,6 +407,7 @@ window.Model = (function()
     return {
         RetrieveChecklistData : retrieveChecklistData,
         AddNewList : addNewList,
+        GetListItems : getListItems,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem,
         GetListBalance: getListBalance
