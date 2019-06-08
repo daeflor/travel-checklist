@@ -41,6 +41,8 @@ Features:
     Reminder: Should probably get latest versions of plugins (e.g. Popper.js).
     Reminder: Should figure out which exact subset of files is necessary (specifically for font-awesome)
         - Could also consider using a different font library, if not going to be using CDN anyway.
+- Does it make sense to have a 'Car' or 'Other' column in the Travel Checklist
+- Make columns modular, so that they can be added or removed by the user, and the user can choose what icon to use for them (and therefore choose the category).
 
 Usability & Appearance (UX & UI):
 - It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list
@@ -81,6 +83,10 @@ Testing, Debug Tools, & Performance:
 - Should have a good way to test backwards compatibility (assuming backwards compatibility support still exists and is desired)
 - Figure out what's causing poor performance with collapsible settings view
 - Debug mode could also dictate storage location, among other things
+
+Security:
+- Make git repo private once not using GitHub Pages
+- Restrict by IP / Domain, and limit write access. (Probably want to do this if using Firebase)
 
 Brainstorming & Ideas for the Future:
 - Could have an 'overview' section/page, which tallies totals and shows overall state/balance of Lists

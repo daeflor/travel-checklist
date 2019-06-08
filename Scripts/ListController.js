@@ -104,7 +104,7 @@ window.ListController = (function()
         /** VC Bindings **/
         HideActiveSettingsView: {
             event: 'SettingsViewExpansionStarted', 
-            action: 'HideActiveSettingsView',
+            action: 'HideActiveSettingsView', //TODO should also trigger on hashchange... right?
             modelUpdateRequired: false,
             //bindOptions: ['id'],
             //modelOptions: [],
@@ -410,20 +410,18 @@ window.ListController = (function()
             }
             else if (bind.action === 'UpdateListToggleColor')
             {
-                //TODO Can this kind of thing be in a helper method instead?
-                //Determine the anchor part of the URL of the page that was navigated to
-                let _newUrlAnchor = inputArgument.newURL.split('#/')[1];
+                //TODO Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
 
-                //If the new page is the Home page for the Travel Checklist...
-                if (_newUrlAnchor === "travel")
+                //If the app was not refreshed (i.e. there is a previous page), and the new page is the Home page for the Travel Checklist
+                if (inputArgument.oldUrl != null && getFragmentIdentifierFromUrlString(inputArgument.newURL) === "/travel")
                 {
                     //Determine the anchor part of the URL of the page that was navigated from
-                    let _oldUrlAnchor = inputArgument.oldURL.split('#/')[1];
+                    let _oldUrlAnchor = getFragmentIdentifierFromUrlString(inputArgument.oldUrl);
 
                     if (_oldUrlAnchor != null)
                     {
                         //Determine the ID of the List from the previous page
-                        let _listId = _oldUrlAnchor.split('/')[1];
+                        let _listId = _oldUrlAnchor.split('/')[2];
 
                         //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
                         fetchAndRenderListBalance(_listId);

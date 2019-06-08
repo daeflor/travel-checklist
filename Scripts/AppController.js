@@ -8,7 +8,7 @@
         window.DebugController.LogWarning("Setting up app. Location Hash depth:" + document.location.hash.split('/').length);
 
         //Force the initial page to be the travel list selection screen 
-        location.href = '#/travel';
+        location.href = '#/travel'; //TODO I think I'd prefer to use #travel
 
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
@@ -45,6 +45,7 @@
                 }
 
                 //Hide any active settings view and display the Home Screen
+                //TODO Hiding the Active Settings View shouldn't have to be handled here..
                 window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
                 window.View.Render('showHomeScreen'); 
                 //TODO should this be done in controller?
