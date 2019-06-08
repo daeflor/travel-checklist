@@ -434,6 +434,30 @@ window.ListController = (function()
         }
     }
 
+    /**
+     * Calculates the balance of a List Item based on its different quantity values
+     * @param {object} quantities The List Item's 'quantities' object
+     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
+     */
+    function calculateListItemBalance(quantities)
+    {
+        //Calculate the List Item's balance based on its different quantity values
+        let _listItemBalance = quantities.needed - quantities.luggage - quantities.wearing - quantities.backpack;
+
+        if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
+        {
+            return ChecklistObjectBalance.Unbalanced;
+        } 
+        else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
+        {
+            return ChecklistObjectBalance.Balanced;
+        }
+        else //Else return None
+        {
+            return ChecklistObjectBalance.None;
+        }
+    }
+
     function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
     {
         let _calculateAndRenderListBalance = function(listItems)
@@ -445,16 +469,16 @@ window.ListController = (function()
             for (let i = 0; i < listItems.length; i++)
             {
                 //Calculate the List Item's balance based on its different quantity values
-                let _listItemBalance = listItems[i].quantities.needed - listItems[i].quantities.luggage - listItems[i].quantities.wearing - listItems[i].quantities.backpack;
+                let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
 
-                //If the balance is not equal to zero, then set the List's balance as Unbalanced
-                if (_listItemBalance !== 0)
+                //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
+                if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
                 {
                     _listBalance = ChecklistObjectBalance.Unbalanced;
                     break;
                 } 
-                //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
-                else if (listItems[i].quantities.needed !== 0)
+                //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
+                else if (_listItemBalance === ChecklistObjectBalance.Balanced)
                 {
                     _listBalance = ChecklistObjectBalance.Balanced;
                 }
