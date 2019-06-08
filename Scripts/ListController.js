@@ -247,7 +247,7 @@ window.ListController = (function()
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
-        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
 
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (let quantityType in listItem.quantities)
@@ -270,9 +270,8 @@ window.ListController = (function()
     function renderUpdatesToListItemQuantity(listItem, quantityType)
     {
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
-        
-        //TODO can this use the new ChecklistObjectBalance system?
-        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -485,7 +484,7 @@ window.ListController = (function()
             }
 
             //Update the View, passing it the List's ID and calculated balance
-            window.View.Render('UpdateListNameColor', {id:listId, balance:_listBalance});
+            window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
         }
 
         //TODO this completely breaks the existing pattern. 

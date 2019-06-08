@@ -417,6 +417,17 @@ window.View = (function()
                 //Find the List Item element which matches the given ID, and then remove it
                 findChecklistElement(parameters.id, elementFoundCallback);
             },
+            UpdateNameToggleColor: function() //Expected parameters: id, balance
+            {
+                let elementFoundCallback = function(element)
+                {                    
+                    element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
+                                              : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
+                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
+                };
+
+                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
+            },
             UpdateListItemQuantityText: function() //Expected parameters: id, quantityType, updatedValue
             {
                 window.DebugController.Print("Request to update quantity value. ListItem ID: " + parameters.id + ". Quantity type: " + parameters.quantityType + ". New value: " + parameters.updatedValue);
@@ -429,19 +440,6 @@ window.View = (function()
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, parameters.updatedValue);
-            },
-            UpdateListItemNameColor: function() //Expected parameters: id, quantityBalance, quantityNeeded
-            {
-                //window.DebugController.Print("Request to update color of list item with id: " + parameters.id);
-
-                let elementFoundCallback = function(element)
-                {                    
-                    element.style.borderColor = (parameters.quantityBalance != 0) ? 'peru' //lightsalmon is also good
-                                              : (parameters.quantityNeeded != 0)  ? 'mediumseagreen'
-                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
-                };
-
-                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
             },
             ExpandSettingsView: function() 
             {
@@ -505,19 +503,6 @@ window.View = (function()
                 {
                     window.DebugController.LogError("ERROR: One or both of the list object elements to swap is null. ID of element to move Upwards: " + parameters.moveUpwardsId + ", Downwards: " + parameters.moveDownwardsId);
                 }
-            },
-            UpdateListNameColor: function() //Expected parameters: id, balance
-            {
-                //TODO can this be merged with UpdateListItemNameColor?
-
-                let elementFoundCallback = function(element)
-                {                    
-                    element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
-                                              : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
-                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
-                };
-
-                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
             }
         };
 
