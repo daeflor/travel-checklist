@@ -434,18 +434,40 @@ window.ListController = (function()
         }
     }
 
-    function fetchAndRenderListBalance(id)
+    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
     {
-        //TODO this completely breaks the existing pattern.
-        let _updateView = function(balance)
+        let _calculateAndRenderListBalance = function(listItems)
         {
-            window.View.Render('UpdateListNameColor', {id:id, balance:balance});
+            //Set the List's balance as None by default
+            let _listBalance = ChecklistObjectBalance.None;
+
+            //For each List Item in the List...
+            for (let i = 0; i < listItems.length; i++)
+            {
+                //Calculate the List Item's balance based on its different quantity values
+                let _listItemBalance = listItems[i].quantities.needed - listItems[i].quantities.luggage - listItems[i].quantities.wearing - listItems[i].quantities.backpack;
+
+                //If the balance is not equal to zero, then set the List's balance as Unbalanced
+                if (_listItemBalance !== 0)
+                {
+                    _listBalance = ChecklistObjectBalance.Unbalanced;
+                    break;
+                } 
+                //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
+                else if (listItems[i].quantities.needed !== 0)
+                {
+                    _listBalance = ChecklistObjectBalance.Balanced;
+                }
+            }
+
+            //Update the View, passing it the List's ID and calculated balance
+            window.View.Render('UpdateListNameColor', {id:listId, balance:_listBalance});
         }
 
         //TODO this completely breaks the existing pattern. 
             //This doesn't require updates to the model but it does access the model to get information. 
             //Calling this here is completely different to how the rest of the actions are performed
-        window.Model.GetListBalance(id, _updateView); 
+        window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /**
