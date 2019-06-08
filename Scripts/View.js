@@ -506,6 +506,19 @@ window.View = (function()
                     window.DebugController.LogError("ERROR: One or both of the list object elements to swap is null. ID of element to move Upwards: " + parameters.moveUpwardsId + ", Downwards: " + parameters.moveDownwardsId);
                 }
             },
+            UpdateListNameColor: function() //Expected parameters: id, balance
+            {
+                //TODO can this be merged with UpdateListItemNameColor?
+
+                let elementFoundCallback = function(element)
+                {                    
+                    element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
+                                              : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
+                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
+                };
+
+                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
+            }
         };
 
         //If a command is provided, execute the corresponding method

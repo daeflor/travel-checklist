@@ -53,6 +53,8 @@
         }
     }
     
+    //TODO Could/should this be made publicly accessible?
+
     function getCurrentScreenData()
     {
         var currentScreenData = {
