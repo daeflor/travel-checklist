@@ -335,7 +335,6 @@ window.Model = (function()
         findListItem(listId, listItemId, runCommand);
     }
 
-    //TODO This isn't being used when the app is launched, so all the List Toggles will be gray
     //TODO should this be in a method like ModifyList? maybe AccessList?
     function getListBalance(listId, callback)
     {

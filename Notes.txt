@@ -14,13 +14,10 @@ TO-DOs:
 
 Upcoming To-Do List:
 - handleUpdatesFromView should use event name instead of action name
-- The links to different categories could have checkmarks or be color-coded to indicate whether or not that section is 'complete' or not
-    May also make sense to have an 'overview' section/page for this, which tallies totals and shows overall state
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
 - Replace var with const and let
 - Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
-- BUG! : The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 
 - Backup or cloud storage functionality
 - Clean up and document Model
 - Every time an unreported error is hit, add error handling for it
@@ -44,6 +41,7 @@ Features:
         - Could also consider using a different font library, if not going to be using CDN anyway.
 - Could have a travel preparation category/section, which would require different columns and interactions
 - A feature that guesses clothing quantities based on the number of nights provided. 
+- Could have an 'overview' section/page, which tallies totals and shows overall state/balance of Lists
 
 Usability & Appearance (UX & UI):
 - ! BUG: The edit name text area isn't large enough anymore. It should be more similar to the length of the toggle/name. 

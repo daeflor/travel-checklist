@@ -199,6 +199,8 @@ window.ListController = (function()
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
         window.View.Render('AddList', {list:list});
 
+        fetchAndRenderListBalance(list.id);
+
             // var myObj = {myKey:"myVar", fruit:'banana'};
             // for (let key in myObj)
             // {
@@ -423,20 +425,36 @@ window.ListController = (function()
                         //Determine the ID of the List from the previous page
                         let _listId = _oldUrlAnchor.split('/')[1];
 
-                        //TODO this completely breaks the existing pattern.
-                        let _updateView = function(listBalance)
-                        {
-                            window.View.Render('UpdateListNameColor', {id:_listId, balance:listBalance});
-                        }
+                        fetchAndRenderListBalance(_listId);
 
-                        //TODO this completely breaks the existing pattern. 
-                            //This doesn't require updates to the model but it does access the model to get information. 
-                            //Calling this here is completely different to how the rest of the actions are performed
-                        window.Model.GetListBalance(_listId, _updateView); 
+                        // //TODO this completely breaks the existing pattern.
+                        // let _updateView = function(listBalance)
+                        // {
+                        //     window.View.Render('UpdateListNameColor', {id:_listId, balance:listBalance});
+                        // }
+
+                        // //TODO this completely breaks the existing pattern. 
+                        //     //This doesn't require updates to the model but it does access the model to get information. 
+                        //     //Calling this here is completely different to how the rest of the actions are performed
+                        // window.Model.GetListBalance(_listId, _updateView); 
                     }
                 }
             }
         }
+    }
+
+    function fetchAndRenderListBalance(id)
+    {
+        //TODO this completely breaks the existing pattern.
+        let _updateView = function(balance)
+        {
+            window.View.Render('UpdateListNameColor', {id:id, balance:balance});
+        }
+
+        //TODO this completely breaks the existing pattern. 
+            //This doesn't require updates to the model but it does access the model to get information. 
+            //Calling this here is completely different to how the rest of the actions are performed
+        window.Model.GetListBalance(id, _updateView); 
     }
 
     /**
