@@ -24,33 +24,33 @@ window.Model = (function()
         window.StorageManager.StoreChecklistData(checklistData);
     }
 
-    //TODO Do these (below) really need to use callbacks instead of just returning the List or ListItem objects?
-
-    //TODO This doesn't really return the list, just the List Index. Should this be renamed?
-    function findList(listId, callback)
+    /**
+     * Get the index of the List in the Lists array that matches the provided ID
+     * @param {string} listId The ID of the List to search for
+     * @returns the index of the List in the Lists array that matches the provided ID
+     */
+    function getListIndexFromId(listId)
     {
-        //Search for the List and, if it's found, execute the callback method
-        GetArrayIndexOfObjectWithKVP(getLists(), 'id', listId, callback);
+        //Search for the List and return its index
+        return GetArrayIndexOfObjectWithKVP(getLists(), 'id', listId);
     }
 
-    function findListItem(listId, listItemId, callback)
+    /**
+     * Get the index of the List Item in a List's List Items array, matching the provided List and List Item IDs
+     * @param {string} listId The ID of the List Item's parent List
+     * @param {string} listItemId The ID of the List Item to search for
+     * @returns the index of the List Item
+     */
+    function getListItemIndexFromId(listId, listItemId) //TODO eventually this should only require the List Item ID, which should include the list ID as a prefix
     {
-        //Set up the callback method to execute when a List matching the given ID is found
-        let _listFoundCallback = function(listIndex)
+        //Get the index of the list in the Lists array
+        let _listIndex = getListIndexFromId(listId);
+
+        if (_listIndex != null) //TODO replace this with try catch 
         {
-            //Set up the callback method to execute when a List Item matching the given ID is found
-            let _listItemFoundCallback = function(listItemIndex)
-            {
-                //Execute the provided callback method, passing both the List index and List Item index as arguments
-                callback(listIndex, listItemIndex);
-            };
-            
-            //Search for the List Item and, if it's found, execute the callback method
-            GetArrayIndexOfObjectWithKVP(getLists()[listIndex].listItems, 'id', listItemId, _listItemFoundCallback);
-        };
-        
-        //Search for the List and, if it's found, execute the callback method
-        findList(listId, _listFoundCallback);
+            //Search for the List Item and return its index
+            return _listItemIndex = GetArrayIndexOfObjectWithKVP(getLists()[_listIndex].listItems, 'id', listItemId); 
+        }
     }
 
     function editName(checklistObject, updatedName, callback)
@@ -215,26 +215,19 @@ window.Model = (function()
             }
         };
 
-        //TODO Is it possible to somehow merge this with the same method in modifyListItem?... Maybe at least the commandSucceededCallback can be abstracted? But it wouldn't help much
-        //Set up the callback method to execute when a List matching the given ID is found
-        let runCommand = function(listIndex)
-        {
-            //Set up the callback method to execute once the given command has been executed successfully 
-            let commandSucceededCallback = function(args)
-            {       
-                //Store the updated checklist data
-                storeChecklistData();
+        //TODO Is it possible to somehow merge this with the same method in modifyListItem?
+        //Set up the callback method to execute once the given command has been executed successfully 
+        let commandSucceededCallback = function(args)
+        {       
+            //Store the updated checklist data
+            storeChecklistData();
 
-                //Execute the provided callback method, passing the returned arguments if not null
-                args != null ? callback(args) : callback();
-            };
+            //Execute the provided callback method, passing the returned arguments if not null
+            args != null ? callback(args) : callback();
+        };
 
-            //Execute the method matching the given command
-            commands[command](listIndex, commandSucceededCallback);
-        }
-
-        //Search for the List and, if it's found, execute the method matching the given command
-        findList(listId, runCommand);
+        //Execute the method matching the given command
+        commands[command](getListIndexFromId(listId), commandSucceededCallback);
     }
 
     function modifyListItem(command, listId, listItemId, callback, options)
@@ -311,72 +304,58 @@ window.Model = (function()
             }
         };
 
-        //Set up the callback method to execute when a List Item matching the given ID is found
-        let runCommand = function(listIndex, listItemIndex)
-        {
-            //Set up the callback method to execute once the given command has been executed successfully 
-            let commandSucceededCallback = function(args)
-            {       
-                //Store the updated checklist data object
-                storeChecklistData();
+        //Set up the callback method to execute once the given command has been executed successfully 
+        let commandSucceededCallback = function(args)
+        {       
+            //Store the updated checklist data object
+            storeChecklistData();
 
-                //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
-                    //But it wouldn't work for ClearQuantityValues (in ModifyList)
+            //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
+                //But it wouldn't work for ClearQuantityValues (in ModifyList)
 
-                //Execute the provided callback method, passing the returned arguments if not null
-                args != null ? callback(args) : callback();
-            };
+            //Execute the provided callback method, passing the returned arguments if not null
+            args != null ? callback(args) : callback();
+        };
 
-            //Execute the method matching the given command
-            commands[command](listIndex, listItemIndex, commandSucceededCallback);
-
-            // //Execute the method matching the given command
-            // commands[command](listIndex, listItemIndex, modelUpdated);
-        }
-
-        //Search for the List Item and, if it's found, execute the method matching the given command
-        findListItem(listId, listItemId, runCommand);
+        //Execute the method matching the given command
+        commands[command](getListIndexFromId(listId), getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
     }
 
     //TODO should this be in a method like ModifyList? maybe AccessList?
         //Or should this be done in the Controller? Probably...
     function getListBalance(listId, callback)
     {
-        //Setup the callback to execute once the List has been found
-        let _listFoundCallback = function(listIndex)
+        //Get the index of the list in the Lists array
+        let _listIndex = getListIndexFromId(listId);
+
+        let _listObject = getLists()[_listIndex];
+        
+        //Set the List's balance as None by default
+        let _listBalance = ChecklistObjectBalance.None;
+
+        //For each List Item in the List...
+        for (let i = 0; i < _listObject.listItems.length; i++)
         {
-            let _listObject = getLists()[listIndex];
-            
-            //Set the List's balance as None by default
-            let _listBalance = ChecklistObjectBalance.None;
+            let _listItem = _listObject.listItems[i];
 
-            //For each List Item in the List...
-            for (let i = 0; i < _listObject.listItems.length; i++)
+            //Calculate the List Item's balance based on its different quantity values
+            let _listItemBalance = _listItem.quantities.needed - _listItem.quantities.luggage - _listItem.quantities.wearing - _listItem.quantities.backpack;
+
+            //If the balance is not equal to zero, then set the List's balance as Unbalanced
+            if (_listItemBalance !== 0)
             {
-                let _listItem = _listObject.listItems[i];
-
-                //Calculate the List Item's balance based on its different quantity values
-                let _listItemBalance = _listItem.quantities.needed - _listItem.quantities.luggage - _listItem.quantities.wearing - _listItem.quantities.backpack;
-
-                //If the balance is not equal to zero, then set the List's balance as Unbalanced
-                if (_listItemBalance !== 0)
-                {
-                    _listBalance = ChecklistObjectBalance.Unbalanced;
-                    break;
-                } 
-                //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
-                else if (_listItem.quantities.needed !== 0)
-                {
-                    _listBalance = ChecklistObjectBalance.Balanced;
-                }
+                _listBalance = ChecklistObjectBalance.Unbalanced;
+                break;
+            } 
+            //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
+            else if (_listItem.quantities.needed !== 0)
+            {
+                _listBalance = ChecklistObjectBalance.Balanced;
             }
-
-            //Execute the callback method passed in from the Controller, passing back the calculated List balance as an argument
-            callback(_listBalance);
         }
 
-        //Search for the List and, if it's found, execute the method matching the given command
-        findList(listId, _listFoundCallback);
+        //Execute the callback method passed in from the Controller, passing back the calculated List balance as an argument
+        callback(_listBalance);
     }
 
     // function modelUpdated(callback, args)
