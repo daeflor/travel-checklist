@@ -47,17 +47,23 @@ function GetElement(id, callback)
     }
 }
 
-function GetArrayIndexOfObjectWithKVP(array, key, value, callback)
+/**
+ * Get the index of an object which has a key that matches the given value, in the given array 
+ * @param {array} array The array in which to search for the object
+ * @param {string} key The key for which to find a matching value
+ * @param {*} value The value of the provided key to search for
+ * @returns the index of the found object in the array provided
+ */
+function GetArrayIndexOfObjectWithKVP(array, key, value)
 {
     //Traverse the array, searching for an object that has a key matching the given value
     for (var i = array.length-1; i >= 0; i--)
     {
-        //If a match is found, call the passed callback method and end execution of this method
+        //If a match is found, return the index
         if (array[i][key] == value)
         {
             window.DebugController.Print("Returned object with Key: " + key + ", Value: " + value);
-            callback(i);
-            return;
+            return i;
         }
     } 
 

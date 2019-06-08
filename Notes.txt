@@ -13,7 +13,7 @@ TO-DOs:
     - - - Total             : 119
 
 Upcoming To-Do List:
-- Make Model findList command synchronous / return a value (getListIndexFromId?)
+- Address some TODOs from dynamic-list-toggle-color branch (https://github.com/daeflor/travel-checklist/compare/dynamic-list-toggle-color)
 - handleUpdatesFromView should use event name instead of action name
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
@@ -24,6 +24,7 @@ Upcoming To-Do List:
 - Every time an unreported error is hit, add error handling for it
 - Revamp CreateNewElement
 - Disallow refresh gesture in List view
+- Look into (unit) testing possibilities 
 
 Features:
 - ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
@@ -55,6 +56,7 @@ Usability & Appearance (UX & UI):
 - Color palette of popovers (incl. background) could be better
 
 Code Cleanup:
+- Consider replacing (some) callbacks with async/await
 - It may be possible to avoid the Active List/SettingsView/Popover/etc. by using self-invoking functions (IIFEs)
 - All instances of document.getElementById should be replaced with a custom one that includes error handling
 - View.cs is pretty long and could possibly be broken up, perhaps between HomeScreenView and ListScreenView, or something alone those lines.
