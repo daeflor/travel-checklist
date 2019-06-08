@@ -508,6 +508,8 @@ window.View = (function()
             },
             UpdateListNameColor: function() //Expected parameters: id, balance
             {
+                //TODO can this be merged with UpdateListItemNameColor?
+
                 let elementFoundCallback = function(element)
                 {                    
                     element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good

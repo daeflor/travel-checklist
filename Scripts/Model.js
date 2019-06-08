@@ -24,6 +24,9 @@ window.Model = (function()
         window.StorageManager.StoreChecklistData(checklistData);
     }
 
+    //TODO Do these (below) really need to use callbacks instead of just returning the List or ListItem objects?
+
+    //TODO This doesn't really return the list, just the List Index. Should this be renamed?
     function findList(listId, callback)
     {
         //Search for the List and, if it's found, execute the callback method
@@ -336,15 +339,16 @@ window.Model = (function()
     }
 
     //TODO should this be in a method like ModifyList? maybe AccessList?
+        //Or should this be done in the Controller? Probably...
     function getListBalance(listId, callback)
     {
         //Setup the callback to execute once the List has been found
         let _listFoundCallback = function(listIndex)
         {
+            let _listObject = getLists()[listIndex];
+            
             //Set the List's balance as None by default
             let _listBalance = ChecklistObjectBalance.None;
-            
-            let _listObject = getLists()[listIndex];
 
             //For each List Item in the List...
             for (let i = 0; i < _listObject.listItems.length; i++)
@@ -369,14 +373,6 @@ window.Model = (function()
 
             //Execute the callback method passed in from the Controller, passing back the calculated List balance as an argument
             callback(_listBalance);
-
-            //Set a temporary balanceState variable to None
-            //For each ListItem in the List
-                //Calculate the List Item's Balance - Probably need a separate method for this
-                    //If the Balance is Unbalanced, set the balanceState variable to Unbalanced and break (or just return Unbalanced?)
-                    //If the Balance is Balanced, set the balanceState variable to Balanced, then continue
-                    //If the Balance is None, continue
-            //Execute the callback, passing the balanceState as a parameter
         }
 
         //Search for the List and, if it's found, execute the method matching the given command
