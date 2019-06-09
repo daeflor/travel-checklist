@@ -104,7 +104,7 @@ window.ListController = (function()
         /** VC Bindings **/
         HideActiveSettingsView: {
             event: 'SettingsViewExpansionStarted', 
-            action: 'HideActiveSettingsView',
+            action: 'HideActiveSettingsView', //TODO should also trigger on hashchange... right?
             modelUpdateRequired: false,
             //bindOptions: ['id'],
             //modelOptions: [],
@@ -247,7 +247,7 @@ window.ListController = (function()
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
-        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
 
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (let quantityType in listItem.quantities)
@@ -270,9 +270,8 @@ window.ListController = (function()
     function renderUpdatesToListItemQuantity(listItem, quantityType)
     {
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
-        
-        //TODO can this use the new ChecklistObjectBalance system?
-        window.View.Render('UpdateListItemNameColor', {id:listItem.id, quantityNeeded:listItem.quantities.needed, quantityBalance:(listItem.quantities.needed - listItem.quantities.luggage - listItem.quantities.wearing - listItem.quantities.backpack)});
+
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -411,20 +410,18 @@ window.ListController = (function()
             }
             else if (bind.action === 'UpdateListToggleColor')
             {
-                //TODO Can this kind of thing be in a helper method instead?
-                //Determine the anchor part of the URL of the page that was navigated to
-                let _newUrlAnchor = inputArgument.newURL.split('#/')[1];
+                //TODO Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
 
-                //If the new page is the Home page for the Travel Checklist...
-                if (_newUrlAnchor === "travel")
+                //If the new page is the Home page for the Travel Checklist
+                if (getFragmentIdentifierFromUrlString(inputArgument.newURL) === "/travel")
                 {
                     //Determine the anchor part of the URL of the page that was navigated from
-                    let _oldUrlAnchor = inputArgument.oldURL.split('#/')[1];
+                    let _oldUrlAnchor = getFragmentIdentifierFromUrlString(inputArgument.oldURL);
 
                     if (_oldUrlAnchor != null)
                     {
                         //Determine the ID of the List from the previous page
-                        let _listId = _oldUrlAnchor.split('/')[1];
+                        let _listId = _oldUrlAnchor.split('/')[2];
 
                         //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
                         fetchAndRenderListBalance(_listId);
@@ -434,18 +431,64 @@ window.ListController = (function()
         }
     }
 
-    function fetchAndRenderListBalance(id)
+    /**
+     * Calculates the balance of a List Item based on its different quantity values
+     * @param {object} quantities The List Item's 'quantities' object
+     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
+     */
+    function calculateListItemBalance(quantities)
     {
-        //TODO this completely breaks the existing pattern.
-        let _updateView = function(balance)
+        //Calculate the List Item's balance based on its different quantity values
+        let _listItemBalance = quantities.needed - quantities.luggage - quantities.wearing - quantities.backpack;
+
+        if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
         {
-            window.View.Render('UpdateListNameColor', {id:id, balance:balance});
+            return ChecklistObjectBalance.Unbalanced;
+        } 
+        else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
+        {
+            return ChecklistObjectBalance.Balanced;
+        }
+        else //Else return None
+        {
+            return ChecklistObjectBalance.None;
+        }
+    }
+
+    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    {
+        let _calculateAndRenderListBalance = function(listItems)
+        {
+            //Set the List's balance as None by default
+            let _listBalance = ChecklistObjectBalance.None;
+
+            //For each List Item in the List...
+            for (let i = 0; i < listItems.length; i++)
+            {
+                //Calculate the List Item's balance based on its different quantity values
+                let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
+
+                //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
+                if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
+                {
+                    _listBalance = ChecklistObjectBalance.Unbalanced;
+                    break;
+                } 
+                //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
+                else if (_listItemBalance === ChecklistObjectBalance.Balanced)
+                {
+                    _listBalance = ChecklistObjectBalance.Balanced;
+                }
+            }
+
+            //Update the View, passing it the List's ID and calculated balance
+            window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
         }
 
         //TODO this completely breaks the existing pattern. 
             //This doesn't require updates to the model but it does access the model to get information. 
             //Calling this here is completely different to how the rest of the actions are performed
-        window.Model.GetListBalance(id, _updateView); 
+        window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /**

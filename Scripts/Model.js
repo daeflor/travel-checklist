@@ -331,43 +331,12 @@ window.Model = (function()
         commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
     }
 
-    //TODO should this be in a method like ModifyList? maybe AccessList?
-        //Or should this be done in the Controller? Probably...
-    function getListBalance(listId, callback)
-    {
-        //Get the index of the list in the Lists array
-        //let _listIndex = getListIndexFromId(listId);
+    //TODO It's not very logical/intuitive that access list items would execute a call back
+    function accessListItems(listId, callback)
+    {     
+        let _listItems = getListItems(listId);
 
-        //let _listObject = getLists()[_listIndex];
-
-        let _listItems = getListItems(listId)
-        
-        //Set the List's balance as None by default
-        let _listBalance = ChecklistObjectBalance.None;
-
-        //For each List Item in the List...
-        for (let i = 0; i < _listItems.length; i++)
-        {
-            //let _listItem = _listItems[i];
-
-            //Calculate the List Item's balance based on its different quantity values
-            let _listItemBalance = _listItems[i].quantities.needed - _listItems[i].quantities.luggage - _listItems[i].quantities.wearing - _listItems[i].quantities.backpack;
-
-            //If the balance is not equal to zero, then set the List's balance as Unbalanced
-            if (_listItemBalance !== 0)
-            {
-                _listBalance = ChecklistObjectBalance.Unbalanced;
-                break;
-            } 
-            //Else, if the 'needed' quantity is not equal to zero, then set the List's balance as Balanced
-            else if (_listItems[i].quantities.needed !== 0)
-            {
-                _listBalance = ChecklistObjectBalance.Balanced;
-            }
-        }
-
-        //Execute the callback method passed in from the Controller, passing back the calculated List balance as an argument
-        callback(_listBalance);
+        callback(_listItems);
     }
 
     // function modelUpdated(callback, args)
@@ -407,10 +376,9 @@ window.Model = (function()
     return {
         RetrieveChecklistData : retrieveChecklistData,
         AddNewList : addNewList,
-        GetListItems : getListItems,
+        AccessListItems : accessListItems,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem,
-        GetListBalance: getListBalance
+        ModifyListItem : modifyListItem
     };
 })();
 

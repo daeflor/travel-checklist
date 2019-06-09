@@ -96,6 +96,24 @@ function MergeObjects(target, source)
     return target;
 }
 
+/**
+ * Get the Fragment Identifier (anchor tag) for the provided URL
+ * @param {string} urlString The full URL string
+ * @returns the Fragment Identifier (anchor tag) for the provided URL
+ */
+function getFragmentIdentifierFromUrlString(urlString)
+{
+    if (urlString != null) //TODO replace with try catch
+    {
+        return urlString.split('#')[1]; 
+        //TODO if there is no Fragment Identifier, would it be better to return an empty string rather than 'undefined'?
+    }
+    else
+    {
+        window.DebugController.LogError("Fragment Identifier requested but a valid URL string was not provided.");
+    }
+}
+
 /** Experimental & In Progress **/
 
 /** Unused Utilities **/
