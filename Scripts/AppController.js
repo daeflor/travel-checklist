@@ -30,7 +30,7 @@
     {
         var currentScreenData = getCurrentScreenData();
 
-        window.DebugController.LogWarning("App: The URL fragment identifier changed. Hash route: " + GetLocationHashRoute());
+        window.DebugController.Print("App: The URL fragment identifier changed. Hash route: " + GetLocationHashRoute());
 
         //If the current screen data is valid and specifies a checklist type...
         if (currentScreenData.listType != null && currentScreenData.listId != null && currentScreenData.listType !== '')
@@ -45,7 +45,7 @@
                 }
 
                 //Hide any active settings view and display the Home Screen
-                //TODO Hiding the Active Settings View shouldn't have to be handled here..
+                //TODO Hiding the Active Settings View shouldn't have to be handled here.. Should be handled with hashchange event in controller
                 window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
                 window.View.Render('showHomeScreen'); 
                 //TODO should this be done in controller?

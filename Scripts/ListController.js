@@ -1,3 +1,33 @@
+const ChecklistEvents = {
+    //App
+    HashChanged: 'HashChanged', //TODO two resulting actions
+
+    //Home Screen
+    GoToListButtonPressed: 'GoToListButtonPressed',
+    NewListButtonPressed: 'NewListButtonPressed',
+
+    //List Screens
+    NewListItemButtonPressed: 'NewListItemButtonPressed',
+
+    //List Headers
+    QuantityHeaderPopoverShown: 'QuantityHeaderPopoverShown',
+    ClearButtonPressed: 'ClearButtonPressed',
+
+    //Settings Views
+    SettingsViewExpansionStarted: 'SettingsViewExpansionStarted',
+    NameEdited: 'NameEdited',
+    DeleteButtonPressed: 'DeleteButtonPressed', //TODO two separate, possible actions
+    MoveUpwardsButtonPressed: 'MoveUpwardsButtonPressed',
+    MoveDownwardsButtonPressed: 'MoveDownwardsButtonPressed',
+
+    //Quantity Toggles/Popovers
+    QuantityToggleSelected: 'QuantityToggleSelected',
+    QuantityPopoverShown: 'QuantityPopoverShown',
+    DecrementQuantityButtonPressed: 'DecrementQuantityButtonPressed',
+    IncrementQuantityButtonPressed: 'IncrementQuantityButtonPressed',
+    ClickDetectedOutsidePopover: 'ClickDetectedOutsidePopover'
+};
+
 window.ListController = (function()
 {    
     let activeListId = '';
@@ -228,7 +258,22 @@ window.ListController = (function()
 
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:list};
-        createBind(bindReference.HideActiveSettingsView, _options);
+        
+        //createBind(bindReference.HideActiveSettingsView, _options);
+
+            //TODO temporarily replaced the line above with the block below.
+
+            //Set up the callback method to execute for when the View recieves input from the user
+            const _onUserInput = function(inputArgument) 
+            {
+                //Handle the updates/input received from the View
+                //handleUpdatesFromView(bind, options, inputArgument);
+                handleEvent(ChecklistEvents.SettingsViewExpansionStarted, _options, inputArgument);
+            };
+
+            //Add an event listener to the specified element
+            window.View.Bind("SettingsViewExpansionStarted", _onUserInput, _options);
+
         createBind(bindReference.GoToList, _options);
         createBind(bindReference.UpdateName, _options);
         createBind(bindReference.MoveUpwards, _options);
@@ -317,6 +362,25 @@ window.ListController = (function()
         }
     }
 
+
+    function handleEvent(triggeredEvent, options, inputArgument)
+    {
+        if (triggeredEvent === ChecklistEvents.HashChanged)
+        {
+            window.View.Render('HideActiveSettingsView');
+            window.View.Render('HideActiveQuantityPopover');
+            
+            if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
+            {
+                fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
+            }
+        }
+        else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
+        {
+            window.View.Render('HideActiveSettingsView');
+        }
+    }
+
     /**
      * Handle any input or updates to the checklist, received from the View. These updates may be passed along to the Model or directly back to the View to be rendered as needed.
      * @param {object} bind The bind object associated with the type of application interaction that has been triggered (i.e. the action that has been initiated by the user or app, such as removing a List Item).
@@ -362,7 +426,7 @@ window.ListController = (function()
             else if (bind.action === 'GoToList')
             {
                 //If there is any active settings view, close it
-                window.View.Render('HideActiveSettingsView');
+                window.View.Render('HideActiveSettingsView'); //TODO this probably isn't necessary if we just have it trigger on hashchange
 
                 //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
                     //Although, if this is the only place the Active List is hidden, then maybe it's fine
@@ -410,26 +474,53 @@ window.ListController = (function()
             }
             else if (bind.action === 'UpdateListToggleColor')
             {
-                //TODO Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
-
-                //If the new page is the Home page for the Travel Checklist
-                if (getFragmentIdentifierFromUrlString(inputArgument.newURL) === "/travel")
+                //If the new page is the Home Screen and the previous page was a List Screen...
+                if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
                 {
-                    //Determine the anchor part of the URL of the page that was navigated from
-                    let _oldUrlAnchor = getFragmentIdentifierFromUrlString(inputArgument.oldURL);
-
-                    if (_oldUrlAnchor != null)
-                    {
-                        //Determine the ID of the List from the previous page
-                        let _listId = _oldUrlAnchor.split('/')[2];
-
-                        //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
-                        fetchAndRenderListBalance(_listId);
-                    }
+                    //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
+                    
+                    //Calculate the previous List's balance and then update the List's Toggle in the View
+                    fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
                 }
             }
         }
     }
+
+    //TODO these helper methods below may not belong in Controller
+        //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
+
+    function isHomeScreen(urlString)
+    {
+        //If the url string matches the Home page for the Travel Checklist, return true, else return false
+        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
+    }
+
+    function isListScreen(urlString)
+    {
+        //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
+
+        //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+        return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
+
+        ////Determine the anchor part of the URL provided
+        //let _urlAnchor = getFragmentIdentifierFromUrlString(urlString);
+
+        ////If the URL anchor exists and it contains three sections, then assume that this is a List Screen and return true. Else return false.
+        //return (_urlAnchor != null && _urlAnchor.split('/').length == 3) ? true : false; //TODO this is pretty hacky
+    }
+
+    // function getListIdFromUrl(urlString)
+    // {
+    //     if (isListScreen(urlString) == true)
+    //     {
+    //         return getUrlSlug(urlString);
+    //     }
+    //     else
+    //     {
+    //         window.DebugController.LogWarning("Tried to get a List ID from a URL, but the URL is not for a List Screen.");
+    //         return undefined;
+    //     }
+    // }
 
     /**
      * Calculates the balance of a List Item based on its different quantity values
