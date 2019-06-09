@@ -114,6 +114,20 @@ function getFragmentIdentifierFromUrlString(urlString)
     }
 }
 
+/**
+ * Get the final path segment ("slug") of the provided URL
+ * @param {string} urlString The URL or portion of a URL
+ * @returns the final path segment ("slug") of the provided URL
+ */
+function getUrlSlug(urlString)
+{
+    //Split the URL into the various path segments separated by '/'
+    let _pathSegments = urlString.split('/');
+
+    //Return the last path segment in the URL
+    return _pathSegments[_pathSegments.length-1]; 
+}
+
 /** Experimental & In Progress **/
 
 /** Unused Utilities **/
