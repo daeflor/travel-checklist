@@ -1,3 +1,5 @@
+//'use strict';
+
 const ChecklistEvents = {
     //App
     HashChanged: 'HashChanged', //TODO two resulting actions
@@ -30,7 +32,7 @@ const ChecklistEvents = {
 
 window.ListController = (function()
 {    
-    let activeListId = '';
+    let activeListId = null;
 
     //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
         //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
@@ -134,7 +136,7 @@ window.ListController = (function()
         /** VC Bindings **/
         HideActiveSettingsView: {
             event: 'SettingsViewExpansionStarted', 
-            action: 'HideActiveSettingsView', //TODO should also trigger on hashchange... right?
+            action: 'HideActiveSettingsView', //TODO should ALSO trigger on hashchange... right?
             modelUpdateRequired: false,
             //bindOptions: ['id'],
             //modelOptions: [],
@@ -260,21 +262,11 @@ window.ListController = (function()
         const _options = {checklistObject:list};
         
         //createBind(bindReference.HideActiveSettingsView, _options);
+        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
 
-            //TODO temporarily replaced the line above with the block below.
+        //createBind(bindReference.GoToList, _options);
+        setupBind(ChecklistEvents.GoToListButtonPressed, _options);
 
-            //Set up the callback method to execute for when the View recieves input from the user
-            const _onUserInput = function(inputArgument) 
-            {
-                //Handle the updates/input received from the View
-                //handleUpdatesFromView(bind, options, inputArgument);
-                handleEvent(ChecklistEvents.SettingsViewExpansionStarted, _options, inputArgument);
-            };
-
-            //Add an event listener to the specified element
-            window.View.Bind("SettingsViewExpansionStarted", _onUserInput, _options);
-
-        createBind(bindReference.GoToList, _options);
         createBind(bindReference.UpdateName, _options);
         createBind(bindReference.MoveUpwards, _options);
         createBind(bindReference.MoveDownwards, _options);
@@ -305,7 +297,10 @@ window.ListController = (function()
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:listItem}; //TODO if this is the only param needed, could _options = listItem? Not unless for List it also only needs the List object...
-        createBind(bindReference.HideActiveSettingsView, _options);
+        
+        //createBind(bindReference.HideActiveSettingsView, _options);
+        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
+
         createBind(bindReference.UpdateName, _options);
         createBind(bindReference.MoveUpwards, _options);
         createBind(bindReference.MoveDownwards, _options);
@@ -362,6 +357,34 @@ window.ListController = (function()
         }
     }
 
+    function setupBind(eventToBind, options)
+    {
+        //If a valid event was provided, setup the bind. Otherwise throw an error message.
+        if (ChecklistEvents[eventToBind] != null)
+        {
+            //If no options were provided, create an empty options object
+            options = options || {}; 
+
+            //Set up the callback method to execute for when the View recieves input from the user
+            const _onUserInput = function(inputArgument) 
+            {
+                //Handle the updates/input received from the View
+                handleEvent(eventToBind, options, inputArgument);
+            };
+
+            //Add an event listener to the specified element
+            window.View.Bind(eventToBind, _onUserInput, options);
+
+            //TODO instead of trying to shoehorn everything to work in the same way, maybe it would actually be simpler (and more readable) to just split each case into it's own section.
+                //For example, each bind would be split into its own section similar to handleUpdatesFromModel. 
+                //This one-size-fits-all approach is nice in theory but doesn't scale well, and as it turns out causes more complication and reduces readability.
+        }
+        else
+        {
+            window.DebugController.LogError("ERROR: Invalid event provided when attempting to setup a bind.");
+        }
+    }
+
 
     function handleEvent(triggeredEvent, options, inputArgument)
     {
@@ -372,20 +395,26 @@ window.ListController = (function()
 
             //TODO Should add logic here to Hide the List Screen, if the previous page was a List Screen
             
-            //TODO wouldn't it be easier/cleaner to just use activeListId here instead?
-            if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
+            //If the new page is the Home Screen and the previous page was a List Screen...
+            if (isHomeScreen(inputArgument.newURL) && activeListId != null)
             {
-                fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
+                //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+                    //Although, if this is the only place the Active List is hidden, then maybe it's fine
+                    //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+                
+                //Hide the List which was previously active, show the Home Screen, and calculate the update the List's balance
+                window.View.Render('HideList', {id:activeListId});
+                window.View.Render('ShowHomeScreen');
+                fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL)); //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
+
+                activeListId = null;
             }
         }
         else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed)
         {
-            //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-                //Although, if this is the only place the Active List is hidden, then maybe it's fine
-                //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-            //Display the specified List Screen (and hide the Active List Screen, if applicable)
-            window.View.Render('DisplayList', {id:options.checklistObject.id, activeListId:activeListId});
-            //TODO would it be possible to get the List ID from the URL instead? That doesn't seem like the safest approach though..
+            //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
+            //Display the specified List
+            window.View.Render('DisplayList', {id:options.checklistObject.id});
 
             //Set the newly selected List as the Active List
             activeListId = options.checklistObject.id;
@@ -393,6 +422,10 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
             window.View.Render('HideActiveSettingsView');
+        }
+        else if (triggeredEvent === ChecklistEvents.ClickDetectedOutsidePopover)
+        {
+            window.View.Render('HideActiveQuantityPopover');
         }
     }
 
@@ -434,27 +467,27 @@ window.ListController = (function()
             //TODO should these use events instead of actions?
                 //I think that would be easier to read. Would then see the triggered event, followed by the action (e.g. listed in the render call).
 
-            if (bind.action === 'HideActiveSettingsView')
-            {
-                window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
-            }
-            else if (bind.action === 'GoToList')
-            {
-                //If there is any active settings view, close it
-                window.View.Render('HideActiveSettingsView'); //TODO this probably isn't necessary if we just have it trigger on hashchange
+            // if (bind.action === 'HideActiveSettingsView')
+            // {
+            //     window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
+            // }
+            // else if (bind.action === 'GoToList')
+            // {
+            //     //If there is any active settings view, close it
+            //     window.View.Render('HideActiveSettingsView'); //TODO this probably isn't necessary if we just have it trigger on hashchange
 
-                //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-                    //Although, if this is the only place the Active List is hidden, then maybe it's fine
-                    //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-                //Display the specified List Screen (and hide the Active List Screen, if applicable)
-                window.View.Render('DisplayList', {id:options.checklistObject.id, activeListId:activeListId});
+            //     //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+            //         //Although, if this is the only place the Active List is hidden, then maybe it's fine
+            //         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+            //     //Display the specified List Screen (and hide the Active List Screen, if applicable)
+            //     window.View.Render('DisplayList', {id:options.checklistObject.id, activeListId:activeListId});
 
-                //Set the newly selected List as the Active List
-                activeListId = options.checklistObject.id;
+            //     //Set the newly selected List as the Active List
+            //     activeListId = options.checklistObject.id;
 
-                window.DebugController.Print("Active List ID: " + activeListId);
-            }
-            else if (bind.action == 'ShowQuantityPopover')
+            //     window.DebugController.Print("Active List ID: " + activeListId);
+            // }
+            if (bind.action == 'ShowQuantityPopover')
             {
                 if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
                 {
@@ -472,32 +505,34 @@ window.ListController = (function()
                 //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
                 createBind(bindReference.DecrementQuantityValue, options);
                 createBind(bindReference.IncrementQuantityValue, options);
-                createBind(bindReference.HideQuantityPopover);
+                
+                //createBind(bindReference.HideQuantityPopover);
+                setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
             }
             // else if (bind.action == 'HideQuantityPopover')
             // {
             //     window.View.Render(bind.action);
             // }
-            else if (bind.action === 'HideActiveQuantityPopover')
-            {
-                window.View.Render(bind.action); 
-            }
+            // else if (bind.action === 'HideActiveQuantityPopover')
+            // {
+            //     window.View.Render(bind.action); 
+            // }
             else if (bind.action == 'SetupHeaderPopoverBinds')
             {
                 //Setup the bind to clear the quantity values for the List Item, for the given quantity type
                 createBind(bindReference.ClearQuantityValues, options);
             }
-            else if (bind.action === 'UpdateListToggleColor')
-            {
-                //If the new page is the Home Screen and the previous page was a List Screen...
-                if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
-                {
-                    //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
+            // else if (bind.action === 'UpdateListToggleColor')
+            // {
+            //     //If the new page is the Home Screen and the previous page was a List Screen...
+            //     if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
+            //     {
+            //         //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
                     
-                    //Calculate the previous List's balance and then update the List's Toggle in the View
-                    fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
-                }
-            }
+            //         //Calculate the previous List's balance and then update the List's Toggle in the View
+            //         fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
+            //     }
+            // }
         }
     }
 
@@ -680,15 +715,9 @@ window.ListController = (function()
             },
             RemoveList : function()
             {
-                //TODO Instead, activeListId should be nullified when returning to the Home Screen
-
-                //If the List that was removed was the most recently Active List, set the Active List ID to null                
-                if (activeListId == options.checklistObject.id)
-                {
-                    activeListId = null;
-                }
-
-                window.View.Render('RemoveList', {id:options.checklistObject.id}); 
+                //If the Active List ID is null, remove the List, else throw an error.
+                activeListId == null    ? window.View.Render('RemoveList', {id:options.checklistObject.id}) 
+                                        : window.DebugController.LogError("Expected Active List ID to be null when trying to remove a List, but it wasn't.");
             },
             RemoveListItem : function()
             {
@@ -726,8 +755,10 @@ window.ListController = (function()
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
 
-        createBind(bindReference.HideActivePopover);
-        createBind(bindReference.UpdateListToggleColor);
+        setupBind(ChecklistEvents.HashChanged);
+
+        //createBind(bindReference.HideActivePopover);
+        //createBind(bindReference.UpdateListToggleColor);
     }
 
     function loadChecklistDataIntoView(loadedListData)

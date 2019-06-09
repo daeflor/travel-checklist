@@ -43,13 +43,6 @@
                 {
                     window.history.go(-(window.history.length-1));
                 }
-
-                //Hide any active settings view and display the Home Screen
-                //TODO Hiding the Active Settings View shouldn't have to be handled here.. Should be handled with hashchange event in controller
-                window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
-                window.View.Render('showHomeScreen'); 
-                //TODO should this be done in controller?
-                //TODO should this also hide and nullify the activeListId?
             }
         }
     }
