@@ -369,11 +369,26 @@ window.ListController = (function()
         {
             window.View.Render('HideActiveSettingsView');
             window.View.Render('HideActiveQuantityPopover');
+
+            //TODO Should add logic here to Hide the List Screen, if the previous page was a List Screen
             
+            //TODO wouldn't it be easier/cleaner to just use activeListId here instead?
             if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
             {
                 fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
             }
+        }
+        else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed)
+        {
+            //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
+                //Although, if this is the only place the Active List is hidden, then maybe it's fine
+                //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
+            //Display the specified List Screen (and hide the Active List Screen, if applicable)
+            window.View.Render('DisplayList', {id:options.checklistObject.id, activeListId:activeListId});
+            //TODO would it be possible to get the List ID from the URL instead? That doesn't seem like the safest approach though..
+
+            //Set the newly selected List as the Active List
+            activeListId = options.checklistObject.id;
         }
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
@@ -501,26 +516,7 @@ window.ListController = (function()
 
         //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
         return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
-
-        ////Determine the anchor part of the URL provided
-        //let _urlAnchor = getFragmentIdentifierFromUrlString(urlString);
-
-        ////If the URL anchor exists and it contains three sections, then assume that this is a List Screen and return true. Else return false.
-        //return (_urlAnchor != null && _urlAnchor.split('/').length == 3) ? true : false; //TODO this is pretty hacky
     }
-
-    // function getListIdFromUrl(urlString)
-    // {
-    //     if (isListScreen(urlString) == true)
-    //     {
-    //         return getUrlSlug(urlString);
-    //     }
-    //     else
-    //     {
-    //         window.DebugController.LogWarning("Tried to get a List ID from a URL, but the URL is not for a List Screen.");
-    //         return undefined;
-    //     }
-    // }
 
     /**
      * Calculates the balance of a List Item based on its different quantity values
