@@ -412,11 +412,11 @@ window.ListController = (function()
             {
                 //TODO Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
 
-                //If the app was not refreshed (i.e. there is a previous page), and the new page is the Home page for the Travel Checklist
-                if (inputArgument.oldUrl != null && getFragmentIdentifierFromUrlString(inputArgument.newURL) === "/travel")
+                //If the new page is the Home page for the Travel Checklist
+                if (getFragmentIdentifierFromUrlString(inputArgument.newURL) === "/travel")
                 {
                     //Determine the anchor part of the URL of the page that was navigated from
-                    let _oldUrlAnchor = getFragmentIdentifierFromUrlString(inputArgument.oldUrl);
+                    let _oldUrlAnchor = getFragmentIdentifierFromUrlString(inputArgument.oldURL);
 
                     if (_oldUrlAnchor != null)
                     {
