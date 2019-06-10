@@ -14,6 +14,7 @@ TO-DOs:
 
 Upcoming To-Do List:
 - handleUpdatesFromView should use event name instead of action name
+- Start using strict mode
 - Update app navigation and AppController
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 

@@ -2,7 +2,7 @@
 
 const ChecklistEvents = {
     //App
-    HashChanged: 'HashChanged', //TODO two resulting actions
+    HashChanged: 'HashChanged', //Can result in up to three reactions. They are not mutually exclusive. 
 
     //Home Screen
     GoToListButtonPressed: 'GoToListButtonPressed',
@@ -18,7 +18,7 @@ const ChecklistEvents = {
     //Settings Views
     SettingsViewExpansionStarted: 'SettingsViewExpansionStarted',
     NameEdited: 'NameEdited',
-    DeleteButtonPressed: 'DeleteButtonPressed', //TODO two separate, possible actions
+    DeleteButtonPressed: 'DeleteButtonPressed', //TODO Can result in two separate actions. They are currently mutually exclusive. 
     MoveUpwardsButtonPressed: 'MoveUpwardsButtonPressed',
     MoveDownwardsButtonPressed: 'MoveDownwardsButtonPressed',
 
@@ -28,6 +28,35 @@ const ChecklistEvents = {
     DecrementQuantityButtonPressed: 'DecrementQuantityButtonPressed',
     IncrementQuantityButtonPressed: 'IncrementQuantityButtonPressed',
     ClickDetectedOutsidePopover: 'ClickDetectedOutsidePopover'
+};
+
+const ChecklistEventReactions = {
+    //Home Screen
+    GoToList: 'GoToList', 
+    AddNewList: 'AddNewList',
+    RemoveList: 'RemoveList',
+    RemoveList: 'UpdateNameToggleColor',
+
+    //List Screens
+    AddNewListItem: 'AddNewListItem',
+    RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
+
+    //List Headers
+    SetupHeaderPopoverBinds: 'SetupHeaderPopoverBinds',
+    ClearQuantityValues: 'ClearQuantityValues',
+
+    //Settings Views
+    HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
+    UpdateName: 'UpdateName',
+    MoveUpwards: 'MoveUpwards',
+    MoveDownwards: 'MoveDownwards', 
+
+    //Quantity Toggles/Popovers
+    ShowQuantityPopover: 'ShowQuantityPopover',
+    SetupQuantityPopoverBinds: 'SetupQuantityPopoverBinds',
+    DecrementQuantityValue: 'DecrementQuantityValue',
+    IncrementQuantityValue: 'IncrementQuantityValue',
+    HideActiveQuantityPopover: 'HideActiveQuantityPopover' //Can be caused by two separate triggers
 };
 
 window.ListController = (function()
@@ -189,15 +218,15 @@ window.ListController = (function()
             bindOptions: ['quantityType'],
             //modelOptions: [],
             renderOptions: ['listId', 'quantityType']
-        },
-        UpdateListToggleColor: {
-            event: 'HashChanged', 
-            action: 'UpdateListToggleColor',
-            modelUpdateRequired: false,
-            //bindOptions: [],
-            //modelOptions: [],
-            renderOptions: []
         }
+        // UpdateListToggleColor: {
+        //     event: 'HashChanged', 
+        //     action: 'UpdateNameToggleColor',
+        //     modelUpdateRequired: false,
+        //     //bindOptions: [],
+        //     //modelOptions: [],
+        //     renderOptions: ['listId', 'balance']
+        // }
 
         //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
 
@@ -205,6 +234,8 @@ window.ListController = (function()
     };
 
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
+
+    //TODO Might be best to keep renders, binds, and loads separate
 
     function renderAndBindQuantityHeader()
     {
@@ -216,7 +247,7 @@ window.ListController = (function()
         for (let key in QuantityType)
         {
             const _options = {quantityType:key};
-            createBind(bindReference.SetupHeaderPopoverBinds, _options);
+            setupBind(ChecklistEvents.QuantityHeaderPopoverShown, _options);
         }
     }
 
@@ -291,8 +322,10 @@ window.ListController = (function()
         {
             //Setup the binds to display the quantity popover, and create its own elements' binds once it has been added to the DOM
             const _options = {checklistObject:listItem, quantityType:quantityType};
-            createBind(bindReference.ShowQuantityPopover, _options);
-            createBind(bindReference.SetupQuantityPopoverBinds, _options);
+            //createBind(bindReference.ShowQuantityPopover, _options);
+            setupBind(ChecklistEvents.QuantityToggleSelected, _options);
+            //createBind(bindReference.SetupQuantityPopoverBinds, _options);
+            setupBind(ChecklistEvents.QuantityPopoverShown, _options);
         }
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
@@ -385,9 +418,22 @@ window.ListController = (function()
         }
     }
 
+    //handleEventWhichModifiesData, handleDataImpactingEvent, handleDataAlteringEvent - It's not JUST altering anymore though, also simply accessing
+    //handleEventWithModelInteraction
+    //Or just do it all in one event maybe
+    //function handleModel
+
+    // function updateView(renderAction, options, argument)
+    // {
+    //     //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
+    //     MergeObjects(options, argument);
+    // }
 
     function handleEvent(triggeredEvent, options, inputArgument)
     {
+        ////Merge any properties from the arguments passed from the View (from the user input) into the options object
+        //MergeObjects(options, inputArgument); 
+
         if (triggeredEvent === ChecklistEvents.HashChanged)
         {
             window.View.Render('HideActiveSettingsView');
@@ -410,18 +456,88 @@ window.ListController = (function()
                 activeListId = null;
             }
         }
-        else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed)
+        // else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
+        // {
+        //     //triggerEventReaction
+        //     //triggerModelInteration
+        //     //triggerViewInteraction
+        //     //triggerModelAction
+        //     //triggerViewAction
+        //     //initiate... ^ ^ ^
+
+        //     // e.g. 
+        //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveSettingsView);
+        //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveQuantityPopover);
+        //     //     triggerViewInteractions(ChecklistEventReactions.HideActiveSettingsView, ChecklistEventReactions.HideActiveQuantityPopover);
+                
+        //     //     triggerModelInteraction(getList); //bad exxample. Other cases might work
+        //     // ---
+            
+        //     //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
+        //     MergeObjects(options, inputArgument); 
+
+        //     //TODO This section (below) could be in updateModel, but not sure it makes much difference
+
+        //     //Set up the callback method to execute once the Model has been updated. 
+        //     //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
+        //     const _modelUpdated = function(argument) 
+        //     {    
+        //         //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
+        //         MergeObjects(options, argument);
+                
+        //         ////Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
+        //         //handleUpdatesFromModel(bind.action, options);
+
+        //         //Render the new List and setup its bindings
+        //         renderAndBindLoadedList(options.list);
+
+        //         //Once the new List has been added to the DOM, expand its Settings View
+        //         window.View.Render('ExpandSettingsView', {id:options.list.id});
+        //     };
+            
+        //     //updateModel(bind.action, _modelUpdated, options);
+        //     window.Model.AddNewList(_modelUpdated);
+        // }
+        else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
         {
             //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
             //Display the specified List
             window.View.Render('DisplayList', {id:options.checklistObject.id});
+            //TODO Not all of the Render Commands are captured in the ChecklistEventsReaction enum, because that's not how this worked before...
+                //Perhaps the Render commands could be made to be consistent with the Reaction command names, or vice versa
 
             //Set the newly selected List as the Active List
             activeListId = options.checklistObject.id;
         }
+        else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
+        {
+            //Setup the bind to clear the quantity values for the List Item, for the given quantity type
+            createBind(bindReference.ClearQuantityValues, options);
+        }
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
             window.View.Render('HideActiveSettingsView');
+        }
+        else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
+        {
+            if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
+            {
+                //window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
+
+                inputArgument.stopPropagation();
+
+                window.View.Render('ShowQuantityPopover', {id:options.checklistObject.id, quantityType:options.quantityType});   
+            }
+        }
+        else if (triggeredEvent === ChecklistEvents.QuantityPopoverShown)
+        {   
+            //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+
+            //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
+            createBind(bindReference.DecrementQuantityValue, options);
+            createBind(bindReference.IncrementQuantityValue, options);
+            
+            setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
         }
         else if (triggeredEvent === ChecklistEvents.ClickDetectedOutsidePopover)
         {
@@ -464,74 +580,32 @@ window.ListController = (function()
                 //hmm maybe not... might get confusing between that and handleUpdatesFromModel
                 //maybe think about actions and reactions
 
-            //TODO should these use events instead of actions?
-                //I think that would be easier to read. Would then see the triggered event, followed by the action (e.g. listed in the render call).
-
-            // if (bind.action === 'HideActiveSettingsView')
+            // if (bind.action == 'ShowQuantityPopover')
             // {
-            //     window.View.Render(bind.action); //TODO Is this actually more readable than just saying 'HideActiveSettingsView' instead of bind.action. That option may be more prone to error, but it's more readable. 
-            // }
-            // else if (bind.action === 'GoToList')
-            // {
-            //     //If there is any active settings view, close it
-            //     window.View.Render('HideActiveSettingsView'); //TODO this probably isn't necessary if we just have it trigger on hashchange
-
-            //     //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-            //         //Although, if this is the only place the Active List is hidden, then maybe it's fine
-            //         //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-            //     //Display the specified List Screen (and hide the Active List Screen, if applicable)
-            //     window.View.Render('DisplayList', {id:options.checklistObject.id, activeListId:activeListId});
-
-            //     //Set the newly selected List as the Active List
-            //     activeListId = options.checklistObject.id;
-
-            //     window.DebugController.Print("Active List ID: " + activeListId);
-            // }
-            if (bind.action == 'ShowQuantityPopover')
-            {
-                if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
-                {
-                    window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
-                    inputArgument.stopPropagation();
-
-                    window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
-                }
-            }
-            else if (bind.action == 'SetupQuantityPopoverBinds')
-            {   
-                //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-
-                //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-                createBind(bindReference.DecrementQuantityValue, options);
-                createBind(bindReference.IncrementQuantityValue, options);
-                
-                //createBind(bindReference.HideQuantityPopover);
-                setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
-            }
-            // else if (bind.action == 'HideQuantityPopover')
-            // {
-            //     window.View.Render(bind.action);
-            // }
-            // else if (bind.action === 'HideActiveQuantityPopover')
-            // {
-            //     window.View.Render(bind.action); 
-            // }
-            else if (bind.action == 'SetupHeaderPopoverBinds')
-            {
-                //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-                createBind(bindReference.ClearQuantityValues, options);
-            }
-            // else if (bind.action === 'UpdateListToggleColor')
-            // {
-            //     //If the new page is the Home Screen and the previous page was a List Screen...
-            //     if (isHomeScreen(inputArgument.newURL) && isListScreen(inputArgument.oldURL))
+            //     if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
             //     {
-            //         //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
-                    
-            //         //Calculate the previous List's balance and then update the List's Toggle in the View
-            //         fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL));
+            //         window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
+
+            //         inputArgument.stopPropagation();
+
+            //         window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
             //     }
+            // }
+            // if (bind.action == 'SetupQuantityPopoverBinds')
+            // {   
+            //     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+
+            //     //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
+            //     createBind(bindReference.DecrementQuantityValue, options);
+            //     createBind(bindReference.IncrementQuantityValue, options);
+                
+            //     //createBind(bindReference.HideQuantityPopover);
+            //     setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
+            // }
+            // else if (bind.action == 'SetupHeaderPopoverBinds')
+            // {
+            //     //Setup the bind to clear the quantity values for the List Item, for the given quantity type
+            //     createBind(bindReference.ClearQuantityValues, options);
             // }
         }
     }
@@ -577,40 +651,54 @@ window.ListController = (function()
         }
     }
 
-    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    /**
+     * Calculates the balance of a List based on the balance of its List Items
+     * @param {array} listItems The array of List Items that the List comprises
+     * @returns The balance of the List, in the form of a ChecklistObjectBalance value
+     */
+    function calculateListBalance(listItems)
     {
-        let _calculateAndRenderListBalance = function(listItems)
+        //Set the List's balance as None by default
+        let _listBalance = ChecklistObjectBalance.None;
+
+        //For each List Item in the List...
+        for (let i = 0; i < listItems.length; i++)
         {
-            //Set the List's balance as None by default
-            let _listBalance = ChecklistObjectBalance.None;
+            //Calculate the List Item's balance based on its different quantity values
+            let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
 
-            //For each List Item in the List...
-            for (let i = 0; i < listItems.length; i++)
+            //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
+            if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
             {
-                //Calculate the List Item's balance based on its different quantity values
-                let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
-
-                //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
-                if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
-                {
-                    _listBalance = ChecklistObjectBalance.Unbalanced;
-                    break;
-                } 
-                //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
-                else if (_listItemBalance === ChecklistObjectBalance.Balanced)
-                {
-                    _listBalance = ChecklistObjectBalance.Balanced;
-                }
+                _listBalance = ChecklistObjectBalance.Unbalanced;
+                break;
+            } 
+            //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
+            else if (_listItemBalance === ChecklistObjectBalance.Balanced)
+            {
+                _listBalance = ChecklistObjectBalance.Balanced;
             }
-
-            //Update the View, passing it the List's ID and calculated balance
-            window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
         }
 
-        //TODO this completely breaks the existing pattern. 
-            //This doesn't require updates to the model but it does access the model to get information. 
-            //Calling this here is completely different to how the rest of the actions are performed
-        window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
+        return _listBalance;
+    }
+
+    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    {
+        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
+        let _listBalance = window.Model.GetListBalance(listId, calculateListBalance);
+        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
+
+        // let _calculateAndRenderListBalance = function(listItems)
+        // {
+        //     //Update the View, passing it the List's ID and calculated balance
+        //     window.View.Render('UpdateNameToggleColor', {id:listId, balance:calculateListBalance(listItems)});
+        // }
+
+        // //TODO this completely breaks the existing pattern. 
+        //     //This doesn't require updates to the model but it does access the model to get information. 
+        //     //Calling this here is completely different to how the rest of the actions are performed
+        // window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /**
@@ -633,6 +721,10 @@ window.ListController = (function()
         }
         else if (action === 'ClearQuantityValues')
         {
+            //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
+                //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
+                //     var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
+                //Nah, seems unhelpful
             window.Model.ModifyList(action, activeListId, callback, options);
         }
         else if (options != null && options.hasOwnProperty('checklistObject') == true)
@@ -749,16 +841,16 @@ window.ListController = (function()
         renderAndBindQuantityHeader();
 
         //Set up the binds for the buttons to add a new List or List Item
+        
         createBind(bindReference.AddNewList);
+        //setupBind(ChecklistEvents.NewListButtonPressed);
+        
         createBind(bindReference.AddNewListItem);
         
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
 
         setupBind(ChecklistEvents.HashChanged);
-
-        //createBind(bindReference.HideActivePopover);
-        //createBind(bindReference.UpdateListToggleColor);
     }
 
     function loadChecklistDataIntoView(loadedListData)

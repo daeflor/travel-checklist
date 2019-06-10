@@ -382,6 +382,9 @@ window.View = (function()
 
                     //Update the reorder buttons for all the List toggles in the Home Screen
                     updateReorderButtons(elements.homeScreenListElements);
+
+                    //TODO Seems that this could easily use the same command logic as RemoveListItem. 
+                        //This command just needs to reference the parent element instead of homeScreenListElements
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it

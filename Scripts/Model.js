@@ -9,14 +9,23 @@ window.Model = (function()
 
     function getLists() 
     {
-        //If checklist data already has been loaded from storage
+        //If checklist data has already been loaded from storage, return the Lists array
         if (checklistData != null)
         {
-            //Return the Lists array
             return checklistData.lists;
         }
 
-        window.DebugController.LogError("ERROR: Checklist data is null");
+        window.DebugController.LogError("ERROR: Tried to retrieve Lists array but Checklist data is null");
+    }
+
+    /**
+     * Get the array of List Items for the List matching the provided ID
+     * @param {string} listId The ID of the List
+     * @returns the array of List Items
+     */
+    function getListItems(listId)
+    {
+        return getLists()[getListIndexFromId(listId)].listItems;
     }
     
     function storeChecklistData()
@@ -51,16 +60,6 @@ window.Model = (function()
             //Search for the List Item and return its index
             return _listItemIndex = GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
         }
-    }
-
-    /**
-     * Get the array of List Items for the List matching the provided ID
-     * @param {string} listId The ID of the List
-     * @returns the array of List Items
-     */
-    function getListItems(listId)
-    {
-        return getLists()[getListIndexFromId(listId)].listItems;
     }
 
     function editName(checklistObject, updatedName, callback)
@@ -331,12 +330,23 @@ window.Model = (function()
         commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
     }
 
-    //TODO It's not very logical/intuitive that access list items would execute a call back
-    function accessListItems(listId, callback)
-    {     
-        let _listItems = getListItems(listId);
+    // //TODO It's not very logical/intuitive that access list items would execute a call back
+    // function accessListItems(listId, callback)
+    // {     
+    //     let _listItems = getListItems(listId);
 
-        callback(_listItems);
+    //     callback(_listItems);
+    // }
+
+    /**
+     * Get a the balance of a List matching the provided ID, and using the calculation function provided
+     * @param {string} listId The ID of the List
+     * @param {function} calculationFunction The function which contains the logic used to calculate the balance 
+     * @returns the List's balance, in the form of a ChecklistObjectBalance value
+     */
+    function getListBalance(listId, calculationFunction)
+    {
+        return calculationFunction(getListItems(listId)); //TODO maybe it would make more sense for the calculation function to be a helper method in a custom helpers file
     }
 
     // function modelUpdated(callback, args)
@@ -376,9 +386,10 @@ window.Model = (function()
     return {
         RetrieveChecklistData : retrieveChecklistData,
         AddNewList : addNewList,
-        AccessListItems : accessListItems,
+        //AccessListItems : accessListItems,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem
+        ModifyListItem : modifyListItem,
+        GetListBalance: getListBalance
     };
 })();
 
