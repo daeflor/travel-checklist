@@ -32,14 +32,16 @@ const ChecklistEvents = {
 
 const ChecklistEventReactions = {
     //Home Screen
-    GoToList: 'GoToList', 
+    DisplayList: 'DisplayList', 
     AddNewList: 'AddNewList',
     RemoveList: 'RemoveList',
-    RemoveList: 'UpdateNameToggleColor',
+    UpdateNameToggleColor: 'UpdateNameToggleColor',
 
     //List Screens
     AddNewListItem: 'AddNewListItem',
     RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
+    HideList: 'HideList',
+    ShowHomeScreen: 'ShowHomeScreen',
 
     //List Headers
     SetupHeaderPopoverBinds: 'SetupHeaderPopoverBinds',
@@ -173,7 +175,7 @@ window.ListController = (function()
         },
         GoToList: {
             event: 'GoToListButtonPressed', 
-            action: 'GoToList',
+            action: 'DisplayList',
             modelUpdateRequired: false,
             //bindOptions: ['id'],
             //modelOptions: [],
@@ -579,34 +581,6 @@ window.ListController = (function()
             //TODO all the below should probably be split into an updateView or updateController method for better readability
                 //hmm maybe not... might get confusing between that and handleUpdatesFromModel
                 //maybe think about actions and reactions
-
-            // if (bind.action == 'ShowQuantityPopover')
-            // {
-            //     if (window.View.IsSettingsViewActive() == false && window.View.IsQuantityPopoverActive() == false)
-            //     {
-            //         window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
-            //         inputArgument.stopPropagation();
-
-            //         window.View.Render(bind.action, {id:options.checklistObject.id, quantityType:options.quantityType});   
-            //     }
-            // }
-            // if (bind.action == 'SetupQuantityPopoverBinds')
-            // {   
-            //     //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
-
-            //     //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-            //     createBind(bindReference.DecrementQuantityValue, options);
-            //     createBind(bindReference.IncrementQuantityValue, options);
-                
-            //     //createBind(bindReference.HideQuantityPopover);
-            //     setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
-            // }
-            // else if (bind.action == 'SetupHeaderPopoverBinds')
-            // {
-            //     //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-            //     createBind(bindReference.ClearQuantityValues, options);
-            // }
         }
     }
 
