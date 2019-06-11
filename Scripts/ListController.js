@@ -545,6 +545,26 @@ window.ListController = (function()
         {
             window.View.Render('HideActiveQuantityPopover');
         }
+        else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
+        {
+                    //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
+                    MergeObjects(options, inputArgument); 
+
+                    //TODO This section (below) could be in updateModel, but not sure it makes much difference
+
+                    //Set up the callback method to execute once the Model has been updated. 
+                    //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
+                    const _modelUpdated = function(argument) 
+                    {    
+                        //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
+                        MergeObjects(options, argument);
+                        
+                        //Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
+                        handleUpdatesFromModel('AddNewList', options);
+                    };
+
+            window.Model.AddNewList(_modelUpdated);
+        }
     }
 
     /**
@@ -689,10 +709,10 @@ window.ListController = (function()
         {
             window.Model.ModifyList(action, activeListId, callback);
         }
-        else if (action === 'AddNewList')
-        {
-            window.Model.AddNewList(callback);
-        }
+        // else if (action === 'AddNewList')
+        // {
+        //     window.Model.AddNewList(callback);
+        // }
         else if (action === 'ClearQuantityValues')
         {
             //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
@@ -816,8 +836,8 @@ window.ListController = (function()
 
         //Set up the binds for the buttons to add a new List or List Item
         
-        createBind(bindReference.AddNewList);
-        //setupBind(ChecklistEvents.NewListButtonPressed);
+        //createBind(bindReference.AddNewList);
+        setupBind(ChecklistEvents.NewListButtonPressed);
         
         createBind(bindReference.AddNewListItem);
         
