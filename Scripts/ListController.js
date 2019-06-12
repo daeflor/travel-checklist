@@ -614,7 +614,8 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
         {
             //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-            createBind(bindReference.ClearQuantityValues, options);
+            //createBind(bindReference.ClearQuantityValues, options);
+            setupBind(ChecklistEvents.ClearButtonPressed, options);
         }
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
@@ -666,24 +667,28 @@ window.ListController = (function()
             //var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
 
             //TODO Why pass options when we know it's empty?
-            var _updateView = handleModelInteraction.bind(options, 'AddNewList');
-
+            let _updateView = handleModelInteraction.bind(options, 'AddNewList');
             window.Model.AddNewList(_updateView);
         }
-        if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
+        else if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
         {
             //TODO Why pass options when we know it's empty?
-            var _updateView = handleModelInteraction.bind(options, 'AddNewListItem');
-            
+            let _updateView = handleModelInteraction.bind(options, 'AddNewListItem');    
             window.Model.ModifyList('AddNewListItem', activeListId, _updateView);
         }
+        else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
+        {
+            let _updateView = handleModelInteraction.bind(options, 'ClearQuantityValues'); 
+            window.Model.ModifyList('ClearQuantityValues', activeListId, _updateView, options);
+        }
+
     }
 
     //TODO Temporary name probably
     function handleModelInteraction(action, argument)
     {       
         //Merge any properties from the argument passed from the Model into the options object
-        console.log("THIS then ARGUMENT then THIS merged with ARGUMENT");
+        //console.log("THIS then ARGUMENT then THIS merged with ARGUMENT");
         //console.log(JSON.stringify(this));
         //console.log(JSON.stringify(argument));
         MergeObjects(this, argument);
@@ -705,8 +710,15 @@ window.ListController = (function()
                 //Once the new List Item has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:this.listItem.id});
                 break;
+            case 'ClearQuantityValues':
+                //For each modified List Item, update its displayed quantity value for the given type, and then update its name's color
+                for (let i = 0; i < this.modifiedListItems.length; i++)
+                {
+                    renderUpdatesToListItemQuantity(this.modifiedListItems[i], this.quantityType);
+                } 
+                break;
             default:
-                window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
+                window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
         }
 
         //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
@@ -782,15 +794,15 @@ window.ListController = (function()
         // {
         //     window.Model.AddNewList(callback);
         // }
-        if (action === 'ClearQuantityValues')
-        {
-            //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
-                //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
-                //     var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
-                //Nah, seems unhelpful
-            window.Model.ModifyList(action, activeListId, callback, options);
-        }
-        else if (options != null && options.hasOwnProperty('checklistObject') == true)
+        // if (action === 'ClearQuantityValues')
+        // {
+        //     //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
+        //         //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
+        //         //     var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
+        //         //Nah, seems unhelpful
+        //     window.Model.ModifyList(action, activeListId, callback, options);
+        // }
+        if (options != null && options.hasOwnProperty('checklistObject') == true)
         {
             if (options.checklistObject.hasOwnProperty('listItems') == true)
             {
@@ -877,16 +889,16 @@ window.ListController = (function()
             RemoveListItem : function()
             {
                 window.View.Render('RemoveListItem', {id:options.checklistObject.id}); 
-            },
-            ClearQuantityValues : function()
-            {
-                //For each modified List Item...
-                for (let i = 0; i < options.modifiedListItems.length; i++)
-                {
-                    //Update the List Item's displayed quantity value for the given type, and then update the List Item name's color
-                    renderUpdatesToListItemQuantity(options.modifiedListItems[i], options.quantityType);
-                }                
             }
+            // ClearQuantityValues : function()
+            // {
+            //     //For each modified List Item...
+            //     for (let i = 0; i < options.modifiedListItems.length; i++)
+            //     {
+            //         //Update the List Item's displayed quantity value for the given type, and then update the List Item name's color
+            //         renderUpdatesToListItemQuantity(options.modifiedListItems[i], options.quantityType);
+            //     }                
+            // }
         };
 
         //If an action is provided, execute the corresponding method

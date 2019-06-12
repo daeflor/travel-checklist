@@ -205,7 +205,7 @@ window.Model = (function()
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
-                let quantityType = options.quantityType;
+                let quantityType = options.quantityType; //TODO I don't think this is necessary
 
                 if (quantityType != null)
                 {
@@ -238,6 +238,18 @@ window.Model = (function()
         //Execute the method matching the given command
         commands[command](getListIndexFromId(listId), commandSucceededCallback);
     }
+
+    //TODO what if instead of ModifyList vs ModifyListItem, we break it down by purpose/outcome. For example:
+        //UpdateName(callback, updatedValue, listId, listItemId(optional(and temporary)))
+        //ChangePosition(callback, direction, listId, listItemId(optional(and temporary))) - (Maybe leave it ias MoveUpwards & MoveDownwards)
+        //Remove(callback, listId, listItemId(optional(and temporary)))
+        //AddList
+        //AddListItem
+        //Decrement
+        //Increment
+        //clearQuantityValues(callback, quantityType, listId)
+    //Disadvantages is that it may less neat and more difficult to keep track of what can be done to a List vs List Item
+        //Advantage would be no longer relying on an options object
 
     function modifyListItem(command, listId, listItemId, callback, options)
     {       
