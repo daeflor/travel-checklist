@@ -235,6 +235,23 @@ window.ListController = (function()
         //TODO could have error checking on startup to ensure that these bidndings are all set correctly here (e.g. that an event and action is provided)
     };
 
+    //TODO these helper methods below may not belong in Controller
+    //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
+
+    function isHomeScreen(urlString)
+    {
+        //If the url string matches the Home page for the Travel Checklist, return true, else return false
+        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
+    }
+
+    function isListScreen(urlString)
+    {
+        //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
+
+        //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+        return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
+    }
+
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
 
     //TODO Might be best to keep renders, binds, and loads separate
@@ -347,6 +364,80 @@ window.ListController = (function()
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
 
         window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
+    }
+    
+    /**
+     * Calculates the balance of a List Item based on its different quantity values
+     * @param {object} quantities The List Item's 'quantities' object
+     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
+     */
+    function calculateListItemBalance(quantities)
+    {
+        //Calculate the List Item's balance based on its different quantity values
+        let _listItemBalance = quantities.needed - quantities.luggage - quantities.wearing - quantities.backpack;
+
+        if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
+        {
+            return ChecklistObjectBalance.Unbalanced;
+        } 
+        else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
+        {
+            return ChecklistObjectBalance.Balanced;
+        }
+        else //Else return None
+        {
+            return ChecklistObjectBalance.None;
+        }
+    }
+
+    /**
+     * Calculates the balance of a List based on the balance of its List Items
+     * @param {array} listItems The array of List Items that the List comprises
+     * @returns The balance of the List, in the form of a ChecklistObjectBalance value
+     */
+    function calculateListBalance(listItems)
+    {
+        //Set the List's balance as None by default
+        let _listBalance = ChecklistObjectBalance.None;
+
+        //For each List Item in the List...
+        for (let i = 0; i < listItems.length; i++)
+        {
+            //Calculate the List Item's balance based on its different quantity values
+            let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
+
+            //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
+            if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
+            {
+                _listBalance = ChecklistObjectBalance.Unbalanced;
+                break;
+            } 
+            //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
+            else if (_listItemBalance === ChecklistObjectBalance.Balanced)
+            {
+                _listBalance = ChecklistObjectBalance.Balanced;
+            }
+        }
+
+        return _listBalance;
+    }
+
+    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    {
+        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
+        let _listBalance = window.Model.GetListBalance(listId, calculateListBalance);
+        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
+
+        // let _calculateAndRenderListBalance = function(listItems)
+        // {
+        //     //Update the View, passing it the List's ID and calculated balance
+        //     window.View.Render('UpdateNameToggleColor', {id:listId, balance:calculateListBalance(listItems)});
+        // }
+
+        // //TODO this completely breaks the existing pattern. 
+        //     //This doesn't require updates to the model but it does access the model to get information. 
+        //     //Calling this here is completely different to how the rest of the actions are performed
+        // window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -671,97 +762,6 @@ window.ListController = (function()
                 //hmm maybe not... might get confusing between that and handleUpdatesFromModel
                 //maybe think about actions and reactions
         }
-    }
-
-    //TODO these helper methods below may not belong in Controller
-        //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
-
-    function isHomeScreen(urlString)
-    {
-        //If the url string matches the Home page for the Travel Checklist, return true, else return false
-        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
-    }
-
-    function isListScreen(urlString)
-    {
-        //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
-
-        //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-        return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
-    }
-
-    /**
-     * Calculates the balance of a List Item based on its different quantity values
-     * @param {object} quantities The List Item's 'quantities' object
-     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
-     */
-    function calculateListItemBalance(quantities)
-    {
-        //Calculate the List Item's balance based on its different quantity values
-        let _listItemBalance = quantities.needed - quantities.luggage - quantities.wearing - quantities.backpack;
-
-        if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
-        {
-            return ChecklistObjectBalance.Unbalanced;
-        } 
-        else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
-        {
-            return ChecklistObjectBalance.Balanced;
-        }
-        else //Else return None
-        {
-            return ChecklistObjectBalance.None;
-        }
-    }
-
-    /**
-     * Calculates the balance of a List based on the balance of its List Items
-     * @param {array} listItems The array of List Items that the List comprises
-     * @returns The balance of the List, in the form of a ChecklistObjectBalance value
-     */
-    function calculateListBalance(listItems)
-    {
-        //Set the List's balance as None by default
-        let _listBalance = ChecklistObjectBalance.None;
-
-        //For each List Item in the List...
-        for (let i = 0; i < listItems.length; i++)
-        {
-            //Calculate the List Item's balance based on its different quantity values
-            let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
-
-            //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
-            if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
-            {
-                _listBalance = ChecklistObjectBalance.Unbalanced;
-                break;
-            } 
-            //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
-            else if (_listItemBalance === ChecklistObjectBalance.Balanced)
-            {
-                _listBalance = ChecklistObjectBalance.Balanced;
-            }
-        }
-
-        return _listBalance;
-    }
-
-    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
-    {
-        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
-        let _listBalance = window.Model.GetListBalance(listId, calculateListBalance);
-        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
-
-        // let _calculateAndRenderListBalance = function(listItems)
-        // {
-        //     //Update the View, passing it the List's ID and calculated balance
-        //     window.View.Render('UpdateNameToggleColor', {id:listId, balance:calculateListBalance(listItems)});
-        // }
-
-        // //TODO this completely breaks the existing pattern. 
-        //     //This doesn't require updates to the model but it does access the model to get information. 
-        //     //Calling this here is completely different to how the rest of the actions are performed
-        // window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /**
