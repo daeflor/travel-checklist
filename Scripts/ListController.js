@@ -572,36 +572,54 @@ window.ListController = (function()
                     //     handleUpdatesFromModel('AddNewList', options);
                     // };
 
-            var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
+            //var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
 
             //TODO try this next: (needs the handle fnc to be updated to use 'this')
-            //var _updateView = handleModelInteraction.bind(options, 'AddNewList');
+            var _updateView = handleModelInteraction.bind(options, 'AddNewList');
 
             window.Model.AddNewList(_updateView);
         }
     }
 
-    function handleModelInteraction(action, options, argument)
+    //TODO Temporary name probably
+    function handleModelInteraction(action, argument)
     {       
         //Merge any properties from the argument passed from the Model into the options object
-        MergeObjects(options, argument);
+        console.log("THIS then ARGUMENT then THIS merged with ARGUMENT");
+        //console.log(JSON.stringify(this));
+        //console.log(JSON.stringify(argument));
+        MergeObjects(this, argument);
+        //console.log(JSON.stringify(this));
 
-        //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
-        //TODO Could use a switch/case here instead
-        const actions = 
+        switch(action) 
         {
-            AddNewList : function()
-            {
+            case 'AddNewList':
                 //Render the new List and setup its bindings
-                renderAndBindLoadedList(options.list);
+                renderAndBindLoadedList(this.list);
             
                 //Once the new List has been added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:options.list.id});
-            }
-        };
+                window.View.Render('ExpandSettingsView', {id:this.list.id});
+                break;
+            default:
+                window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
+        }
 
-        //If an action is provided, execute the corresponding method
-        action != null ? actions[action]() : window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
+        //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
+        // //TODO Could use a switch/case here instead
+        // const actions = 
+        // {
+        //     AddNewList : function()
+        //     {
+        //         //Render the new List and setup its bindings
+        //         renderAndBindLoadedList(this.list);
+            
+        //         //Once the new List has been added to the DOM, expand its Settings View
+        //         window.View.Render('ExpandSettingsView', {id:this.list.id});
+        //     }
+        // };
+
+        // //If an action is provided, execute the corresponding method
+        // action != null ? actions[action]() : window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
     }
 
     /**
