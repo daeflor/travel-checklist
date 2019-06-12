@@ -316,7 +316,7 @@ window.ListController = (function()
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
-        createBind(bindReference.MoveUpwards, _options);
+        setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         createBind(bindReference.MoveDownwards, _options);
         createBind(bindReference.RemoveList, _options); 
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
@@ -351,7 +351,7 @@ window.ListController = (function()
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
-        createBind(bindReference.MoveUpwards, _options);
+        setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         createBind(bindReference.MoveDownwards, _options);
         createBind(bindReference.RemoveListItem, _options);
     }
@@ -678,9 +678,24 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind(options, 'ClearQuantityValues'); 
             window.Model.ModifyList('ClearQuantityValues', activeListId, _updateView, options);
         }
-        else if (triggeredEvent ===  ChecklistEvents.NameEdited)
+        else
         {
             //TODO This is going to get ugly.
+
+            let action = null;
+
+            //TODO it would be better to use ternary operator than switch actually. Fix asap. Reference the View methods.
+            switch (triggeredEvent)
+            {
+                case ChecklistEvents.NameEdited:
+                    action = 'UpdateName';
+                    break;
+                case ChecklistEvents.MoveUpwardsButtonPressed:
+                    action = 'MoveUpwards';
+                    break;
+                default:
+                    window.DebugController.LogError("ERROR: An invalid event was triggered, with name: " + triggeredEvent);
+            }
 
             //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
             MergeObjects(options, inputArgument); 
@@ -690,11 +705,17 @@ window.ListController = (function()
                     //let _updatedName = inputArgument.updatedValue;
                     //if (_updatedName != undefined) ... pass it as a param to the model, else throw an error
 
-            let _updateView = handleModelInteraction.bind(options, 'UpdateName'); 
+            let _updateView = handleModelInteraction.bind(options, action);
+
+            let _updateModel = null;
 
             if (options.checklistObject.hasOwnProperty('listItems') == true)
             {
-                window.Model.ModifyList('UpdateName', options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});
+                //_updateModel = window.Model.ModifyList.bind(null);
+                //TODO if this is actually the long-term approach we want to take (which doesn't seem likely), then we should re-arrange the parameters so we can bind more of them. 
+                
+                _updateModel = window.Model.ModifyList.bind(null, action, options.checklistObject.id, _updateView, options);
+                console.log("Update Model will update a List");
             }
             else if (options.checklistObject.hasOwnProperty('quantities') == true)
             {
@@ -702,8 +723,28 @@ window.ListController = (function()
                     //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
                     //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
                     //Maybe have a ValidateParameters utility function
-                window.Model.ModifyListItem('UpdateName', activeListId, options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});                
+                //_updateModel = window.Model.ModifyListItem.bind(options); 
+                
+                _updateModel = window.Model.ModifyListItem.bind(null, action, activeListId, options.checklistObject.id, _updateView, options);    
+                console.log("Update Model will update a List Item");
             }
+
+            _updateModel();
+
+            // let _updateView = handleModelInteraction.bind(options, 'UpdateName'); 
+            
+            // if (options.checklistObject.hasOwnProperty('listItems') == true)
+            // {
+            //     window.Model.ModifyList('UpdateName', options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});
+            // }
+            // else if (options.checklistObject.hasOwnProperty('quantities') == true)
+            // {
+            //     //TODO using options twice (or thrice!) within the params here seems silly
+            //         //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
+            //         //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
+            //         //Maybe have a ValidateParameters utility function
+            //     window.Model.ModifyListItem('UpdateName', activeListId, options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});                
+            // }
         }
     }
 
@@ -742,6 +783,9 @@ window.ListController = (function()
                 break;
             case 'UpdateName':
                 window.View.Render('UpdateName', {id:this.checklistObject.id, updatedValue:this.checklistObject.name});
+                break;
+            case 'MoveUpwards':
+                window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:this.swappedChecklistObjectId});
                 break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
@@ -890,10 +934,10 @@ window.ListController = (function()
             // {
             //     window.View.Render('UpdateName', {id:options.checklistObject.id, updatedValue:options.checklistObject.name});
             // },
-            MoveUpwards : function()
-            {
-                window.View.Render('SwapListObjects', {moveUpwardsId:options.checklistObject.id, moveDownwardsId:options.swappedChecklistObjectId});
-            },
+            // MoveUpwards : function()
+            // {
+            //     window.View.Render('SwapListObjects', {moveUpwardsId:options.checklistObject.id, moveDownwardsId:options.swappedChecklistObjectId});
+            // },
             MoveDownwards : function()
             {
                 window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedChecklistObjectId, moveDownwardsId:options.checklistObject.id});
