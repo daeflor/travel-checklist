@@ -311,13 +311,11 @@ window.ListController = (function()
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:list};
         
-        //createBind(bindReference.HideActiveSettingsView, _options);
-        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-
-        //createBind(bindReference.GoToList, _options);
         setupBind(ChecklistEvents.GoToListButtonPressed, _options);
 
-        createBind(bindReference.UpdateName, _options);
+        //Settings View Binds
+        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
+        setupBind(ChecklistEvents.NameEdited, _options);
         createBind(bindReference.MoveUpwards, _options);
         createBind(bindReference.MoveDownwards, _options);
         createBind(bindReference.RemoveList, _options); 
@@ -350,10 +348,9 @@ window.ListController = (function()
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
         const _options = {checklistObject:listItem}; //TODO if this is the only param needed, could _options = listItem? Not unless for List it also only needs the List object...
         
-        //createBind(bindReference.HideActiveSettingsView, _options);
+        //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-
-        createBind(bindReference.UpdateName, _options);
+        setupBind(ChecklistEvents.NameEdited, _options);
         createBind(bindReference.MoveUpwards, _options);
         createBind(bindReference.MoveDownwards, _options);
         createBind(bindReference.RemoveListItem, _options);
@@ -681,7 +678,33 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind(options, 'ClearQuantityValues'); 
             window.Model.ModifyList('ClearQuantityValues', activeListId, _updateView, options);
         }
+        else if (triggeredEvent ===  ChecklistEvents.NameEdited)
+        {
+            //TODO This is going to get ugly.
 
+            //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
+            MergeObjects(options, inputArgument); 
+            //TODO should validate that the inputArgument object contains an 'updatedValue' key, and extract it
+                //Or, just extract it, instead of doing a merge
+                //For example:
+                    //let _updatedName = inputArgument.updatedValue;
+                    //if (_updatedName != undefined) ... pass it as a param to the model, else throw an error
+
+            let _updateView = handleModelInteraction.bind(options, 'UpdateName'); 
+
+            if (options.checklistObject.hasOwnProperty('listItems') == true)
+            {
+                window.Model.ModifyList('UpdateName', options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});
+            }
+            else if (options.checklistObject.hasOwnProperty('quantities') == true)
+            {
+                //TODO using options twice (or thrice!) within the params here seems silly
+                    //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
+                    //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
+                    //Maybe have a ValidateParameters utility function
+                window.Model.ModifyListItem('UpdateName', activeListId, options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});                
+            }
+        }
     }
 
     //TODO Temporary name probably
@@ -716,6 +739,9 @@ window.ListController = (function()
                 {
                     renderUpdatesToListItemQuantity(this.modifiedListItems[i], this.quantityType);
                 } 
+                break;
+            case 'UpdateName':
+                window.View.Render('UpdateName', {id:this.checklistObject.id, updatedValue:this.checklistObject.name});
                 break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
@@ -860,10 +886,10 @@ window.ListController = (function()
             //     //Once the new List Item has been added to the DOM, expand its Settings View
             //     window.View.Render('ExpandSettingsView', {id:options.listItem.id});
             // },
-            UpdateName : function()
-            {
-                window.View.Render('UpdateName', {id:options.checklistObject.id, updatedValue:options.checklistObject.name});
-            },
+            // UpdateName : function()
+            // {
+            //     window.View.Render('UpdateName', {id:options.checklistObject.id, updatedValue:options.checklistObject.name});
+            // },
             MoveUpwards : function()
             {
                 window.View.Render('SwapListObjects', {moveUpwardsId:options.checklistObject.id, moveDownwardsId:options.swappedChecklistObjectId});

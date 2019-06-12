@@ -15,6 +15,7 @@ TO-DOs:
 Upcoming To-Do List:
 - handleUpdatesFromView should use event name instead of action name
 - Start using strict mode
+- Have List Items start using the ListID as a prefix
 - Reduce reliance on options object, where possible (or at least not always pass around the whole object)
 - Update app navigation and AppController
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
