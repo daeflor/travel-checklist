@@ -1,3 +1,4 @@
+'use strict';
 window.Model = (function() 
 {
     //TODO using 'self' makes it more obvious when accessing 'global' variables (even though these aren't actually global)
@@ -58,7 +59,7 @@ window.Model = (function()
         if (_listIndex != null) //TODO replace this with try catch 
         {
             //Search for the List Item and return its index
-            return _listItemIndex = GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
+            return GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
         }
     }
 

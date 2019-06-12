@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 
 const ChecklistEvents = {
     //App
@@ -30,18 +30,16 @@ const ChecklistEvents = {
     ClickDetectedOutsidePopover: 'ClickDetectedOutsidePopover'
 };
 
-const ChecklistEventReactions = {
+const ChecklistEventReactionMapping = {
     //Home Screen
-    DisplayList: 'DisplayList', 
-    AddNewList: 'AddNewList',
-    RemoveList: 'RemoveList',
-    UpdateNameToggleColor: 'UpdateNameToggleColor',
+    //DisplayList: 'DisplayList', 
+    //AddNewList: 'AddNewList',
+    //UpdateNameToggleColor: 'UpdateNameToggleColor',
 
     //List Screens
-    AddNewListItem: 'AddNewListItem',
-    RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
-    HideList: 'HideList',
-    ShowHomeScreen: 'ShowHomeScreen',
+    //AddNewListItem: 'AddNewListItem',
+    //HideList: 'HideList',
+    //ShowHomeScreen: 'ShowHomeScreen',
 
     //List Headers
     SetupHeaderPopoverBinds: 'SetupHeaderPopoverBinds',
@@ -49,8 +47,10 @@ const ChecklistEventReactions = {
 
     //Settings Views
     HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
-    UpdateName: 'UpdateName',
-    MoveUpwards: 'MoveUpwards',
+    NameEdited: 'UpdateName',
+    //RemoveList: 'RemoveList',
+    RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
+    MoveUpwardsButtonPressed: 'MoveUpwards',
     MoveDownwards: 'MoveDownwards', 
 
     //Quantity Toggles/Popovers
@@ -682,20 +682,22 @@ window.ListController = (function()
         {
             //TODO This is going to get ugly.
 
-            let action = null;
+            // let action = null;
 
-            //TODO it would be better to use ternary operator than switch actually. Fix asap. Reference the View methods.
-            switch (triggeredEvent)
-            {
-                case ChecklistEvents.NameEdited:
-                    action = 'UpdateName';
-                    break;
-                case ChecklistEvents.MoveUpwardsButtonPressed:
-                    action = 'MoveUpwards';
-                    break;
-                default:
-                    window.DebugController.LogError("ERROR: An invalid event was triggered, with name: " + triggeredEvent);
-            }
+            // //TODO it would be better to use ternary operator than switch actually. Fix asap. Reference the View methods.
+            // switch (triggeredEvent)
+            // {
+            //     case ChecklistEvents.NameEdited:
+            //         action = 'UpdateName';
+            //         break;
+            //     case ChecklistEvents.MoveUpwardsButtonPressed:
+            //         action = 'MoveUpwards';
+            //         break;
+            //     default:
+            //         window.DebugController.LogError("ERROR: An invalid event was triggered, with name: " + triggeredEvent);
+            // }
+
+            let action = ChecklistEventReactionMapping[triggeredEvent];
 
             //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
             MergeObjects(options, inputArgument); 

@@ -1,3 +1,4 @@
+'use strict';
 (function () 
 {   
     //Initialize once the DOM content has loaded, and then remove this event listener after a single firing

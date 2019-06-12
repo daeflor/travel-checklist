@@ -1,3 +1,4 @@
+'use strict';
 window.CustomTemplates = (function () 
 {   
     //TODO re-order these methods for better readability
