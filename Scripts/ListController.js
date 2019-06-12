@@ -574,10 +574,17 @@ window.ListController = (function()
 
             //var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
 
-            //TODO try this next: (needs the handle fnc to be updated to use 'this')
+            //TODO Why pass options when we know it's empty?
             var _updateView = handleModelInteraction.bind(options, 'AddNewList');
 
             window.Model.AddNewList(_updateView);
+        }
+        if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
+        {
+            //TODO Why pass options when we know it's empty?
+            var _updateView = handleModelInteraction.bind(options, 'AddNewListItem');
+            
+            window.Model.ModifyList('AddNewListItem', activeListId, _updateView);
         }
     }
 
@@ -599,6 +606,13 @@ window.ListController = (function()
             
                 //Once the new List has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:this.list.id});
+                break;
+            case 'AddNewListItem':
+                //Render the new List Item and setup its bindings
+                renderAndBindLoadedListItem(activeListId, this.listItem);
+                
+                //Once the new List Item has been added to the DOM, expand its Settings View
+                window.View.Render('ExpandSettingsView', {id:this.listItem.id});
                 break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
@@ -760,15 +774,15 @@ window.ListController = (function()
     {
         //window["Model"][binding.modificationType](binding.action, checklistData.listId, checklistData.listItem.id, callback, options);
 
-        if (action === 'AddNewListItem')
-        {
-            window.Model.ModifyList(action, activeListId, callback);
-        }
+        // if (action === 'AddNewListItem')
+        // {
+        //     window.Model.ModifyList(action, activeListId, callback);
+        // }
         // else if (action === 'AddNewList')
         // {
         //     window.Model.AddNewList(callback);
         // }
-        else if (action === 'ClearQuantityValues')
+        if (action === 'ClearQuantityValues')
         {
             //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
                 //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
@@ -818,22 +832,22 @@ window.ListController = (function()
         //TODO Could use a switch/case here instead
         const actions = 
         {
-            AddNewList : function()
-            {
-                //Render the new List and setup its bindings
-                renderAndBindLoadedList(options.list);
+            // AddNewList : function()
+            // {
+            //     //Render the new List and setup its bindings
+            //     renderAndBindLoadedList(options.list);
             
-                //Once the new List has been added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:options.list.id});
-            },
-            AddNewListItem : function()
-            {
-                //Render the new List Item and setup its bindings
-                renderAndBindLoadedListItem(activeListId, options.listItem);
+            //     //Once the new List has been added to the DOM, expand its Settings View
+            //     window.View.Render('ExpandSettingsView', {id:options.list.id});
+            // },
+            // AddNewListItem : function()
+            // {
+            //     //Render the new List Item and setup its bindings
+            //     renderAndBindLoadedListItem(activeListId, options.listItem);
                 
-                //Once the new List Item has been added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:options.listItem.id});
-            },
+            //     //Once the new List Item has been added to the DOM, expand its Settings View
+            //     window.View.Render('ExpandSettingsView', {id:options.listItem.id});
+            // },
             UpdateName : function()
             {
                 window.View.Render('UpdateName', {id:options.checklistObject.id, updatedValue:options.checklistObject.name});
@@ -894,7 +908,8 @@ window.ListController = (function()
         //createBind(bindReference.AddNewList);
         setupBind(ChecklistEvents.NewListButtonPressed);
         
-        createBind(bindReference.AddNewListItem);
+        //createBind(bindReference.AddNewListItem);
+        setupBind(ChecklistEvents.NewListItemButtonPressed);
         
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
