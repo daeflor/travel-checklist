@@ -43,51 +43,58 @@ window.CustomTemplates = (function ()
 
     function createListToggleFromTemplate(list)
     {
-        window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
+        if (list != null) //TODO Use try catch instead
+        {
+            window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
 
-        var wrapper = CreateNewElement('div', [ ['id',list.id], ['class','row divItemRow divListToggleWrapper'] ]);
+            var wrapper = CreateNewElement('div', [ ['id',list.id], ['class','row divItemRow divListToggleWrapper'] ]);
 
-        /* Name Toggle/Button */
+            /* Name Toggle/Button */
 
-        //Create the name button/toggle that can be selected to open or close the settings view for the List
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonListItem buttonListToggle', list.name, 'NameButton-'.concat(list.id));
+            //Create the name button/toggle that can be selected to open or close the settings view for the List
+            var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonListItem buttonListToggle', list.name, 'NameButton-'.concat(list.id));
+            
+            //Create the div wrapper for the List Name button/toggle
+            var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
+
+            /* Navigation Button */
+
+            //var navButton = CreateButtonWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
+            //TODO it's possible right now for this element creation to happen before the page is at the #travel hash location, which means the hyperlink below won't work. There are various ways this could be addressed. 
+            //var hyperlink = (document.location.hash).concat('/').concat(data.listId);
+            //console.log("current hash: " + (document.location.hash));
+            //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
+            
+            //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
+            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(list.type).concat('/').concat(list.id)}); 
+            
+            //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
+
+
+            var navButtonWrapper = CreateNewElement('div', [ ['class','col-2'] ], navButton);
+
+            /* Settings View */
+
+            //Create the Settings View for the List
+            var settingsWrapper = createSettingsViewFromTemplate(
+                list.id, 
+                list.name, 
+                'list', 
+                function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
+            );
+
+            /* Append all the individual div wrappers to the overall wrapper */
         
-        //Create the div wrapper for the List Name button/toggle
-        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
+            wrapper.appendChild(nameWrapper);
+            wrapper.appendChild(navButtonWrapper);
+            wrapper.appendChild(settingsWrapper);
 
-        /* Navigation Button */
-
-        //var navButton = CreateButtonWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right'});
-        //TODO it's possible right now for this element creation to happen before the page is at the #travel hash location, which means the hyperlink below won't work. There are various ways this could be addressed. 
-        //var hyperlink = (document.location.hash).concat('/').concat(data.listId);
-        //console.log("current hash: " + (document.location.hash));
-        //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
-        
-        //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
-        var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(list.type).concat('/').concat(list.id)}); 
-        
-        //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
-
-
-        var navButtonWrapper = CreateNewElement('div', [ ['class','col-2'] ], navButton);
-
-        /* Settings View */
-
-        //Create the Settings View for the List
-        var settingsWrapper = createSettingsViewFromTemplate(
-            list.id, 
-            list.name, 
-            'list', 
-            function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
-        );
-
-        /* Append all the individual div wrappers to the overall wrapper */
-    
-        wrapper.appendChild(nameWrapper);
-        wrapper.appendChild(navButtonWrapper);
-        wrapper.appendChild(settingsWrapper);
-
-        return wrapper;
+            return wrapper;
+        }
+        else
+        {
+            window.DebugController.LogError("Request received to create a List Toggle but no valid List object was provided.");
+        }
     }
 
     //TODO Is this method still necessary? Should probably at least be renamed 

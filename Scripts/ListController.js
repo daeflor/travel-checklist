@@ -405,6 +405,10 @@ window.ListController = (function()
             {
                 //Handle the updates/input received from the View
                 handleEvent(eventToBind, options, inputArgument);
+
+                //TODO Note that the options object still exists from the previous time _onUerInput was called
+                    //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior for all cases, and should be re-written.
+                    //For example, for a case like AddListItem, the options object should always start as empty, but it actually retains the value from the previous time the button was pressed, and then gets over-ridden. 
             };
 
             //Add an event listener to the specified element
@@ -433,6 +437,11 @@ window.ListController = (function()
 
     function handleEvent(triggeredEvent, options, inputArgument)
     {
+        // console.log("HANDLE EVENT PARAMS - event: " + triggeredEvent + "; options: BELOW; Argument: " + inputArgument);
+        // console.log(JSON.stringify(options));
+        //TODO The options object still exists from the previous time a list was added.. It's blank the first time and then not after..
+            //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior and should be re-written.
+
         ////Merge any properties from the arguments passed from the View (from the user input) into the options object
         //MergeObjects(options, inputArgument); 
 
@@ -547,24 +556,52 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
         {
-                    //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-                    MergeObjects(options, inputArgument); 
+                    // //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
+                    // MergeObjects(options, inputArgument); 
 
-                    //TODO This section (below) could be in updateModel, but not sure it makes much difference
+                    // //TODO This section (below) could be in updateModel, but not sure it makes much difference
 
-                    //Set up the callback method to execute once the Model has been updated. 
-                    //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
-                    const _modelUpdated = function(argument) 
-                    {    
-                        //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
-                        MergeObjects(options, argument);
+                    // //Set up the callback method to execute once the Model has been updated. 
+                    // //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
+                    // const _modelUpdated = function(argument) 
+                    // {    
+                    //     //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
+                    //     MergeObjects(options, argument);
                         
-                        //Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
-                        handleUpdatesFromModel('AddNewList', options);
-                    };
+                    //     //Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
+                    //     handleUpdatesFromModel('AddNewList', options);
+                    // };
 
-            window.Model.AddNewList(_modelUpdated);
+            var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
+
+            //TODO try this next: (needs the handle fnc to be updated to use 'this')
+            //var _updateView = handleModelInteraction.bind(options, 'AddNewList');
+
+            window.Model.AddNewList(_updateView);
         }
+    }
+
+    function handleModelInteraction(action, options, argument)
+    {       
+        //Merge any properties from the argument passed from the Model into the options object
+        MergeObjects(options, argument);
+
+        //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
+        //TODO Could use a switch/case here instead
+        const actions = 
+        {
+            AddNewList : function()
+            {
+                //Render the new List and setup its bindings
+                renderAndBindLoadedList(options.list);
+            
+                //Once the new List has been added to the DOM, expand its Settings View
+                window.View.Render('ExpandSettingsView', {id:options.list.id});
+            }
+        };
+
+        //If an action is provided, execute the corresponding method
+        action != null ? actions[action]() : window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no action was provided.");
     }
 
     /**

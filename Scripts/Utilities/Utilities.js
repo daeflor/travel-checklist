@@ -89,8 +89,8 @@ function MergeObjects(target, source)
         //Merge any properties from the source object to the target object
         Object.assign(target, source);
 
-        window.DebugController.Print("Merged two objects into the following target object: ");
-        window.DebugController.Print(target);
+        //window.DebugController.Print("Merged two objects into the following target object: ");
+        //window.DebugController.Print(target);
     }
 
     return target;
