@@ -587,14 +587,12 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
         {
-            //TODO It's weird to have to pass an empty object (rather than just using the argument param in handleModelInteraction)
-            let _updateView = handleModelInteraction.bind({}, 'AddNewList');
+            let _updateView = handleModelInteraction.bind(null, 'AddNewList');
             window.Model.AddNewList(_updateView);
         }
         else if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
         {
-            //TODO It's weird to have to pass an empty object (rather than just using the argument param in handleModelInteraction)
-            let _updateView = handleModelInteraction.bind({}, 'AddNewListItem');    
+            let _updateView = handleModelInteraction.bind(null, 'AddNewListItem');    
             window.Model.ModifyList('AddNewListItem', activeListId, _updateView);
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
@@ -683,9 +681,9 @@ window.ListController = (function()
     /**
      * Handle callbacks received from the Model after the checklist data has been updated, and react by passing along to the View any data necessary to properly render those updates
      * @param {string} action The name of the action that has been initiated by the user or application (e.g. removing a List or List Item)
-     * @param {object} [argument] [Optional] An optional object passed back from the Model containing any additional data necessary to properly render the updates to the checklist
+     * @param {object} [modifiedChecklistData] [Optional] An optional object passed back from the Model containing any additional data necessary to properly render the updates to the checklist
      */
-    function handleModelInteraction(action, argument)
+    function handleModelInteraction(action, modifiedChecklistData)
     {       
         //TODO is there a way to make it obvious when reading the code that 'this' is the options object?
         //TODO Maybe document (or add error handling for) the possible properties of 'this'/'options': quantityType, swappedChecklistObjectId, etc.
@@ -694,7 +692,7 @@ window.ListController = (function()
         //console.log("THIS then ARGUMENT then THIS merged with ARGUMENT");
         //console.log(JSON.stringify(this));
         //console.log(JSON.stringify(argument));
-        MergeObjects(this, argument);
+        //MergeObjects(this, argument);
         //console.log(JSON.stringify(this));
 
         //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
@@ -703,33 +701,33 @@ window.ListController = (function()
         {
             case 'AddNewList':
                 //Render the new List and setup its bindings
-                renderAndBindLoadedList(this.list);
+                renderAndBindLoadedList(modifiedChecklistData.newList);
             
                 //Once the new List has been added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:this.list.id});
+                window.View.Render('ExpandSettingsView', {id:modifiedChecklistData.newList.id});
                 break;
             case 'AddNewListItem':
                 //Render the new List Item and setup its bindings
-                renderAndBindLoadedListItem(activeListId, this.listItem);
+                renderAndBindLoadedListItem(activeListId, modifiedChecklistData.newListItem);
                 
                 //Once the new List Item has been added to the DOM, expand its Settings View
-                window.View.Render('ExpandSettingsView', {id:this.listItem.id});
+                window.View.Render('ExpandSettingsView', {id:modifiedChecklistData.newListItem.id});
                 break;
             case 'ClearQuantityValues':
                 //For each modified List Item, update its displayed quantity value for the given type, and then update its name's color
-                for (let i = 0; i < this.modifiedListItems.length; i++)
+                for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
                 {
-                    renderUpdatesToListItemQuantity(this.modifiedListItems[i], this.quantityType);
+                    renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
                 } 
                 break;
             case 'UpdateName':
                 window.View.Render('UpdateName', {id:this.checklistObject.id, updatedValue:this.checklistObject.name});
                 break;
             case 'MoveUpwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:this.swappedChecklistObjectId});
+                window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
                 break;
             case 'MoveDownwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:this.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
+                window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
                 break;
             case 'RemoveList':
                 //If the Active List ID is null, remove the List, else throw an error.

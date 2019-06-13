@@ -136,7 +136,7 @@ window.Model = (function()
         listObject.listItems.push(newListItem);
 
         //Execute the provided callback method once the new List Item has been added to the List, passing the List Item object as an argument
-        callback({listItem:newListItem});
+        callback({newListItem:newListItem});
     }
 
     /** Publicly Exposed Methods To Access & Modify List Data **/
@@ -165,7 +165,7 @@ window.Model = (function()
 
         storeChecklistData();
 
-        callback({list:newList});
+        callback({newList:newList});
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
