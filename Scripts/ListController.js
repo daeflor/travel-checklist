@@ -51,7 +51,7 @@ const ChecklistEventReactionMapping = {
     //RemoveList: 'RemoveList',
     RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
     MoveUpwardsButtonPressed: 'MoveUpwards',
-    MoveDownwards: 'MoveDownwards', 
+    MoveDownwardsButtonPressed: 'MoveDownwards', 
 
     //Quantity Toggles/Popovers
     ShowQuantityPopover: 'ShowQuantityPopover',
@@ -317,7 +317,7 @@ window.ListController = (function()
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
         setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        createBind(bindReference.MoveDownwards, _options);
+        setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
         createBind(bindReference.RemoveList, _options); 
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
             //Then much of this (most of the bind setup) could be reused, for both List and List Item
@@ -352,7 +352,7 @@ window.ListController = (function()
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
         setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        createBind(bindReference.MoveDownwards, _options);
+        setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
         createBind(bindReference.RemoveListItem, _options);
     }
 
@@ -789,6 +789,9 @@ window.ListController = (function()
             case 'MoveUpwards':
                 window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:this.swappedChecklistObjectId});
                 break;
+            case 'MoveDownwards':
+                window.View.Render('SwapListObjects', {moveUpwardsId:this.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
+                break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
         }
@@ -940,10 +943,10 @@ window.ListController = (function()
             // {
             //     window.View.Render('SwapListObjects', {moveUpwardsId:options.checklistObject.id, moveDownwardsId:options.swappedChecklistObjectId});
             // },
-            MoveDownwards : function()
-            {
-                window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedChecklistObjectId, moveDownwardsId:options.checklistObject.id});
-            },
+            // MoveDownwards : function()
+            // {
+            //     window.View.Render('SwapListObjects', {moveUpwardsId:options.swappedChecklistObjectId, moveDownwardsId:options.checklistObject.id});
+            // },
             DecrementQuantityValue : function()
             {
                 renderUpdatesToListItemQuantity(options.checklistObject, options.quantityType);
