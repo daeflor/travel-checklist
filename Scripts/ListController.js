@@ -318,7 +318,7 @@ window.ListController = (function()
         setupBind(ChecklistEvents.NameEdited, _options);
         setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
-        createBind(bindReference.RemoveList, _options); 
+        setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
             //Then much of this (most of the bind setup) could be reused, for both List and List Item
     }
@@ -353,7 +353,7 @@ window.ListController = (function()
         setupBind(ChecklistEvents.NameEdited, _options);
         setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
-        createBind(bindReference.RemoveListItem, _options);
+        setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
     }
 
     function renderUpdatesToListItemQuantity(listItem, quantityType)
@@ -533,6 +533,8 @@ window.ListController = (function()
         ////Merge any properties from the arguments passed from the View (from the user input) into the options object
         //MergeObjects(options, inputArgument); 
 
+        //TODO maybe put error handling in these IFs to ensure the expected options have been passed. For example:
+            //if (triggeredEvent === ChecklistEvents.NameEdited && options[updatedValue] != null)
         if (triggeredEvent === ChecklistEvents.HashChanged)
         {
             window.View.Render('HideActiveSettingsView');
@@ -678,6 +680,31 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind(options, 'ClearQuantityValues'); 
             window.Model.ModifyList('ClearQuantityValues', activeListId, _updateView, options);
         }
+        else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
+        {
+            //TODO this is terrible:
+
+            let _id = options.checklistObject.id;
+
+            let _action, _updateModel, _updateView = null;
+
+            //let _updateModel = null;
+
+            if (options.checklistObject.hasOwnProperty('listItems') == true)
+            {
+                _action = 'RemoveList';
+                _updateView = handleModelInteraction.bind({id:_id}, _action);
+                _updateModel = window.Model.ModifyList.bind(null, _action, _id, _updateView);
+            }
+            else if (options.checklistObject.hasOwnProperty('quantities') == true)
+            {                
+                _action = 'RemoveListItem';
+                _updateView = handleModelInteraction.bind({id:_id}, _action);
+                _updateModel = window.Model.ModifyListItem.bind(null, _action, activeListId, _id, _updateView);    
+            }
+
+            _updateModel();
+        }
         else
         {
             //TODO This is going to get ugly.
@@ -791,6 +818,14 @@ window.ListController = (function()
                 break;
             case 'MoveDownwards':
                 window.View.Render('SwapListObjects', {moveUpwardsId:this.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
+                break;
+            case 'RemoveList':
+                //If the Active List ID is null, remove the List, else throw an error.
+                activeListId == null    ? window.View.Render('RemoveList', {id:this.id}) 
+                                        : window.DebugController.LogError("Expected Active List ID to be null when trying to remove a List, but it wasn't.");
+                break;
+            case 'RemoveListItem':
+                window.View.Render('RemoveListItem', {id:this.id}); 
                 break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
@@ -955,16 +990,16 @@ window.ListController = (function()
             {
                 renderUpdatesToListItemQuantity(options.checklistObject, options.quantityType);
             },
-            RemoveList : function()
-            {
-                //If the Active List ID is null, remove the List, else throw an error.
-                activeListId == null    ? window.View.Render('RemoveList', {id:options.checklistObject.id}) 
-                                        : window.DebugController.LogError("Expected Active List ID to be null when trying to remove a List, but it wasn't.");
-            },
-            RemoveListItem : function()
-            {
-                window.View.Render('RemoveListItem', {id:options.checklistObject.id}); 
-            }
+            // RemoveList : function()
+            // {
+            //     //If the Active List ID is null, remove the List, else throw an error.
+            //     activeListId == null    ? window.View.Render('RemoveList', {id:options.checklistObject.id}) 
+            //                             : window.DebugController.LogError("Expected Active List ID to be null when trying to remove a List, but it wasn't.");
+            // },
+            // RemoveListItem : function()
+            // {
+            //     window.View.Render('RemoveListItem', {id:options.checklistObject.id}); 
+            // }
             // ClearQuantityValues : function()
             // {
             //     //For each modified List Item...

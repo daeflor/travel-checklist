@@ -131,6 +131,8 @@ window.View = (function()
         //Set up the callback method to execute when the element matching the given ID is found
         let elementFoundCallback = function(element)
         {          
+            //TODO consider using Switch or a lookup table for this (probably Switch)
+
             //Update the element based on the action and options provided       
             action == 'Hide'          ? element.hidden = true : 
             action == 'Show'          ? element.hidden = false :
