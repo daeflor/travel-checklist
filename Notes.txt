@@ -13,8 +13,7 @@ TO-DOs:
     - - - Total             : 119
 
 Upcoming To-Do List:
-- handleUpdatesFromView should use event name instead of action name
-- Start using strict mode
+- Don't send options when not needed (e.g. when adding checklist objects)
 - Have List Items start using the ListID as a prefix
 - Reduce reliance on options object, where possible (or at least not always pass around the whole object)
 - Update app navigation and AppController

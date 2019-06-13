@@ -541,32 +541,6 @@ window.ListController = (function()
                 
         //     //     triggerModelInteraction(getList); //bad exxample. Other cases might work
         //     // ---
-            
-        //     //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-        //     MergeObjects(options, inputArgument); 
-
-        //     //TODO This section (below) could be in updateModel, but not sure it makes much difference
-
-        //     //Set up the callback method to execute once the Model has been updated. 
-        //     //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
-        //     const _modelUpdated = function(argument) 
-        //     {    
-        //         //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
-        //         MergeObjects(options, argument);
-                
-        //         ////Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
-        //         //handleUpdatesFromModel(bind.action, options);
-
-        //         //Render the new List and setup its bindings
-        //         renderAndBindLoadedList(options.list);
-
-        //         //Once the new List has been added to the DOM, expand its Settings View
-        //         window.View.Render('ExpandSettingsView', {id:options.list.id});
-        //     };
-            
-        //     //updateModel(bind.action, _modelUpdated, options);
-        //     window.Model.AddNewList(_modelUpdated);
-        // }
         else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
         {
             //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
@@ -604,8 +578,7 @@ window.ListController = (function()
 
             //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
             setupBind(ChecklistEvents.DecrementQuantityButtonPressed, options);
-            setupBind(ChecklistEvents.IncrementQuantityButtonPressed, options);
-            
+            setupBind(ChecklistEvents.IncrementQuantityButtonPressed, options); 
             setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
         }
         else if (triggeredEvent === ChecklistEvents.ClickDetectedOutsidePopover)
@@ -614,32 +587,14 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
         {
-                    // //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-                    // MergeObjects(options, inputArgument); 
-
-                    // //TODO This section (below) could be in updateModel, but not sure it makes much difference
-
-                    // //Set up the callback method to execute once the Model has been updated. 
-                    // //TODO the param name 'inputArgument' doesn't make sense coming from the Model, but would like something clearer than just 'argument'
-                    // const _modelUpdated = function(argument) 
-                    // {    
-                    //     //Merge any properties from the argument passed from the Model into the options object that gets passed to the View
-                    //     MergeObjects(options, argument);
-                        
-                    //     //Process the updates from the Model as needed, and then update the View, passing along any options  as applicable
-                    //     handleUpdatesFromModel('AddNewList', options);
-                    // };
-
-            //var _updateView = handleModelInteraction.bind(null, 'AddNewList', options);
-
-            //TODO Why pass options when we know it's empty?
-            let _updateView = handleModelInteraction.bind(options, 'AddNewList');
+            //TODO It's weird to have to pass an empty object (rather than just using the argument param in handleModelInteraction)
+            let _updateView = handleModelInteraction.bind({}, 'AddNewList');
             window.Model.AddNewList(_updateView);
         }
         else if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
         {
-            //TODO Why pass options when we know it's empty?
-            let _updateView = handleModelInteraction.bind(options, 'AddNewListItem');    
+            //TODO It's weird to have to pass an empty object (rather than just using the argument param in handleModelInteraction)
+            let _updateView = handleModelInteraction.bind({}, 'AddNewListItem');    
             window.Model.ModifyList('AddNewListItem', activeListId, _updateView);
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
@@ -676,7 +631,7 @@ window.ListController = (function()
 
             // let action = null;
 
-            // //TODO it would be better to use ternary operator than switch actually. Fix asap. Reference the View methods.
+            // //TODO it may be better to use ternary operator than switch actually. Reference the View methods.
             // switch (triggeredEvent)
             // {
             //     case ChecklistEvents.NameEdited:
@@ -705,11 +660,8 @@ window.ListController = (function()
 
             if (options.checklistObject.hasOwnProperty('listItems') == true)
             {
-                //_updateModel = window.Model.ModifyList.bind(null);
-                //TODO if this is actually the long-term approach we want to take (which doesn't seem likely), then we should re-arrange the parameters so we can bind more of them. 
-                
                 _updateModel = window.Model.ModifyList.bind(null, action, options.checklistObject.id, _updateView, options);
-                console.log("Update Model will update a List");
+                //console.log("Update Model will update a List");
             }
             else if (options.checklistObject.hasOwnProperty('quantities') == true)
             {
@@ -720,25 +672,10 @@ window.ListController = (function()
                 //_updateModel = window.Model.ModifyListItem.bind(options); 
                 
                 _updateModel = window.Model.ModifyListItem.bind(null, action, activeListId, options.checklistObject.id, _updateView, options);    
-                console.log("Update Model will update a List Item");
+                //console.log("Update Model will update a List Item");
             }
 
             _updateModel();
-
-            // let _updateView = handleModelInteraction.bind(options, 'UpdateName'); 
-            
-            // if (options.checklistObject.hasOwnProperty('listItems') == true)
-            // {
-            //     window.Model.ModifyList('UpdateName', options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});
-            // }
-            // else if (options.checklistObject.hasOwnProperty('quantities') == true)
-            // {
-            //     //TODO using options twice (or thrice!) within the params here seems silly
-            //         //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
-            //         //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
-            //         //Maybe have a ValidateParameters utility function
-            //     window.Model.ModifyListItem('UpdateName', activeListId, options.checklistObject.id, _updateView, {updatedValue:inputArgument.updatedValue});                
-            // }
         }
     }
 
