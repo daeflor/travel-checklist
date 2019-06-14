@@ -252,6 +252,11 @@ window.Model = (function()
     //Disadvantages is that it may less neat and more difficult to keep track of what can be done to a List vs List Item
         //Advantage would be no longer relying on an options object
 
+    //TODO Would it be worth it to add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item
+        //It could be something like Model.Update() but should also make sense for getting a List's Balance...
+    // TODO Change List Item IDs to be prefixed by the listId.
+        //Then it may be possible to more easily attempt some of the suggestions above. 
+
     function modifyListItem(command, listId, listItemId, callback, options)
     {       
         let commands = 

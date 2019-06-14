@@ -604,6 +604,23 @@ window.ListController = (function()
         {
             //TODO this is terrible:
 
+            //TODO If List Item IDs are prefixed by the List IDs, there will still need to be a way, within the Controller, to determine if a given ID is for a List or List Item.
+                //Other than this case, this is mostly only necessary to do in the Model
+                //Perhaps it would be best to have this helper method in another file altogether
+                /*
+                function GetChecklistObjectTypeFromId(id)
+                {
+                    if id character length = xxxxx
+                        return 'list'
+                    else if id character length = yyy
+                        return 'list item'
+                    else 
+                        throw error
+                }
+                */
+                //TODO OR alternatively, just pass the checklist object type in the options.
+                    //For example, _options = {id:_id, type:'list'}
+                
             let _id = options.checklistObject.id;
 
             let _action, _updateModel, _updateView = null;
@@ -658,8 +675,12 @@ window.ListController = (function()
 
             if (options.checklistObject.hasOwnProperty('listItems') == true)
             {
+                //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
+                    //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
+                    // var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
+                    //Probably not... There is likely a better solution 
+                
                 _updateModel = window.Model.ModifyList.bind(null, action, options.checklistObject.id, _updateView, options);
-                //console.log("Update Model will update a List");
             }
             else if (options.checklistObject.hasOwnProperty('quantities') == true)
             {
@@ -667,10 +688,8 @@ window.ListController = (function()
                     //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
                     //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
                     //Maybe have a ValidateParameters utility function
-                //_updateModel = window.Model.ModifyListItem.bind(options); 
                 
                 _updateModel = window.Model.ModifyListItem.bind(null, action, activeListId, options.checklistObject.id, _updateView, options);    
-                //console.log("Update Model will update a List Item");
             }
 
             _updateModel();
@@ -680,20 +699,14 @@ window.ListController = (function()
     //TODO Temporary name probably
     /**
      * Handle callbacks received from the Model after the checklist data has been updated, and react by passing along to the View any data necessary to properly render those updates
+     * @this {Object} An object containing data about the checklist component being interacted with, if it is needed to properly react to the interaction. If it is not needed, then 'this' is null.
      * @param {string} action The name of the action that has been initiated by the user or application (e.g. removing a List or List Item)
-     * @param {object} [modifiedChecklistData] [Optional] An optional object passed back from the Model containing any additional data necessary to properly render the updates to the checklist
+     * @param {Object} [modifiedChecklistData] [Optional] An optional object passed back from the Model containing any additional data necessary to properly render the updates to the checklist
      */
     function handleModelInteraction(action, modifiedChecklistData)
     {       
         //TODO is there a way to make it obvious when reading the code that 'this' is the options object?
         //TODO Maybe document (or add error handling for) the possible properties of 'this'/'options': quantityType, swappedChecklistObjectId, etc.
-
-        //Merge any properties from the argument passed from the Model into the options object
-        //console.log("THIS then ARGUMENT then THIS merged with ARGUMENT");
-        //console.log(JSON.stringify(this));
-        //console.log(JSON.stringify(argument));
-        //MergeObjects(this, argument);
-        //console.log(JSON.stringify(this));
 
         //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
             //No I think it would be better to be more specific
@@ -748,62 +761,6 @@ window.ListController = (function()
         }
     }
 
-    /**
-     * Pass along to the Model any modifications or updates which need to be made to the checklist data
-     * @param {string} action The action that has been initiated by the user or application (e.g. removing a List Item)
-     * @param {Function} callback The method to call once the Model has been successfully updated
-     * @param {object} [options] [Optional] An optional object to pass containing any data needed to pass along updates to the Model
-     */
-    function updateModel(action, callback, options)
-    {
-        //window["Model"][binding.modificationType](binding.action, checklistData.listId, checklistData.listItem.id, callback, options);
-
-        // if (action === 'AddNewListItem')
-        // {
-        //     window.Model.ModifyList(action, activeListId, callback);
-        // }
-        // else if (action === 'AddNewList')
-        // {
-        //     window.Model.AddNewList(callback);
-        // }
-        // if (action === 'ClearQuantityValues')
-        // {
-        //     //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
-        //         //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
-        //         //     var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
-        //         //Nah, seems unhelpful
-        //     window.Model.ModifyList(action, activeListId, callback, options);
-        // }
-        if (options != null && options.hasOwnProperty('checklistObject') == true)
-        {
-            if (options.checklistObject.hasOwnProperty('listItems') == true)
-            {
-                window.Model.ModifyList(action, options.checklistObject.id, callback, options);
-            }
-            else if (options.checklistObject.hasOwnProperty('quantities') == true)
-            {
-                //TODO using options twice (or thrice!) within the params here seems silly
-                    //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
-                    //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
-                    //Maybe have a ValidateParameters utility function
-                window.Model.ModifyListItem(action, activeListId, options.checklistObject.id, callback, options);
-                
-                window.DebugController.Print("Active List ID: " + activeListId);
-            }
-
-            //TODO 5 meh ideas to make this work
-                // 1) Change it back to how it was, using listId and listItemId
-                // 2) Pass activeListId in the options in such a way that it references its most up to date value
-                // 3) Pass listId in the options for any List Item modifications - (Likely best short term solution)
-                // 4) Add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item - (This would likely run into the same problem)
-                // 5) Change List Item IDs to be prefixed by the listId, and then do #4 above. - (More of a long term solution)
-        }
-        else
-        {
-            window.DebugController.LogError("ERROR: Unable to handle updates received from the View. Action: " + action);
-        }
-    }
-
     /** Publicly Exposed Methods To Setup UI & Load List Data **/
 
     function init()
@@ -811,21 +768,18 @@ window.ListController = (function()
         //Set the checklist type
         //checklistType = checklistType;
 
-        //Setup the binds for interactions with the quantity header row
+        //Set up the binds for interactions with the quantity header row
         renderAndBindQuantityHeader();
 
         //Set up the binds for the buttons to add a new List or List Item
-        
-        //createBind(bindReference.AddNewList);
         setupBind(ChecklistEvents.NewListButtonPressed);
-        
-        //createBind(bindReference.AddNewListItem);
         setupBind(ChecklistEvents.NewListItemButtonPressed);
-        
+
+        //Set up the bind logic for when the app's web page hash changes
+        setupBind(ChecklistEvents.HashChanged);
+
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
-
-        setupBind(ChecklistEvents.HashChanged);
     }
 
     function loadChecklistDataIntoView(loadedListData)
@@ -836,7 +790,7 @@ window.ListController = (function()
         for (let i = 0; i < loadedListData.length; i++) 
         {
             //Add the List elements to the DOM and set up the binds for interactions with them
-            renderAndBindLoadedList(loadedListData[i])
+            renderAndBindLoadedList(loadedListData[i]);
             
             //For each List Item in the List...
             for (let j = 0; j < loadedListData[i].listItems.length; j++) 
@@ -853,7 +807,6 @@ window.ListController = (function()
 
     return {
         Init : init
-        //LoadChecklistDataIntoView : loadChecklistDataIntoView
     };
 })();
 
