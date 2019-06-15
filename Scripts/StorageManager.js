@@ -1,3 +1,4 @@
+'use strict';
 window.StorageManager = (function () 
 {
     //TODO Add JSDoc comments to each of the methods below, and add any other comments as needed

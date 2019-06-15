@@ -131,6 +131,8 @@ window.View = (function()
         //Set up the callback method to execute when the element matching the given ID is found
         let elementFoundCallback = function(element)
         {          
+            //TODO consider using Switch or a lookup table for this (probably Switch)
+
             //Update the element based on the action and options provided       
             action == 'Hide'          ? element.hidden = true : 
             action == 'Show'          ? element.hidden = false :
@@ -299,7 +301,7 @@ window.View = (function()
     {
         let viewCommands = 
         {
-            showHomeScreen: function() 
+            ShowHomeScreen: function() 
             {
                 //TODO this can probably all be put into a Toggle helper method.
                     //But first should probably move the headers into their respective screens
@@ -316,7 +318,7 @@ window.View = (function()
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
             },
-            DisplayList: function() //Expected parameters: id, activeListId
+            DisplayList: function() //Expected parameters: id
             {
                 //Hide the Home Header when an individual List is displayed
                 elements.homeHeader.hidden = true;
@@ -324,24 +326,15 @@ window.View = (function()
                 //Hide the Home Screen when an individual List is displayed
                 elements.homeScreen.hidden = true;
 
-                //TODO might be worth renaming the callback function variables below to improve readability
-
                 //Set up the callback method to execute when a name button matching the given ID is found
-                let elementFoundCallback = function(element)
+                let _updateListTitle = function(element)
                 {                    
                     //Set the List title to match the text content of the name button element
                     elements.listTitle.textContent = element.textContent;
                 };
 
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
-                findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
-
-                //If a valid Active List ID was provided...
-                if (parameters.activeListId != null && parameters.activeListId != '')
-                {
-                    //Hide the wrapper element for the Active List
-                    updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.activeListId});
-                }
+                findChecklistElement(parameters.id, _updateListTitle, 'NameButton');
 
                 //Show the wrapper element for the List matching the given ID
                 updateChecklistElement('Show', {type:'ListWrapper', id:parameters.id});
@@ -352,6 +345,18 @@ window.View = (function()
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
             },
+            HideList: function() //Expected parameters: id
+            {
+                //If a non-null List ID was provided, hide the wrapper element for the matching List
+                if (parameters.id != null)
+                {
+                    updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.id});
+                }
+                else 
+                {
+                    window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
+                }
+            }, 
             AddList: function() //Expected parameters: list
             {
                 //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
@@ -379,6 +384,9 @@ window.View = (function()
 
                     //Update the reorder buttons for all the List toggles in the Home Screen
                     updateReorderButtons(elements.homeScreenListElements);
+
+                    //TODO Seems that this could easily use the same command logic as RemoveListItem. 
+                        //This command just needs to reference the parent element instead of homeScreenListElements
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it

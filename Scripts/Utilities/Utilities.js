@@ -1,3 +1,4 @@
+'use strict';
 /** General Utilities **/
 
 //TODO Utilities should probably have its own namespace, for clarity
@@ -89,8 +90,8 @@ function MergeObjects(target, source)
         //Merge any properties from the source object to the target object
         Object.assign(target, source);
 
-        window.DebugController.Print("Merged two objects into the following target object: ");
-        window.DebugController.Print(target);
+        //window.DebugController.Print("Merged two objects into the following target object: ");
+        //window.DebugController.Print(target);
     }
 
     return target;
@@ -112,6 +113,20 @@ function getFragmentIdentifierFromUrlString(urlString)
     {
         window.DebugController.LogError("Fragment Identifier requested but a valid URL string was not provided.");
     }
+}
+
+/**
+ * Get the final path segment ("slug") of the provided URL
+ * @param {string} urlString The URL or portion of a URL
+ * @returns the final path segment ("slug") of the provided URL
+ */
+function getUrlSlug(urlString)
+{
+    //Split the URL into the various path segments separated by '/'
+    let _pathSegments = urlString.split('/');
+
+    //Return the last path segment in the URL
+    return _pathSegments[_pathSegments.length-1]; 
 }
 
 /** Experimental & In Progress **/

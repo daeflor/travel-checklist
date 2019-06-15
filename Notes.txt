@@ -13,8 +13,10 @@ TO-DOs:
     - - - Total             : 119
 
 Upcoming To-Do List:
-- Address some TODOs from dynamic-list-toggle-color branch (https://github.com/daeflor/travel-checklist/compare/dynamic-list-toggle-color)
-- handleUpdatesFromView should use event name instead of action name
+- Don't send options when not needed (e.g. when adding checklist objects)
+- Have List Items start using the ListID as a prefix
+- Reduce reliance on options object, where possible (or at least not always pass around the whole object)
+- Update app navigation and AppController
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
 - Replace var with const and let
