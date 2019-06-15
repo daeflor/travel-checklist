@@ -1,4 +1,3 @@
-'use strict';
 (function () 
 {   
     //Initialize once the DOM content has loaded, and then remove this event listener after a single firing
@@ -31,7 +30,7 @@
     {
         var currentScreenData = getCurrentScreenData();
 
-        window.DebugController.Print("App: The URL fragment identifier changed. Hash route: " + GetLocationHashRoute());
+        window.DebugController.LogWarning("App: The URL fragment identifier changed. Hash route: " + GetLocationHashRoute());
 
         //If the current screen data is valid and specifies a checklist type...
         if (currentScreenData.listType != null && currentScreenData.listId != null && currentScreenData.listType !== '')
@@ -44,6 +43,13 @@
                 {
                     window.history.go(-(window.history.length-1));
                 }
+
+                //Hide any active settings view and display the Home Screen
+                //TODO Hiding the Active Settings View shouldn't have to be handled here..
+                window.View.Render('HideActiveSettingsView'); //TODO can hiding the Active settings view be part of showing the home screen?
+                window.View.Render('showHomeScreen'); 
+                //TODO should this be done in controller?
+                //TODO should this also hide and nullify the activeListId?
             }
         }
     }

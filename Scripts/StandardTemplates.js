@@ -1,4 +1,3 @@
-'use strict';
 //TODO should this whole file be wrapped in an IIFE?
 
 /** Standard Element Creation **/

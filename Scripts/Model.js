@@ -1,4 +1,3 @@
-'use strict';
 window.Model = (function() 
 {
     //TODO using 'self' makes it more obvious when accessing 'global' variables (even though these aren't actually global)
@@ -10,23 +9,14 @@ window.Model = (function()
 
     function getLists() 
     {
-        //If checklist data has already been loaded from storage, return the Lists array
+        //If checklist data already has been loaded from storage
         if (checklistData != null)
         {
+            //Return the Lists array
             return checklistData.lists;
         }
 
-        window.DebugController.LogError("ERROR: Tried to retrieve Lists array but Checklist data is null");
-    }
-
-    /**
-     * Get the array of List Items for the List matching the provided ID
-     * @param {string} listId The ID of the List
-     * @returns the array of List Items
-     */
-    function getListItems(listId)
-    {
-        return getLists()[getListIndexFromId(listId)].listItems;
+        window.DebugController.LogError("ERROR: Checklist data is null");
     }
     
     function storeChecklistData()
@@ -59,8 +49,18 @@ window.Model = (function()
         if (_listIndex != null) //TODO replace this with try catch 
         {
             //Search for the List Item and return its index
-            return GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
+            return _listItemIndex = GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
         }
+    }
+
+    /**
+     * Get the array of List Items for the List matching the provided ID
+     * @param {string} listId The ID of the List
+     * @returns the array of List Items
+     */
+    function getListItems(listId)
+    {
+        return getLists()[getListIndexFromId(listId)].listItems;
     }
 
     function editName(checklistObject, updatedName, callback)
@@ -136,7 +136,7 @@ window.Model = (function()
         listObject.listItems.push(newListItem);
 
         //Execute the provided callback method once the new List Item has been added to the List, passing the List Item object as an argument
-        callback({newListItem:newListItem});
+        callback({listItem:newListItem});
     }
 
     /** Publicly Exposed Methods To Access & Modify List Data **/
@@ -165,7 +165,7 @@ window.Model = (function()
 
         storeChecklistData();
 
-        callback({newList:newList});
+        callback({list:newList});
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
@@ -206,7 +206,7 @@ window.Model = (function()
             },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
-                let quantityType = options.quantityType; //TODO I don't think this is necessary
+                let quantityType = options.quantityType;
 
                 if (quantityType != null)
                 {
@@ -239,18 +239,6 @@ window.Model = (function()
         //Execute the method matching the given command
         commands[command](getListIndexFromId(listId), commandSucceededCallback);
     }
-
-    //TODO what if instead of ModifyList vs ModifyListItem, we break it down by purpose/outcome. For example:
-        //UpdateName(callback, updatedValue, listId, listItemId(optional(and temporary)))
-        //ChangePosition(callback, direction, listId, listItemId(optional(and temporary))) - (Maybe leave it ias MoveUpwards & MoveDownwards)
-        //Remove(callback, listId, listItemId(optional(and temporary)))
-        //AddList
-        //AddListItem
-        //Decrement
-        //Increment
-        //clearQuantityValues(callback, quantityType, listId)
-    //Disadvantages is that it may less neat and more difficult to keep track of what can be done to a List vs List Item
-        //Advantage would be no longer relying on an options object
 
     function modifyListItem(command, listId, listItemId, callback, options)
     {       
@@ -343,23 +331,12 @@ window.Model = (function()
         commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
     }
 
-    // //TODO It's not very logical/intuitive that access list items would execute a call back
-    // function accessListItems(listId, callback)
-    // {     
-    //     let _listItems = getListItems(listId);
+    //TODO It's not very logical/intuitive that access list items would execute a call back
+    function accessListItems(listId, callback)
+    {     
+        let _listItems = getListItems(listId);
 
-    //     callback(_listItems);
-    // }
-
-    /**
-     * Get a the balance of a List matching the provided ID, and using the calculation function provided
-     * @param {string} listId The ID of the List
-     * @param {function} calculationFunction The function which contains the logic used to calculate the balance 
-     * @returns the List's balance, in the form of a ChecklistObjectBalance value
-     */
-    function getListBalance(listId, calculationFunction)
-    {
-        return calculationFunction(getListItems(listId)); //TODO maybe it would make more sense for the calculation function to be a helper method in a custom helpers file
+        callback(_listItems);
     }
 
     // function modelUpdated(callback, args)
@@ -399,10 +376,9 @@ window.Model = (function()
     return {
         RetrieveChecklistData : retrieveChecklistData,
         AddNewList : addNewList,
-        //AccessListItems : accessListItems,
+        AccessListItems : accessListItems,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem,
-        GetListBalance: getListBalance
+        ModifyListItem : modifyListItem
     };
 })();
 

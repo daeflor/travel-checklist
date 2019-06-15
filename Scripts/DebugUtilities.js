@@ -1,4 +1,3 @@
-'use strict';
 window.DebugController = (function()
 {
     var debugModeEnabled = true;
