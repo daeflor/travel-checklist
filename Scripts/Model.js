@@ -70,7 +70,7 @@ window.Model = (function()
                 //Get the List Item's previous/old ID assign it to a temporary variable
                 let _oldListItemId = lists[i].listItems[j].id
 
-                if (_oldListItemId.includes('-') == false)
+                if (_oldListItemId.toString().includes('-') == false)
                 {
                     //Set the List Item's new ID as a concatention of the List ID and the previous/old List Item ID
                     lists[i].listItems[j].id = lists[i].id.toString().concat('-').concat(_oldListItemId);
