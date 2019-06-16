@@ -66,23 +66,23 @@ window.Model = (function()
     //     callback();
     // }
 
-    function swapChecklistObjects(array, index, indexToSwapWith, callback)
-    {
-        //Try to swap the object at one index with the object at another index in the array and, if successful, get the swapped object
-        let swappedChecklistObject = SwapElementsInArray(array, index, indexToSwapWith);
+    // function swapChecklistObjects(array, index, indexToSwapWith, callback)
+    // {
+    //     //Try to swap the object at one index with the object at another index in the array and, if successful, get the swapped object
+    //     let swappedChecklistObject = SwapElementsInArray(array, index, indexToSwapWith);
             
-        //If the swap succeeded, execute the callback method, passing the swapped checklist object ID as an argument
-        if (swappedChecklistObject != null)
-        {
-            //TODO could possibly just return the swapped list instead of specifically it's ID
-                //The "SwapElementsInArray" helper method could also go back to using a callback, if desired
-            callback({swappedChecklistObjectId:swappedChecklistObject.id});
-        }
-        else
-        {
-            window.DebugController.Print("Unable to swap the checklist object with ID " + array[index].id);
-        }
-    }
+    //     //If the swap succeeded, execute the callback method, passing the swapped checklist object ID as an argument
+    //     if (swappedChecklistObject != null)
+    //     {
+    //         //TODO could possibly just return the swapped list instead of specifically it's ID
+    //             //The "SwapElementsInArray" helper method could also go back to using a callback, if desired
+    //         callback({swappedChecklistObjectId:swappedChecklistObject.id});
+    //     }
+    //     else
+    //     {
+    //         window.DebugController.Print("Unable to swap the checklist object with ID " + array[index].id);
+    //     }
+    // }
 
     function clearQuantityValues(listObject, quantityType, callback)
     {
@@ -312,14 +312,19 @@ window.Model = (function()
         let _listId = id.toString().split('-')[0];
         let _listItemSuffix = id.toString().split('-')[1];
         let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
+        let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
+        let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id); //TODO could instead just use an if/else to determine if index is the one for the List or the one for the List Item (if applicable)
     
         if (_listIndex != null)
         {
             return {
-                listIndex: _listIndex,
-                listItemIndex: (_listItemSuffix != null) ? GetArrayIndexOfObjectWithKVP(getListItems(_listId), 'id', id) : null,
-                //parentArray: (_listItemSuffix == null) ? getLists() : getListItems(_listId)
-                parentArray: (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems
+                index: _index,
+                //listIndex: _listIndex,
+                //listItemIndex: (_listItemSuffix != null) ? GetArrayIndexOfObjectWithKVP(getListItems(_listId), 'id', id) : null,
+                //parentArray: (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems,
+                parentArray: _parentArray,
+                //object: (_listItemSuffix == null) ? getLists()[_listIndex] : getLists()[_listIndex].listItems[_indices.listItemIndex]
+                object: _parentArray[_index]
                 //type: (_listItemSuffix == null) ? 'list' : 'listItem'
             };
         }
@@ -336,14 +341,11 @@ window.Model = (function()
             //Retrieve data about the checklist object based on its ID
             let _data = getChecklistObjectDataFromId(id);
             
-            //If the checklist object has List Item Index value, use that. Otherwise, use the List Index value.
-            let _index = (_data.listItemIndex == null) ? _data.listIndex : _data.listItemIndex;
-
             //If the specified direction is 'Upwards', swap with the previous index, otherwise swap with the next index.
-            let _indexToSwapWith = (direction === 'Upwards') ? _index-1 : _index+1;
+            let _indexToSwapWith = (direction === 'Upwards') ? _data.index-1 : _data.index+1;
 
             //Try to swap the object with the one at an adjacent index in the array and, if successful, get the swapped object
-            let _swappedChecklistObject = SwapElementsInArray(_data.parentArray, _index, _indexToSwapWith); 
+            let _swappedChecklistObject = SwapElementsInArray(_data.parentArray, _data.index, _indexToSwapWith); 
         
             //If the swap succeeded, store the updated checklist data and then execute the callback function, passing the ID of swapped checklist object
             if (_swappedChecklistObject != null)
@@ -361,92 +363,6 @@ window.Model = (function()
             DebugController.LogError("Request received to modify a checklist object's position, but in invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
         }
     }
-
-    // function modifyPosition(id, callback, direction)
-    // {
-    //     if (direction === 'Upwards' || direction === 'Downwards')
-    //     {
-    //         let _indices = getChecklistObjectIndicesFromId(id);
-
-    //         if (_indices.listIndex != null) 
-    //         {
-    //             let _parentArray = (_indices.listItemIndex == null) ? getLists() : getLists()[_indices.listIndex].listItems;
-            
-    //             let _indexToSwapWith = (direction === 'Upwards') ? index - 1 : index+ + 1;
-
-    //             /////
-
-    //             //let _parentArray = null;
-    //             let _index = null;
-    //             //let _indexToSwapWith = null;
-
-    //             if (_indices.listItemIndex == null)
-    //             {
-    //                 _parentArray = getLists();
-    //                 _indexToSwapWith = _indices.listIndex
-    //             }
-    //             else 
-    //             {
-    //                 _parentArray = getLists()[_indices.listIndex].listItems;
-    //             }
-            
-
-
-
-    //             /////
-            
-    //             //Store the updated checklist data
-    //             storeChecklistData();
-
-    //             //Execute the provided callback function 
-    //             callback();
-    //         }
-    //         else
-    //         {
-    //             DebugController.LogError("Tried to retrieve a Checklist Object but a valid List ID was not provided or could not be determined.");
-    //         }
-
-    //         let _indexToSwapWith = (direction === 'Upwards') ? index - 1 : index+ + 1;
-    //     }
-    //     else
-    //     {
-    //         DebugController.LogError("Request received to modify a checklist object's position, but in invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
-    //     }
-
-
-
-    //     if (direction === 'Upwards')
-    //     {
-            
-
-    //         //Store the updated checklist data
-    //         storeChecklistData();
-
-    //         //Execute the provided callback function 
-    //         callback();
-    //     }
-    //     else if (direction === 'Downwards')
-    //     {
-
-    //     }
-    //     else
-    //     {
-    //         DebugController.LogError("Request received to modify a checklist object's position, but in invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
-    //     }
-            
-        
-    //     //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
-    //     swapChecklistObjects(getLists(), listIndex, listIndex-1, commandSucceededCallback);
-        
-    //     //
-        
-
-    //     //Store the updated checklist data
-    //     storeChecklistData();
-
-    //     //Execute the provided callback function 
-    //     callback();
-    // }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
         //Maybe keep ModifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
@@ -474,11 +390,11 @@ window.Model = (function()
             //     //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
             //     swapChecklistObjects(getLists(), listIndex, listIndex-1, commandSucceededCallback);
             // },
-            MoveDownwards : function(listIndex, commandSucceededCallback)
-            {
-                //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
-                swapChecklistObjects(getLists(), listIndex, listIndex+1, commandSucceededCallback);
-            },
+            // MoveDownwards : function(listIndex, commandSucceededCallback)
+            // {
+            //     //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
+            //     swapChecklistObjects(getLists(), listIndex, listIndex+1, commandSucceededCallback);
+            // },
             AddNewListItem : function(listIndex, commandSucceededCallback)
             {
                 //Add a new List Item to the given List and then execute the provided callback method
@@ -560,11 +476,11 @@ window.Model = (function()
             //     //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
             //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex-1, commandSucceededCallback);
             // },
-            MoveDownwards : function(listItemIndex, commandSucceededCallback)
-            {
-                //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-                swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
-            },
+            // MoveDownwards : function(listItemIndex, commandSucceededCallback)
+            // {
+            //     //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+            //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
+            // },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
             DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
             {
