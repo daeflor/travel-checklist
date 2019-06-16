@@ -113,27 +113,6 @@ window.Model = (function()
         }
     }
 
-    function addNewListItem(listObject, callback)
-    {
-        //TODO instead of prefixing the List Item ID with the List's ID, is it viable to just add a 'type' key?
-        let newListItem = {
-            id : listObject.id.toString().concat('-').concat(new Date().getTime()), //TODO if we ever start using Firebase or some other server, we should just keep an incrementing counter for this ID.
-            name : '',
-            quantities : {
-                needed: 0,
-                luggage: 0,
-                wearing: 0,
-                backpack: 0
-            }
-        };
-        
-        //Add the new List Item to the given List object
-        listObject.listItems.push(newListItem);
-
-        //Execute the provided callback method once the new List Item has been added to the List, passing the List Item object as an argument
-        callback({newListItem:newListItem});
-    }
-
     function convertListItemIds(lists)
     {
         //For each List loaded from Storage...
@@ -314,6 +293,33 @@ window.Model = (function()
         }
     }
 
+    function addNewListItem(listId, callback)
+    {
+        //Retrieve data about the checklist object based on its ID
+        let _data = getChecklistObjectDataFromId(listId); //TODO it may be overkill using this in this instance
+
+        //TODO instead of prefixing the List Item ID with the List's ID, is it viable to just add a 'type' key?
+        let newListItem = {
+            id : _data.object.id.toString().concat('-').concat(new Date().getTime()), //TODO if we ever start using Firebase or some other server, we should just keep an incrementing counter for this ID.
+            name : '',
+            quantities : {
+                needed: 0,
+                luggage: 0,
+                wearing: 0,
+                backpack: 0
+            }
+        };
+        
+        //Add the new List Item to the List object matching the provided ID
+        _data.object.listItems.push(newListItem);
+
+        //Store the updated checklist data
+        storeChecklistData();
+
+        //Execute the provided callback function, passing the new List Item object as an argument
+        callback({newListItem:newListItem});
+    }
+
     function modifyName(id, callback, updatedValue)
     {
         //If a valid name was provided...
@@ -347,10 +353,13 @@ window.Model = (function()
             //Try to swap the object with the one at an adjacent index in the array and, if successful, get the swapped object
             let _swappedChecklistObject = SwapElementsInArray(_data.parentArray, _data.index, _indexToSwapWith); 
         
-            //If the swap succeeded, store the updated checklist data and then execute the callback function, passing the ID of swapped checklist object
+            //If the swap was successful...
             if (_swappedChecklistObject != null)
             {
-                storeChecklistData();            
+                //Store the updated checklist data
+                storeChecklistData();
+
+                //Execute the provided callback function, passing the ID of swapped checklist object as an argument
                 callback({swappedChecklistObjectId:_swappedChecklistObject.id});
             }
             else
@@ -360,7 +369,7 @@ window.Model = (function()
         }
         else
         {
-            DebugController.LogError("Request received to modify a checklist object's position, but an invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
+            window.DebugController.LogError("Request received to modify a checklist object's position, but an invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
         }
     }
 
@@ -456,11 +465,11 @@ window.Model = (function()
             //     //Try to move the List downwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
             //     swapChecklistObjects(getLists(), listIndex, listIndex+1, commandSucceededCallback);
             // },
-            AddNewListItem : function(listIndex, commandSucceededCallback)
-            {
-                //Add a new List Item to the given List and then execute the provided callback method
-                addNewListItem(getLists()[listIndex], commandSucceededCallback); 
-            },
+            // AddNewListItem : function(listIndex, commandSucceededCallback)
+            // {
+            //     //Add a new List Item to the given List and then execute the provided callback method
+            //     addNewListItem(getLists()[listIndex], commandSucceededCallback); 
+            // },
             ClearQuantityValues : function(listIndex, commandSucceededCallback)
             {
                 let quantityType = options.quantityType; //TODO I don't think this is necessary
@@ -511,99 +520,6 @@ window.Model = (function()
 
     //TODO Would it be worth it to add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item
         //It could be something like Model.Update() but should also make sense for getting a List's Balance...
-    // TODO Change List Item IDs to be prefixed by the listId.
-        //Then it may be possible to more easily attempt some of the suggestions above. 
-
-    // function modifyListItem(command, listId, listItemId, callback, options)
-    // {       
-    //     let commands = 
-    //     {
-    //         // UpdateName : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     let updatedValue = options.updatedValue;
-
-    //         //     if (updatedValue != null)
-    //         //     {
-    //         //         //Update the name of the List Item and then execute the provided callback method
-    //         //         editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
-    //         //     }
-    //         //     else
-    //         //     {
-    //         //         DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
-    //         //     }                
-    //         // },
-    //         // MoveUpwards : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-    //         //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex-1, commandSucceededCallback);
-    //         // },
-    //         // MoveDownwards : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-    //         //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
-    //         // },
-    //         //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
-    //         // DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     let quantityType = options.quantityType;
-
-    //         //     if (quantityType != null)
-    //         //     {
-    //         //         //If the quantity value for the given quantity type is greater than zero...
-    //         //         if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
-    //         //         {
-    //         //             //Decrement the quantity value by one
-    //         //             getListItems(listId)[listItemIndex].quantities[quantityType]--;
-
-    //         //             //Execute the provided callback method once the command has been successfully executed
-    //         //             commandSucceededCallback();
-    //         //         }
-    //         //     }
-    //         //     else
-    //         //     {
-    //         //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-    //         //     }
-    //         // },
-    //         // IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     let quantityType = options.quantityType;
-
-    //         //     if (quantityType != null)
-    //         //     {
-    //         //         //Increment the quantity value for the given quantity type by one
-    //         //         getListItems(listId)[listItemIndex].quantities[quantityType]++;
-                    
-    //         //         //Execute the provided callback method once the command has been successfully executed
-    //         //         commandSucceededCallback();
-    //         //     }
-    //         //     else
-    //         //     {
-    //         //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-    //         //     }
-    //         // },
-    //         // RemoveListItem : function(listItemIndex, commandSucceededCallback)
-    //         // {
-    //         //     //Remove the List Item object from the listItems array and then execute the provided callback method
-    //         //     RemoveElementFromArray(getListItems(listId), listItemIndex, commandSucceededCallback);
-    //         // }
-    //     };
-
-    //     //Set up the callback method to execute once the given command has been executed successfully 
-    //     let commandSucceededCallback = function(args)
-    //     {       
-    //         //Store the updated checklist data object
-    //         storeChecklistData();
-
-    //         //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
-    //             //But it wouldn't work for ClearQuantityValues (in ModifyList)
-
-    //         //Execute the provided callback method, passing the returned arguments if not null
-    //         args != null ? callback(args) : callback();
-    //     };
-
-    //     //Execute the method matching the given command
-    //     commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
-    // }
 
     // //TODO It's not very logical/intuitive that access list items would execute a call back
     // function accessListItems(listId, callback)
@@ -664,6 +580,7 @@ window.Model = (function()
         //AccessListItems : accessListItems,
         ModifyList : modifyList,
         GetListBalance: getListBalance,
+        AddNewListItem: addNewListItem,
         ModifyName: modifyName,
         ModifyPosition: modifyPosition,
         ModifyQuantityValue: modifyQuantityValue,

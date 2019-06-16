@@ -49,7 +49,7 @@ const ChecklistEventReactionMapping = {
     //HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
     //-----NameEdited: 'UpdateName',
     //RemoveList: 'RemoveList',
-    RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
+    //-----RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
     //-----MoveUpwardsButtonPressed: 'MoveUpwards',
     //-----MoveDownwardsButtonPressed: 'MoveDownwards', 
 
@@ -593,7 +593,7 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
         {
             let _updateView = handleModelInteraction.bind(null, 'AddNewListItem');    
-            window.Model.ModifyList('AddNewListItem', activeListId, _updateView);
+            window.Model.AddNewListItem(activeListId, _updateView);
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
         {
