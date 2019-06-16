@@ -312,7 +312,6 @@ window.Model = (function()
         let _listId = id.toString().split('-')[0];
         let _listItemSuffix = id.toString().split('-')[1];
         let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
-        //let _type;
     
         if (_listIndex != null)
         {
@@ -320,8 +319,8 @@ window.Model = (function()
                 listIndex: _listIndex,
                 listItemIndex: (_listItemSuffix != null) ? GetArrayIndexOfObjectWithKVP(getListItems(_listId), 'id', id) : null,
                 //parentArray: (_listItemSuffix == null) ? getLists() : getListItems(_listId)
-                parentArray: (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems,
-                type: (_listItemSuffix == null) ? 'list' : 'listItem'
+                parentArray: (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems
+                //type: (_listItemSuffix == null) ? 'list' : 'listItem'
             };
         }
         else
@@ -330,27 +329,36 @@ window.Model = (function()
         }
     }
 
-    function moveUpwards(id, callback)
+    function modifyPosition(id, callback, direction)
     {
-        //Retrieve data about the checklist object based on its ID
-        let _data = getChecklistObjectDataFromId(id);
-        
-        //If the checklist object has List Item Index value, use that. Otherwise, use the List Index value.
-        //let _index = (_data.type === 'list') ? _data.listIndex : _data.listItemIndex; //TODO Maybe 'type' isn't needed
-        let _index = (_data.listItemIndex == null) ? _data.listIndex : _data.listItemIndex;
-
-        //Try to swap the object with the one at the previous index in the array and, if successful, get the swapped object
-        let _swappedChecklistObject = SwapElementsInArray(_data.parentArray, _index, _index-1); 
-    
-        //If the swap succeeded, store the updated checklist data and then execute the callback function, passing the ID of swapped checklist object
-        if (_swappedChecklistObject != null)
+        if (direction === 'Upwards' || direction === 'Downwards')
         {
-            storeChecklistData();            
-            callback({swappedChecklistObjectId:_swappedChecklistObject.id});
+            //Retrieve data about the checklist object based on its ID
+            let _data = getChecklistObjectDataFromId(id);
+            
+            //If the checklist object has List Item Index value, use that. Otherwise, use the List Index value.
+            let _index = (_data.listItemIndex == null) ? _data.listIndex : _data.listItemIndex;
+
+            //If the specified direction is 'Upwards', swap with the previous index, otherwise swap with the next index.
+            let _indexToSwapWith = (direction === 'Upwards') ? _index-1 : _index+1;
+
+            //Try to swap the object with the one at an adjacent index in the array and, if successful, get the swapped object
+            let _swappedChecklistObject = SwapElementsInArray(_data.parentArray, _index, _indexToSwapWith); 
+        
+            //If the swap succeeded, store the updated checklist data and then execute the callback function, passing the ID of swapped checklist object
+            if (_swappedChecklistObject != null)
+            {
+                storeChecklistData();            
+                callback({swappedChecklistObjectId:_swappedChecklistObject.id});
+            }
+            else
+            {
+                window.DebugController.Print("Unable to modify the position of the checklist object with ID " + id);
+            }
         }
         else
         {
-            window.DebugController.Print("Unable to modify the position of the checklist object with ID " + id);
+            DebugController.LogError("Request received to modify a checklist object's position, but in invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
         }
     }
 
@@ -681,7 +689,7 @@ window.Model = (function()
         ModifyListItem : modifyListItem,
         GetListBalance: getListBalance,
         UpdateName: updateName,
-        MoveUpwards: moveUpwards
+        ModifyPosition: modifyPosition
     };
 })();
 

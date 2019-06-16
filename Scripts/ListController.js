@@ -51,7 +51,7 @@ const ChecklistEventReactionMapping = {
     //RemoveList: 'RemoveList',
     RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
     //-----MoveUpwardsButtonPressed: 'MoveUpwards',
-    MoveDownwardsButtonPressed: 'MoveDownwards', 
+    //-----MoveDownwardsButtonPressed: 'MoveDownwards', 
 
     //Quantity Toggles/Popovers
     //ShowQuantityPopover: 'ShowQuantityPopover',
@@ -648,13 +648,13 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
         {
             let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
-            window.Model.MoveUpwards(options.checklistObject.id, _updateView);
+            window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Upwards');
         }
-        // else if (triggeredEvent === ChecklistEvents.MoveDownwards)
-        // {
-        //     let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
-        //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
-        // }
+        else if (triggeredEvent === ChecklistEvents.MoveDownwardsButtonPressed)
+        {
+            let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
+            window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
+        }
         else
         {
             //TODO This is going to get ugly.
@@ -755,7 +755,7 @@ window.ListController = (function()
                 window.View.Render('SwapListObjects', {moveUpwardsId:this.moveUpwardsId, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
                 break;
             case 'MoveDownwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
+                window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
                 break;
             case 'RemoveList':
                 //If the Active List ID is null, remove the List, else throw an error.
