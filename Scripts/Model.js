@@ -293,7 +293,7 @@ window.Model = (function()
         if (updatedValue != null)
         {
             //Update the name of the List or List Item data object
-            getChecklistObjectFromId(id).name = updatedValue;
+            getChecklistObjectDataFromId(id).object.name = updatedValue;
 
             //Store the updated checklist data
             storeChecklistData();
