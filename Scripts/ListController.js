@@ -30,57 +30,16 @@ const ChecklistEvents = {
     ClickDetectedOutsidePopover: 'ClickDetectedOutsidePopover'
 };
 
-const ChecklistEventReactionMapping = {
-    //Home Screen
-    //DisplayList: 'DisplayList', 
-    //AddNewList: 'AddNewList',
-    //UpdateNameToggleColor: 'UpdateNameToggleColor',
-
-    //List Screens
-    //AddNewListItem: 'AddNewListItem',
-    //HideList: 'HideList',
-    //ShowHomeScreen: 'ShowHomeScreen',
-
-    //List Headers
-    //SetupHeaderPopoverBinds: 'SetupHeaderPopoverBinds',
-    //ClearQuantityValues: 'ClearQuantityValues',
-
-    //Settings Views
-    //HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
-    //-----NameEdited: 'UpdateName',
-    //RemoveList: 'RemoveList',
-    //-----RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
-    //-----MoveUpwardsButtonPressed: 'MoveUpwards',
-    //-----MoveDownwardsButtonPressed: 'MoveDownwards', 
-
-    //Quantity Toggles/Popovers
-    //ShowQuantityPopover: 'ShowQuantityPopover',
-    //SetupQuantityPopoverBinds: 'SetupQuantityPopoverBinds',
-    //-----DecrementQuantityButtonPressed: 'DecrementQuantityValue',
-    //-----IncrementQuantityButtonPressed: 'IncrementQuantityValue',
-    //HideActiveQuantityPopover: 'HideActiveQuantityPopover' //Can be caused by two separate triggers
-};
-
 window.ListController = (function()
 {    
     let activeListId = null;
-
-    //TODO what if, instead of having 3 different options properties, there is only one, and it gets replaced/updated at each interval as needed. 
-        //i.e. options starts with bind options, then adds on (or is replaced with) any necessary model options, then adds on render options. 
-        //This would probably only work if handleUpdatesFromView gets split into individual sections, which may be clearer anyway
 
     //TODO The binding reference could have actions and reactions
         //e.g. event -> action -> reaction (optional)
         //In most cases, reaction might be the same as action, but in other cases it might not be (e.g. DecrementQuantityValue/IncrementQuantityValue)
         //HandleEvent(), HandleAction(), HandleReaction()?
 
-    //TODO could have a modelCommand and parameters (e.g. modelCommand=ModifyList/ModifyListItem/None, params=MoveUpwards)
-        //Then the modelUpdateRequired field wouldn't be needed
-        //Maybe rename/add as such:
-            //bindingName = event
-            //modelViewCommand = action
-            //modificationType (AddList, ModifyList, and ModifyListItem being the options)
-    //TODO remove the properties here that aren't being used, but document them elsewhere (e.g. in the Model's Modify methods or the View's Bind and Render methods) - i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
+    //TODO remove this object, but document the required properties elsewhere (e.g. in the Model's Modify methods or the View's Bind and Render methods) - i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
     const bindReference = {
         /** MVC Bindings **/
         AddNewList: {
@@ -230,27 +189,7 @@ window.ListController = (function()
         //     renderOptions: ['listId', 'balance']
         // }
 
-        //TODO maybe we should get rid of this whole template/matrix above and just perform the right actions based on the triggered events as needed, below. 
-
-        //TODO could have error checking on startup to ensure that these bidndings are all set correctly here (e.g. that an event and action is provided)
     };
-
-    //TODO these helper methods below may not belong in Controller
-    //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
-
-    function isHomeScreen(urlString)
-    {
-        //If the url string matches the Home page for the Travel Checklist, return true, else return false
-        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
-    }
-
-    function isListScreen(urlString)
-    {
-        //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
-
-        //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-        return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
-    }
 
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
 
@@ -479,10 +418,9 @@ window.ListController = (function()
         }
     }
 
-    //handleEventWhichModifiesData, handleDataImpactingEvent, handleDataAlteringEvent - It's not JUST altering anymore though, also simply accessing
-    //handleEventWithModelInteraction
-    //Or just do it all in one event maybe
-    //function handleModel
+    //TODO
+        //handleEventWhichModifiesData, handleDataImpactingEvent, handleDataAlteringEvent - It's not JUST altering anymore though, also simply accessing
+        //handleEventWithModelInteraction
 
     /**
      * Handle events received from the View as a result of user interaction with the checklist. These events may result in actions passed along to the Model and/or back to the View to be rendered as needed.
@@ -497,9 +435,6 @@ window.ListController = (function()
         //TODO The options object still exists from the previous time a list was added.. It's blank the first time and then not after..
             //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior and should be re-written.
 
-        ////Merge any properties from the arguments passed from the View (from the user input) into the options object
-        //MergeObjects(options, inputArgument); 
-
         //TODO change this to a Switch statement maybe?
         //TODO OR maybe put error handling in these IFs to ensure the expected options have been passed. For example:
             //if (triggeredEvent === ChecklistEvents.NameEdited && options[updatedValue] != null)
@@ -507,8 +442,6 @@ window.ListController = (function()
         {
             window.View.Render('HideActiveSettingsView');
             window.View.Render('HideActiveQuantityPopover');
-
-            //TODO Should add logic here to Hide the List Screen, if the previous page was a List Screen
             
             //If the new page is the Home Screen and the previous page was a List Screen...
             if (isHomeScreen(inputArgument.newURL) && activeListId != null)
@@ -525,29 +458,11 @@ window.ListController = (function()
                 activeListId = null;
             }
         }
-        // else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
-        // {
-        //     //triggerEventReaction
-        //     //triggerModelInteration
-        //     //triggerViewInteraction
-        //     //triggerModelAction
-        //     //triggerViewAction
-        //     //initiate... ^ ^ ^
-
-        //     // e.g. 
-        //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveSettingsView);
-        //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveQuantityPopover);
-        //     //     triggerViewInteractions(ChecklistEventReactions.HideActiveSettingsView, ChecklistEventReactions.HideActiveQuantityPopover);
-                
-        //     //     triggerModelInteraction(getList); //bad exxample. Other cases might work
-        //     // ---
         else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
         {
             //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
             //Display the specified List
             window.View.Render('DisplayList', {id:options.checklistObject.id});
-            //TODO Not all of the Render Commands are captured in the ChecklistEventsReaction enum, because that's not how this worked before...
-                //Perhaps the Render commands could be made to be consistent with the Reaction command names, or vice versa
 
             //Set the newly selected List as the Active List
             activeListId = options.checklistObject.id;
@@ -566,9 +481,7 @@ window.ListController = (function()
             if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
             {
                 //window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-
                 inputArgument.stopPropagation();
-
                 window.View.Render('ShowQuantityPopover', {id:options.checklistObject.id, quantityType:options.quantityType});   
             }
         }
@@ -631,63 +544,18 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
             window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Increment', options.quantityType);
         }
-        else
-        {
-            //TODO This is going to get ugly.
-
-            // let action = null;
-
-            // //TODO it may be better to use ternary operator than switch actually. Reference the View methods.
-            // switch (triggeredEvent)
-            // {
-            //     case ChecklistEvents.NameEdited:
-            //         action = 'UpdateName';
-            //         break;
-            //     case ChecklistEvents.MoveUpwardsButtonPressed:
-            //         action = 'MoveUpwards';
-            //         break;
-            //     default:
-            //         window.DebugController.LogError("ERROR: An invalid event was triggered, with name: " + triggeredEvent);
-            // }
-
-            let action = ChecklistEventReactionMapping[triggeredEvent];
-
-            //Merge any properties from the arguments passed from the View (from the user input) into the options object that gets passed to the Model
-            MergeObjects(options, inputArgument); 
-            //TODO should validate that the inputArgument object contains an 'updatedValue' key, and extract it
-                //Or, just extract it, instead of doing a merge
-                //For example:
-                    //let _updatedName = inputArgument.updatedValue;
-                    //if (_updatedName != undefined) ... pass it as a param to the model, else throw an error
-
-            let _updateView = handleModelInteraction.bind(options, action);
-
-            let _updateModel = null;
-
-            if (options.checklistObject.hasOwnProperty('listItems') == true)
-            {
-                //TODO would it be possible to use a js bind to merge ModifyList and ModifyListItem and pass different modify commands?
-                    //e.g. var modifyList = window.Model.Modify.bind(null, 'List');
-                    // var modifyListItem = window.Model.Modify.bind(null, 'ListItem');
-                    //Probably not... There is likely a better solution 
-                
-                _updateModel = window.Model.ModifyList.bind(null, action, options.checklistObject.id, _updateView, options);
-            }
-            else if (options.checklistObject.hasOwnProperty('quantities') == true)
-            {
-                //TODO using options twice (or thrice!) within the params here seems silly
-                    //Could have a singular point of entry in the Model instead of determining between ModifyList and ModifyListItem here
-                    //maybe set _id at the top of the parent else if clause, with error handling (since ID is required, not optional)
-                    //Maybe have a ValidateParameters utility function
-                
-                _updateModel = window.Model.ModifyListItem.bind(null, action, activeListId, options.checklistObject.id, _updateView, options);    
-            }
-
-            _updateModel();
-        }
     }
 
     //TODO Temporary name probably
+        //triggerEventReaction
+        //triggerModelInteration
+        //triggerViewInteraction
+        //triggerModelAction
+        //triggerViewAction
+        //initiate... ^ ^ ^
+        //     triggerViewInteraction(ChecklistEventReactions.HideActiveSettingsView);
+        //     triggerViewInteraction(ChecklistEventReactions.HideActiveQuantityPopover);
+        //     triggerViewInteractions(ChecklistEventReactions.HideActiveSettingsView, ChecklistEventReactions.HideActiveQuantityPopover);
     /**
      * Handle callbacks received from the Model after the checklist data has been updated, and react by passing along to the View any data necessary to properly render those updates
      * @this {Object} An object containing data about the checklist component being interacted with, if it is needed to properly react to the interaction. If it is not needed, then 'this' is null.
@@ -792,6 +660,23 @@ window.ListController = (function()
     }
 
     /** Experimental & In Progress **/
+
+    //TODO these helper methods below may not belong in Controller
+        //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
+
+    function isHomeScreen(urlString)
+    {
+        //If the url string matches the Home page for the Travel Checklist, return true, else return false
+        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
+    }
+
+    function isListScreen(urlString)
+    {
+        //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
+
+        //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+        return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
+    }
 
     /** Publicly Exposed Methods **/
 
