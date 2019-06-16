@@ -4,10 +4,20 @@ window.Model = (function()
     //TODO using 'self' makes it more obvious when accessing 'global' variables (even though these aren't actually global)
     var checklistData;
 
-    //TODO Add JSDoc comments to each of the methods here/below, and add any other comments as needed
-
     /** Private Checklist Data Utility Methods **/
 
+    /**
+     * Saves the Checklist data object to storege
+     */
+    function storeChecklistData()
+    {
+        window.StorageManager.StoreChecklistData(checklistData);
+    }
+
+    /**
+     * Gets the lists array from the Checklist data object
+     * @returns the lists array if the Checklist data object exists, otherwise logs an error and returns undefined
+     */
     function getLists() 
     {
         //If checklist data has already been loaded from storage, return the Lists array
@@ -15,13 +25,10 @@ window.Model = (function()
         {
             return checklistData.lists;
         }
-
-        window.DebugController.LogError("ERROR: Tried to retrieve Lists array but Checklist data is null");
-    }
-    
-    function storeChecklistData()
-    {
-        window.StorageManager.StoreChecklistData(checklistData);
+        else
+        {
+            window.DebugController.LogError("ERROR: Tried to retrieve Lists array but Checklist data is null");
+        }
     }
 
     function convertListItemIds(lists)
@@ -55,11 +62,15 @@ window.Model = (function()
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
+    /**
+     * Fetches the Checklist data from storage and then executes the provided callback function
+     * @param {function} callback The function to execute once the Checklist data has been retrieved from storage
+     */
     function retrieveChecklistData(callback)
     {
         checklistData = window.StorageManager.RetrieveChecklistData();
 
-        //convertListItemIds(checklistData.lists);
+        convertListItemIds(checklistData.lists);
 
         window.DebugController.Print("Checklist data retrieved from storage");
 
@@ -67,6 +78,10 @@ window.Model = (function()
         callback(checklistData.lists);        
     }
 
+    /**
+     * Adds a new List to the Checklist data
+     * @param {function} callback The function to execute once the new List has been added to the Checklist data
+     */
     function addNewList(callback)
     {
         let newList = {
@@ -97,7 +112,7 @@ window.Model = (function()
         if (_listIndex != null)
         {
             let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
-            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id); //TODO could instead just use an if/else to determine if index is the one for the List or the one for the List Item (if applicable)
+            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id);
         
                 return {
                     index: _index,
@@ -114,7 +129,7 @@ window.Model = (function()
     /**
      * Adds a new List Item to the List matching the provided ID
      * @param {*} listId The ID of the List that the List Item will belong to
-     * @param {function} callback The function to execute once the List Item has been added to the Checklist data
+     * @param {function} callback The function to execute once the new List Item has been added to the Checklist data
      */
     function addNewListItem(listId, callback)
     {
