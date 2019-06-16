@@ -83,21 +83,27 @@ window.Model = (function()
         callback({newList:newList});
     }
 
+    /**
+     * Gets the data object, index, and parent array for the checklist object matching the provided ID
+     * @param {*} id The ID of the checklist object (List or List Item) //TODO currently this can be a string or an integer. In the future it would be good to standardize it. 
+     * @returns an object containing a reference to the checklist object, its index, and its parent array 
+     */
     function getChecklistObjectDataFromId(id)
     {
         let _listId = id.toString().split('-')[0];
         let _listItemSuffix = id.toString().split('-')[1];
         let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
-        let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
-        let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id); //TODO could instead just use an if/else to determine if index is the one for the List or the one for the List Item (if applicable)
-    
+
         if (_listIndex != null)
         {
-            return {
-                index: _index,
-                parentArray: _parentArray,
-                object: _parentArray[_index]
-            };
+            let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
+            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id); //TODO could instead just use an if/else to determine if index is the one for the List or the one for the List Item (if applicable)
+        
+                return {
+                    index: _index,
+                    parentArray: _parentArray,
+                    object: _parentArray[_index]
+                };
         }
         else
         {
@@ -105,10 +111,15 @@ window.Model = (function()
         }
     }
 
+    /**
+     * Adds a new List Item to the List matching the provided ID
+     * @param {*} listId The ID of the List that the List Item will belong to
+     * @param {function} callback The function to execute once the List Item has been added to the Checklist data
+     */
     function addNewListItem(listId, callback)
     {
-        //Retrieve data about the checklist object based on its ID
-        let _data = getChecklistObjectDataFromId(listId); //TODO it may be overkill using this in this instance
+        //Retrieve data about the List based on its ID
+        let _data = getChecklistObjectDataFromId(listId); 
 
         let newListItem = {
             id : _data.object.id.toString().concat('-').concat(new Date().getTime()), //TODO if we ever start using Firebase or some other server, we should just keep an incrementing counter for this ID.
@@ -131,6 +142,12 @@ window.Model = (function()
         callback({newListItem:newListItem});
     }
 
+    /**
+     * Updates the name of the checklist object matching the provided ID
+     * @param {*} id The ID of the checklist object (List or List Item) which is being renamed
+     * @param {function} callback The function to execute once the checklist object has been renamed
+     * @param {string} updatedValue The updated name value of the checklist object
+     */
     function modifyName(id, callback, updatedValue)
     {
         //If a valid name was provided...
@@ -151,6 +168,12 @@ window.Model = (function()
         }
     }
 
+    /**
+     * Moves the checklist object matching the provided ID upwards or downwards in its parent array
+     * @param {*} id The ID of the checklist object (List or List Item) which is being re-odered
+     * @param {function} callback The function to execute once the checklist object has been re-ordered
+     * @param {string} direction Specifies whether the checklist object should be moved upwards or downwards
+     */
     function modifyPosition(id, callback, direction)
     {
         if (direction === 'Upwards' || direction === 'Downwards')
@@ -184,13 +207,20 @@ window.Model = (function()
         }
     }
 
-    function modifyQuantityValue(id, callback, modification, quantityType)
+    /**
+     * Updates the quantity value for the given quantity type of the List Item matching the provided ID
+     * @param {*} listItemId The ID of the List Item which is having its quantity value modified
+     * @param {function} callback The function to execute once the List Item's quantity value has been updated
+     * @param {string} modification Specifies whether the List Item's quantity value should be incremented or decremented 
+     * @param {string} quantityType Specifies the quantity type which should be updated ('needed', 'luggage', 'wearing', or 'backpack')
+     */
+    function modifyQuantityValue(listItemId, callback, modification, quantityType)
     {
         //If a valid modification and quantity type is provided...
         if (QuantityType[quantityType] != null && (modification === 'Decrement' || modification === 'Increment'))
         {
             //Retrieve data about the List Item based on its ID
-            let _data = getChecklistObjectDataFromId(id);
+            let _data = getChecklistObjectDataFromId(listItemId);
 
             //If the request is to decrement the quantity value, and the current value for the given quantity type is greater than zero...
             if (modification === 'Decrement' && _data.object.quantities[quantityType] > 0)
@@ -230,12 +260,18 @@ window.Model = (function()
         }
     }
 
-    function clearQuantityValues(id, callback, quantityType)
+    /**
+     * Clears all the quantity values for the given quantity type in the List matching the provided ID
+     * @param {*} listId The ID of the List which is having its quantity values cleared
+     * @param {function} callback The function to execute once the List's quantity values for the given quantity type have been cleared
+     * @param {string} quantityType Specifies the quantity type which should be cleared ('needed', 'luggage', 'wearing', or 'backpack')
+     */
+    function clearQuantityValues(listId, callback, quantityType)
     {
         if (QuantityType[quantityType] != null)
         {
             //Retrieve data about the List based on its ID
-            let _data = getChecklistObjectDataFromId(id);
+            let _data = getChecklistObjectDataFromId(listId);
 
             //Initialize an array to keep track of any List Items that will have a quantity value be modified
             let modifiedListItems = [];
@@ -272,6 +308,11 @@ window.Model = (function()
         }     
     }
 
+    /**
+     * Removes the checklist object matching the provided ID from its parent array
+     * @param {*} id The ID of the checklist object (List or List Item) which is being removed
+     * @param {function} callback The function to execute once the checklist object has been removed
+     */
     function remove(id, callback)
     {
         //Retrieve data about the checklist object based on its ID
