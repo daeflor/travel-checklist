@@ -1,20 +1,18 @@
 TO-DOs:
 	- index.html            : 3
-    - AppController.js      : 4
-    - CustomTemplates.js    : 8
+    - AppController.js      : 5
+    - CustomTemplates.js    : 9
     - DebugUtilities.js     : 4
-	- ListController.js     : 39
-    - Model.js              : 16
+	- ListController.js     : 40
+    - Model.js              : 12
     - StandardTemplates.js  : 6
     - StorageManager.js     : 2
-    - Utilities.js          : 3
-    - View.js               : 27
+    - Utilities.js          : 5
+    - View.js               : 32
     - style_new.css         : 3
-    - - - Total             : 119
+    - - - Total             : 121
 
 Upcoming To-Do List:
-- Don't send options when not needed (e.g. when adding checklist objects)
-- Have List Items start using the ListID as a prefix
 - Reduce reliance on options object, where possible (or at least not always pass around the whole object)
 - Update app navigation and AppController
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
@@ -22,7 +20,6 @@ Upcoming To-Do List:
 - Replace var with const and let
 - Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
 - Backup or cloud storage functionality
-- Clean up and document Model
 - Every time an unreported error is hit, add error handling for it
 - Revamp CreateNewElement
 - Disallow refresh gesture in List view

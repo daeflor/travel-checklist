@@ -291,6 +291,10 @@ window.View = (function()
         }
     }
 
+
+    //TODO It probably makes sense to split the Rendering of checklist object element from other elements
+        //That way the parameters can be more consistent. All checklist object element render calls could take a checklist object as a parameter, for example, instead of using options.
+
     //TODO why is the format in bind and render different? Seems like it could be the same
 
     //TODO maybe split this between View.HomeScreen and View.ListScreen? 
@@ -387,6 +391,7 @@ window.View = (function()
 
                     //TODO Seems that this could easily use the same command logic as RemoveListItem. 
                         //This command just needs to reference the parent element instead of homeScreenListElements
+                        //Actually, removing the List Wrapper makes this a bit more complicated
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
