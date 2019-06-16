@@ -84,34 +84,34 @@ window.Model = (function()
     //     }
     // }
 
-    function clearQuantityValues(listObject, quantityType, callback)
-    {
-        //Initialize an array to keep track of any List Items that will have a quantity value be modified
-        let modifiedListItems = [];
+    // function clearQuantityValues(listObject, quantityType, callback)
+    // {
+    //     //Initialize an array to keep track of any List Items that will have a quantity value be modified
+    //     let modifiedListItems = [];
 
-        let _clearQuantityValue = function(listItem)
-        {
-            //If the quantity value for the given quantity type is not already set to zero...
-            if (listItem.quantities[quantityType] != 0)
-            {
-                //Set the quantity value to zero
-                listItem.quantities[quantityType] = 0;
+    //     let _clearQuantityValue = function(listItem)
+    //     {
+    //         //If the quantity value for the given quantity type is not already set to zero...
+    //         if (listItem.quantities[quantityType] != 0)
+    //         {
+    //             //Set the quantity value to zero
+    //             listItem.quantities[quantityType] = 0;
 
-                //Add the List Item to the array of modified List Items
-                modifiedListItems.push(listItem);
-            }
-        };
+    //             //Add the List Item to the array of modified List Items
+    //             modifiedListItems.push(listItem);
+    //         }
+    //     };
 
-        //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
-        listObject.listItems.forEach(_clearQuantityValue);
+    //     //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
+    //     listObject.listItems.forEach(_clearQuantityValue);
 
-        //If the quantity value of any List Item was actually changed...
-        if (modifiedListItems.length > 0)
-        {
-            //Execute the provided callback method once the quantity values have been cleared, passing the array of modified List Items as an argument
-            callback({modifiedListItems:modifiedListItems});
-        }
-    }
+    //     //If the quantity value of any List Item was actually changed...
+    //     if (modifiedListItems.length > 0)
+    //     {
+    //         //Execute the provided callback method once the quantity values have been cleared, passing the array of modified List Items as an argument
+    //         callback({modifiedListItems:modifiedListItems});
+    //     }
+    // }
 
     function convertListItemIds(lists)
     {
@@ -378,7 +378,7 @@ window.Model = (function()
         //If a valid modification and quantity type is provided...
         if (QuantityType[quantityType] != null && (modification === 'Decrement' || modification === 'Increment'))
         {
-            //Retrieve data about the checklist object based on its ID
+            //Retrieve data about the List Item based on its ID
             let _data = getChecklistObjectDataFromId(id);
 
             //If the request is to decrement the quantity value, and the current value for the given quantity type is greater than zero...
@@ -415,8 +415,50 @@ window.Model = (function()
         else
         {
             //TODO could be more consistent with capitaliation
-            DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement' and 'Increment'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
+            window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement' and 'Increment'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }
+    }
+
+    function clearQuantityValues(id, callback, quantityType)
+    {
+        if (QuantityType[quantityType] != null)
+        {
+            //Retrieve data about the List based on its ID
+            let _data = getChecklistObjectDataFromId(id);
+
+            //Initialize an array to keep track of any List Items that will have a quantity value be modified
+            let modifiedListItems = [];
+
+            let _clearQuantityValue = function(listItem)
+            {
+                //If the quantity value for the given quantity type is not already set to zero...
+                if (listItem.quantities[quantityType] != 0)
+                {
+                    //Set the quantity value to zero
+                    listItem.quantities[quantityType] = 0;
+
+                    //Add the List Item to the array of modified List Items
+                    modifiedListItems.push(listItem);
+                }
+            };
+
+            //For each List Item in the List, clear the quantity value (i.e. set it to zero)   
+            _data.object.listItems.forEach(_clearQuantityValue);
+
+            //If the quantity value of any List Item was actually changed...
+            if (modifiedListItems.length > 0)
+            {
+                //Store the updated checklist data
+                storeChecklistData();
+                
+                //Execute the provided callback function, passing the array of modified List Items as an argument
+                callback({modifiedListItems:modifiedListItems});
+            }
+        }
+        else
+        {
+            window.DebugController.LogError("Request received to clear a List's quantity values for a given quantity type, but an invalid quantity type was provided. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
+        }     
     }
 
     function remove(id, callback)
@@ -470,20 +512,20 @@ window.Model = (function()
             //     //Add a new List Item to the given List and then execute the provided callback method
             //     addNewListItem(getLists()[listIndex], commandSucceededCallback); 
             // },
-            ClearQuantityValues : function(listIndex, commandSucceededCallback)
-            {
-                let quantityType = options.quantityType; //TODO I don't think this is necessary
+            // ClearQuantityValues : function(listIndex, commandSucceededCallback)
+            // {
+            //     let quantityType = options.quantityType; //TODO I don't think this is necessary
 
-                if (quantityType != null)
-                {
-                    //Clear the List's quantity values for the given quantity type, and then execute the provided callback method
-                    clearQuantityValues(getLists()[listIndex], quantityType, commandSucceededCallback)
-                }
-                else
-                {
-                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-                }     
-            }
+            //     if (quantityType != null)
+            //     {
+            //         //Clear the List's quantity values for the given quantity type, and then execute the provided callback method
+            //         clearQuantityValues(getLists()[listIndex], quantityType, commandSucceededCallback)
+            //     }
+            //     else
+            //     {
+            //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+            //     }     
+            // }
             // RemoveList : function(listIndex, commandSucceededCallback)
             // {
             //     //Remove the List object from the lists array and then execute the provided callback method
@@ -584,6 +626,7 @@ window.Model = (function()
         ModifyName: modifyName,
         ModifyPosition: modifyPosition,
         ModifyQuantityValue: modifyQuantityValue,
+        ClearQuantityValues: clearQuantityValues,
         Remove: remove
     };
 })();

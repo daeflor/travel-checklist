@@ -43,7 +43,7 @@ const ChecklistEventReactionMapping = {
 
     //List Headers
     //SetupHeaderPopoverBinds: 'SetupHeaderPopoverBinds',
-    ClearQuantityValues: 'ClearQuantityValues',
+    //ClearQuantityValues: 'ClearQuantityValues',
 
     //Settings Views
     //HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
@@ -597,8 +597,8 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
         {
-            let _updateView = handleModelInteraction.bind(options, 'ClearQuantityValues'); 
-            window.Model.ModifyList('ClearQuantityValues', activeListId, _updateView, options);
+            let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
+            window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
         }
         else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         {
