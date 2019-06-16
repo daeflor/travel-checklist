@@ -56,8 +56,8 @@ const ChecklistEventReactionMapping = {
     //Quantity Toggles/Popovers
     //ShowQuantityPopover: 'ShowQuantityPopover',
     //SetupQuantityPopoverBinds: 'SetupQuantityPopoverBinds',
-    DecrementQuantityButtonPressed: 'DecrementQuantityValue',
-    IncrementQuantityButtonPressed: 'IncrementQuantityValue',
+    //-----DecrementQuantityButtonPressed: 'DecrementQuantityValue',
+    //-----IncrementQuantityButtonPressed: 'IncrementQuantityValue',
     //HideActiveQuantityPopover: 'HideActiveQuantityPopover' //Can be caused by two separate triggers
 };
 
@@ -604,6 +604,9 @@ window.ListController = (function()
         {
             //TODO this is terrible:
 
+            //TODO Instead of the suggestion below, just check if activeListId is null or not.
+                //If it is, then delete a List. Otherwise, delete a List Item.
+
             //TODO If List Item IDs are prefixed by the List IDs, there will still need to be a way, within the Controller, to determine if a given ID is for a List or List Item.
                 //Other than this case, this is mostly only necessary to do in the Model
                 //Perhaps it would be best to have this helper method in another file altogether
@@ -654,6 +657,16 @@ window.ListController = (function()
         {
             let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
             window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
+        }
+        else if (triggeredEvent === ChecklistEvents.DecrementQuantityButtonPressed)
+        {
+            let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
+            window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Decrement', options.quantityType);
+        }
+        else if (triggeredEvent === ChecklistEvents.IncrementQuantityButtonPressed)
+        {
+            let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
+            window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Increment', options.quantityType);
         }
         else
         {
@@ -746,6 +759,8 @@ window.ListController = (function()
                 for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
                 {
                     renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
+                    //window.View.Render('UpdateListItemQuantityText', {id:modifiedChecklistData.modifiedListItems[i].id, quantityType:this.quantityType, updatedValue:modifiedChecklistData.modifiedListItems[i].quantities[this.quantityType]});
+                    //window.View.Render('UpdateNameToggleColor', {id:modifiedChecklistData.modifiedListItems[i].id, balance:calculateListItemBalance(modifiedChecklistData.modifiedListItems[i].quantities)});
                 } 
                 break;
             case 'UpdateName':
@@ -765,11 +780,10 @@ window.ListController = (function()
             case 'RemoveListItem':
                 window.View.Render('RemoveListItem', {id:this.id}); 
                 break;
-            case 'DecrementQuantityValue':
+            case 'ModifyQuantityValue':
                 renderUpdatesToListItemQuantity(this.checklistObject, this.quantityType);
-                break;
-            case 'IncrementQuantityValue':
-                renderUpdatesToListItemQuantity(this.checklistObject, this.quantityType);
+                //window.View.Render('UpdateListItemQuantityText', {id:this.checklistObject.id, quantityType:this.quantityType, updatedValue:this.checklistObject.quantities[this.quantityType]});
+                //window.View.Render('UpdateNameToggleColor', {id:this.checklistObject.id, balance:calculateListItemBalance(this.checklistObject.quantities)});
                 break;
             default:
                 window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");

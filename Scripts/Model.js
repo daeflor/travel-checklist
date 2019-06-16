@@ -360,7 +360,52 @@ window.Model = (function()
         }
         else
         {
-            DebugController.LogError("Request received to modify a checklist object's position, but in invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
+            DebugController.LogError("Request received to modify a checklist object's position, but an invalid direction was provided. Valid directions are 'Upwards' and 'Downwards'");
+        }
+    }
+
+    function modifyQuantityValue(id, callback, modification, quantityType)
+    {
+        //If a valid modification and quantity type is provided...
+        if (QuantityType[quantityType] != null && (modification === 'Decrement' || modification === 'Increment'))
+        {
+            //Retrieve data about the checklist object based on its ID
+            let _data = getChecklistObjectDataFromId(id);
+
+            //If the request is to decrement the quantity value, and the current value for the given quantity type is greater than zero...
+            if (modification === 'Decrement' && _data.object.quantities[quantityType] > 0)
+            {
+                //Decrement the quantity value for the given quantity type by one
+                _data.object.quantities[quantityType]--;
+
+                //Store the updated checklist data
+                storeChecklistData();
+
+                //Execute the provided callback function
+                callback();
+            }
+            else if (modification === 'Increment') //Else, if the request is to increment the quantity value
+            {
+                //Increment the quantity value for the given quantity type by one
+                _data.object.quantities[quantityType]++; 
+
+                //Store the updated checklist data
+                storeChecklistData();
+
+                //Execute the provided callback function
+                callback();
+
+                //TODO Instead of always passing a callback, would it make sense to not, and instead have a 'respondToController' function (with a better name obviously)
+                    //This function would take as a parmeter any argument(s) that needs to be sent back to the Controller
+                    //It would store the checklist data (perhaps there could be a param option for whether or not to do this - to account for the list balance edge case...)
+                    //It would then call a dedicated function in the Controller, which would pass along actions in the View
+                    // The PROBLEM with this is that there are options from the initial bind that need to passed back to the View, but which the controller doesn't need to be aware of. So sending them through the controller just to be passed back doesn't seem like a good idea. 
+            }
+        }
+        else
+        {
+            //TODO could be more consistent with capitaliation
+            DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement' and 'Increment'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }
     }
 
@@ -482,44 +527,44 @@ window.Model = (function()
             //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
             // },
             //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
-            DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-            {
-                let quantityType = options.quantityType;
+            // DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
+            // {
+            //     let quantityType = options.quantityType;
 
-                if (quantityType != null)
-                {
-                    //If the quantity value for the given quantity type is greater than zero...
-                    if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
-                    {
-                        //Decrement the quantity value by one
-                        getListItems(listId)[listItemIndex].quantities[quantityType]--;
+            //     if (quantityType != null)
+            //     {
+            //         //If the quantity value for the given quantity type is greater than zero...
+            //         if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
+            //         {
+            //             //Decrement the quantity value by one
+            //             getListItems(listId)[listItemIndex].quantities[quantityType]--;
 
-                        //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                        commandSucceededCallback();
-                    }
-                }
-                else
-                {
-                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-                }
-            },
-            IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-            {
-                let quantityType = options.quantityType;
+            //             //Execute the provided callback method once the command has been successfully executed
+            //             commandSucceededCallback();
+            //         }
+            //     }
+            //     else
+            //     {
+            //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+            //     }
+            // },
+            // IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
+            // {
+            //     let quantityType = options.quantityType;
 
-                if (quantityType != null)
-                {
-                    //Increment the quantity value for the given quantity type by one
-                    getListItems(listId)[listItemIndex].quantities[quantityType]++;
+            //     if (quantityType != null)
+            //     {
+            //         //Increment the quantity value for the given quantity type by one
+            //         getListItems(listId)[listItemIndex].quantities[quantityType]++;
                     
-                    //Execute the provided callback method once the command has been successfully executed, passing the quantity type as an argument
-                    commandSucceededCallback();
-                }
-                else
-                {
-                    DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-                }
-            },
+            //         //Execute the provided callback method once the command has been successfully executed
+            //         commandSucceededCallback();
+            //     }
+            //     else
+            //     {
+            //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+            //     }
+            // },
             RemoveListItem : function(listItemIndex, commandSucceededCallback)
             {
                 //Remove the List Item object from the listItems array and then execute the provided callback method
@@ -605,7 +650,8 @@ window.Model = (function()
         ModifyListItem : modifyListItem,
         GetListBalance: getListBalance,
         UpdateName: updateName,
-        ModifyPosition: modifyPosition
+        ModifyPosition: modifyPosition,
+        ModifyQuantityValue: modifyQuantityValue
     };
 })();
 
