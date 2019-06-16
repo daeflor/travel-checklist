@@ -435,6 +435,7 @@ window.ListController = (function()
         //TODO The options object still exists from the previous time a list was added.. It's blank the first time and then not after..
             //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior and should be re-written.
 
+        //TODO Adjust the order of how these events are handled to be more logical / make it more readable, if possible
         //TODO change this to a Switch statement maybe?
         //TODO OR maybe put error handling in these IFs to ensure the expected options have been passed. For example:
             //if (triggeredEvent === ChecklistEvents.NameEdited && options[updatedValue] != null)

@@ -31,6 +31,34 @@ window.Model = (function()
         }
     }
 
+    /**
+     * Gets the data object, index, and parent array for the checklist object matching the provided ID
+     * @param {*} id The ID of the checklist object (List or List Item) //TODO currently this can be a string or an integer. In the future it would be good to standardize it. 
+     * @returns an object containing a reference to the checklist object, its index, and its parent array 
+     */
+    function getChecklistObjectDataFromId(id)
+    {
+        let _listId = id.toString().split('-')[0];
+        let _listItemSuffix = id.toString().split('-')[1];
+        let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
+
+        if (_listIndex != null)
+        {
+            let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
+            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id);
+        
+                return {
+                    index: _index,
+                    parentArray: _parentArray,
+                    object: _parentArray[_index]
+                };
+        }
+        else
+        {
+            DebugController.LogError("Tried to access data about a checklist object but a valid List ID was not provided or could not be determined. Full ID value provided: " + id);
+        }
+    }
+
     function convertListItemIds(lists)
     {
         //For each List loaded from Storage...
@@ -99,34 +127,6 @@ window.Model = (function()
     }
 
     /**
-     * Gets the data object, index, and parent array for the checklist object matching the provided ID
-     * @param {*} id The ID of the checklist object (List or List Item) //TODO currently this can be a string or an integer. In the future it would be good to standardize it. 
-     * @returns an object containing a reference to the checklist object, its index, and its parent array 
-     */
-    function getChecklistObjectDataFromId(id)
-    {
-        let _listId = id.toString().split('-')[0];
-        let _listItemSuffix = id.toString().split('-')[1];
-        let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
-
-        if (_listIndex != null)
-        {
-            let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
-            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id);
-        
-                return {
-                    index: _index,
-                    parentArray: _parentArray,
-                    object: _parentArray[_index]
-                };
-        }
-        else
-        {
-            DebugController.LogError("Tried to access data about a checklist object but a valid List ID was not provided or could not be determined. Full ID value provided: " + id);
-        }
-    }
-
-    /**
      * Adds a new List Item to the List matching the provided ID
      * @param {*} listId The ID of the List that the List Item will belong to
      * @param {function} callback The function to execute once the new List Item has been added to the Checklist data
@@ -181,6 +181,26 @@ window.Model = (function()
         {
             DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
         }
+    }
+
+    /**
+     * Removes the checklist object matching the provided ID from its parent array
+     * @param {*} id The ID of the checklist object (List or List Item) which is being removed
+     * @param {function} callback The function to execute once the checklist object has been removed
+     */
+    function remove(id, callback)
+    {
+        //Retrieve data about the checklist object based on its ID
+        let _data = getChecklistObjectDataFromId(id);
+
+        //Remove the checklist object from its parent array
+        RemoveElementFromArray(_data.parentArray, _data.index);
+
+        //Store the updated checklist data
+        storeChecklistData();
+
+        //Execute the provided callback function
+        callback();
     }
 
     /**
@@ -321,26 +341,6 @@ window.Model = (function()
         {
             window.DebugController.LogError("Request received to clear a List's quantity values for a given quantity type, but an invalid quantity type was provided. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }     
-    }
-
-    /**
-     * Removes the checklist object matching the provided ID from its parent array
-     * @param {*} id The ID of the checklist object (List or List Item) which is being removed
-     * @param {function} callback The function to execute once the checklist object has been removed
-     */
-    function remove(id, callback)
-    {
-        //Retrieve data about the checklist object based on its ID
-        let _data = getChecklistObjectDataFromId(id);
-
-        //Remove the checklist object from its parent array
-        RemoveElementFromArray(_data.parentArray, _data.index);
-
-        //Store the updated checklist data
-        storeChecklistData();
-
-        //Execute the provided callback function
-        callback();
     }
 
     //TODO Would it be worth it to add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item
