@@ -53,24 +53,18 @@ window.Model = (function()
      */
     function getListItemIndexFromId(listId, listItemId) //TODO eventually this should only require the List Item ID, which should include the list ID as a prefix
     {
-        //Get the index of the list in the Lists array
-        let _listIndex = getListIndexFromId(listId);
-
-        if (_listIndex != null) //TODO replace this with try catch 
-        {
-            //Search for the List Item and return its index
-            return GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
-        }
+        //Search for the List Item and return its index
+        return GetArrayIndexOfObjectWithKVP(getListItems(listId), 'id', listItemId); 
     }
 
-    function editName(checklistObject, updatedName, callback)
-    {
-        //Update the name of the List or List Item data object
-        checklistObject.name = updatedName;
+    // function editName(checklistObject, updatedName, callback)
+    // {
+    //     //Update the name of the List or List Item data object
+    //     checklistObject.name = updatedName;
 
-        //Execute the provided callback method once the name has been updated
-        callback();
-    }
+    //     //Execute the provided callback method once the name has been updated
+    //     callback();
+    // }
 
     function swapChecklistObjects(array, index, indexToSwapWith, callback)
     {
@@ -121,8 +115,9 @@ window.Model = (function()
 
     function addNewListItem(listObject, callback)
     {
+        //TODO instead of prefixing the List Item ID with the List's ID, is it viable to just add a 'type' key?
         let newListItem = {
-            id : new Date().getTime(), 
+            id : listObject.id.toString().concat('-').concat(new Date().getTime()), //TODO if we ever start using Firebase or some other server, we should just keep an incrementing counter for this ID.
             name : '',
             quantities : {
                 needed: 0,
@@ -139,12 +134,42 @@ window.Model = (function()
         callback({newListItem:newListItem});
     }
 
+    function convertListItemIds(lists)
+    {
+        //For each List loaded from Storage...
+        for (let i = 0; i < lists.length; i++) 
+        {            
+            //For each List Item in the List...
+            for (let j = 0; j < lists[i].listItems.length; j++) 
+            {
+                //Get the List Item's previous/old ID assign it to a temporary variable
+                let _oldListItemId = lists[i].listItems[j].id
+
+                if (_oldListItemId.includes('-') == false)
+                {
+                    //Set the List Item's new ID as a concatention of the List ID and the previous/old List Item ID
+                    lists[i].listItems[j].id = lists[i].id.toString().concat('-').concat(_oldListItemId);
+
+                    window.DebugController.Print("Replaced old List Item ID with: " + lists[i].listItems[j].id);
+                }
+                else
+                {
+                    window.DebugController.Print("List Item ID is in current format and doesn't need to be updated.");
+                }
+            }
+        }
+
+        storeChecklistData();
+    }
+
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
     function retrieveChecklistData(callback)
     {
         checklistData = window.StorageManager.RetrieveChecklistData();
+
+        //convertListItemIds(checklistData.lists);
 
         window.DebugController.Print("Checklist data retrieved from storage");
 
@@ -168,6 +193,118 @@ window.Model = (function()
         callback({newList:newList});
     }
 
+    // function getChecklistObjectIndexFromId(id)
+    // {
+    //     if (id.includes('-') === false)
+    //     {
+    //         return getListIndexFromId(id);
+    //     }
+    //     else
+    //     {
+    //         return getListItemIndexFromId(id);
+    //     }
+    // }
+
+    function getChecklistObjectIndicesFromId(id)
+    {
+        let _listId = id.toString().split('-')[0];
+        let _listItemSuffix = id.toString().split('-')[1];
+    
+        return {
+            listIndex: GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId),
+            //listItemIndex: null,
+            listItemIndex: (_listItemSuffix != null) ? GetArrayIndexOfObjectWithKVP(getListItems(_listId), 'id', id) : null
+        };
+
+        // if (_listItemSuffix != null)
+        // {
+        //     _indices.listItemIndex = GetArrayIndexOfObjectWithKVP(getListItems(_listId), 'id', id);
+        // }
+
+        //return _indices;
+    }
+
+    function getChecklistObjectFromId(id)
+    {
+        let _indices = getChecklistObjectIndicesFromId(id);
+
+        if (_indices.listIndex != null)
+        {
+            if (_indices.listItemIndex == null)
+            {
+                return getLists()[_indices.listIndex];
+            }
+            else 
+            {
+                return getLists()[_indices.listIndex].listItems[_indices.listItemIndex];
+            }
+        }
+        else 
+        {
+            DebugController.LogError("Tried to retrieve a Checklist Object but a valid List ID was not provided or could not be determined.");
+        }
+    }
+
+    function getListIdPrefixFromListItemId(listItemId)
+    {
+        if (listItemId != null)
+        {
+            return listItemId.split('-')[0];
+        }
+        else
+        {
+            DebugController.LogError("Tried to get the List ID prefix from a List Item ID, but the List Item ID provided is invalid.");
+        }
+    }
+
+    function getListItemIndexFromFullId(listItemId) //TODO rename eventually (remove 'full')
+    {
+        //Search for the List Item and return its index
+        return GetArrayIndexOfObjectWithKVP(getListItems(getListIdPrefixFromListItemId(listItemId)), 'id', listItemId); 
+    }
+
+    function getChecklistObjectFromId_OLD(id)
+    {
+        let _listId = id.split('-')[0];
+        let _listItemSuffix = id.split('-')[1];
+
+        if (_listId != null)
+        {
+            if (_listItemSuffix == null)
+            {
+                return getLists()[getListIndexFromId(_listId)];
+            }
+            else
+            {
+                return getListItems(_listId)[getListItemIndexFromFullId(id)];
+            }
+        }
+        else 
+        {
+            DebugController.LogError("Tried to retrieve a Checklist Object but a valid ID was not provided.");
+        }
+    }
+
+    function updateName(id, callback, updatedValue)
+    {
+        //If a valid name was provided...
+        if (updatedValue != null)
+        {
+            //Update the name of the List or List Item data object
+            getChecklistObjectFromId(id).name = updatedValue;
+
+            //Store the updated checklist data
+            storeChecklistData();
+
+            //Execute the provided callback function 
+            callback();
+        }
+        else
+        {
+            DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+        }
+    }
+
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
         //Maybe keep ModifyList and ModifyListItem separate, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
         //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
@@ -175,20 +312,20 @@ window.Model = (function()
     {       
         let commands = 
         {
-            UpdateName : function(listIndex, commandSucceededCallback)
-            {
-                let updatedValue = options.updatedValue;
+            // UpdateName : function(listIndex, commandSucceededCallback)
+            // {
+            //     let updatedValue = options.updatedValue;
 
-                if (updatedValue != null)
-                {
-                    //Update the name of the List and then execute the provided callback method
-                    editName(getLists()[listIndex], updatedValue, commandSucceededCallback);
-                }
-                else
-                {
-                    DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
-                }
-            },
+            //     if (updatedValue != null)
+            //     {
+            //         //Update the name of the List and then execute the provided callback method
+            //         editName(getLists()[listIndex], updatedValue, commandSucceededCallback);
+            //     }
+            //     else
+            //     {
+            //         DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+            //     }
+            // },
             MoveUpwards : function(listIndex, commandSucceededCallback)
             {
                 //Try to move the List upwards in the array and, if successful, execute the callback method, passing the swapped List ID as an argument
@@ -261,20 +398,20 @@ window.Model = (function()
     {       
         let commands = 
         {
-            UpdateName : function(listItemIndex, commandSucceededCallback)
-            {
-                let updatedValue = options.updatedValue;
+            // UpdateName : function(listItemIndex, commandSucceededCallback)
+            // {
+            //     let updatedValue = options.updatedValue;
 
-                if (updatedValue != null)
-                {
-                    //Update the name of the List Item and then execute the provided callback method
-                    editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
-                }
-                else
-                {
-                    DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
-                }                
-            },
+            //     if (updatedValue != null)
+            //     {
+            //         //Update the name of the List Item and then execute the provided callback method
+            //         editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
+            //     }
+            //     else
+            //     {
+            //         DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+            //     }                
+            // },
             MoveUpwards : function(listItemIndex, commandSucceededCallback)
             {
                 //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
@@ -407,7 +544,8 @@ window.Model = (function()
         //AccessListItems : accessListItems,
         ModifyList : modifyList,
         ModifyListItem : modifyListItem,
-        GetListBalance: getListBalance
+        GetListBalance: getListBalance,
+        UpdateName: updateName
     };
 })();
 

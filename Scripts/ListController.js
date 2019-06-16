@@ -640,6 +640,11 @@ window.ListController = (function()
 
             _updateModel();
         }
+        else if (triggeredEvent == ChecklistEvents.NameEdited)
+        {
+            let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
+            window.Model.UpdateName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
+        }
         else
         {
             //TODO This is going to get ugly.
@@ -734,7 +739,7 @@ window.ListController = (function()
                 } 
                 break;
             case 'UpdateName':
-                window.View.Render('UpdateName', {id:this.checklistObject.id, updatedValue:this.checklistObject.name});
+                window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
                 break;
             case 'MoveUpwards':
                 window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});

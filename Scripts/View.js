@@ -291,6 +291,10 @@ window.View = (function()
         }
     }
 
+
+    //TODO It probably makes sense to split the Rendering of checklist object element from other elements
+        //That way the parameters can be more consistent. All checklist object element render calls could take a checklist object as a parameter, for example, instead of using options.
+
     //TODO why is the format in bind and render different? Seems like it could be the same
 
     //TODO maybe split this between View.HomeScreen and View.ListScreen? 
