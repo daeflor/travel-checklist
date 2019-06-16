@@ -47,10 +47,10 @@ const ChecklistEventReactionMapping = {
 
     //Settings Views
     //HideActiveSettingsView: 'HideActiveSettingsView', //Can be caused by two separate triggers
-    NameEdited: 'UpdateName',
+    //-----NameEdited: 'UpdateName',
     //RemoveList: 'RemoveList',
     RemoveListItem: 'RemoveListItem', //TODO is it possible to just have 'Remove' which works for both Lists and List Items?
-    MoveUpwardsButtonPressed: 'MoveUpwards',
+    //-----MoveUpwardsButtonPressed: 'MoveUpwards',
     MoveDownwardsButtonPressed: 'MoveDownwards', 
 
     //Quantity Toggles/Popovers
@@ -645,6 +645,16 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
             window.Model.UpdateName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
         }
+        else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
+        {
+            let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
+            window.Model.MoveUpwards(options.checklistObject.id, _updateView);
+        }
+        // else if (triggeredEvent === ChecklistEvents.MoveDownwards)
+        // {
+        //     let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
+        //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
+        // }
         else
         {
             //TODO This is going to get ugly.
@@ -742,7 +752,7 @@ window.ListController = (function()
                 window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
                 break;
             case 'MoveUpwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:this.checklistObject.id, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
+                window.View.Render('SwapListObjects', {moveUpwardsId:this.moveUpwardsId, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
                 break;
             case 'MoveDownwards':
                 window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.checklistObject.id});
