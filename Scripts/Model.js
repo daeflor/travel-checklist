@@ -287,26 +287,6 @@ window.Model = (function()
         }
     }
 
-    function updateName(id, callback, updatedValue)
-    {
-        //If a valid name was provided...
-        if (updatedValue != null)
-        {
-            //Update the name of the List or List Item data object
-            getChecklistObjectDataFromId(id).object.name = updatedValue;
-
-            //Store the updated checklist data
-            storeChecklistData();
-
-            //Execute the provided callback function 
-            callback();
-        }
-        else
-        {
-            DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
-        }
-    }
-
     function getChecklistObjectDataFromId(id)
     {
         let _listId = id.toString().split('-')[0];
@@ -331,6 +311,26 @@ window.Model = (function()
         else
         {
             DebugController.LogError("Tried to access data about a checklist object but a valid List ID was not provided or could not be determined. Full ID value provided: " + id);
+        }
+    }
+
+    function modifyName(id, callback, updatedValue)
+    {
+        //If a valid name was provided...
+        if (updatedValue != null)
+        {
+            //Update the name of the List or List Item data object
+            getChecklistObjectDataFromId(id).object.name = updatedValue;
+
+            //Store the updated checklist data
+            storeChecklistData();
+
+            //Execute the provided callback function 
+            callback();
+        }
+        else
+        {
+            DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
         }
     }
 
@@ -399,7 +399,8 @@ window.Model = (function()
                     //This function would take as a parmeter any argument(s) that needs to be sent back to the Controller
                     //It would store the checklist data (perhaps there could be a param option for whether or not to do this - to account for the list balance edge case...)
                     //It would then call a dedicated function in the Controller, which would pass along actions in the View
-                    // The PROBLEM with this is that there are options from the initial bind that need to passed back to the View, but which the controller doesn't need to be aware of. So sending them through the controller just to be passed back doesn't seem like a good idea. 
+                    //The PROBLEM with this is that there are options from the initial bind that need to passed back to the View, but which the controller doesn't need to be aware of. So sending them through the controller just to be passed back doesn't seem like a good idea. 
+                    //Although now that the different Model commands are separated, it would be possible to insert the updated checklistObject into the return arguments of the callback, only when applicable. That should cover most of the needs that the Render commands have...
             }
         }
         else
@@ -407,6 +408,21 @@ window.Model = (function()
             //TODO could be more consistent with capitaliation
             DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement' and 'Increment'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }
+    }
+
+    function remove(id, callback)
+    {
+        //Retrieve data about the checklist object based on its ID
+        let _data = getChecklistObjectDataFromId(id);
+
+        //Remove the checklist object from its parent array
+        RemoveElementFromArray(_data.parentArray, _data.index);
+
+        //Store the updated checklist data
+        storeChecklistData();
+
+        //Execute the provided callback function
+        callback();
     }
 
     //TODO it probably *is* possible to merge modifyList and modifyListItem but it might not be cleaner. In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
@@ -458,12 +474,12 @@ window.Model = (function()
                 {
                     DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
                 }     
-            },
-            RemoveList : function(listIndex, commandSucceededCallback)
-            {
-                //Remove the List object from the lists array and then execute the provided callback method
-                RemoveElementFromArray(getLists(), listIndex, commandSucceededCallback);
             }
+            // RemoveList : function(listIndex, commandSucceededCallback)
+            // {
+            //     //Remove the List object from the lists array and then execute the provided callback method
+            //     RemoveElementFromArray(getLists(), listIndex, commandSucceededCallback);
+            // }
         };
 
         //TODO Is it possible to somehow merge this with the same method in modifyListItem?
@@ -498,96 +514,96 @@ window.Model = (function()
     // TODO Change List Item IDs to be prefixed by the listId.
         //Then it may be possible to more easily attempt some of the suggestions above. 
 
-    function modifyListItem(command, listId, listItemId, callback, options)
-    {       
-        let commands = 
-        {
-            // UpdateName : function(listItemIndex, commandSucceededCallback)
-            // {
-            //     let updatedValue = options.updatedValue;
+    // function modifyListItem(command, listId, listItemId, callback, options)
+    // {       
+    //     let commands = 
+    //     {
+    //         // UpdateName : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     let updatedValue = options.updatedValue;
 
-            //     if (updatedValue != null)
-            //     {
-            //         //Update the name of the List Item and then execute the provided callback method
-            //         editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
-            //     }
-            //     else
-            //     {
-            //         DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
-            //     }                
-            // },
-            // MoveUpwards : function(listItemIndex, commandSucceededCallback)
-            // {
-            //     //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-            //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex-1, commandSucceededCallback);
-            // },
-            // MoveDownwards : function(listItemIndex, commandSucceededCallback)
-            // {
-            //     //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
-            //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
-            // },
-            //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
-            // DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-            // {
-            //     let quantityType = options.quantityType;
+    //         //     if (updatedValue != null)
+    //         //     {
+    //         //         //Update the name of the List Item and then execute the provided callback method
+    //         //         editName(getListItems(listId)[listItemIndex], updatedValue, commandSucceededCallback);
+    //         //     }
+    //         //     else
+    //         //     {
+    //         //         DebugController.LogError("An 'updatedValue' option was expected but not provided. Model could not be updated.");
+    //         //     }                
+    //         // },
+    //         // MoveUpwards : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     //Try to move the List Item upwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+    //         //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex-1, commandSucceededCallback);
+    //         // },
+    //         // MoveDownwards : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     //Try to move the List Item downwards in the array and, if successful, execute the callback method, passing the swapped List Item ID as an argument
+    //         //     swapChecklistObjects(getListItems(listId), listItemIndex, listItemIndex+1, commandSucceededCallback);
+    //         // },
+    //         //TODO might be able to merge Decrement and Increment, and pass in a modifier value parameter (e.g. mod=-1 or mod=1) which then gets added to the current/previous quantity value
+    //         // DecrementQuantityValue : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     let quantityType = options.quantityType;
 
-            //     if (quantityType != null)
-            //     {
-            //         //If the quantity value for the given quantity type is greater than zero...
-            //         if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
-            //         {
-            //             //Decrement the quantity value by one
-            //             getListItems(listId)[listItemIndex].quantities[quantityType]--;
+    //         //     if (quantityType != null)
+    //         //     {
+    //         //         //If the quantity value for the given quantity type is greater than zero...
+    //         //         if (getListItems(listId)[listItemIndex].quantities[quantityType] > 0)
+    //         //         {
+    //         //             //Decrement the quantity value by one
+    //         //             getListItems(listId)[listItemIndex].quantities[quantityType]--;
 
-            //             //Execute the provided callback method once the command has been successfully executed
-            //             commandSucceededCallback();
-            //         }
-            //     }
-            //     else
-            //     {
-            //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-            //     }
-            // },
-            // IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
-            // {
-            //     let quantityType = options.quantityType;
+    //         //             //Execute the provided callback method once the command has been successfully executed
+    //         //             commandSucceededCallback();
+    //         //         }
+    //         //     }
+    //         //     else
+    //         //     {
+    //         //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+    //         //     }
+    //         // },
+    //         // IncrementQuantityValue : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     let quantityType = options.quantityType;
 
-            //     if (quantityType != null)
-            //     {
-            //         //Increment the quantity value for the given quantity type by one
-            //         getListItems(listId)[listItemIndex].quantities[quantityType]++;
+    //         //     if (quantityType != null)
+    //         //     {
+    //         //         //Increment the quantity value for the given quantity type by one
+    //         //         getListItems(listId)[listItemIndex].quantities[quantityType]++;
                     
-            //         //Execute the provided callback method once the command has been successfully executed
-            //         commandSucceededCallback();
-            //     }
-            //     else
-            //     {
-            //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
-            //     }
-            // },
-            RemoveListItem : function(listItemIndex, commandSucceededCallback)
-            {
-                //Remove the List Item object from the listItems array and then execute the provided callback method
-                RemoveElementFromArray(getListItems(listId), listItemIndex, commandSucceededCallback);
-            }
-        };
+    //         //         //Execute the provided callback method once the command has been successfully executed
+    //         //         commandSucceededCallback();
+    //         //     }
+    //         //     else
+    //         //     {
+    //         //         DebugController.LogError("A 'quantityType' option was expected but not provided. Model could not be updated.");
+    //         //     }
+    //         // },
+    //         // RemoveListItem : function(listItemIndex, commandSucceededCallback)
+    //         // {
+    //         //     //Remove the List Item object from the listItems array and then execute the provided callback method
+    //         //     RemoveElementFromArray(getListItems(listId), listItemIndex, commandSucceededCallback);
+    //         // }
+    //     };
 
-        //Set up the callback method to execute once the given command has been executed successfully 
-        let commandSucceededCallback = function(args)
-        {       
-            //Store the updated checklist data object
-            storeChecklistData();
+    //     //Set up the callback method to execute once the given command has been executed successfully 
+    //     let commandSucceededCallback = function(args)
+    //     {       
+    //         //Store the updated checklist data object
+    //         storeChecklistData();
 
-            //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
-                //But it wouldn't work for ClearQuantityValues (in ModifyList)
+    //         //TODO It would be possible here to insert the updated checklistObject into the return arguments. 
+    //             //But it wouldn't work for ClearQuantityValues (in ModifyList)
 
-            //Execute the provided callback method, passing the returned arguments if not null
-            args != null ? callback(args) : callback();
-        };
+    //         //Execute the provided callback method, passing the returned arguments if not null
+    //         args != null ? callback(args) : callback();
+    //     };
 
-        //Execute the method matching the given command
-        commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
-    }
+    //     //Execute the method matching the given command
+    //     commands[command](getListItemIndexFromId(listId, listItemId), commandSucceededCallback);
+    // }
 
     // //TODO It's not very logical/intuitive that access list items would execute a call back
     // function accessListItems(listId, callback)
@@ -647,11 +663,11 @@ window.Model = (function()
         AddNewList : addNewList,
         //AccessListItems : accessListItems,
         ModifyList : modifyList,
-        ModifyListItem : modifyListItem,
         GetListBalance: getListBalance,
-        UpdateName: updateName,
+        ModifyName: modifyName,
         ModifyPosition: modifyPosition,
-        ModifyQuantityValue: modifyQuantityValue
+        ModifyQuantityValue: modifyQuantityValue,
+        Remove: remove
     };
 })();
 

@@ -24,13 +24,10 @@ function SwapElementsInArray(array, index, indexToSwap, callback) //TODO these a
     }
 }
 
-function RemoveElementFromArray(array, index, callback)
+function RemoveElementFromArray(array, index)
 {
     //Remove the element at the given index from the given array
     array.splice(index, 1);
-
-    //Execute the provided callback method once the element has been removed from the array
-    callback();
 }
 
 //TODO Might be useful to use Try/Catch here

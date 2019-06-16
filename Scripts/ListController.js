@@ -602,51 +602,14 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         {
-            //TODO this is terrible:
-
-            //TODO Instead of the suggestion below, just check if activeListId is null or not.
-                //If it is, then delete a List. Otherwise, delete a List Item.
-
-            //TODO If List Item IDs are prefixed by the List IDs, there will still need to be a way, within the Controller, to determine if a given ID is for a List or List Item.
-                //Other than this case, this is mostly only necessary to do in the Model
-                //Perhaps it would be best to have this helper method in another file altogether
-                /*
-                function GetChecklistObjectTypeFromId(id)
-                {
-                    if id character length = xxxxx
-                        return 'list'
-                    else if id character length = yyy
-                        return 'list item'
-                    else 
-                        throw error
-                }
-                */
-                //TODO OR alternatively, just pass the checklist object type in the options.
-                    //For example, _options = {id:_id, type:'list'}
-                
-            let _id = options.checklistObject.id;
-
-            let _action, _updateModel, _updateView = null;
-
-            if (options.checklistObject.hasOwnProperty('listItems') == true)
-            {
-                _action = 'RemoveList';
-                _updateView = handleModelInteraction.bind({id:_id}, _action);
-                _updateModel = window.Model.ModifyList.bind(null, _action, _id, _updateView);
-            }
-            else if (options.checklistObject.hasOwnProperty('quantities') == true)
-            {                
-                _action = 'RemoveListItem';
-                _updateView = handleModelInteraction.bind({id:_id}, _action);
-                _updateModel = window.Model.ModifyListItem.bind(null, _action, activeListId, _id, _updateView);    
-            }
-
-            _updateModel();
+            let _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
+            let _updateView = handleModelInteraction.bind({id:options.checklistObject.id}, _renderAction); 
+            window.Model.Remove(options.checklistObject.id, _updateView);
         }
         else if (triggeredEvent == ChecklistEvents.NameEdited)
         {
             let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
-            window.Model.UpdateName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
+            window.Model.ModifyName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
         }
         else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
         {
@@ -773,9 +736,7 @@ window.ListController = (function()
                 window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
                 break;
             case 'RemoveList':
-                //If the Active List ID is null, remove the List, else throw an error.
-                activeListId == null    ? window.View.Render('RemoveList', {id:this.id}) 
-                                        : window.DebugController.LogError("Expected Active List ID to be null when trying to remove a List, but it wasn't.");
+                window.View.Render('RemoveList', {id:this.id});
                 break;
             case 'RemoveListItem':
                 window.View.Render('RemoveListItem', {id:this.id}); 

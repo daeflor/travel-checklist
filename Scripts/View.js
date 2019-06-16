@@ -391,6 +391,7 @@ window.View = (function()
 
                     //TODO Seems that this could easily use the same command logic as RemoveListItem. 
                         //This command just needs to reference the parent element instead of homeScreenListElements
+                        //Actually, removing the List Wrapper makes this a bit more complicated
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
