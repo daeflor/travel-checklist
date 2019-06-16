@@ -59,34 +59,6 @@ window.Model = (function()
         }
     }
 
-    function convertListItemIds(lists)
-    {
-        //For each List loaded from Storage...
-        for (let i = 0; i < lists.length; i++) 
-        {            
-            //For each List Item in the List...
-            for (let j = 0; j < lists[i].listItems.length; j++) 
-            {
-                //Get the List Item's previous/old ID assign it to a temporary variable
-                let _oldListItemId = lists[i].listItems[j].id
-
-                if (_oldListItemId.toString().includes('-') == false)
-                {
-                    //Set the List Item's new ID as a concatention of the List ID and the previous/old List Item ID
-                    lists[i].listItems[j].id = lists[i].id.toString().concat('-').concat(_oldListItemId);
-
-                    window.DebugController.Print("Replaced old List Item ID with: " + lists[i].listItems[j].id);
-                }
-                else
-                {
-                    window.DebugController.Print("List Item ID is in current format and doesn't need to be updated.");
-                }
-            }
-        }
-
-        storeChecklistData();
-    }
-
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
     //TODO it might make more sense to do this in some sort of init method
@@ -97,8 +69,6 @@ window.Model = (function()
     function retrieveChecklistData(callback)
     {
         checklistData = window.StorageManager.RetrieveChecklistData();
-
-        convertListItemIds(checklistData.lists);
 
         window.DebugController.Print("Checklist data retrieved from storage");
 
