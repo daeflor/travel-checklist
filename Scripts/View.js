@@ -321,6 +321,9 @@ window.View = (function()
 
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
+
+                //Allow browser refresh when scrolling to the top of the Home Screen
+                document.body.classList.remove("disallowBrowserRefresh");
             },
             DisplayList: function() //Expected parameters: id
             {
@@ -348,6 +351,9 @@ window.View = (function()
 
                 //Show the List Screen when an individual List is displayed
                 elements.listScreen.hidden = false;
+
+                //Disallow browser refresh when scrolling to the top of the List Screen
+                document.body.classList.add("disallowBrowserRefresh");
             },
             HideList: function() //Expected parameters: id
             {
@@ -434,6 +440,7 @@ window.View = (function()
             {
                 let elementFoundCallback = function(element)
                 {                    
+                    //TODO might be better to change the class, and in css assign the colors to different classes for each balance
                     element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
                                               : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
                                               :                                     'rgb(77, 77, 77)'; //"darkgrey";

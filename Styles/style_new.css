@@ -473,3 +473,7 @@ button {
 #buttonTest {
     color: #333333;
 }
+
+.disallowBrowserRefresh {
+    overscroll-behavior-y: contain;
+}
