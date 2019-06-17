@@ -413,6 +413,8 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
+            //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
+                //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
             window.View.Render('HideActiveSettingsView');
         }
         else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
@@ -449,8 +451,11 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
         {
-            let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
-            window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
+            if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
+            {
+                let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
+                window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
+            }
         }
         else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         {

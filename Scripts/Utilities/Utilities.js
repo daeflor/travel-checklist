@@ -6,7 +6,7 @@
 function SwapElementsInArray(array, index, indexToSwap, callback) //TODO these are not DOM elements. Is this confusing?
 {
     //Assign the element in the array that should be swapped with the one selected
-    var elementToSwap = array[indexToSwap];
+    let elementToSwap = array[indexToSwap];
 
     //If the element is not null...
     if (elementToSwap != null)
@@ -33,7 +33,7 @@ function RemoveElementFromArray(array, index)
 //TODO Might be useful to use Try/Catch here
 function GetElement(id, callback)
 {
-    var element = document.getElementById(id);
+    let element = document.getElementById(id);
 
     if (element != null)
     {
@@ -55,7 +55,7 @@ function GetElement(id, callback)
 function GetArrayIndexOfObjectWithKVP(array, key, value)
 {
     //Traverse the array, searching for an object that has a key matching the given value
-    for (var i = array.length-1; i >= 0; i--)
+    for (let i = array.length-1; i >= 0; i--)
     {
         //If a match is found, return the index
         if (array[i][key] == value)
@@ -71,27 +71,6 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
 function GetLocationHashRoute()
 {
     return document.location.hash.split('/')[1];
-}
-
-function MergeObjects(target, source)
-{
-    //If a source object is provided
-    if (source !== undefined)
-    {
-        //If the target is undefined, assign an empty object to it
-        if (target === undefined)
-        {
-            target = {};
-        }
-
-        //Merge any properties from the source object to the target object
-        Object.assign(target, source);
-
-        //window.DebugController.Print("Merged two objects into the following target object: ");
-        //window.DebugController.Print(target);
-    }
-
-    return target;
 }
 
 /**
@@ -128,7 +107,65 @@ function getUrlSlug(urlString)
 
 /** Experimental & In Progress **/
 
+/**
+ * Validates that the provided object contains valid values for the given keys
+ * @param {Object} object the object to validate
+ * @param {string[]} keyArray an array of key strings to validate
+ * @returns {boolean} whether or not the object contains valid valid values for the given keys. 
+ */
+function validateObjectContainsValidKVPs(object, keyArray)
+{
+    //TODO would it be better to use the arguments[] variable here, so that the user can just input mulitple keys as individual parameters?
+
+    //If a valid object and array of keys was provided...
+    if (object != null && keyArray != null) //TODO should also validate that keyArray is actually an array, and not empty (currently this function will return true in those cases)
+    {
+        let _validResults = true;
+        
+        //For each key in the provided array of keys
+        for (let i = 0; i < keyArray.length; i++)
+        {
+            //If the object does not contain that key, or the value for that key is null, log an error and return false.
+            if (object[keyArray[i]] == null)
+            {
+                _validResults = false;
+                window.DebugController.LogError("Object does not contain valid values for the given keys. Object: " + JSON.stringify(object));
+                break;
+            }
+        } 
+
+        window.DebugController.Print("Object contains valid values for the given keys. Object: " + JSON.stringify(object));
+        return _validResults;
+    }
+    else
+    {
+        //TODO Does it makes sense to be using the DebugController in the Utilities file? Maybe the DebugController should also be made to be more generic (like this file) rather than specific to the Checklist app. 
+        window.DebugController.LogError("Request received to validate that an object contains valid values for the given keys, but either an invalid object or invalid keys array was provided. Object: " + JSON.stringify(object));
+    }
+}
+
 /** Unused Utilities **/
+
+function MergeObjects(target, source)
+{
+    //If a source object is provided
+    if (source !== undefined)
+    {
+        //If the target is undefined, assign an empty object to it
+        if (target === undefined)
+        {
+            target = {};
+        }
+
+        //Merge any properties from the source object to the target object
+        Object.assign(target, source);
+
+        //window.DebugController.Print("Merged two objects into the following target object: ");
+        //window.DebugController.Print(target);
+    }
+
+    return target;
+}
 
 function htmlEscape(str) 
 {
