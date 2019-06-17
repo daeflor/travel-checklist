@@ -22,8 +22,8 @@ Upcoming To-Do List:
 - Backup or cloud storage functionality
 - Every time an unreported error is hit, add error handling for it
 - Revamp CreateNewElement
-- Disallow refresh gesture in List view
 - Look into (unit) testing possibilities 
+- Consider filing bugs in a dedicated location, to avoid bogging up the code with comments that may potentially not even need to be addressed in some cases (i.e. not all issues necessarily need to get fixed in the foreseeable future).
 
 Features:
 - ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns

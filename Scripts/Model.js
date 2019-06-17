@@ -313,33 +313,24 @@ window.Model = (function()
         }     
     }
 
+    /**
+     * Get a the balance of a List matching the provided ID, and using the calculation function in ChecklistUtilities
+     * @param {string} id The ID of the List
+     * @returns the List's balance, in the form of a ChecklistObjectBalance value
+     */
+    function getListBalance(id)
+    {
+        //Retrieve data about the checklist object based on its ID
+        let _data = getChecklistObjectDataFromId(id);
+
+        return ChecklistUtilities.CalculateListBalance(_data.object.listItems);
+    }
+
     //TODO Would it be worth it to add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item
         //It could be something like Model.Update() but should also make sense for getting a List's Balance...
         //In many(?) cases you could set the array based on the type of list object to modify (e.g. array = getLists() or getLists()[listIndex].listItems)
         //Maybe keep a separate ModifyList and ModifyListItem, but use this only to set the array and other necessary vars (e.g. in ModifyList, array = getLists())
         //Then the bulk of the logic could be handled elsewhere? maybe... Although it kind of already is... 
-
-    // //TODO It's not very logical/intuitive that access list items would execute a call back
-    // function accessListItems(listId, callback)
-    // {     
-    //     let _listItems = getListItems(listId);
-
-    //     callback(_listItems);
-    // }
-
-    /**
-     * Get a the balance of a List matching the provided ID, and using the calculation function provided
-     * @param {string} id The ID of the List
-     * @param {function} calculationFunction The function which contains the logic used to calculate the balance 
-     * @returns the List's balance, in the form of a ChecklistObjectBalance value
-     */
-    function getListBalance(id, calculationFunction)
-    {
-        //Retrieve data about the checklist object based on its ID
-        let _data = getChecklistObjectDataFromId(id);
-
-        return calculationFunction(_data.object.listItems); //TODO maybe it would make more sense for the calculation function to be a helper method in a custom helpers file
-    }
 
     // function modelUpdated(callback, args)
     // {
@@ -379,9 +370,3 @@ window.Model = (function()
         GetListBalance: getListBalance
     };
 })();
-
-const ChecklistObjectBalance = {
-    None: 'None',
-    Balanced: 'Balanced',
-    Unbalanced: 'Unbalanced'
-};

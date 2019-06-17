@@ -60,7 +60,7 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
         //If a match is found, return the index
         if (array[i][key] == value)
         {
-            window.DebugController.Print("Returned object with Key: " + key + ", Value: " + value);
+            //window.DebugController.Print("Returned object with Key: " + key + ", Value: " + value);
             return i;
         }
     } 

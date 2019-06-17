@@ -24,8 +24,9 @@
     }
 
     //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
-        //This seems fine, at least for the time being. The View is informed to Show the Home Screen and Hide the Active Settings View, unnecessarily. 
+        //This seems fine, at least for the time being. The View is Hide the Active Settings View and Quantity Popover, unnecessarily. 
         //Maybe it's possible to use the history to tell if the app was just launched...
+    //TODO The first time a garbage URL is provided it doesn't clear it, but on successive attempts it does. Unclear why, but it doesn't seem to be causing any issues.
 
     function urlHashChanged()
     {

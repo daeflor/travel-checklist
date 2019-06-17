@@ -1,6 +1,8 @@
 'use strict';
 window.DebugController = (function()
 {
+    //TODO Consider a system of debug log priorities/verbosity. (Such that older low-risk ones don't print unless specified, so it's easier to filter through the logs).
+
     var debugModeEnabled = true;
     var VERSION = '0.0.13';
 
