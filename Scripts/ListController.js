@@ -271,7 +271,7 @@ window.ListController = (function()
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
 
         //Bind user interaction with the quantity toggles to corresponding behavior
         for (let quantityType in listItem.quantities)
@@ -299,81 +299,15 @@ window.ListController = (function()
     {
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
 
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:calculateListItemBalance(listItem.quantities)});
-    }
-    
-    /**
-     * Calculates the balance of a List Item based on its different quantity values
-     * @param {object} quantities The List Item's 'quantities' object
-     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
-     */
-    function calculateListItemBalance(quantities)
-    {
-        //Calculate the List Item's balance based on its different quantity values
-        let _listItemBalance = quantities.needed - quantities.luggage - quantities.wearing - quantities.backpack;
-
-        if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
-        {
-            return ChecklistObjectBalance.Unbalanced;
-        } 
-        else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
-        {
-            return ChecklistObjectBalance.Balanced;
-        }
-        else //Else return None
-        {
-            return ChecklistObjectBalance.None;
-        }
-    }
-
-    /**
-     * Calculates the balance of a List based on the balance of its List Items
-     * @param {array} listItems The array of List Items that the List comprises
-     * @returns The balance of the List, in the form of a ChecklistObjectBalance value
-     */
-    function calculateListBalance(listItems)
-    {
-        //Set the List's balance as None by default
-        let _listBalance = ChecklistObjectBalance.None;
-
-        //For each List Item in the List...
-        for (let i = 0; i < listItems.length; i++)
-        {
-            //Calculate the List Item's balance based on its different quantity values
-            let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
-
-            //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
-            if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
-            {
-                _listBalance = ChecklistObjectBalance.Unbalanced;
-                break;
-            } 
-            //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
-            else if (_listItemBalance === ChecklistObjectBalance.Balanced)
-            {
-                _listBalance = ChecklistObjectBalance.Balanced;
-            }
-        }
-
-        return _listBalance;
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
     }
 
     function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
     {
         //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
-        let _listBalance = window.Model.GetListBalance(listId, calculateListBalance);
+            //This is also the only Model call that doesn't require updates to the model but does access it get information.
+        let _listBalance = window.Model.GetListBalance(listId);
         window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
-
-        // let _calculateAndRenderListBalance = function(listItems)
-        // {
-        //     //Update the View, passing it the List's ID and calculated balance
-        //     window.View.Render('UpdateNameToggleColor', {id:listId, balance:calculateListBalance(listItems)});
-        // }
-
-        // //TODO this completely breaks the existing pattern. 
-        //     //This doesn't require updates to the model but it does access the model to get information. 
-        //     //Calling this here is completely different to how the rest of the actions are performed
-        // window.Model.AccessListItems(listId, _calculateAndRenderListBalance); 
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -441,12 +375,16 @@ window.ListController = (function()
             //if (triggeredEvent === ChecklistEvents.NameEdited && options[updatedValue] != null)
         if (triggeredEvent === ChecklistEvents.HashChanged)
         {
+            window.DebugController.Print("Hash Changed event triggered. Active Settings View and Quantity Popover will be hidden.");
+            
             window.View.Render('HideActiveSettingsView');
             window.View.Render('HideActiveQuantityPopover');
             
             //If the new page is the Home Screen and the previous page was a List Screen...
             if (isHomeScreen(inputArgument.newURL) && activeListId != null)
             {
+                window.DebugController.Print("Hash Changed event triggered. The URL changed from a List Screen to a Home Screen. The List Screen will be hidden and the Home Screen will be displayed.");
+
                 //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
                     //Although, if this is the only place the Active List is hidden, then maybe it's fine
                     //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
@@ -475,6 +413,8 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         {
+            //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
+                //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
             window.View.Render('HideActiveSettingsView');
         }
         else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
@@ -511,8 +451,11 @@ window.ListController = (function()
         }
         else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
         {
-            let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
-            window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
+            if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
+            {
+                let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
+                window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
+            }
         }
         else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         {

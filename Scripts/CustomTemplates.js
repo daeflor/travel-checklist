@@ -46,7 +46,7 @@ window.CustomTemplates = (function ()
     {
         if (list != null) //TODO Use try catch instead
         {
-            window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
+            //window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
 
             var wrapper = CreateNewElement('div', [ ['id',list.id], ['class','row divItemRow divListToggleWrapper'] ]);
 
