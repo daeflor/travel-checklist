@@ -13,11 +13,17 @@ TO-DOs:
     - - - Total             : 121
 
 Upcoming To-Do List:
+- Split DeleteButtonPressed event into RemoveListButtonPressed and RemoveListItemButtonPressed. 
+- Could MAYBE make an AppNavigationController which dictates whether HashChanged means the Home or List Screen should be displayed
+    - Just because the JS listener is called hashchanged doesn't mean the custom checklist ones have to. Could use different events for the different behaviors/screens.
+- Might be able to associate binds->reactions(model or view)
+- Tag and delete old branches
 - Reduce reliance on options object, where possible (or at least not always pass around the whole object)
 - Update app navigation and AppController (NavigationManager?)
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
     - Also for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
 - Replace var with const and let
+    - Replace with some lets with consts
 - Merge Bind, Model, and Render properties into one object. Can the View be sent a full Checklist Object instead of just sub-properties?
 - Backup or cloud storage functionality
 - Every time an unreported error is hit, add error handling for it

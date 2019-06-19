@@ -191,7 +191,62 @@ window.ListController = (function()
 
     };
 
-    /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/
+    function init()
+    {     
+        //Set the checklist type
+        //checklistType = checklistType;
+
+        //Set up the binds for interactions with the quantity header row
+        renderAndBindQuantityHeader();
+
+        //Set up the binds for the buttons to add a new List or List Item
+        setupBind(ChecklistEvents.NewListButtonPressed);
+        setupBind(ChecklistEvents.NewListItemButtonPressed);
+
+        //Set up the bind logic for when the app's web page hash changes
+        setupBind(ChecklistEvents.HashChanged);
+
+        //Load the list data from storage and pass it along to the View
+        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+    }
+
+    // createBind(eventToBind)
+    // {
+    //     if (eventToBind === ChecklistEvents.GoToListButtonPressed) 
+    //     {
+    //         //If a valid event was provided, setup the bind. Otherwise throw an error message.
+    //         if (ChecklistEvents[eventToBind] != null)
+    //         {
+    //             const _options = {checklistObject:list};
+
+    //             //Set up the callback method to execute for when the View recieves input from the user
+    //             const _onUserInput = function(inputArgument) 
+    //             {
+    //                 //Handle the updates/input received from the View
+    //                 handleEvent(eventToBind, options, inputArgument);
+
+    //                 //TODO Note that the options object still exists from the previous time _onUerInput was called
+    //                     //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior for all cases, and should be re-written.
+    //                     //For example, for a case like AddListItem, the options object should always start as empty, but it actually retains the value from the previous time the button was pressed, and then gets over-ridden. 
+    //             };
+
+    //             //Add an event listener to the specified element
+    //             window.View.Bind(eventToBind, _onUserInput, options);
+    //             //TODO it's confusing using bind and Bind
+
+    //             //TODO instead of trying to shoehorn everything to work in the same way, maybe it would actually be simpler (and more readable) to just split each case into it's own section.
+    //                 //For example, each bind would be split into its own section similar to handleModelInteraction or handleEvent. 
+    //                 //This one-size-fits-all approach is nice in theory but doesn't scale well, and as it turns out causes more complication and reduces readability.
+    //         }
+    //         else
+    //         {
+    //             window.DebugController.LogError("ERROR: Invalid event provided when attempting to setup a bind.");
+    //         }
+    //     }
+    // }
+
+    /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
+    //TODO ^ This description is no longer accurate
 
     //TODO Might be best to keep renders, binds, and loads separate
 
@@ -209,6 +264,25 @@ window.ListController = (function()
         }
     }
 
+    function loadChecklistDataIntoView(loadedListData)
+    {
+        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
+
+        //For each List loaded from Storage...
+        for (let i = 0; i < loadedListData.length; i++) 
+        {
+            //Add the List elements to the DOM and set up the binds for interactions with them
+            renderAndBindLoadedList(loadedListData[i]);
+            
+            //For each List Item in the List...
+            for (let j = 0; j < loadedListData[i].listItems.length; j++) 
+            {
+                //Add the List Item's elements to the DOM and set up the binds for interactions with them
+                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
+            }
+        }
+    }
+
     //TODO why the name "loaded"? Seems unnecessary. And should rendering / adding the list to the DOM be done separately than creating the binds?
     /**
      * Sends to the View any data needed to render the specified List, and then sets up all applicable bindings
@@ -221,30 +295,7 @@ window.ListController = (function()
         window.View.Render('AddList', {list:list});
 
         fetchAndRenderListBalance(list.id);
-
-            // var myObj = {myKey:"myVar", fruit:'banana'};
-            // for (let key in myObj)
-            // {
-            //     if (myObj[key] == "myVar")
-            //     { 
-            //         console.log(key.toString());
-            //     }
-            //     else
-            //     {
-            //         console.log("Nope");
-            //         console.log(myObj[key]);
-            //     }
-            // }
-
-            //TODO I can't remember why I wanted property names, but it seems possible to get after all... ^ ^ ^
-                //Oh one reason was because the bindReference has a lot of duplication between the reference name and the action
     
-                //Would it help at all to send a string (e.g. 'HideSettingsView') as a param instead of the bindReference property object (e.g. bindReference.HideSettingsView)?
-                    //Rename to bindActions, and each property has a sub property called event? And then that's all it has?
-                    //bind.event would become bindActions[action].event
-                    
-                    //Actually I think I prefer reversing this so it's done based on event instead of action. Seems more readable that way, since the event is the first trigger in the chain of occurences
-
         //TODO continue to standardize ID parameter names as applicable
 
         //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
@@ -260,6 +311,14 @@ window.ListController = (function()
         setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
             //Then much of this (most of the bind setup) could be reused, for both List and List Item
+    }
+
+    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    {
+        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
+            //This is also the only Model call that doesn't require updates to the model but does access it get information.
+        let _listBalance = window.Model.GetListBalance(listId);
+        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -300,14 +359,6 @@ window.ListController = (function()
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
 
         window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
-    }
-
-    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
-    {
-        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
-            //This is also the only Model call that doesn't require updates to the model but does access it get information.
-        let _listBalance = window.Model.GetListBalance(listId);
-        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -429,6 +480,8 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.QuantityPopoverShown)
         {   
             //TODO There might be a better way to do this, where these BINDs can be done when the +/- buttons are created and not when the popover is shown.
+                //Maybe by using an iife? I think I've looked into this before...
+
 
             //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
             setupBind(ChecklistEvents.DecrementQuantityButtonPressed, options);
@@ -456,6 +509,7 @@ window.ListController = (function()
                 let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
                 window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
             }
+            //TODO could use: validateObjectContainsKVPs([key1, key2, etc]) == true ? doAction() : logError();
         }
         else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         {
@@ -565,44 +619,6 @@ window.ListController = (function()
 
     /** Publicly Exposed Methods To Setup UI & Load List Data **/
 
-    function init()
-    {     
-        //Set the checklist type
-        //checklistType = checklistType;
-
-        //Set up the binds for interactions with the quantity header row
-        renderAndBindQuantityHeader();
-
-        //Set up the binds for the buttons to add a new List or List Item
-        setupBind(ChecklistEvents.NewListButtonPressed);
-        setupBind(ChecklistEvents.NewListItemButtonPressed);
-
-        //Set up the bind logic for when the app's web page hash changes
-        setupBind(ChecklistEvents.HashChanged);
-
-        //Load the list data from storage and pass it along to the View
-        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
-    }
-
-    function loadChecklistDataIntoView(loadedListData)
-    {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
-
-        //For each List loaded from Storage...
-        for (let i = 0; i < loadedListData.length; i++) 
-        {
-            //Add the List elements to the DOM and set up the binds for interactions with them
-            renderAndBindLoadedList(loadedListData[i]);
-            
-            //For each List Item in the List...
-            for (let j = 0; j < loadedListData[i].listItems.length; j++) 
-            {
-                //Add the List Item's elements to the DOM and set up the binds for interactions with them
-                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
-            }
-        }
-    }
-
     /** Experimental & In Progress **/
 
     //TODO these helper methods below may not belong in Controller
@@ -634,32 +650,28 @@ const ListType = {
     Checklist: 'shopping'
 };
 
-//TODO Consider moving this to a separate file?
+//TODO Consider moving this to a separate file. Should this be in ChecklistUtilities instead?
 const QuantityType = {
     needed: {
         type: 'needed', //TODO this should be temp. Can the same be accomplished using 'key'?
-        //index: 0,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-pie-chart fa-lg iconHeader'
     },
     luggage: {
         type: 'luggage',
-        //index: 1,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-suitcase fa-lg iconHeader'
     },
     wearing: {
         type: 'wearing',
-        //index: 2,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader',
         iconClass: 'fa fa-male fa-lg iconHeader'
     },
     backpack: {
         type: 'backpack',
-        //index: 3,
         wrapperClass: 'col divQuantityHeader',
         toggleClass: 'toggleQuantityHeader toggleSmallIcon',
         iconClass: 'fa fa-briefcase iconHeader'

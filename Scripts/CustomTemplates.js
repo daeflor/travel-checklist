@@ -181,7 +181,7 @@ window.CustomTemplates = (function ()
 
         for (var key in QuantityType)
         {
-            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key])); 
+            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key]));  //TODO could pass here just the key. That should allow removing the 'type' key from the QuantityType enums
         }
 
         return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;

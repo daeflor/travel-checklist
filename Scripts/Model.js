@@ -31,6 +31,7 @@ window.Model = (function()
         }
     }
 
+    //TODO Should this be in ChecklistUtilities instead?
     /**
      * Gets the data object, index, and parent array for the checklist object matching the provided ID
      * @param {*} id The ID of the checklist object (List or List Item) //TODO currently this can be a string or an integer. In the future it would be good to standardize it. 
