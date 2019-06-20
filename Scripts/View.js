@@ -253,16 +253,16 @@ window.View = (function()
         {
             addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
         }
-        else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
+        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
         {
             //TODO modify bindChecklistObjectElement so that it can support multiple parameters, incl. quantityType
 
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'click', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
         }
-        else if (event === 'QuantityPopoverShown') //Expected parameters: checklistObject, quantityType
+        else if (event === 'QuantityPopoverShown') //Expected parameters: id, quantityType
         {
             //Set the behavior for when the Quantity popover for the given quantity type is made visible
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'shown.bs.popover', callback);
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
 
             //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and list Item Id: " + parameters.id);
         }
