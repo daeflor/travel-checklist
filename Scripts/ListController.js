@@ -309,14 +309,7 @@ window.ListController = (function()
         
         setupBind(ChecklistEvents.GoToListButtonPressed, _options);
 
-        //Settings View Binds
-        listenForEvent_SettingsViewExpansionStarted(list.id);
-        listenForEvent_NameEdited(list.id);
-        listenForEvent_DeleteButtonPressed(list.id); 
-        listenForEvent_MoveUpwardsButtonPressed(list.id);
-        listenForEvent_MoveDownwardsButtonPressed(list.id);
-        //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
-            //Then much of this (most of the bind setup) could be reused, for both List and List Item
+        setupSettingsViewListeners(list.id); //Setup listeners related to the List's Settings View
     }
 
     function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
@@ -338,23 +331,26 @@ window.ListController = (function()
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
         window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
 
-        //Bind user interaction with the quantity toggles to corresponding behavior
-        for (let quantityType in listItem.quantities)
+        for (let quantityType in listItem.quantities) //For each quantity type...
         {
-            //Setup the binds to display the quantity popover, and create its own elements' binds once it has been added to the DOM
-            listenForEvent_QuantityToggleSelected(listItem.id, quantityType);
-            listenForEvent_QuantityPopoverShown(listItem.id, quantityType);
+            listenForEvent_QuantityToggleSelected(listItem.id, quantityType); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
+            listenForEvent_QuantityPopoverShown(listItem.id, quantityType); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
         }
-
-        //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
-        const _options = {checklistObject:listItem}; //TODO if this is the only param needed, could _options = listItem? Not unless for List it also only needs the List object...
         
-        //Settings View Binds
-        listenForEvent_SettingsViewExpansionStarted(listItem.id);
-        listenForEvent_NameEdited(listItem.id);
-        listenForEvent_DeleteButtonPressed(listItem.id); 
-        listenForEvent_MoveUpwardsButtonPressed(listItem.id);
-        listenForEvent_MoveDownwardsButtonPressed(listItem.id);
+        setupSettingsViewListeners(listItem.id); //Setup listeners related to the List Item's Settings View
+    }
+
+    /**
+     * Sets up the listener for the various user interactions related to a List or List Item's Settings View
+     * @param {string} id The ID of the List or List Item
+     */
+    function setupSettingsViewListeners(id)
+    {
+        listenForEvent_SettingsViewExpansionStarted(id); //When the animation to expand the Settings View starts, hide the Active Settings View
+        listenForEvent_NameEdited(id); //When the name text field is modified, update the name of the checklist object
+        listenForEvent_DeleteButtonPressed(id); //When the delete button is pressed, remove the checklist object
+        listenForEvent_MoveUpwardsButtonPressed(id); //When the Move Upwards button is pressed, move the checklist object up by one position
+        listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
     }
 
     function renderUpdatesToListItemQuantity(listItem, quantityType)
