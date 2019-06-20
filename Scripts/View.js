@@ -200,7 +200,7 @@ window.View = (function()
             //Set the behavior for when the Add List Item button is pressed
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);                
         }
-        else if (event === 'NameEdited') //Expected parameters: checklistObject
+        else if (event === 'NameEdited') //Expected parameters: id
         {
             let eventTriggeredCallback = function(event)
             {
@@ -209,12 +209,17 @@ window.View = (function()
             
             bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters.id);
         }
-        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
+        else if (event === 'DeleteButtonPressed') //Expected parameters: id
+        {
+            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
+            bindChecklistObjectElement('Delete', 'click', callback, parameters.id);
+        }
+        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
             bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters.id);
         }
-        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
+        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
             bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters.id);
@@ -226,11 +231,6 @@ window.View = (function()
         else if (event === 'IncrementQuantityButtonPressed')
         {
             addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
-        }
-        else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
-        {
-            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('Delete', 'click', callback, parameters.checklistObject.id);
         }
         else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
         {

@@ -315,9 +315,10 @@ window.ListController = (function()
         listenForEvent_NameEdited(list.id);
         //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
-        bindEvent_MoveUpwardsButtonPressed(list.id);
-        bindEvent_MoveDownwardsButtonPressed(list.id);
-        setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
+        //setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
+        listenForEvent_DeleteButtonPressed(list.id); 
+        listenForEvent_MoveUpwardsButtonPressed(list.id);
+        listenForEvent_MoveDownwardsButtonPressed(list.id);
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
             //Then much of this (most of the bind setup) could be reused, for both List and List Item
     }
@@ -361,9 +362,9 @@ window.ListController = (function()
         listenForEvent_NameEdited(listItem.id);
         //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
-        bindEvent_MoveUpwardsButtonPressed(listItem.id);
-        bindEvent_MoveDownwardsButtonPressed(listItem.id);
-        setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
+        listenForEvent_DeleteButtonPressed(listItem.id); 
+        listenForEvent_MoveUpwardsButtonPressed(listItem.id);
+        listenForEvent_MoveDownwardsButtonPressed(listItem.id);
     }
 
     function renderUpdatesToListItemQuantity(listItem, quantityType)
@@ -434,7 +435,18 @@ window.ListController = (function()
         // window.View.Bind('NameEdited', _eventTriggered, {id:id});
     }
 
-    function bindEvent_MoveUpwardsButtonPressed(id)
+    function listenForEvent_DeleteButtonPressed(id)
+    {
+        const _viewReaction = function() {
+            // const _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
+            // window.View.Render(_renderAction, {id:id});
+            (activeListId == null) ? window.View.Render('RemoveList', {id:id}) : window.View.Render('RemoveListItem', {id:id});
+        };
+        const _modelReaction = window.Model.Remove.bind(null, id, _viewReaction);
+        window.View.Bind('DeleteButtonPressed', _modelReaction, {id:id});
+    }
+
+    function listenForEvent_MoveUpwardsButtonPressed(id)
     {
         // const _viewReaction = handleModelInteraction.bind({moveUpwardsId:id}, 'MoveUpwards'); 
         // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
@@ -447,7 +459,7 @@ window.ListController = (function()
         window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
     }
 
-    function bindEvent_MoveDownwardsButtonPressed(id)
+    function listenForEvent_MoveDownwardsButtonPressed(id)
     {
         // const _viewReaction = handleModelInteraction.bind({moveDownwardsId:id}, 'MoveDownwards'); 
         // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
@@ -658,12 +670,12 @@ window.ListController = (function()
             // case 'MoveDownwards':
             //     window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
             //     break;
-            case 'RemoveList':
-                window.View.Render('RemoveList', {id:this.id});
-                break;
-            case 'RemoveListItem':
-                window.View.Render('RemoveListItem', {id:this.id}); 
-                break;
+            // case 'RemoveList':
+            //     window.View.Render('RemoveList', {id:this.id});
+            //     break;
+            // case 'RemoveListItem':
+            //     window.View.Render('RemoveListItem', {id:this.id}); 
+            //     break;
             case 'ModifyQuantityValue':
                 renderUpdatesToListItemQuantity(this.checklistObject, this.quantityType);
                 //window.View.Render('UpdateListItemQuantityText', {id:this.checklistObject.id, quantityType:this.quantityType, updatedValue:this.checklistObject.quantities[this.quantityType]});
