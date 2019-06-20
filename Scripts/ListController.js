@@ -311,7 +311,8 @@ window.ListController = (function()
 
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-        setupBind(ChecklistEvents.NameEdited, _options);
+        //setupBind(ChecklistEvents.NameEdited, _options);
+        listenForEvent_NameEdited(list.id);
         //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
         bindEvent_MoveUpwardsButtonPressed(list.id);
@@ -356,7 +357,8 @@ window.ListController = (function()
         
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-        setupBind(ChecklistEvents.NameEdited, _options);
+        //setupBind(ChecklistEvents.NameEdited, _options);
+        listenForEvent_NameEdited(listItem.id);
         //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
         //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
         bindEvent_MoveUpwardsButtonPressed(listItem.id);
@@ -413,16 +415,47 @@ window.ListController = (function()
         }
     }
 
+    //function setupCustomListener_NameEdited(id)
+    function listenForEvent_NameEdited(id)
+    {
+        //const _viewReaction = window.View.Render.bind('UpdateName', {id:id, updatedValue:this.updatedValue});
+        //handleModelInteraction.bind({id:id, updatedValue:inputArgument.updatedValue}, 'UpdateName');  
+
+        const _viewReaction = function(updatedValue) {
+            window.View.Render('UpdateName', {id:id, updatedValue:updatedValue});
+        };
+        const _modelReaction = window.Model.ModifyName.bind(null, id, _viewReaction);
+        window.View.Bind('NameEdited', _modelReaction, {id:id});
+
+        // const _eventTriggered = function(updatedValue) {
+        //     const _viewReaction = window.View.Render.bind(null, 'UpdateName', {id:id, updatedValue:updatedValue});
+        //     window.Model.ModifyName(id, _viewReaction, updatedValue);
+        // };
+        // window.View.Bind('NameEdited', _eventTriggered, {id:id});
+    }
+
     function bindEvent_MoveUpwardsButtonPressed(id)
     {
-        const _viewReaction = handleModelInteraction.bind({moveUpwardsId:id}, 'MoveUpwards'); 
+        // const _viewReaction = handleModelInteraction.bind({moveUpwardsId:id}, 'MoveUpwards'); 
+        // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
+        // window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
+
+        const _viewReaction = function(swappedChecklistObjectId) {
+            window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
+        };
         const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
         window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
     }
 
     function bindEvent_MoveDownwardsButtonPressed(id)
     {
-        const _viewReaction = handleModelInteraction.bind({moveDownwardsId:id}, 'MoveDownwards'); 
+        // const _viewReaction = handleModelInteraction.bind({moveDownwardsId:id}, 'MoveDownwards'); 
+        // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
+        // window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
+
+        const _viewReaction = function(swappedChecklistObjectId) {
+            window.View.Render('SwapListObjects', {moveUpwardsId:swappedChecklistObjectId, moveDownwardsId:id});
+        };
         const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
         window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
     }
@@ -541,11 +574,11 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind({id:options.checklistObject.id}, _renderAction); 
             window.Model.Remove(options.checklistObject.id, _updateView);
         }
-        else if (triggeredEvent == ChecklistEvents.NameEdited)
-        {
-            let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
-            window.Model.ModifyName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
-        }
+        // else if (triggeredEvent == ChecklistEvents.NameEdited)
+        // {
+        //     let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
+        //     window.Model.ModifyName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
+        // }
         // else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
         // {
         //     let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
@@ -616,15 +649,15 @@ window.ListController = (function()
                     //window.View.Render('UpdateNameToggleColor', {id:modifiedChecklistData.modifiedListItems[i].id, balance:calculateListItemBalance(modifiedChecklistData.modifiedListItems[i].quantities)});
                 } 
                 break;
-            case 'UpdateName':
-                window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
-                break;
-            case 'MoveUpwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:this.moveUpwardsId, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
-                break;
-            case 'MoveDownwards':
-                window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
-                break;
+            // case 'UpdateName':
+            //     window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
+            //     break;
+            // case 'MoveUpwards':
+            //     window.View.Render('SwapListObjects', {moveUpwardsId:this.moveUpwardsId, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
+            //     break;
+            // case 'MoveDownwards':
+            //     window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
+            //     break;
             case 'RemoveList':
                 window.View.Render('RemoveList', {id:this.id});
                 break;

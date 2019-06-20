@@ -204,10 +204,10 @@ window.View = (function()
         {
             let eventTriggeredCallback = function(event)
             {
-                callback({updatedValue:event.target.value});
+                callback(event.target.value);
             }
             
-            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters.checklistObject.id);
+            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters.id);
         }
         else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
         {

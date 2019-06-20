@@ -39,24 +39,31 @@ window.Model = (function()
      */
     function getChecklistObjectDataFromId(id)
     {
-        let _listId = id.toString().split('-')[0];
-        let _listItemSuffix = id.toString().split('-')[1];
-        let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
-
-        if (_listIndex != null)
+        if (id != null)
         {
-            let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
-            let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id);
-        
-                return {
-                    index: _index,
-                    parentArray: _parentArray,
-                    object: _parentArray[_index]
-                };
+            let _listId = id.toString().split('-')[0];
+            let _listItemSuffix = id.toString().split('-')[1];
+            let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
+    
+            if (_listIndex != null)
+            {
+                let _parentArray = (_listItemSuffix == null) ? getLists() : getLists()[_listIndex].listItems;
+                let _index = (_listItemSuffix == null) ? _listIndex : GetArrayIndexOfObjectWithKVP(_parentArray, 'id', id);
+            
+                    return {
+                        index: _index,
+                        parentArray: _parentArray,
+                        object: _parentArray[_index]
+                    };
+            }
+            else
+            {
+                DebugController.LogError("Tried to access data about a checklist object but a valid List ID was not provided or could not be determined. Full ID value provided: " + id);
+            }
         }
         else
         {
-            DebugController.LogError("Tried to access data about a checklist object but a valid List ID was not provided or could not be determined. Full ID value provided: " + id);
+            DebugController.LogError("Tried to access data about a checklist object but a valid ID was not provided.");
         }
     }
 
@@ -145,8 +152,8 @@ window.Model = (function()
             //Store the updated checklist data
             storeChecklistData();
 
-            //Execute the provided callback function 
-            callback();
+            //Execute the provided callback function, passing the updated name as an argument
+            callback(updatedValue);
         }
         else
         {
@@ -200,7 +207,7 @@ window.Model = (function()
                 storeChecklistData();
 
                 //Execute the provided callback function, passing the ID of swapped checklist object as an argument
-                callback({swappedChecklistObjectId:_swappedChecklistObject.id});
+                callback(_swappedChecklistObject.id);
             }
             else
             {
