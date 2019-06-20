@@ -343,10 +343,10 @@ window.ListController = (function()
         {
             //Setup the binds to display the quantity popover, and create its own elements' binds once it has been added to the DOM
             const _options = {checklistObject:listItem, quantityType:quantityType};
-            //createBind(bindReference.ShowQuantityPopover, _options);
             setupBind(ChecklistEvents.QuantityToggleSelected, _options);
-            //createBind(bindReference.SetupQuantityPopoverBinds, _options);
             setupBind(ChecklistEvents.QuantityPopoverShown, _options);
+            // listenForEvent_QuantityToggleSelected(listItem, quantityType);
+            // listenForEvent_QuantityPopoverShown(listItem, quantityType);
         }
 
         //Setup the binds to update the list item name, move it upwards or downwards in the list, remove it from the list, or hide the Active Settings View when the animation to expand its Settings View starts
@@ -409,7 +409,14 @@ window.ListController = (function()
         }
     }
 
-    //function setupCustomListener_NameEdited(id)
+    //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
+
+    function listenForEvent_SettingsViewExpansionStarted(id)
+    {
+        const _viewReaction = window.View.Render.bind(null, 'HideActiveSettingsView');
+        window.View.Bind('SettingsViewExpansionStarted', _viewReaction, {id:id});
+    }
+
     function listenForEvent_NameEdited(id)
     {
         //const _viewReaction = window.View.Render.bind('UpdateName', {id:id, updatedValue:this.updatedValue});
@@ -426,12 +433,6 @@ window.ListController = (function()
         //     window.Model.ModifyName(id, _viewReaction, updatedValue);
         // };
         // window.View.Bind('NameEdited', _eventTriggered, {id:id});
-    }
-
-    function listenForEvent_SettingsViewExpansionStarted(id)
-    {
-        const _viewReaction = window.View.Render.bind(null, 'HideActiveSettingsView');
-        window.View.Bind('SettingsViewExpansionStarted', _viewReaction, {id:id});
     }
 
     function listenForEvent_DeleteButtonPressed(id)
@@ -470,6 +471,17 @@ window.ListController = (function()
         };
         const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
         window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
+    }
+
+    function listenForEvent_DecrementQuantityButtonPressed(id, quantityType)
+    {
+        const _viewReaction = function(updatedValue) {
+            let _listItemBalance = window.Model.GetListItemBalance(id);
+            window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
+            window.View.Render('UpdateNameToggleColor', {id:id, balance:_listItemBalance});
+        };
+        const _modelReaction = window.Model.ModifyQuantityValue.bind(null, id, _viewReaction, 'Decrement', quantityType);
+        window.View.Bind('DecrementQuantityButtonPressed', _modelReaction); //, {id:id}
     }
 
     //TODO
@@ -553,7 +565,8 @@ window.ListController = (function()
 
 
             //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-            setupBind(ChecklistEvents.DecrementQuantityButtonPressed, options);
+            //setupBind(ChecklistEvents.DecrementQuantityButtonPressed, options);
+            listenForEvent_DecrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
             setupBind(ChecklistEvents.IncrementQuantityButtonPressed, options); 
             setupBind(ChecklistEvents.ClickDetectedOutsidePopover, options);
         }
@@ -601,11 +614,11 @@ window.ListController = (function()
         //     let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
         //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
         // }
-        else if (triggeredEvent === ChecklistEvents.DecrementQuantityButtonPressed)
-        {
-            let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
-            window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Decrement', options.quantityType);
-        }
+        // else if (triggeredEvent === ChecklistEvents.DecrementQuantityButtonPressed)
+        // {
+        //     let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
+        //     window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Decrement', options.quantityType);
+        // }
         else if (triggeredEvent === ChecklistEvents.IncrementQuantityButtonPressed)
         {
             let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 

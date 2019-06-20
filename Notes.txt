@@ -13,7 +13,6 @@ TO-DOs:
     - - - Total             : 121
 
 Upcoming To-Do List:
-- Split DeleteButtonPressed event into RemoveListButtonPressed and RemoveListItemButtonPressed. 
 - Could MAYBE make an AppNavigationController which dictates whether HashChanged means the Home or List Screen should be displayed
     - Just because the JS listener is called hashchanged doesn't mean the custom checklist ones have to. Could use different events for the different behaviors/screens.
 - Might be able to associate binds->reactions(model or view)

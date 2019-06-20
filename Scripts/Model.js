@@ -244,8 +244,8 @@ window.Model = (function()
                 //Store the updated checklist data
                 storeChecklistData();
 
-                //Execute the provided callback function
-                callback();
+                //Execute the provided callback function, passing the updated quantity value as an argument
+                callback(_data.object.quantities[quantityType]);
             }
             else if (modification === 'Increment') //Else, if the request is to increment the quantity value
             {
@@ -255,8 +255,8 @@ window.Model = (function()
                 //Store the updated checklist data
                 storeChecklistData();
 
-                //Execute the provided callback function
-                callback();
+                //Execute the provided callback function, passing the updated quantity value as an argument
+                callback(_data.object.quantities[quantityType]);
 
                 //TODO Instead of always passing a callback, would it make sense to not, and instead have a 'respondToController' function (with a better name obviously)
                     //This function would take as a parmeter any argument(s) that needs to be sent back to the Controller
@@ -322,16 +322,43 @@ window.Model = (function()
     }
 
     /**
-     * Get a the balance of a List matching the provided ID, and using the calculation function in ChecklistUtilities
-     * @param {string} id The ID of the List
-     * @returns the List's balance, in the form of a ChecklistObjectBalance value
+     * Get a the balance of a List Item matching the provided ID, and using the calculation function in ChecklistUtilities
+     * @param {string} listItemId The ID of the List Item
+     * @returns {string} the List Item's balance, in the form of a ChecklistObjectBalance value
      */
-    function getListBalance(id)
+    function getListItemBalance(listItemId)
     {
-        //Retrieve data about the checklist object based on its ID
-        let _data = getChecklistObjectDataFromId(id);
+        //Retrieve data about the List Item based on its ID
+        let _data = getChecklistObjectDataFromId(listItemId);
 
-        return ChecklistUtilities.CalculateListBalance(_data.object.listItems);
+        if (_data.object.quantities != null)
+        {
+            return ChecklistUtilities.CalculateListBalance(_data.object.quantities);
+        }
+        else
+        {
+            window.DebugController.LogError("Request received to get a List Item's balance but a valid but a valid ID was not provided or could not be determined. ID provided: " + listItemId);
+        }
+    }
+
+    /**
+     * Get a the balance of a List matching the provided ID, and using the calculation function in ChecklistUtilities
+     * @param {string} listId The ID of the List
+     * @returns {string} the List's balance, in the form of a ChecklistObjectBalance value
+     */
+    function getListBalance(listId)
+    {
+        //Retrieve data about the List based on its ID
+        let _data = getChecklistObjectDataFromId(listId);
+
+        if (_data.object.listItems != null)
+        {
+            return ChecklistUtilities.CalculateListBalance(_data.object.listItems);
+        }
+        else
+        {
+            window.DebugController.LogError("Request received to get a List's balance but a valid but a valid ID was not provided or could not be determined. ID provided: " + listId);
+        }
     }
 
     //TODO Would it be worth it to add some sort of singular entrypoint method in the Model that determines if it needs to modify a List or List Item
@@ -375,6 +402,7 @@ window.Model = (function()
         ModifyPosition: modifyPosition,
         ModifyQuantityValue: modifyQuantityValue,
         ClearQuantityValues: clearQuantityValues,
+        GetListItemBalance: getListItemBalance,
         GetListBalance: getListBalance
     };
 })();
