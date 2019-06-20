@@ -310,12 +310,8 @@ window.ListController = (function()
         setupBind(ChecklistEvents.GoToListButtonPressed, _options);
 
         //Settings View Binds
-        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-        //setupBind(ChecklistEvents.NameEdited, _options);
+        listenForEvent_SettingsViewExpansionStarted(list.id);
         listenForEvent_NameEdited(list.id);
-        //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
-        //setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
         listenForEvent_DeleteButtonPressed(list.id); 
         listenForEvent_MoveUpwardsButtonPressed(list.id);
         listenForEvent_MoveDownwardsButtonPressed(list.id);
@@ -357,11 +353,8 @@ window.ListController = (function()
         const _options = {checklistObject:listItem}; //TODO if this is the only param needed, could _options = listItem? Not unless for List it also only needs the List object...
         
         //Settings View Binds
-        setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
-        //setupBind(ChecklistEvents.NameEdited, _options);
+        listenForEvent_SettingsViewExpansionStarted(listItem.id);
         listenForEvent_NameEdited(listItem.id);
-        //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
         listenForEvent_DeleteButtonPressed(listItem.id); 
         listenForEvent_MoveUpwardsButtonPressed(listItem.id);
         listenForEvent_MoveDownwardsButtonPressed(listItem.id);
@@ -435,12 +428,19 @@ window.ListController = (function()
         // window.View.Bind('NameEdited', _eventTriggered, {id:id});
     }
 
+    function listenForEvent_SettingsViewExpansionStarted(id)
+    {
+        const _viewReaction = window.View.Render.bind(null, 'HideActiveSettingsView');
+        window.View.Bind('SettingsViewExpansionStarted', _viewReaction, {id:id});
+    }
+
     function listenForEvent_DeleteButtonPressed(id)
     {
         const _viewReaction = function() {
             // const _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
             // window.View.Render(_renderAction, {id:id});
             (activeListId == null) ? window.View.Render('RemoveList', {id:id}) : window.View.Render('RemoveListItem', {id:id});
+            //TODO- DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
         };
         const _modelReaction = window.Model.Remove.bind(null, id, _viewReaction);
         window.View.Bind('DeleteButtonPressed', _modelReaction, {id:id});
@@ -531,12 +531,12 @@ window.ListController = (function()
             //Setup the bind to clear the quantity values for the List Item, for the given quantity type
             setupBind(ChecklistEvents.ClearButtonPressed, options);
         }
-        else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
-        {
-            //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
-                //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
-            window.View.Render('HideActiveSettingsView');
-        }
+        // else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
+        // {
+        //     //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
+        //         //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
+        //     window.View.Render('HideActiveSettingsView');
+        // }
         else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
         {
             if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
@@ -580,12 +580,12 @@ window.ListController = (function()
             }
             //TODO could use: validateObjectContainsKVPs([key1, key2, etc]) == true ? doAction() : logError();
         }
-        else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
-        {
-            let _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
-            let _updateView = handleModelInteraction.bind({id:options.checklistObject.id}, _renderAction); 
-            window.Model.Remove(options.checklistObject.id, _updateView);
-        }
+        // else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
+        // {
+        //     let _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
+        //     let _updateView = handleModelInteraction.bind({id:options.checklistObject.id}, _renderAction); 
+        //     window.Model.Remove(options.checklistObject.id, _updateView);
+        // }
         // else if (triggeredEvent == ChecklistEvents.NameEdited)
         // {
         //     let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 

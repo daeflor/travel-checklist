@@ -200,6 +200,27 @@ window.View = (function()
             //Set the behavior for when the Add List Item button is pressed
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);                
         }
+        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
+        {
+            let eventTriggeredCallback = function(event)
+            {
+                //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
+                    //then maybe this doesn't make sense for a BIND...?
+                    //But it kind of needs to be a Bind because it needs to be done for *each* Settings View
+                    //TODO perhaps this can be moved to be included in the logic of adding a List or List Item
+                        //but then this would be mixing with render logic which is also not right
+
+                //self.render('HideActiveSettingsView');
+                callback(); //TODO don't really like the idea of having a callback and THEN still doing something... It implies the View does actually have knowledge of what is going on, and doesn't really seem correct
+                elements.activeSettingsView = event.target;
+                // callback(newSettingsView); 
+                
+                //HideActiveSettingsView();
+                //elements.activeSettingsView = event.target;
+            }
+
+            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters.id);            
+        }
         else if (event === 'NameEdited') //Expected parameters: id
         {
             let eventTriggeredCallback = function(event)
@@ -254,27 +275,6 @@ window.View = (function()
         {
             //Set the behavior for when a Clear button in the Header is pressed
             addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
-        }
-        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: checklistObject
-        {
-            let eventTriggeredCallback = function(event)
-            {
-                //TODO If there is no callback (i.e. nothing for the Controller to do because activeSettingsView is now tracked in View),
-                    //then maybe this doesn't make sense for a BIND...?
-                    //But it kind of needs to be a Bind because it needs to be done for *each* Settings View
-                    //TODO perhaps this can be moved to be included in the logic of adding a List or List Item
-                        //but then this would be mixing with render logic which is also not right
-
-                //self.render('HideActiveSettingsView');
-                callback(); //TODO don't really like the idea of having a callback and THEN still doing something... It implies the View does actually have knowledge of what is going on, and doesn't really seem correct
-                elements.activeSettingsView = event.target;
-                // callback(newSettingsView); 
-                
-                //HideActiveSettingsView();
-                //elements.activeSettingsView = event.target;
-            }
-
-            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters.checklistObject.id);            
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
