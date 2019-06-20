@@ -245,6 +245,12 @@ window.ListController = (function()
     //     }
     // }
 
+    //TODO what if, instead of one bug bindEventToReaction method with a bunch of if/elses, there's a section dedicated to bind and event handling, where each event is handled individually?
+        //For example - bindAndHandleEventClearButtonPressed or something maybe slightly less awful?
+        //Then each of those can take the parameters necessary for that event (e.g. list id vs quantity vs nothing)
+        //Look into whether or not this would work, and if anything could be astracted from each one while still keeping it readable.
+        //_viewReaction, _modelReaction, _controllerReaction
+
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
     //TODO ^ This description is no longer accurate
 
@@ -306,8 +312,10 @@ window.ListController = (function()
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
-        setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
+        //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
+        //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
+        bindEvent_MoveUpwardsButtonPressed(list.id);
+        bindEvent_MoveDownwardsButtonPressed(list.id);
         setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
         //TODO would be nice if it were possible to just have Remove (instead of RemoveList and RemoveListItem)
             //Then much of this (most of the bind setup) could be reused, for both List and List Item
@@ -349,8 +357,10 @@ window.ListController = (function()
         //Settings View Binds
         setupBind(ChecklistEvents.SettingsViewExpansionStarted, _options);
         setupBind(ChecklistEvents.NameEdited, _options);
-        setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
-        setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
+        //setupBind(ChecklistEvents.MoveUpwardsButtonPressed, _options);
+        //setupBind(ChecklistEvents.MoveDownwardsButtonPressed, _options);
+        bindEvent_MoveUpwardsButtonPressed(listItem.id);
+        bindEvent_MoveDownwardsButtonPressed(listItem.id);
         setupBind(ChecklistEvents.DeleteButtonPressed, _options); 
     }
 
@@ -401,6 +411,20 @@ window.ListController = (function()
         {
             window.DebugController.LogError("ERROR: Invalid event provided when attempting to setup a bind.");
         }
+    }
+
+    function bindEvent_MoveUpwardsButtonPressed(id)
+    {
+        const _viewReaction = handleModelInteraction.bind({moveUpwardsId:id}, 'MoveUpwards'); 
+        const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
+        window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
+    }
+
+    function bindEvent_MoveDownwardsButtonPressed(id)
+    {
+        const _viewReaction = handleModelInteraction.bind({moveDownwardsId:id}, 'MoveDownwards'); 
+        const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
+        window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
     }
 
     //TODO
@@ -522,16 +546,16 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
             window.Model.ModifyName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
         }
-        else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
-        {
-            let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
-            window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Upwards');
-        }
-        else if (triggeredEvent === ChecklistEvents.MoveDownwardsButtonPressed)
-        {
-            let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
-            window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
-        }
+        // else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
+        // {
+        //     let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
+        //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Upwards');
+        // }
+        // else if (triggeredEvent === ChecklistEvents.MoveDownwardsButtonPressed)
+        // {
+        //     let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
+        //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
+        // }
         else if (triggeredEvent === ChecklistEvents.DecrementQuantityButtonPressed)
         {
             let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 

@@ -158,14 +158,12 @@ window.View = (function()
      * @param {function} callback - The callback to execute when the event listener is triggered
      * @param {object} parameters - An object containing additional parameters necessary to identify and locate the element being bound
      */
-    function bindChecklistObjectElement(prefix, eventType, callback, parameters)
+    function bindChecklistObjectElement(prefix, eventType, callback, id)
     {
-        let listObject = parameters.checklistObject;
-
-        if (listObject != null && listObject.id != null)
+        if (id != null)
         {
             //Set the behavior for when one of the Checklist Object's buttons is pressed
-            addListenerToChecklistElement({prefix:prefix, id:listObject.id}, eventType, callback);
+            addListenerToChecklistElement({prefix:prefix, id:id}, eventType, callback);
         }
         else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }
     }
@@ -195,7 +193,7 @@ window.View = (function()
         else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when a Go To List button is pressed
-            bindChecklistObjectElement('GoToList', 'click', callback, parameters);
+            bindChecklistObjectElement('GoToList', 'click', callback, parameters.checklistObject.id);
         }
         else if (event === 'NewListItemButtonPressed') 
         {
@@ -209,17 +207,17 @@ window.View = (function()
                 callback({updatedValue:event.target.value});
             }
             
-            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters);
+            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters.checklistObject.id);
         }
         else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters);
+            bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters.id);
         }
         else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters);
+            bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters.id);
         }
         else if (event === 'DecrementQuantityButtonPressed') 
         {
@@ -232,7 +230,7 @@ window.View = (function()
         else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
         {
             //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('Delete', 'click', callback, parameters);
+            bindChecklistObjectElement('Delete', 'click', callback, parameters.checklistObject.id);
         }
         else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
         {
@@ -276,7 +274,7 @@ window.View = (function()
                 //elements.activeSettingsView = event.target;
             }
 
-            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters);            
+            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters.checklistObject.id);            
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
