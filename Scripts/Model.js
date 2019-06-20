@@ -333,7 +333,7 @@ window.Model = (function()
 
         if (_data.object.quantities != null)
         {
-            return ChecklistUtilities.CalculateListBalance(_data.object.quantities);
+            return ChecklistUtilities.CalculateListItemBalance(_data.object.quantities);
         }
         else
         {
