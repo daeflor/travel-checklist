@@ -101,7 +101,7 @@ window.Model = (function()
 
         storeChecklistData();
 
-        callback({newList:newList});
+        callback(newList);
     }
 
     /**
@@ -132,7 +132,7 @@ window.Model = (function()
         storeChecklistData();
 
         //Execute the provided callback function, passing the new List Item object as an argument
-        callback({newListItem:newListItem});
+        callback(newListItem);
     }
 
     /**
