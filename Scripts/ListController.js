@@ -296,18 +296,12 @@ window.ListController = (function()
      */
     function renderAndBindLoadedList(list)
     {
-        //Add the List elements to the DOM
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
-        window.View.Render('AddList', {list:list});
+        window.View.Render('AddList', {list:list}); //Add the List elements to the DOM
 
         fetchAndRenderListBalance(list.id);
-    
-        //TODO continue to standardize ID parameter names as applicable
-
-        //Setup the binds to update the list name, move it upwards or downwards, remove it from the list selection screen, navigate to it, or hide the Active Settings View when the animation to expand its Settings View starts
-        const _options = {checklistObject:list};
         
-        setupBind(ChecklistEvents.GoToListButtonPressed, _options);
+        listenForEvent_GoToListButtonPressed(list.id); //When the Go To List button is pressed, display the list
 
         setupSettingsViewListeners(list.id); //Setup listeners related to the List's Settings View
     }
@@ -403,6 +397,18 @@ window.ListController = (function()
     }
 
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
+        //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
+
+    function listenForEvent_GoToListButtonPressed(id) //TODO is this necessary or can HashChanged just be used?
+    {
+        //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
+
+        const _viewReaction = function() {
+            window.View.Render('DisplayList', {id:id}); //Display the specified List
+            activeListId = id; //Set the newly selected List as the Active List
+        };
+        window.View.Bind('GoToListButtonPressed', _viewReaction, {id:id});
+    }
 
     function listenForEvent_SettingsViewExpansionStarted(id)
     {
@@ -528,6 +534,8 @@ window.ListController = (function()
         // const _modelReaction = window.Model.ClearQuantityValues.bind(null, activeListId, _viewReaction, quantityType);
         // window.View.Bind('ClearButtonPressed', _modelReaction);
 
+        //TODO see if we want to try a different approach here
+
         const _eventTriggered = function() { //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?...
             const _viewReaction = function(modifiedListItems) { 
                 for (let i = 0; i < modifiedListItems.length; i++)
@@ -588,15 +596,15 @@ window.ListController = (function()
                 activeListId = null;
             }
         }
-        else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
-        {
-            //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
-            //Display the specified List
-            window.View.Render('DisplayList', {id:options.checklistObject.id});
+        // else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
+        // {
+        //     //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
+        //     //Display the specified List
+        //     window.View.Render('DisplayList', {id:options.checklistObject.id});
 
-            //Set the newly selected List as the Active List
-            activeListId = options.checklistObject.id;
-        }
+        //     //Set the newly selected List as the Active List
+        //     activeListId = options.checklistObject.id;
+        // }
         else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
         {
             //Setup the bind to clear the quantity values for the List Item, for the given quantity type
@@ -646,7 +654,7 @@ window.ListController = (function()
         //         let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
         //         window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
         //     }
-        //     //TODO could use: validateObjectContainsKVPs([key1, key2, etc]) == true ? doAction() : logError();
+        //     //TODO could use: validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
         // }
         // else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         // {

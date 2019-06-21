@@ -192,10 +192,10 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
-        else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
+        else if (event === 'GoToListButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when a Go To List button is pressed
-            bindChecklistObjectElement('GoToList', 'click', callback, parameters.checklistObject.id);
+            bindChecklistObjectElement('GoToList', 'click', callback, parameters.id);
         }
         else if (event === 'NewListItemButtonPressed') 
         {
