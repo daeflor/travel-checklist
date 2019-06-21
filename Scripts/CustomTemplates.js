@@ -10,7 +10,8 @@ window.CustomTemplates = (function ()
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
         var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listItem.id), 'buttonListItem buttonListItemName', listItem.name, 'NameButton-'.concat(listItem.id));
-        
+        //TODO could pass an optional toggleBorderColor parameter to the helper function above, to set an initial color for the list item toggle
+
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
 

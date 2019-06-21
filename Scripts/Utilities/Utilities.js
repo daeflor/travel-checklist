@@ -107,6 +107,8 @@ function getUrlSlug(urlString)
 
 /** Experimental & In Progress **/
 
+/** Unused Utilities **/
+
 /**
  * Validates that the provided object contains valid values for the given keys
  * @param {Object} object the object to validate
@@ -143,8 +145,6 @@ function validateObjectContainsValidKVPs(object, keyArray)
         window.DebugController.LogError("Request received to validate that an object contains valid values for the given keys, but either an invalid object or invalid keys array was provided. Object: " + JSON.stringify(object));
     }
 }
-
-/** Unused Utilities **/
 
 function MergeObjects(target, source)
 {

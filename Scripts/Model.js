@@ -286,6 +286,23 @@ window.Model = (function()
             //Retrieve data about the List based on its ID
             let _data = getChecklistObjectDataFromId(listId);
 
+            ///////////////////
+
+            // for (let i = 0; i < _data.object.listItems.length; i++) //TODO also check that list items isnt null
+            //     {
+            //         //If the quantity value for the given quantity type is not already set to zero...
+            //         if (_data.object.listItems[i].quantities[quantityType] != 0)
+            //         {
+            //             //Set the quantity value to zero
+            //             _data.object.listItems[i].quantities[quantityType] = 0;
+
+            //             callback();
+            //         }
+            //     } 
+
+
+            ///////////////////
+
             //Initialize an array to keep track of any List Items that will have a quantity value be modified
             let modifiedListItems = [];
 
@@ -299,6 +316,9 @@ window.Model = (function()
 
                     //Add the List Item to the array of modified List Items
                     modifiedListItems.push(listItem);
+
+                    //Execute the provided callback function, passing the updated quantity value of the List Item as an argument
+                    //callback(listItem.quantities[quantityType]);
                 }
             };
 
@@ -312,7 +332,7 @@ window.Model = (function()
                 storeChecklistData();
                 
                 //Execute the provided callback function, passing the array of modified List Items as an argument
-                callback({modifiedListItems:modifiedListItems});
+                callback(modifiedListItems);
             }
         }
         else

@@ -517,6 +517,32 @@ window.ListController = (function()
         window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
     }
 
+    function listenForEvent_ClearButtonPressed(quantityType)
+    {
+        // const _viewReaction = function() { 
+        //     for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
+        //     {
+        //         renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
+        //     } 
+        // };
+        // const _modelReaction = window.Model.ClearQuantityValues.bind(null, activeListId, _viewReaction, quantityType);
+        // window.View.Bind('ClearButtonPressed', _modelReaction);
+
+        const _eventTriggered = function() { //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?...
+            const _viewReaction = function(modifiedListItems) { 
+                for (let i = 0; i < modifiedListItems.length; i++)
+                {
+                    //renderUpdatesToListItemQuantity(modifiedListItems[i], quantityType);
+                    let _listItemBalance = window.Model.GetListItemBalance(modifiedListItems[i].id);
+                    window.View.Render('UpdateListItemQuantityText', {id:modifiedListItems[i].id, quantityType:quantityType, updatedValue:0});
+                    window.View.Render('UpdateNameToggleColor', {id:modifiedListItems[i].id, balance:_listItemBalance});
+                } 
+            };
+            window.Model.ClearQuantityValues(activeListId, _viewReaction, quantityType); 
+        };
+        window.View.Bind('ClearButtonPressed', _eventTriggered);
+    }
+
     //TODO
         //handleEventWhichModifiesData, handleDataImpactingEvent, handleDataAlteringEvent - It's not JUST altering anymore though, also simply accessing
         //handleEventWithModelInteraction
@@ -574,7 +600,8 @@ window.ListController = (function()
         else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
         {
             //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-            setupBind(ChecklistEvents.ClearButtonPressed, options);
+            //setupBind(ChecklistEvents.ClearButtonPressed, options);
+            listenForEvent_ClearButtonPressed(options.quantityType);
         }
         // else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         // {
@@ -582,22 +609,22 @@ window.ListController = (function()
         //         //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
         //     window.View.Render('HideActiveSettingsView');
         // }
-        else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
-        {
-            if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
-            {
-                //window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-                inputArgument.stopPropagation();
-                window.View.Render('ShowQuantityPopover', {id:options.checklistObject.id, quantityType:options.quantityType});   
-            }
-        }
-        else if (triggeredEvent === ChecklistEvents.QuantityPopoverShown)
-        {   
-            //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-            listenForEvent_DecrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
-            listenForEvent_IncrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
-            listenForEvent_ClickDetectedOutsidePopover();
-        }
+        // else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
+        // {
+        //     if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
+        //     {
+        //         //window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
+        //         inputArgument.stopPropagation();
+        //         window.View.Render('ShowQuantityPopover', {id:options.checklistObject.id, quantityType:options.quantityType});   
+        //     }
+        // }
+        // else if (triggeredEvent === ChecklistEvents.QuantityPopoverShown)
+        // {   
+        //     //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
+        //     listenForEvent_DecrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
+        //     listenForEvent_IncrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
+        //     listenForEvent_ClickDetectedOutsidePopover();
+        // }
         // else if (triggeredEvent === ChecklistEvents.ClickDetectedOutsidePopover)
         // {
         //     window.View.Render('HideActiveQuantityPopover');
@@ -612,15 +639,15 @@ window.ListController = (function()
             let _updateView = handleModelInteraction.bind(null, 'AddNewListItem');    
             window.Model.AddNewListItem(activeListId, _updateView);
         }
-        else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
-        {
-            if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
-            {
-                let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
-                window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
-            }
-            //TODO could use: validateObjectContainsKVPs([key1, key2, etc]) == true ? doAction() : logError();
-        }
+        // else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
+        // {
+        //     if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
+        //     {
+        //         let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
+        //         window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
+        //     }
+        //     //TODO could use: validateObjectContainsKVPs([key1, key2, etc]) == true ? doAction() : logError();
+        // }
         // else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
         // {
         //     let _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
@@ -693,15 +720,15 @@ window.ListController = (function()
                 //Once the new List Item has been added to the DOM, expand its Settings View
                 window.View.Render('ExpandSettingsView', {id:modifiedChecklistData.newListItem.id});
                 break;
-            case 'ClearQuantityValues':
-                //For each modified List Item, update its displayed quantity value for the given type, and then update its name's color
-                for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
-                {
-                    renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
-                    //window.View.Render('UpdateListItemQuantityText', {id:modifiedChecklistData.modifiedListItems[i].id, quantityType:this.quantityType, updatedValue:modifiedChecklistData.modifiedListItems[i].quantities[this.quantityType]});
-                    //window.View.Render('UpdateNameToggleColor', {id:modifiedChecklistData.modifiedListItems[i].id, balance:calculateListItemBalance(modifiedChecklistData.modifiedListItems[i].quantities)});
-                } 
-                break;
+            // case 'ClearQuantityValues':
+            //     //For each modified List Item, update its displayed quantity value for the given type, and then update its name's color
+            //     for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
+            //     {
+            //         renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
+            //         //window.View.Render('UpdateListItemQuantityText', {id:modifiedChecklistData.modifiedListItems[i].id, quantityType:this.quantityType, updatedValue:modifiedChecklistData.modifiedListItems[i].quantities[this.quantityType]});
+            //         //window.View.Render('UpdateNameToggleColor', {id:modifiedChecklistData.modifiedListItems[i].id, balance:calculateListItemBalance(modifiedChecklistData.modifiedListItems[i].quantities)});
+            //     } 
+            //     break;
             // case 'UpdateName':
             //     window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
             //     break;

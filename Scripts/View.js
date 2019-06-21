@@ -180,6 +180,8 @@ window.View = (function()
      */
     function bind(event, callback, parameters)
     {
+        //TODO could use: validateObjectContainsKVPs(parameters, [key1, key2, etc]) == true ? doAction() : logError();
+
         // if (event === 'HomeButtonPressed') 
         // {
         //     //Set the behavior for when the Home button is pressed
