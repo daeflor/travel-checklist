@@ -219,7 +219,7 @@ window.ListController = (function()
     {
         //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
         //TODO right now this assumes the header to display is the Travel type
-        window.View.Render('GenerateQuantityHeader'); 
+        window.View.Render('GenerateQuantityHeader'); //TODO move this to the view's init? For now at least...
         
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
         for (let key in QuantityType)
@@ -228,6 +228,12 @@ window.ListController = (function()
         }
     }
 
+    //TODO What if the model does some work here and sends back more specific info... (which can't be tampered with maybe)
+        //Hmm doesn't really seem feasible 
+        //ExtractListData, ExtractListItemData
+        //Each of those has a callback which does a thing, rather than using a for loop here in the controller
+        //Similar to the new ModifyQuantity function
+        //Then, theoretically, the actual data object never leaves the Model
     function loadChecklistDataIntoView(loadedListData)
     {
         window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
@@ -257,7 +263,11 @@ window.ListController = (function()
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
         window.View.Render('AddList', {list:list}); //Add the List elements to the DOM
 
+        //TODO this doesn't need to be done in the case of new lists, only loaded ones
+            //Assuming the stylesheet has a default color
         fetchAndRenderListBalance(list.id);
+
+        //TODO setupListeners_List
         
         listenForEvent_GoToListButtonPressed(list.id); //When the Go To List button is pressed, display the list
 
@@ -273,6 +283,7 @@ window.ListController = (function()
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
+        //For example: setupListItemListeners or setupListeners_ListItem
     /**
      * Sends to the View any data needed to render the specified List Item, and then sets up all applicable bindings
      * @param {string} listId The unique identfier for the List to which the specified List Item belongs
@@ -280,16 +291,20 @@ window.ListController = (function()
      */
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
-        window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
+        //TODO Should there be a View.Load method instead?
+        window.View.Render('AddListItem', {listId:listId, listItem:listItem});          
+        
+        //TODO this doesn't need to be done in the case of new list items, only loaded ones
+            //Assuming the stylesheet has a default color
         window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
 
-        for (let quantityType in listItem.quantities) //For each quantity type...
-        {
-            listenForEvent_QuantityToggleSelected(listItem.id, quantityType); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
-            listenForEvent_QuantityPopoverShown(listItem.id, quantityType); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
-        }
-        
         setupSettingsViewListeners(listItem.id); //Setup listeners related to the List Item's Settings View
+
+        for (let key in QuantityType) //For each quantity type...
+        {
+            listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
+            listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
+        }        
     }
 
     /**
@@ -303,13 +318,6 @@ window.ListController = (function()
         listenForEvent_DeleteButtonPressed(id); //When the delete button is pressed, remove the checklist object
         listenForEvent_MoveUpwardsButtonPressed(id); //When the Move Upwards button is pressed, move the checklist object up by one position
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
-    }
-
-    function renderUpdatesToListItemQuantity(listItem, quantityType)
-    {
-        window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
-
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -354,8 +362,18 @@ window.ListController = (function()
         }
     }
 
+    //TODO at some point, maybe rename because this may not only be used when there are updates, but also to render the 'loaded' quantity value and balance of a List Item loaded from the Model on startup
+    function renderUpdatesToListItemQuantity(quantityType, id, updatedValue, balance)
+    {
+        window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
+
+        window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
+    }
+
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
+
+    //TODO these functions may be more readable if more whitespace is include, with comments above instead of to the right. 
 
     //--- Home Screen ---//
 
@@ -379,6 +397,9 @@ window.ListController = (function()
         const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction); //TODO it's confusing using bind and Bind
         window.View.Bind('NewListButtonPressed', _modelReaction);
     }
+    //TODO Maybe these event/action combo functions could be split into two small functions. 
+        //For example: listenForEvent_NewListButtonPressed, listenForEvent_AddListItem
+        //Basically just some way to not have too many levels of nested callbacks in one function, to increase readability
 
     //--- List Screen Headers & Footers ---//
 
@@ -414,19 +435,9 @@ window.ListController = (function()
         // const _modelReaction = window.Model.ClearQuantityValues.bind(null, activeListId, _viewReaction, quantityType);
         // window.View.Bind('ClearButtonPressed', _modelReaction);
 
-        //TODO see if we want to try a different approach here
-
         const _eventTriggered = function() { //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?...
-            const _viewReaction = function(modifiedListItems) { 
-                for (let i = 0; i < modifiedListItems.length; i++)
-                {
-                    //renderUpdatesToListItemQuantity(modifiedListItems[i], quantityType);
-                    let _listItemBalance = window.Model.GetListItemBalance(modifiedListItems[i].id);
-                    window.View.Render('UpdateListItemQuantityText', {id:modifiedListItems[i].id, quantityType:quantityType, updatedValue:0});
-                    window.View.Render('UpdateNameToggleColor', {id:modifiedListItems[i].id, balance:_listItemBalance});
-                } 
-            };
-            window.Model.ClearQuantityValues(activeListId, _viewReaction, quantityType); 
+            const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+            window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
         };
         window.View.Bind('ClearButtonPressed', _eventTriggered);
     }
@@ -521,24 +532,15 @@ window.ListController = (function()
 
     function listenForEvent_DecrementQuantityButtonPressed(id, quantityType)
     {
-        const _viewReaction = function(updatedValue) {
-            let _listItemBalance = window.Model.GetListItemBalance(id);
-            window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
-            window.View.Render('UpdateNameToggleColor', {id:id, balance:_listItemBalance});
-        };
-        const _modelReaction = window.Model.ModifyQuantityValue.bind(null, id, _viewReaction, 'Decrement', quantityType);
+        const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+        const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Decrement', quantityType);
         window.View.Bind('DecrementQuantityButtonPressed', _modelReaction);
     }
 
     function listenForEvent_IncrementQuantityButtonPressed(id, quantityType)
     {
-        const _viewReaction = function(updatedValue) { //TODO the Model ModifyQuantityValue could just ALSO return the listItemBalance
-            //TODO consider re-abstracting this portion
-            let _listItemBalance = window.Model.GetListItemBalance(id);
-            window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
-            window.View.Render('UpdateNameToggleColor', {id:id, balance:_listItemBalance});
-        };
-        const _modelReaction = window.Model.ModifyQuantityValue.bind(null, id, _viewReaction, 'Increment', quantityType);
+        const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+        const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Increment', quantityType);
         window.View.Bind('IncrementQuantityButtonPressed', _modelReaction);
     }
 
