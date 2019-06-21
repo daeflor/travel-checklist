@@ -108,6 +108,13 @@ window.View = (function()
         }
     }
 
+    function getBorderColorFromBalance(balance)
+    {
+       return (balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
+            : (balance === ChecklistObjectBalance.Balanced)   ? 'mediumseagreen'
+            :                                                   'rgb(77, 77, 77)'; //"darkgrey" is also good;
+    }
+
     // function HideActiveSettingsView() 
     // {
     //     if (elements.activeSettingsView != null)
@@ -439,11 +446,8 @@ window.View = (function()
             UpdateNameToggleColor: function() //Expected parameters: id, balance
             {
                 let elementFoundCallback = function(element)
-                {                    
-                    //TODO might be better to change the class, and in css assign the colors to different classes for each balance
-                    element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
-                                              : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
-                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
+                {      
+                    element.style.borderColor = getBorderColorFromBalance(parameters.balance);
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
