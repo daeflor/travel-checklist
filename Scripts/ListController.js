@@ -204,42 +204,7 @@ window.ListController = (function()
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
     }
 
-    // createBind(eventToBind)
-    // {
-    //     if (eventToBind === ChecklistEvents.GoToListButtonPressed) 
-    //     {
-    //         //If a valid event was provided, setup the bind. Otherwise throw an error message.
-    //         if (ChecklistEvents[eventToBind] != null)
-    //         {
-    //             const _options = {checklistObject:list};
-
-    //             //Set up the callback method to execute for when the View recieves input from the user
-    //             const _onUserInput = function(inputArgument) 
-    //             {
-    //                 //Handle the updates/input received from the View
-    //                 handleEvent(eventToBind, options, inputArgument);
-
-    //                 //TODO Note that the options object still exists from the previous time _onUerInput was called
-    //                     //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior for all cases, and should be re-written.
-    //                     //For example, for a case like AddListItem, the options object should always start as empty, but it actually retains the value from the previous time the button was pressed, and then gets over-ridden. 
-    //             };
-
-    //             //Add an event listener to the specified element
-    //             window.View.Bind(eventToBind, _onUserInput, options);
-    //             //TODO it's confusing using bind and Bind
-
-    //             //TODO instead of trying to shoehorn everything to work in the same way, maybe it would actually be simpler (and more readable) to just split each case into it's own section.
-    //                 //For example, each bind would be split into its own section similar to handleModelInteraction or handleEvent. 
-    //                 //This one-size-fits-all approach is nice in theory but doesn't scale well, and as it turns out causes more complication and reduces readability.
-    //         }
-    //         else
-    //         {
-    //             window.DebugController.LogError("ERROR: Invalid event provided when attempting to setup a bind.");
-    //         }
-    //     }
-    // }
-
-    //TODO what if, instead of one bug bindEventToReaction method with a bunch of if/elses, there's a section dedicated to bind and event handling, where each event is handled individually?
+    //TODO what if, instead of one big bindEventToReaction method with a bunch of if/elses, there's a section dedicated to bind and event handling, where each event is handled individually?
         //For example - bindAndHandleEventClearButtonPressed or something maybe slightly less awful?
         //Then each of those can take the parameters necessary for that event (e.g. list id vs quantity vs nothing)
         //Look into whether or not this would work, and if anything could be astracted from each one while still keeping it readable.
@@ -316,7 +281,7 @@ window.ListController = (function()
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
         window.View.Render('AddListItem', {listId:listId, listItem:listItem});  //TODO Should there be a View.Load method instead?                  
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
 
         for (let quantityType in listItem.quantities) //For each quantity type...
         {
@@ -344,7 +309,7 @@ window.ListController = (function()
     {
         window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:quantityType, updatedValue:listItem.quantities[quantityType]});
 
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
     }
 
     /** Private Helper Methods To Setup Bindings For Lists & List Items **/
@@ -411,7 +376,7 @@ window.ListController = (function()
             renderAndBindLoadedList(newList); //Add the new List to the DOM and setup listeners for its elements
             window.View.Render('ExpandSettingsView', {id:newList.id}); //Once the new List has been added to the DOM, expand its Settings View
         };
-        const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction);
+        const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction); //TODO it's confusing using bind and Bind
         window.View.Bind('NewListButtonPressed', _modelReaction);
     }
 

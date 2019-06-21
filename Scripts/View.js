@@ -108,13 +108,6 @@ window.View = (function()
         }
     }
 
-    function getBorderColorFromBalance(balance)
-    {
-       return (balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
-            : (balance === ChecklistObjectBalance.Balanced)   ? 'mediumseagreen'
-            :                                                   'rgb(77, 77, 77)'; //"darkgrey" is also good;
-    }
-
     // function HideActiveSettingsView() 
     // {
     //     if (elements.activeSettingsView != null)
@@ -447,7 +440,7 @@ window.View = (function()
             {
                 let elementFoundCallback = function(element)
                 {      
-                    element.style.borderColor = getBorderColorFromBalance(parameters.balance);
+                    element.style.borderColor = window.ChecklistUtilities.GetBorderColorFromBalance(parameters.balance);
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
