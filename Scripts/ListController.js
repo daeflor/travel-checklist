@@ -259,8 +259,7 @@ window.ListController = (function()
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
         for (let key in QuantityType)
         {
-            const _options = {quantityType:key};
-            setupBind(ChecklistEvents.QuantityHeaderPopoverShown, _options);
+            listenForEvent_QuantityHeaderPopoverShown(key);
         }
     }
 
@@ -430,6 +429,13 @@ window.ListController = (function()
             window.Model.AddNewListItem(activeListId, _viewReaction);
         };
         window.View.Bind('NewListItemButtonPressed', _eventTriggered);
+    }
+
+    function listenForEvent_QuantityHeaderPopoverShown(quantityType)
+    {
+        //Set up the listener so that When the Clear button is pressed, the quantity values for the List Item are cleared, for the given quantity type
+        const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
+        window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
     }
 
     function listenForEvent_ClearButtonPressed(quantityType)
@@ -631,11 +637,11 @@ window.ListController = (function()
         //     //Set the newly selected List as the Active List
         //     activeListId = options.checklistObject.id;
         // }
-        else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
-        {
-            //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-            listenForEvent_ClearButtonPressed(options.quantityType);
-        }
+        // else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
+        // {
+        //     //Setup the bind to clear the quantity values for the List Item, for the given quantity type
+        //     listenForEvent_ClearButtonPressed(options.quantityType);
+        // }
         // else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
         // {
         //     //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
