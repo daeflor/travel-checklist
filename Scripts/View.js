@@ -288,10 +288,6 @@ window.View = (function()
 
             //window.DebugController.Print("A onetime onclick listener was added to the checklist body");
         }
-        else if (event === 'HashChanged')
-        {
-            window.addEventListener("hashchange", callback, {once:false});
-        }
     }
 
 

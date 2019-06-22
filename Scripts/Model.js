@@ -343,7 +343,7 @@ window.Model = (function()
         }
         else
         {
-            window.DebugController.LogError("Request received to get a List's balance but a valid but a valid ID was not provided or could not be determined. ID provided: " + listId);
+            window.DebugController.LogError("Request received to get a List's balance but a valid ID was not provided or could not be determined. ID provided: " + listId);
         }
     }
 
