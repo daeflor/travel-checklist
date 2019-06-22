@@ -36,10 +36,11 @@ window.StorageManager = (function ()
 
     function getStorageKey()
     {
-        if (GetLocationHashRoute() == 'travel')
-        {
+        //TODO Should the StorageManager be accessing the location hash directly? Seems like it would be good to have a single point of entry for that.
+        //if (GetLocationHashRoute() == 'travel') 
+        //{
             return 'TraveList-Data';
-        }
+        //}
         // else if (checklistType == 'shopping')
         // {
         //     return 'daeflor-checklist-shopping';

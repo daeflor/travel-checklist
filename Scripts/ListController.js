@@ -761,7 +761,7 @@ window.ListController = (function()
     function isHomeScreen(urlString)
     {
         //If the url string matches the Home page for the Travel Checklist, return true, else return false
-        return getFragmentIdentifierFromUrlString(urlString) === "/travel" ? true : false;
+        return getFragmentIdentifierFromUrlString(urlString) === "travel" ? true : false;
     }
 
     function isListScreen(urlString)

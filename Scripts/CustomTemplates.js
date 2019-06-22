@@ -21,6 +21,8 @@ window.CustomTemplates = (function ()
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
         for (var key in listItem.quantities)
         {
+            //TODO could forego the 3rd param (initialValue), and just have the controller call UpdateListItemQuantityText after adding the List Item...
+                //That seems like a lot of extra work though... But then at least this function would only need the list id and name (not the quantities at all)
             wrapper.appendChild(createListItemModifierFromTemplate(listItem.id, key, listItem.quantities[key])); 
         }
 
@@ -68,7 +70,7 @@ window.CustomTemplates = (function ()
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
             
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
-            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(list.type).concat('/').concat(list.id)}); 
+            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#'.concat(list.type).concat('/').concat(list.id)}); 
             
             //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
 
@@ -99,6 +101,7 @@ window.CustomTemplates = (function ()
         }
     }
 
+    //TODO could forego the initialValue, and just have the controller call UpdateListItemQuantityText after adding the List Item... That seems like a lot of extra work though
     //TODO Is this method still necessary? Should probably at least be renamed 
     function createListItemModifierFromTemplate(listItemId, type, initialValue)
     {

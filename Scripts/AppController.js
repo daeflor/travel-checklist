@@ -26,7 +26,7 @@ window.AppNavigationController = (function()
         window.DebugController.Print("Setting up app. Location Hash depth:" + document.location.hash.split('/').length);
 
         //Force the initial page to be the travel list selection screen 
-        location.href = '#/travel'; //TODO I think I'd prefer to use #travel
+        location.href = '#travel'; 
 
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
@@ -41,12 +41,13 @@ window.AppNavigationController = (function()
         //If the current screen data is valid and specifies a checklist type...
         if (currentScreenData.listType != null && currentScreenData.listId != null && currentScreenData.listType !== '')
         {
-            //If a list ID is not specified, hide any active settings view, display the Home Screen, and, on mobile, clear the browser history log
+            //If a list ID is not specified, on mobile, clear the browser history log
             if (currentScreenData.listId == '')
             {
                 //If on Pixel 2, clear the browser history log
-                if (/Android 9; Pixel 2/i.test(navigator.userAgent))
+                if (/Android 9; Pixel 2/i.test(navigator.userAgent)) //TODO this probably won't work on any other devices
                 {
+                    window.DebugController.Print("Will clear browser history on Pixel 2 devices.");
                     window.history.go(-(window.history.length-1));
                 }
             }
@@ -57,28 +58,45 @@ window.AppNavigationController = (function()
 
     function getCurrentScreenData()
     {
-        var currentScreenData = {
-            listType: '', //TODO is this really better than null?
-            listId: ''
-        };
-
-        if(document.location.hash.split('/').length >= 2)
-        {
-            currentScreenData.listType = GetLocationHashRoute();
-
-            if(document.location.hash.split('/').length == 3)
-            {
-                currentScreenData.listId = document.location.hash.split('/')[2]; //TODO this could use additional validation
-            }
-        }
-
-        return currentScreenData;
-
-        // return {
-        //     listType: _listType,
-        //     listId: _listId
+        // var currentScreenData = {
+        //     listType: '', //TODO is this really better than null?
+        //     listId: ''
         // };
+
+        const _listType = GetLocationHashRoute();
+
+        const _hashSegments = document.location.hash.split('/');
+
+        //If the location hash has two segments, and the second segment is 13 characters long, then assign that segment string as the List ID
+        const _listId = (_hashSegments.length == 2 && _hashSegments[1].length == 13) ? _hashSegments[1] : null; //TODO this could use additional validation
+
+        // if(document.location.hash.split('/').length == 2)
+        // {
+        //     currentScreenData.listId = document.location.hash.split('/')[1]; //TODO this could use additional validation
+        // }
+
+        //return currentScreenData;
+
+        //TODO is it really necessary return both of these in the same function? Seems like they could be handled individually
+        return {
+            listType: _listType,
+            listId: _listId
+        };
     }
+
+    // function isHomeScreen(urlString)
+    // {
+    //     //If the url string matches the Home page for the Travel Checklist, return true, else return false
+    //     return getFragmentIdentifierFromUrlString(urlString) === "travel" ? true : false;
+    // }
+
+    // function isListScreen(urlString)
+    // {
+    //     //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
+
+    //     //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+    //     return getUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
+    // }
 
     return {
         Init: init,

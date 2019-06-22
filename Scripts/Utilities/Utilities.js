@@ -70,7 +70,7 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
 
 function GetLocationHashRoute()
 {
-    return document.location.hash.split('/')[1];
+    return document.location.hash.slice(1).split('/')[0]; //Could also use regex and do 'split(/[\#\/]/)' but that seems more complicated
 }
 
 /**
