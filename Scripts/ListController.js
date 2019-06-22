@@ -32,163 +32,6 @@ window.ListController = (function()
 {    
     let activeListId = null;
 
-    //TODO The binding reference could have actions and reactions
-        //e.g. event -> action -> reaction (optional)
-        //In most cases, reaction might be the same as action, but in other cases it might not be (e.g. DecrementQuantityValue/IncrementQuantityValue)
-        //HandleEvent(), HandleAction(), HandleReaction()?
-
-    //TODO remove this object, but document the required properties elsewhere (e.g. in the Model's Modify methods or the View's Bind and Render methods) - i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
-    const bindReference = {
-        /** MVC Bindings **/
-        AddNewList: {
-            event: 'NewListButtonPressed', 
-            action: 'AddNewList',
-            modelUpdateRequired: true,
-            //bindOptions: [],
-            //modelOptions: [],
-            renderOptions: ['listId', 'listName', 'listType'] //or just checklistObject instead?
-        },
-        AddNewListItem: {
-            event: 'NewListItemButtonPressed', 
-            action: 'AddNewListItem',
-            modelUpdateRequired: true,
-            //bindOptions: [],
-            //modelOptions: ['listId'],
-            renderOptions: ['listId', 'checklistObject']
-        },
-        UpdateName: {
-            //TODO would it be better to have a more generic optionsRequired array, and then check against all of those when setting up the binding?
-            event: 'NameEdited', 
-            action: 'UpdateName',
-            modelUpdateRequired: true,
-            //bindOptions: ['id'], 
-            //modelOptions: ['listId', 'listItemId', 'updatedValue'],
-            renderOptions: ['checklistObject']
-        },
-        MoveUpwards: {
-            event: 'MoveUpwardsButtonPressed', 
-            action: 'MoveUpwards',
-            modelUpdateRequired: true,
-            //bindOptions: ['id'],
-            //modelOptions: ['listId', 'listItemId'],
-            renderOptions: ['checklistObject', 'swappedChecklistObjectId']
-        },
-        MoveDownwards: {
-            event: 'MoveDownwardsButtonPressed', 
-            action: 'MoveDownwards',
-            modelUpdateRequired: true,
-            //bindOptions: ['id'],
-            //modelOptions: ['listId', 'listItemId'],
-            renderOptions: ['checklistObject', 'swappedChecklistObjectId']
-        },
-        DecrementQuantityValue: {
-            event: 'DecrementQuantityButtonPressed', 
-            action: 'DecrementQuantityValue',
-            modelUpdateRequired: true,
-            //bindOptions: [],
-            //modelOptions: ['listId', 'listItemId', 'quantityType'],
-            renderOptions: ['checklistObject', 'quantityType']
-        },
-        IncrementQuantityValue: {
-            event: 'IncrementQuantityButtonPressed', 
-            action: 'IncrementQuantityValue',
-            modelUpdateRequired: true,
-            //bindOptions: [],
-            //modelOptions: ['listId', 'listItemId', 'quantityType'],
-            renderOptions: ['checklistObject', 'quantityType']
-        },
-        RemoveList: {
-            event: 'DeleteButtonPressed', 
-            action: 'RemoveList',
-            modelUpdateRequired: true,
-            //bindOptions: ['id'],
-            //modelOptions: ['listId'],
-            renderOptions: ['checklistObject']
-        },
-        RemoveListItem: {
-            event: 'DeleteButtonPressed', 
-            action: 'RemoveListItem',
-            modelUpdateRequired: true,
-            //bindOptions: ['id'],
-            //modelOptions: ['listId', 'listItemId'],
-            renderOptions: ['checklistObject']
-        },
-        ClearQuantityValues: {
-            event: 'ClearButtonPressed', 
-            action: 'ClearQuantityValues',
-            modelUpdateRequired: true,
-            //bindOptions: [],
-            //modelOptions: ['listId', 'quantityType'],
-            renderOptions: ['quantityType']
-        },
-        /** VC Bindings **/
-        HideActiveSettingsView: {
-            event: 'SettingsViewExpansionStarted', 
-            action: 'HideActiveSettingsView', //TODO should ALSO trigger on hashchange... right?
-            modelUpdateRequired: false,
-            //bindOptions: ['id'],
-            //modelOptions: [],
-            renderOptions: []
-        },
-        GoToList: {
-            event: 'GoToListButtonPressed', 
-            action: 'DisplayList',
-            modelUpdateRequired: false,
-            //bindOptions: ['id'],
-            //modelOptions: [],
-            renderOptions: ['checklistObject']
-        },
-        ShowQuantityPopover: {
-            event: 'QuantityToggleSelected', 
-            action: 'ShowQuantityPopover',
-            modelUpdateRequired: false,
-            bindOptions: ['id', 'quantityType'],
-            //modelOptions: [],
-            renderOptions: ['checklistObject', 'quantityType']
-        },
-        SetupQuantityPopoverBinds: {
-            event: 'QuantityPopoverShown', 
-            action: 'SetupQuantityPopoverBinds',
-            modelUpdateRequired: false,
-            bindOptions: ['id', 'quantityType'],
-            //modelOptions: [],
-            renderOptions: ['checklistObject', 'quantityType']
-        },
-        HideQuantityPopover: {
-            event: 'ClickDetectedOutsidePopover', 
-            action: 'HideActiveQuantityPopover',
-            modelUpdateRequired: false,
-            //bindOptions: [],
-            //modelOptions: [],
-            renderOptions: [] //['checklistObject', 'quantityType']
-        },
-        HideActivePopover: {
-            event: 'HashChanged', 
-            action: 'HideActiveQuantityPopover',
-            modelUpdateRequired: false,
-            //bindOptions: [],
-            //modelOptions: [],
-            renderOptions: []
-        },
-        SetupHeaderPopoverBinds: {
-            event: 'QuantityHeaderPopoverShown', 
-            action: 'SetupHeaderPopoverBinds',
-            modelUpdateRequired: false,
-            bindOptions: ['quantityType'],
-            //modelOptions: [],
-            renderOptions: ['listId', 'quantityType']
-        }
-        // UpdateListToggleColor: {
-        //     event: 'HashChanged', 
-        //     action: 'UpdateNameToggleColor',
-        //     modelUpdateRequired: false,
-        //     //bindOptions: [],
-        //     //modelOptions: [],
-        //     renderOptions: ['listId', 'balance']
-        // }
-
-    };
-
     function init()
     {     
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
@@ -206,17 +49,11 @@ window.ListController = (function()
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
     }
 
-    //TODO what if, instead of one big bindEventToReaction method with a bunch of if/elses, there's a section dedicated to bind and event handling, where each event is handled individually?
-        //For example - bindAndHandleEventClearButtonPressed or something maybe slightly less awful?
-        //Then each of those can take the parameters necessary for that event (e.g. list id vs quantity vs nothing)
-        //Look into whether or not this would work, and if anything could be astracted from each one while still keeping it readable.
-        //_viewReaction, _modelReaction, _controllerReaction
-
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
     //TODO ^ This description is no longer accurate
 
     //TODO What if the model does some work here and sends back more specific info... (which can't be tampered with maybe)
-        //Hmm doesn't really seem feasible 
+        //Hmm doesn't really seem feasible... Actually...
         //ExtractListData, ExtractListItemData
         //Each of those has a callback which does a thing, rather than using a for loop here in the controller
         //Similar to the new ModifyQuantity function
@@ -309,48 +146,6 @@ window.ListController = (function()
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
     }
 
-    /** Private Helper Methods To Setup Bindings For Lists & List Items **/
-
-    // //TODO options might not be the best name since in some cases the values provided are not optional
-    //     //The 'correct' approach may be to split it into two functions, rather than having a parameter that is sometimes required and sometimes optional
-
-    // /**
-    //  * Create a binding between user interaction in the View, and a resulting reaction in the Controller, so that when the app receives user input it reacts accordingly. (This may involve modifiyng the underlying data and/or updating the UI of the checklist).
-    //  * @param {string} eventToBind The name of the event that will trigger when the corresponding user interaction takes place within the app's UI.
-    //  * @param {object} [options] [Optional] An object containing any additional data needed to create the bind. The expected properties of this object are: TODO
-    //  */
-    // function setupBind(eventToBind, options)
-    // {
-    //     //If a valid event was provided, setup the bind. Otherwise throw an error message.
-    //     if (ChecklistEvents[eventToBind] != null)
-    //     {
-    //         //If no options were provided, create an empty options object
-    //         options = options || {}; 
-
-    //         //Set up the callback method to execute for when the View recieves input from the user
-    //         const _onUserInput = function(inputArgument) 
-    //         {
-    //             //Handle the updates/input received from the View
-    //             handleEvent(eventToBind, options, inputArgument);
-
-    //             //TODO Note that the options object still exists from the previous time _onUerInput was called
-    //                 //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior for all cases, and should be re-written.
-    //                 //For example, for a case like AddListItem, the options object should always start as empty, but it actually retains the value from the previous time the button was pressed, and then gets over-ridden. 
-    //         };
-
-    //         //Add an event listener to the specified element
-    //         window.View.Bind(eventToBind, _onUserInput, options);
-
-    //         //TODO instead of trying to shoehorn everything to work in the same way, maybe it would actually be simpler (and more readable) to just split each case into it's own section.
-    //             //For example, each bind would be split into its own section similar to handleModelInteraction or handleEvent. 
-    //             //This one-size-fits-all approach is nice in theory but doesn't scale well, and as it turns out causes more complication and reduces readability.
-    //     }
-    //     else
-    //     {
-    //         window.DebugController.LogError("ERROR: Invalid event provided when attempting to setup a bind.");
-    //     }
-    // }
-
     //TODO at some point, maybe rename because this may not only be used when there are updates, but also to render the 'loaded' quantity value and balance of a List Item loaded from the Model on startup
     function renderUpdatesToListItemQuantity(quantityType, id, updatedValue, balance)
     {
@@ -359,15 +154,19 @@ window.ListController = (function()
         window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
 
+    /** Private Helper Methods To Setup Listeners For Lists & List Items **/
+
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
+        //TODO Maybe document the required properties elsewhere as well? (e.g. in the Model's Modify methods or the View's Bind and Render methods)
+            //i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
 
     //TODO these functions may be more readable if more whitespace is included, with comments above instead of to the right. 
         //Re-assess once the whole listenForEvent transition is complete.
 
     //--- App Navigation ---//
 
-    function listenForEvent_HashChanged()
+    function listenForEvent_HashChanged() //TODO maybe rename this to ScreenChanged?
     {
         const _viewReaction = function() {
             window.View.Render('HideActiveSettingsView'); //Hide the Active Settings View
@@ -563,236 +362,9 @@ window.ListController = (function()
         window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
     }
 
-    // //TODO
-    //     //handleEventWhichModifiesData, handleDataImpactingEvent, handleDataAlteringEvent - It's not JUST altering anymore though, also simply accessing
-    //     //handleEventWithModelInteraction
-
-    // /**
-    //  * Handle events received from the View as a result of user interaction with the checklist. These events may result in actions passed along to the Model and/or back to the View to be rendered as needed.
-    //  * @param {string} triggeredEvent The name of the event associated with the type of user interaction that has been triggered
-    //  * @param {object} [options] [Optional] An object containing data about the checklist element being interacted with, and which is needed to properly react to the interaction
-    //  * @param {object} [inputArgument] [Optional] An additional argument passed from the View as a result of the user interaction, and which is needed to properly react to it (e.g. the Mouse Event when a quantity popover is shown, or the updated name when a List or List Item is renamed)
-    //  */
-    // function handleEvent(triggeredEvent, options, inputArgument)
-    // {
-    //     // console.log("HANDLE EVENT PARAMS - event: " + triggeredEvent + "; options: BELOW; Argument: " + inputArgument);
-    //     // console.log(JSON.stringify(options));
-    //     //TODO The options object still exists from the previous time a list was added.. It's blank the first time and then not after..
-    //         //Should change how we do this. Although it doesn't actually cause any issues currently, it is not the expected or intended behavior and should be re-written.
-
-    //     //TODO Adjust the order of how these events are handled to be more logical / make it more readable, if possible
-    //     //TODO change this to a Switch statement maybe?
-    //     //TODO OR maybe put error handling in these IFs to ensure the expected options have been passed. For example:
-    //         //if (triggeredEvent === ChecklistEvents.NameEdited && options[updatedValue] != null)
-    //     if (triggeredEvent === ChecklistEvents.HashChanged)
-    //     {
-    //         window.DebugController.Print("Hash Changed event triggered. Active Settings View and Quantity Popover will be hidden.");
-            
-    //         window.View.Render('HideActiveSettingsView');
-    //         window.View.Render('HideActiveQuantityPopover');
-            
-    //         //If the new page is the Home Screen and the previous page was a List Screen...
-    //         if (isHomeScreen(inputArgument.newURL) && activeListId != null)
-    //         {
-    //             window.DebugController.Print("Hash Changed event triggered. The URL changed from a List Screen to a Home Screen. The List Screen will be hidden and the Home Screen will be displayed.");
-
-    //             //TODO It might make more sense to have a HideActiveList command in the View, instead of passing the activeListId as a parameter to DisplayList
-    //                 //Although, if this is the only place the Active List is hidden, then maybe it's fine
-    //                 //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
-                
-    //             //Hide the List which was previously active, show the Home Screen, and calculate the List's balance
-    //             window.View.Render('HideList', {id:activeListId});
-    //             window.View.Render('ShowHomeScreen');
-    //             fetchAndRenderListBalance(GetUrlSlug(inputArgument.oldURL)); //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
-
-    //             activeListId = null;
-    //         }
-    //     }
-    //     // else if (triggeredEvent === ChecklistEvents.GoToListButtonPressed) //TODO is this necessary or can hashchage just be used?
-    //     // {
-    //     //     //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though..
-    //     //     //Display the specified List
-    //     //     window.View.Render('DisplayList', {id:options.checklistObject.id});
-
-    //     //     //Set the newly selected List as the Active List
-    //     //     activeListId = options.checklistObject.id;
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.QuantityHeaderPopoverShown)
-    //     // {
-    //     //     //Setup the bind to clear the quantity values for the List Item, for the given quantity type
-    //     //     listenForEvent_ClearButtonPressed(options.quantityType);
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.SettingsViewExpansionStarted)
-    //     // {
-    //     //     //TODO when setting up this bind, can it bypass this handleEvent and go straight to updateView (assuming we create that function / rename handleModelInteraction and make it encompass all render actions)?
-    //     //         //Basically have all render actions happen through one function, and some binds pipe straight to that, while others need to go through this extra step, because they require Model access or some extra logic to be handled.
-    //     //     window.View.Render('HideActiveSettingsView');
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.QuantityToggleSelected)
-    //     // {
-    //     //     if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
-    //     //     {
-    //     //         //window.DebugController.Print("A Quantity Popover will be shown, and events will be prevented from bubbling up.");
-    //     //         inputArgument.stopPropagation();
-    //     //         window.View.Render('ShowQuantityPopover', {id:options.checklistObject.id, quantityType:options.quantityType});   
-    //     //     }
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.QuantityPopoverShown)
-    //     // {   
-    //     //     //Setup the binds to increment or decrement the quantity value for the List Item, and to Hide it
-    //     //     listenForEvent_DecrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
-    //     //     listenForEvent_IncrementQuantityButtonPressed(options.checklistObject.id, options.quantityType);
-    //     //     listenForEvent_ClickDetectedOutsidePopover();
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.ClickDetectedOutsidePopover)
-    //     // {
-    //     //     window.View.Render('HideActiveQuantityPopover');
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.NewListButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind(null, 'AddNewList');
-    //     //     window.Model.AddNewList(_updateView);
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.NewListItemButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind(null, 'AddNewListItem');    
-    //     //     window.Model.AddNewListItem(activeListId, _updateView);
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.ClearButtonPressed)
-    //     // {
-    //     //     if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
-    //     //     {
-    //     //         let _updateView = handleModelInteraction.bind({quantityType:options.quantityType}, 'ClearQuantityValues'); 
-    //     //         window.Model.ClearQuantityValues(activeListId, _updateView, options.quantityType);
-    //     //     }
-    //     //     //TODO could use: validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.DeleteButtonPressed)
-    //     // {
-    //     //     let _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
-    //     //     let _updateView = handleModelInteraction.bind({id:options.checklistObject.id}, _renderAction); 
-    //     //     window.Model.Remove(options.checklistObject.id, _updateView);
-    //     // }
-    //     // else if (triggeredEvent == ChecklistEvents.NameEdited)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind({id:options.checklistObject.id, updatedValue:inputArgument.updatedValue}, 'UpdateName'); 
-    //     //     window.Model.ModifyName(options.checklistObject.id, _updateView, inputArgument.updatedValue);
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.MoveUpwardsButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind({moveUpwardsId:options.checklistObject.id}, 'MoveUpwards'); 
-    //     //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Upwards');
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.MoveDownwardsButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind({moveDownwardsId:options.checklistObject.id}, 'MoveDownwards'); 
-    //     //     window.Model.ModifyPosition(options.checklistObject.id, _updateView, 'Downwards');
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.DecrementQuantityButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
-    //     //     window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Decrement', options.quantityType);
-    //     // }
-    //     // else if (triggeredEvent === ChecklistEvents.IncrementQuantityButtonPressed)
-    //     // {
-    //     //     let _updateView = handleModelInteraction.bind({checklistObject:options.checklistObject, quantityType:options.quantityType}, 'ModifyQuantityValue'); 
-    //     //     window.Model.ModifyQuantityValue(options.checklistObject.id, _updateView, 'Increment', options.quantityType);
-    //     // }
-    // }
-
-    // //TODO Temporary name probably
-    //     //triggerEventReaction
-    //     //triggerModelInteration
-    //     //triggerViewInteraction
-    //     //triggerModelAction
-    //     //triggerViewAction
-    //     //initiate... ^ ^ ^
-    //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveSettingsView);
-    //     //     triggerViewInteraction(ChecklistEventReactions.HideActiveQuantityPopover);
-    //     //     triggerViewInteractions(ChecklistEventReactions.HideActiveSettingsView, ChecklistEventReactions.HideActiveQuantityPopover);
-    // /**
-    //  * Handle callbacks received from the Model after the checklist data has been updated, and react by passing along to the View any data necessary to properly render those updates
-    //  * @this {Object} An object containing data about the checklist component being interacted with, if it is needed to properly react to the interaction. If it is not needed, then 'this' is null.
-    //  * @param {string} action The name of the action that has been initiated by the user or application (e.g. removing a List or List Item)
-    //  * @param {Object} [modifiedChecklistData] [Optional] An optional object passed back from the Model containing any additional data necessary to properly render the updates to the checklist
-    //  */
-    // function handleModelInteraction(action, modifiedChecklistData)
-    // {       
-    //     //TODO is there a way to make it obvious when reading the code that 'this' is the options object?
-    //     //TODO Maybe document (or add error handling for) the possible properties of 'this'/'options': quantityType, swappedChecklistObjectId, etc.
-
-    //     //TODO would it be better if View commands always received consistent paramters (e.g. a list or list item object)?
-    //         //No I think it would be better to be more specific
-    //     switch(action) 
-    //     {
-    //         // case 'AddNewList':
-    //         //     //Render the new List and setup its bindings
-    //         //     renderAndBindLoadedList(modifiedChecklistData.newList);
-            
-    //         //     //Once the new List has been added to the DOM, expand its Settings View
-    //         //     window.View.Render('ExpandSettingsView', {id:modifiedChecklistData.newList.id});
-    //         //     break;
-    //         // case 'AddNewListItem':
-    //         //     //Render the new List Item and setup its bindings
-    //         //     renderAndBindLoadedListItem(activeListId, modifiedChecklistData.newListItem);
-                
-    //         //     //Once the new List Item has been added to the DOM, expand its Settings View
-    //         //     window.View.Render('ExpandSettingsView', {id:modifiedChecklistData.newListItem.id});
-    //         //     break;
-    //         // case 'ClearQuantityValues':
-    //         //     //For each modified List Item, update its displayed quantity value for the given type, and then update its name's color
-    //         //     for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
-    //         //     {
-    //         //         renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
-    //         //         //window.View.Render('UpdateListItemQuantityText', {id:modifiedChecklistData.modifiedListItems[i].id, quantityType:this.quantityType, updatedValue:modifiedChecklistData.modifiedListItems[i].quantities[this.quantityType]});
-    //         //         //window.View.Render('UpdateNameToggleColor', {id:modifiedChecklistData.modifiedListItems[i].id, balance:calculateListItemBalance(modifiedChecklistData.modifiedListItems[i].quantities)});
-    //         //     } 
-    //         //     break;
-    //         // case 'UpdateName':
-    //         //     window.View.Render('UpdateName', {id:this.id, updatedValue:this.updatedValue});
-    //         //     break;
-    //         // case 'MoveUpwards':
-    //         //     window.View.Render('SwapListObjects', {moveUpwardsId:this.moveUpwardsId, moveDownwardsId:modifiedChecklistData.swappedChecklistObjectId});
-    //         //     break;
-    //         // case 'MoveDownwards':
-    //         //     window.View.Render('SwapListObjects', {moveUpwardsId:modifiedChecklistData.swappedChecklistObjectId, moveDownwardsId:this.moveDownwardsId});
-    //         //     break;
-    //         // case 'RemoveList':
-    //         //     window.View.Render('RemoveList', {id:this.id});
-    //         //     break;
-    //         // case 'RemoveListItem':
-    //         //     window.View.Render('RemoveListItem', {id:this.id}); 
-    //         //     break;
-    //         // case 'ModifyQuantityValue':
-    //         //     renderUpdatesToListItemQuantity(this.checklistObject, this.quantityType);
-    //         //     //window.View.Render('UpdateListItemQuantityText', {id:this.checklistObject.id, quantityType:this.quantityType, updatedValue:this.checklistObject.quantities[this.quantityType]});
-    //         //     //window.View.Render('UpdateNameToggleColor', {id:this.checklistObject.id, balance:calculateListItemBalance(this.checklistObject.quantities)});
-    //         //     break;
-    //         default:
-    //             window.DebugController.LogError("ERROR: Tried to handle updates received from the Model, but no valid action was provided.");
-    //     }
-    // }
-
     /** Publicly Exposed Methods To Setup UI & Load List Data **/
 
     /** Experimental & In Progress **/
-
-    // //TODO these helper methods below may not belong in Controller
-    //     //Logic to determine URL details should probably be consolidated in a set of helper methods which are no part of the controller
-
-    // function isHomeScreen(urlString)
-    // {
-    //     //If the url string matches the Home page for the Travel Checklist, return true, else return false
-    //     return GetFragmentIdentifierFromUrlString(urlString) === "travel" ? true : false;
-    // }
-
-    // function isListScreen(urlString)
-    // {
-    //     //TODO There is no validation here to ensure that this URL is within the 'Travel' app section
-
-    //     //If the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-    //     return GetUrlSlug(urlString).length == 13 ? true : false; //TODO this is pretty hacky
-    // }
 
     /** Publicly Exposed Methods **/
 

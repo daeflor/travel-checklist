@@ -68,9 +68,28 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
-function GetLocationHashRoute()
+function GetFragmentIdentifierPrefixFromCurrentUrl() //TODO does this really need to be used? No
 {
-    return document.location.hash.slice(1).split('/')[0]; //Could also use regex and do 'split(/[\#\/]/)' but that seems more complicated
+    //return document.location.hash.slice(1).split('/')[0]; //Could also use regex and do 'split(/[\#\/]/)' but that seems more complicated
+
+    return GetFragmentIdentifierPrefixFromUrlString(document.location.href);
+}
+
+function GetFragmentIdentifierPrefixFromUrlString(urlString)
+{
+    const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
+    
+    //return (_fragmentIdentifier != null) ? _fragmentIdentifier.split('/')[0] : null;
+
+    if (_fragmentIdentifier != null) //TODO replace with try catch
+    {
+        return _fragmentIdentifier.split('/')[0];
+        //TODO if there is no Hash Route, would it be better to return an empty string rather than 'undefined'?
+    }
+    else
+    {
+        window.DebugController.LogError("Fragment Identifier prefix requested but a valid Fragment Identifier string was not provided.");
+    }
 }
 
 /**
@@ -78,7 +97,7 @@ function GetLocationHashRoute()
  * @param {string} urlString The full URL string
  * @returns the Fragment Identifier (anchor tag) for the provided URL
  */
-function getFragmentIdentifierFromUrlString(urlString)
+function GetFragmentIdentifierFromUrlString(urlString)
 {
     if (urlString != null) //TODO replace with try catch
     {
@@ -96,7 +115,7 @@ function getFragmentIdentifierFromUrlString(urlString)
  * @param {string} urlString The URL or portion of a URL
  * @returns the final path segment ("slug") of the provided URL
  */
-function getUrlSlug(urlString)
+function GetUrlSlug(urlString)
 {
     //Split the URL into the various path segments separated by '/'
     let _pathSegments = urlString.split('/');
