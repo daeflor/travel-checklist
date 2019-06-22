@@ -44,6 +44,9 @@ window.View = (function()
         elements.listTitle = document.getElementById('headerCurrentListName');
         elements.listScreen = document.getElementById('divListScreen'); 
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
+
+        //TODO Right now this assumes the header to display is the Travel type. Eventually this should be done in a separate method, depending on the checklist type.
+        elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
     }
 
     //TODO There could even be an optional options param that takes a quantity type
@@ -478,12 +481,6 @@ window.View = (function()
             {
                 //Update the text value of the name toggle/button element which matches the given ID
                 updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, parameters.updatedValue);
-            },
-            GenerateQuantityHeader: function() //TODO not a consistent naming convention for creating/adding elements to the DOM
-            {
-                //TODO might be worth having a helper method specifically dedicated to updating / working with Bootstrap elements
-
-                elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             },
             ShowQuantityPopover: function() //Expected parameters: id, quantityType
             {

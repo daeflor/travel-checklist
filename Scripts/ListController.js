@@ -191,8 +191,11 @@ window.ListController = (function()
 
     function init()
     {     
-        //Set up the binds for interactions with the quantity header row
-        renderAndBindQuantityHeader();
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+        for (let key in QuantityType)
+        {
+            listenForEvent_QuantityHeaderPopoverShown(key);
+        }
 
         listenForEvent_NewListButtonPressed(); //When the New List button is pressed, add a new List to the checklist data and the Dom
         listenForEvent_NewListItemButtonPressed(); //When the New List Item button is pressed, add a new List Item to the checklist data and the Dom
@@ -212,21 +215,6 @@ window.ListController = (function()
 
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
     //TODO ^ This description is no longer accurate
-
-    //TODO Might be best to keep renders, binds, and loads separate
-
-    function renderAndBindQuantityHeader()
-    {
-        //TODO Adding the quantity header to the DOM (below) should be done in a separate method, depending on the checklist type
-        //TODO right now this assumes the header to display is the Travel type
-        window.View.Render('GenerateQuantityHeader'); //TODO move this to the view's init? For now at least...
-        
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' column button 
-        for (let key in QuantityType)
-        {
-            listenForEvent_QuantityHeaderPopoverShown(key);
-        }
-    }
 
     //TODO What if the model does some work here and sends back more specific info... (which can't be tampered with maybe)
         //Hmm doesn't really seem feasible 
@@ -260,6 +248,8 @@ window.ListController = (function()
      */
     function renderAndBindLoadedList(list)
     {
+        //TODO Might be best to keep renders, binds, and loads separate
+
         //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
         window.View.Render('AddList', {list:list}); //Add the List elements to the DOM
 
