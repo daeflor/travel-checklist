@@ -1,32 +1,36 @@
 'use strict';
 (function () 
 {   
-    //Initialize once the DOM content has loaded, and then remove this event listener after a single firing
+    //Initialize the app once the DOM content has loaded, and then remove this event listener
     document.addEventListener('DOMContentLoaded', init, {once:true});
 
     function init()
     {
-        window.DebugController.LogWarning("Setting up app. Location Hash depth:" + document.location.hash.split('/').length);
+        //Initialize the View and the other Controllers
+        window.AppNavigationController.Init();
+        window.View.Init();
+        window.DebugController.Init();
+        window.ListController.Init();
+    }    
+})();  
+
+window.AppNavigationController = (function() 
+{
+    //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
+        //This seems fine, at least for the time being. The View is Hide the Active Settings View and Quantity Popover, unnecessarily. 
+        //Maybe it's possible to use the history to tell if the app was just launched...
+    //TODO The first time a garbage URL is provided it doesn't clear it, but on successive attempts it does. Unclear why, but it doesn't seem to be causing any issues.
+
+    function init()
+    {
+        window.DebugController.Print("Setting up app. Location Hash depth:" + document.location.hash.split('/').length);
 
         //Force the initial page to be the travel list selection screen 
         location.href = '#/travel'; //TODO I think I'd prefer to use #travel
 
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
-
-        //Initialize the View and the other Controllers
-        window.View.Init();
-        window.DebugController.Init();
-        window.ListController.Init();
-
-        // //Load the list data from storage and pass it along to the View
-        // window.Model.RetrieveChecklistData(window.ListController.LoadChecklistDataIntoView);
     }
-
-    //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
-        //This seems fine, at least for the time being. The View is Hide the Active Settings View and Quantity Popover, unnecessarily. 
-        //Maybe it's possible to use the history to tell if the app was just launched...
-    //TODO The first time a garbage URL is provided it doesn't clear it, but on successive attempts it does. Unclear why, but it doesn't seem to be causing any issues.
 
     function urlHashChanged()
     {
@@ -69,5 +73,16 @@
         }
 
         return currentScreenData;
+
+        // return {
+        //     listType: _listType,
+        //     listId: _listId
+        // };
     }
-})();  
+
+    return {
+        Init: init,
+        // ListenForEvent_HashChanged: listenForEvent_HashChanged,
+        // ListenForEvent_NavigatedHome: ListenForEvent_NavigatedHome
+    };
+})();

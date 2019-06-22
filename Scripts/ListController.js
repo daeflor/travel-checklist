@@ -363,8 +363,8 @@ window.ListController = (function()
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true)
 
-    //TODO these functions may be more readable if more whitespace is include, with comments above instead of to the right. 
-
+    //TODO these functions may be more readable if more whitespace is included, with comments above instead of to the right. 
+        //Re-assess once the whole listenForEvent transition is complete.
     //--- Home Screen ---//
 
     function listenForEvent_GoToListButtonPressed(id) //TODO is this necessary or can HashChanged just be used?
@@ -390,7 +390,8 @@ window.ListController = (function()
     //TODO Maybe these event/action combo functions could be split into two small functions. 
         //For example: listenForEvent_NewListButtonPressed, listenForEvent_AddListItem
         //Basically just some way to not have too many levels of nested callbacks in one function, to increase readability
-
+        //Re-assess once the whole listenForEvent transition is complete.
+        
     //--- List Screen Headers & Footers ---//
 
     function listenForEvent_NewListItemButtonPressed()
@@ -577,7 +578,7 @@ window.ListController = (function()
                     //Although, if this is the only place the Active List is hidden, then maybe it's fine
                     //But then again, if there needs to be a special check for the activeListId not being null, then maybe it does make sense to have it be separate
                 
-                //Hide the List which was previously active, show the Home Screen, and calculate the update the List's balance
+                //Hide the List which was previously active, show the Home Screen, and calculate the List's balance
                 window.View.Render('HideList', {id:activeListId});
                 window.View.Render('ShowHomeScreen');
                 fetchAndRenderListBalance(getUrlSlug(inputArgument.oldURL)); //TODO this is inconsistent with the approach taken for other mvc interactions, and should be re-considered.
