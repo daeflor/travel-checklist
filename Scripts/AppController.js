@@ -24,23 +24,10 @@ window.AppNavigationController = (function()
     //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
         //This seems fine, at least for the time being. 
         //Maybe it's possible to use the history to tell if the app was just launched...
-    //TODO The first time a garbage URL is provided it doesn't clear it, but on successive attempts it does. Unclear why, but it doesn't seem to be causing any issues.
-        //I think it's because the first time it doesn't trigger a page refresh, just a hash change. 
-        //This must be some browser behavior, can probably be ignored
 
     function init()
     {
         window.DebugController.Print("AppNavigationController: Setting up app. Current Hash: " + document.location.hash);
-
-                // //While the correct landing page is not active
-                // while (location.hash !== '#travel')
-                // {
-                //     //Force the landing page to be the travel list selection screen 
-                //     location.href = '#travel';
-                // }
-
-                // //Set the behavior for when the URL fragment identifier changes
-                // window.onhashchange = urlHashChanged;
 
         //If the landing page is the Travel Checklist Home Screen...
         if (isHomeScreen(document.location.href) === true)
@@ -53,24 +40,19 @@ window.AppNavigationController = (function()
             window.DebugController.LogWarning("AppNavigationController: The app loaded at a page other than the Home Screen. Current Hash: " + document.location.hash);
             
             //Listen for a one-time hash change event, which will fire when the app is re-routed to the correct landing page, at which point a persistent hash change listener can be set up.
-            document.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
-            //listenForEvent('LandingPageCorrected', )
+            window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
 
             //Re-route the landing page to the Travel Checklist Home Screen
-            location.href = '#travel'; 
+            document.location.href = '#travel'; 
         }
     }
 
-    function setupPersistentHashChangedEventListener() //TODO !!! this is going to be very confusing, should rename and reorganize
+    function setupPersistentHashChangedEventListener() 
     {
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
+        window.DebugController.Print("AppNavigationController: A persistent Hash Changed event listener has been set up.");
     }
-
-    // function validateLandingPage()
-    // {
-
-    // }
 
     function urlHashChanged(hashChangeEvent)
     {
@@ -93,7 +75,7 @@ window.AppNavigationController = (function()
                 //Was the previous screen a List Screen?
                 //What is the ID of the previous List?
 
-                //Maybe don't need to check if it's valid.. just check if the new page is the home screen. If yes, then it must be valid, if no, do nothing. Won't be able to log an error because won't be certain but that's the only downside.
+                //!!Maybe don't need to check if it's valid.. just check if the new page is the home screen. If yes, then it must be valid, if no, do nothing. Won't be able to log an error because won't be certain but that's the only downside.
                 //And also don't need the previous List ID as long as activeListId is being used, just need to know that it was the List Screen (though that pretty much amounts to the same work)
 
         //If the current screen data specifies the 'travel' checklist type...
@@ -107,12 +89,12 @@ window.AppNavigationController = (function()
                 //Execute the List Controller's callback to navigate to the Home Screen, passing the previous's List's ID as an argument
                 hashChangedCallbacks.navigatedHome();//(getListIdFromUrlString(hashChangeEvent.oldURL));
 
-                 //If on Pixel 2, clear the browser history log
-                 if (/Android 9; Pixel 2/i.test(navigator.userAgent)) //TODO this probably won't work on any other devices
-                 {
-                     window.DebugController.Print("Browser history will be cleared on Pixel 2 devices.");
-                     window.history.go(-(window.history.length-1));
-                 }
+                //On Pixel 2, clear the browser history log, so that the user cannot navigate 'back' when in the Home Screen
+                if (/Android 9; Pixel 2/i.test(navigator.userAgent)) //TODO this won't work on any other devices or OS
+                {
+                    window.DebugController.Print("Browser history will be cleared on Pixel 2 devices.");
+                    window.history.go(-(window.history.length-1));
+                }
             }
 
 
