@@ -20,10 +20,6 @@ window.AppNavigationController = (function()
         hashChanged: null,
         navigatedHome: null
     };
-    
-    //TODO Currently, if a URL other than #/travel is provided when first opening the app, urlHashChanged gets called when the page loads 
-        //This seems fine, at least for the time being. 
-        //Maybe it's possible to use the history to tell if the app was just launched...
 
     function init()
     {
@@ -52,42 +48,33 @@ window.AppNavigationController = (function()
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
         window.DebugController.Print("AppNavigationController: A persistent Hash Changed event listener has been set up.");
+    
+        //TODO Maybe a different approach to this would be, in urlHashChanged, to use the browser history to tell if the app was just launched / is on the first page. If so, then ignore the event...
+            //This would also only work on mobile for the same reasons as clearing browser history though... On regular Chrome, the landing page may not actually be the first page in history.
+            //Maybe instead, look at previous page in history (if possible). If it exists, and is not part of the travel checklist, then you know this is the first launch of the app.
+            //That seems hackier than the current solution though, which is actually fine. 
     }
 
     function urlHashChanged(hashChangeEvent)
     {
-        //let _currentScreenData = getCurrentScreenData();
-        //const _data = getDataOnScreenChange(hashChangeEvent);
+        const _screenData = getDataOnScreenChange(hashChangeEvent);
 
-        //console.log(hashChangeEvent);
         window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The browser history length is: " + window.history.length);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The old URL was: " + hashChangeEvent.oldURL);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The new prefix is: " + GetFragmentIdentifierPrefixFromCurrentUrl());
 
-        //TODO What needs to be know for this function?
-            //ID of previous List screen
-            //List type of new screen
-            //Fragment Identifier of new screen (this would contain the list type)
-
-            //In other words:
-                //Is this a valid travel page?
-                //Is the new screen the home screen?
-                //Was the previous screen a List Screen?
-                //What is the ID of the previous List?
-
-                //!!Maybe don't need to check if it's valid.. just check if the new page is the home screen. If yes, then it must be valid, if no, do nothing. Won't be able to log an error because won't be certain but that's the only downside.
-                //And also don't need the previous List ID as long as activeListId is being used, just need to know that it was the List Screen (though that pretty much amounts to the same work)
-
-        //If the current screen data specifies the 'travel' checklist type...
-        if (getListTypeFromCurrentUrl() === 'travel')
+        //If the new screen is a valid page within the Travel Checklist app...
+        if (_screenData.newScreen.isValid === true)
         {
+            //Execute the ListController's hash changed callback function 
             hashChangedCallbacks.hashChanged();
 
-            //If the new page is the Home Screen and the previous page was a List Screen...
-            if (isHomeScreen(hashChangeEvent.newURL) && isListScreen(hashChangeEvent.oldURL))
+            //If the new screen is the Home Screen and the previous screen was a List Screen...
+            //if (isHomeScreen(hashChangeEvent.newURL) === true && isListScreen(hashChangeEvent.oldURL) === true)
+            if (_screenData.newScreen.isHomeScreen === true && _screenData.oldScreen.isListScreen === true)
             {                
-                //Execute the List Controller's callback to navigate to the Home Screen, passing the previous's List's ID as an argument
-                hashChangedCallbacks.navigatedHome();//(getListIdFromUrlString(hashChangeEvent.oldURL));
+                //Execute the List Controller's callback to navigate to the Home Screen
+                hashChangedCallbacks.navigatedHome();
 
                 //On Pixel 2, clear the browser history log, so that the user cannot navigate 'back' when in the Home Screen
                 if (/Android 9; Pixel 2/i.test(navigator.userAgent)) //TODO this won't work on any other devices or OS
@@ -97,19 +84,17 @@ window.AppNavigationController = (function()
                 }
             }
 
-
-            // //If a list ID is not specified...
-            // if (_currentScreenData.listId == null)
-            // {
-            //     hashChangedCallbacks.navigatedHome();
-
-            //     //If on Pixel 2, clear the browser history log
-            //     if (/Android 9; Pixel 2/i.test(navigator.userAgent)) //TODO this probably won't work on any other devices
-            //     {
-            //         window.DebugController.Print("Will clear browser history on Pixel 2 devices.");
-            //         window.history.go(-(window.history.length-1));
-            //     }
-            // }
+            //TODO might want to differentiate between back button pressed and home button pressed. 
+                //When Home button pressed, could go back one level in browser history or use location.replace
+                //Then it shouldn't be necessary to clear the history / go to initial page in history as is being done above.
+                //The problem is, how to propery listen for the Home button being pressed? Probably direclty between AppNavigationController and View (not using ListController)
+            //TODO a separate option, which I like less, could be that when the app loads, clear the browser history, then force re-route to #travel. 
+                //This should make the Home Screen always the first page, even within Chrome. 
+                //However, this seems like a poor solution, expecially when compare to the ones above. 
+        }
+        else 
+        {
+            window.DebugController.LogWarning("AppNavigationController: The URL Hash changed to an invalid value that is not part of the Travel Checklist.");
         }
     }
 
@@ -117,55 +102,30 @@ window.AppNavigationController = (function()
 
     function getDataOnScreenChange(hashChangeEvent)
     {
-        // const _newUrlPrefix = GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.newURL);
-        // const _isValidPage = (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.newURL) === 'travel') ? true : false;
+        // const _oldUrlFragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL);
+        // const _oldUrlSlug = GetUrlSlug(hashChangeEvent.oldURL);
 
-        const _oldUrlFragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL);
-        const _oldUrlSlug = GetUrlSlug(hashChangeEvent.oldURL);
-
+         //TODO is it really necessary return all of these in the same function? Seems like they could be handled individually
         return {
-            currentScreen: {
-                //isValid: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.newURL) === 'travel') ? true : false,
-                isHomeScreen: (GetFragmentIdentifierFromUrlString(hashChangeEvent.newURL) === 'travel') ? true : false
+            newScreen: {
+                isValid: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.newURL) === 'travel') ? true : false,
+                isHomeScreen: isHomeScreen(hashChangeEvent.newURL)
             },
-            previousScreen: {
-                //isListScreen: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL) == 'travel' && GetUrlSlug(hashChangeEvent.oldURL).length == 13) ? true : false,
-                listId: (_oldUrlFragmentIdentifierPrefix == 'travel' && _oldUrlSlug.length == 13) ? _oldUrlSlug : null
-            },
-        };
-    }
-    
-    function getCurrentScreenData()
-    {
-        //TODO actually now I kind of do want to go back to using this... maybe
-
-        const _listType = GetFragmentIdentifierPrefixFromCurrentUrl();
-
-        const _hashSegments = document.location.hash.split('/');
-
-        //If the location hash has two segments, and the second segment is 13 characters long, then assign that segment string as the List ID
-        const _listId = (_hashSegments.length == 2 && _hashSegments[1].length == 13) ? _hashSegments[1] : null; 
-
-        //TODO is it really necessary return both of these in the same function? Seems like they could be handled individually
-        return {
-            listType: _listType,
-            listId: _listId
+            oldScreen: {
+                isListScreen: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL) == 'travel' && GetUrlSlug(hashChangeEvent.oldURL).length == 13) ? true : false
+                //listId: (_oldUrlFragmentIdentifierPrefix == 'travel' && _oldUrlSlug.length == 13) ? _oldUrlSlug : null
+            }
         };
     }
 
-    function getListTypeFromCurrentUrl()
-    {
-        return GetFragmentIdentifierPrefixFromCurrentUrl();
-    }
+    // function getListIdFromUrlString(urlString)
+    // {
+    //     let _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
+    //     let _urlSlug = GetUrlSlug(urlString);
 
-    function getListIdFromUrlString(urlString)
-    {
-        let _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
-        let _urlSlug = GetUrlSlug(urlString);
-
-        //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-        return (_fragmentIdentifierPrefix == 'travel' && _urlSlug.length == 13) ? _urlSlug : null; //TODO this is pretty hacky. Also is 'null' the best thing to return?
-    }
+    //     //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+    //     return (_fragmentIdentifierPrefix == 'travel' && _urlSlug.length == 13) ? _urlSlug : null; //TODO this is pretty hacky. Also is 'null' the best thing to return?
+    // }
 
     function isHomeScreen(urlString)
     {
@@ -173,13 +133,11 @@ window.AppNavigationController = (function()
         return GetFragmentIdentifierFromUrlString(urlString) === 'travel' ? true : false;
     }
 
-    //TODO There is some redundancy within these functions
-
-    function isListScreen(urlString)
-    {
-        //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-        return (GetFragmentIdentifierPrefixFromUrlString(urlString) == 'travel' && GetUrlSlug(urlString).length == 13) ? true : false; //TODO this is pretty hacky
-    }
+    // function isListScreen(urlString)
+    // {
+    //     //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+    //     return (GetFragmentIdentifierPrefixFromUrlString(urlString) == 'travel' && GetUrlSlug(urlString).length == 13) ? true : false; //TODO this is pretty hacky
+    // }
 
     // function listenForEvent_HashChanged(callback)
     // {
@@ -193,10 +151,6 @@ window.AppNavigationController = (function()
 
     function listenForEvent(eventName, callback)
     {
-        // if (eventName == 'LandingPageValidated')
-        // {
-            
-        // }
         if (eventName == 'HashChanged')
         {
             hashChangedCallbacks.hashChanged = callback;
