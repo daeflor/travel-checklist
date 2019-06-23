@@ -57,21 +57,18 @@ window.AppNavigationController = (function()
 
     function urlHashChanged(hashChangeEvent)
     {
-        const _screenData = getDataOnScreenChange(hashChangeEvent);
-
         window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The browser history length is: " + window.history.length);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The old URL was: " + hashChangeEvent.oldURL);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The new prefix is: " + GetFragmentIdentifierPrefixFromCurrentUrl());
 
-        //If the new screen is a valid page within the Travel Checklist app...
-        if (_screenData.newScreen.isValid === true)
+        //If the new page is a valid screen within the Travel Checklist app...
+        if (isValidScreen(hashChangeEvent.newURL) === true)
         {
             //Execute the ListController's hash changed callback function 
             hashChangedCallbacks.hashChanged();
 
-            //If the new screen is the Home Screen and the previous screen was a List Screen...
-            //if (isHomeScreen(hashChangeEvent.newURL) === true && isListScreen(hashChangeEvent.oldURL) === true)
-            if (_screenData.newScreen.isHomeScreen === true && _screenData.oldScreen.isListScreen === true)
+            //If the new page is the Home Screen and the previous page was a List Screen...
+            if (isHomeScreen(hashChangeEvent.newURL) === true && isListScreen(hashChangeEvent.oldURL) === true)
             {                
                 //Execute the List Controller's callback to navigate to the Home Screen
                 hashChangedCallbacks.navigatedHome();
@@ -83,6 +80,9 @@ window.AppNavigationController = (function()
                     window.history.go(-(window.history.length-1));
                 }
             }
+            
+            //TODO If the hash changes in an unsupported way (e.g. user manually inputs List Screen URL), and you then navigate to a List screen, the back button will take you to the invalid/input initial page instead of the Home Screen
+                //Could try to check for this edge case. Using document.location.replace('#travel') might be helpful... 
 
             //TODO might want to differentiate between back button pressed and home button pressed. 
                 //When Home button pressed, could go back one level in browser history or use location.replace
@@ -98,24 +98,21 @@ window.AppNavigationController = (function()
         }
     }
 
-    //TODO All of the URL parsing below could use additional validation
-
-    function getDataOnScreenChange(hashChangeEvent)
+    function isValidScreen(urlString)
     {
-        // const _oldUrlFragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL);
-        // const _oldUrlSlug = GetUrlSlug(hashChangeEvent.oldURL);
+        return (GetFragmentIdentifierPrefixFromUrlString(urlString) === 'travel') ? true : false;
+    }
 
-         //TODO is it really necessary return all of these in the same function? Seems like they could be handled individually
-        return {
-            newScreen: {
-                isValid: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.newURL) === 'travel') ? true : false,
-                isHomeScreen: isHomeScreen(hashChangeEvent.newURL)
-            },
-            oldScreen: {
-                isListScreen: (GetFragmentIdentifierPrefixFromUrlString(hashChangeEvent.oldURL) == 'travel' && GetUrlSlug(hashChangeEvent.oldURL).length == 13) ? true : false
-                //listId: (_oldUrlFragmentIdentifierPrefix == 'travel' && _oldUrlSlug.length == 13) ? _oldUrlSlug : null
-            }
-        };
+    function isHomeScreen(urlString)
+    {
+        //If the entire Fragment Identifier of the URL string matches the Home page for the Travel Checklist, return true, else return false
+        return (GetFragmentIdentifierFromUrlString(urlString) === 'travel') ? true : false;
+    }
+
+    function isListScreen(urlString)
+    {
+        //If this is a valid screen within the app, and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
+        return (isValidScreen(urlString) === true && GetUrlSlug(urlString).length == 13) ? true : false; //TODO this could use additional validation
     }
 
     // function getListIdFromUrlString(urlString)
@@ -125,18 +122,6 @@ window.AppNavigationController = (function()
 
     //     //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
     //     return (_fragmentIdentifierPrefix == 'travel' && _urlSlug.length == 13) ? _urlSlug : null; //TODO this is pretty hacky. Also is 'null' the best thing to return?
-    // }
-
-    function isHomeScreen(urlString)
-    {
-        //If the entire Fragment Identifier of the URL string matches the Home page for the Travel Checklist, return true, else return false
-        return GetFragmentIdentifierFromUrlString(urlString) === 'travel' ? true : false;
-    }
-
-    // function isListScreen(urlString)
-    // {
-    //     //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-    //     return (GetFragmentIdentifierPrefixFromUrlString(urlString) == 'travel' && GetUrlSlug(urlString).length == 13) ? true : false; //TODO this is pretty hacky
     // }
 
     // function listenForEvent_HashChanged(callback)
