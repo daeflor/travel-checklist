@@ -32,35 +32,45 @@ window.AppNavigationController = (function()
     {
         window.DebugController.Print("AppNavigationController: Setting up app. Current Hash: " + document.location.hash);
 
+                // //While the correct landing page is not active
+                // while (location.hash !== '#travel')
+                // {
+                //     //Force the landing page to be the travel list selection screen 
+                //     location.href = '#travel';
+                // }
 
-        //TODO Document/Comment this
-        if (location.hash !== '#travel')
+                // //Set the behavior for when the URL fragment identifier changes
+                // window.onhashchange = urlHashChanged;
+
+        //If the landing page is the Travel Checklist Home Screen...
+        if (isHomeScreen(document.location.href) === true)
+        {
+            //Set up the listener for whenever the hash changes throughout the app session
+            setupPersistentHashChangedEventListener();
+        }
+        else //Else, if the landing page is set to an invalid initial url
         {
             window.DebugController.LogWarning("AppNavigationController: The app loaded at a page other than the Home Screen. Current Hash: " + document.location.hash);
             
-            //Initialize the app once the DOM content has loaded, and then remove this event listener
-            document.addEventListener('hashchange', setupHashChangedEventListener, {once:true});
+            //Listen for a one-time hash change event, which will fire when the app is re-routed to the correct landing page, at which point a persistent hash change listener can be set up.
+            document.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
+            //listenForEvent('LandingPageCorrected', )
 
-            //Force the initial page to be the travel list selection screen 
+            //Re-route the landing page to the Travel Checklist Home Screen
             location.href = '#travel'; 
         }
-        else
-        {
-            setupHashChangedEventListener();
-        }
-
-        // //Force the initial page to be the travel list selection screen 
-        // location.href = '#travel'; 
-
-        // //Set the behavior for when the URL fragment identifier changes
-        // window.onhashchange = urlHashChanged;
     }
 
-    function setupHashChangedEventListener() //TODO this is going to be very confusing, should rename and reorganize
+    function setupPersistentHashChangedEventListener() //TODO !!! this is going to be very confusing, should rename and reorganize
     {
         //Set the behavior for when the URL fragment identifier changes
         window.onhashchange = urlHashChanged;
     }
+
+    // function validateLandingPage()
+    // {
+
+    // }
 
     function urlHashChanged(hashChangeEvent)
     {
@@ -201,6 +211,10 @@ window.AppNavigationController = (function()
 
     function listenForEvent(eventName, callback)
     {
+        // if (eventName == 'LandingPageValidated')
+        // {
+            
+        // }
         if (eventName == 'HashChanged')
         {
             hashChangedCallbacks.hashChanged = callback;
