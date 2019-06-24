@@ -1,16 +1,17 @@
 TO-DOs:
 	- index.html            : 3
-    - AppController.js      : 5
-    - CustomTemplates.js    : 9
-    - DebugUtilities.js     : 4
-	- ListController.js     : 40
+    - AppController.js      : 7
+    - CustomTemplates.js    : 13
+    - DebugUtilities.js     : 6
+	- ListController.js     : 26
     - Model.js              : 12
     - StandardTemplates.js  : 6
-    - StorageManager.js     : 2
-    - Utilities.js          : 5
+    - StorageManager.js     : 3
+    - ChecklistUtilities    : 2
+    - Utilities.js          : 10
     - View.js               : 32
     - style_new.css         : 3
-    - - - Total             : 121
+    - - - Total             : 123
 
 Upcoming To-Do List:
 - Address the TODOs in the ListController from recent commit

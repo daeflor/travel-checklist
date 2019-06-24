@@ -146,11 +146,9 @@ window.ListController = (function()
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
     }
 
-    //TODO at some point, maybe rename because this may not only be used when there are updates, but also to render the 'loaded' quantity value and balance of a List Item loaded from the Model on startup
-    function renderUpdatesToListItemQuantity(quantityType, id, updatedValue, balance)
+    function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
     {
         window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
-
         window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
 
@@ -238,17 +236,8 @@ window.ListController = (function()
 
     function listenForEvent_ClearButtonPressed(quantityType)
     {
-        // const _viewReaction = function() { 
-        //     for (let i = 0; i < modifiedChecklistData.modifiedListItems.length; i++)
-        //     {
-        //         renderUpdatesToListItemQuantity(modifiedChecklistData.modifiedListItems[i], this.quantityType);
-        //     } 
-        // };
-        // const _modelReaction = window.Model.ClearQuantityValues.bind(null, activeListId, _viewReaction, quantityType);
-        // window.View.Bind('ClearButtonPressed', _modelReaction);
-
         const _eventTriggered = function() { //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?...
-            const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+            const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
             window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
         };
         window.View.Bind('ClearButtonPressed', _eventTriggered);
@@ -344,14 +333,14 @@ window.ListController = (function()
 
     function listenForEvent_DecrementQuantityButtonPressed(id, quantityType)
     {
-        const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
         const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Decrement', quantityType);
         window.View.Bind('DecrementQuantityButtonPressed', _modelReaction);
     }
 
     function listenForEvent_IncrementQuantityButtonPressed(id, quantityType)
     {
-        const _viewReaction = renderUpdatesToListItemQuantity.bind(null, quantityType);
+        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
         const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Increment', quantityType);
         window.View.Bind('IncrementQuantityButtonPressed', _modelReaction);
     }
