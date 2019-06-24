@@ -112,32 +112,25 @@ window.AppNavigationController = (function()
         const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
         const _urlSlug = GetUrlSlug(urlString);
 
-        //If the full Fragment Identifier is set to 'travel', OR the Fragment Identifier prefix is set to 'travel', the full Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a valid page within the Checklist.
-        return (_fragmentIdentifier === 'travel' || (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13)) ? true : false;
-        //return (GetFragmentIdentifierPrefixFromUrlString(urlString) === 'travel') ? true : false;
-        //return (isHomeScreen(urlString) === true) ? true : false; //TODO circular dependency here... But continue to go down this route. I think it makes more sense for isValid to use isHomeScreen and isListScreen than the other way around. 
+        //If the URL string matches either the Home Screen or a List Screen, return true, else return false.
+        return (isHomeScreen(urlString) === true || isListScreen(urlString) === true) ? true : false;
     }
 
     function isHomeScreen(urlString)
     {
-        //If the entire Fragment Identifier of the URL string matches the Home page for the Travel Checklist, return true, else return false
+        //If the entire Fragment Identifier of the URL string matches the Home Screen for the Travel Checklist, return true, else return false
         return (GetFragmentIdentifierFromUrlString(urlString) === 'travel') ? true : false;
     }
 
     function isListScreen(urlString)
     {
-        //If this is a valid screen within the app, and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-        return (isValidScreen(urlString) === true && GetUrlSlug(urlString).length == 13) ? true : false; //TODO this could use additional validation
+        const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
+        const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
+        const _urlSlug = GetUrlSlug(urlString);
+
+        //If the Fragment Identifier prefix is set to 'travel', the full Fragment Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a List Screen within the Checklist.
+        return (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13) ? true : false;
     }
-
-    // function getListIdFromUrlString(urlString)
-    // {
-    //     let _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
-    //     let _urlSlug = GetUrlSlug(urlString);
-
-    //     //If the hash route is 'travel' and the URL slug contains 13 characters, then assume that this is a List Screen and return true, else return false.
-    //     return (_fragmentIdentifierPrefix == 'travel' && _urlSlug.length == 13) ? _urlSlug : null; //TODO this is pretty hacky. Also is 'null' the best thing to return?
-    // }
 
     // function listenForEvent_HashChanged(callback)
     // {
