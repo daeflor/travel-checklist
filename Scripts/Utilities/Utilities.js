@@ -68,13 +68,6 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
-function GetFragmentIdentifierPrefixFromCurrentUrl() //TODO does this really need to be used? No
-{
-    //return document.location.hash.slice(1).split('/')[0]; //Could also use regex and do 'split(/[\#\/]/)' but that seems more complicated
-
-    return GetFragmentIdentifierPrefixFromUrlString(document.location.href);
-}
-
 function GetFragmentIdentifierPrefixFromUrlString(urlString)
 {
     const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
@@ -83,7 +76,7 @@ function GetFragmentIdentifierPrefixFromUrlString(urlString)
 
     if (_fragmentIdentifier != null) //TODO replace with try catch
     {
-        return _fragmentIdentifier.split('/')[0];
+        return _fragmentIdentifier.split('/')[0]; 
         //TODO if there is no Hash Route, would it be better to return an empty string rather than 'undefined'?
     }
     else
@@ -101,7 +94,7 @@ function GetFragmentIdentifierFromUrlString(urlString)
 {
     if (urlString != null) //TODO replace with try catch
     {
-        return urlString.split('#')[1]; 
+        return urlString.split('#')[1];
         //TODO if there is no Fragment Identifier, would it be better to return an empty string rather than 'undefined'?
     }
     else

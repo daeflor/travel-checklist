@@ -134,7 +134,7 @@ window.DebugView = (function()
             // },
             UpdateDebugButtonColor: function() 
             {
-                console.log("Request received to change the Debug Button color. New Debug Mode state: " + parameters.debugMode);
+                //console.log("Request received to change the Debug Button color. New Debug Mode state: " + parameters.debugMode);
 
                 //TODO it seems weird to expect different types from a single variable... But I guess that's JavaScript...?
                 if (parameters.debugMode === 'Error')

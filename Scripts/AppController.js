@@ -78,29 +78,44 @@ window.AppNavigationController = (function()
                 {
                     window.DebugController.Print("Browser history will be cleared on Pixel 2 devices.");
                     window.history.go(-(window.history.length-1));
+
+                    //TODO might want to differentiate between back button pressed and home button pressed. 
+                        //When Home button pressed, could go back one level in browser history or use location.replace
+                        //Then it shouldn't be necessary to clear the history / go to initial page in history as is being done above.
+                        //The problem is, how to propery listen for the Home button being pressed? Probably direclty between AppNavigationController and View (not using ListController)
+                     //TODO a separate option, which I like less, could be that when the app loads, clear the browser history, then force re-route to #travel. 
+                        //This should make the Home Screen always the first page, even within Chrome. 
+                        //However, this seems like a poor solution, expecially when compare to the ones above. 
                 }
             }
-            
-            //TODO If the hash changes in an unsupported way (e.g. user manually inputs List Screen URL), and you then navigate to a List screen, the back button will take you to the invalid/input initial page instead of the Home Screen
-                //Could try to check for this edge case. Using document.location.replace('#travel') might be helpful... 
+            //Else, if the old page was not the Home Screen or the new page is not a List Screen (i.e. the old page was the List Screen or an invalid page, or the new page is the Home Screen or an invalid page)...
+            else if (isHomeScreen(hashChangeEvent.oldURL) === false || isListScreen(hashChangeEvent.newURL) === false) 
+            {
+                window.DebugController.LogWarning("AppNavigationController: The URL Hash changed in an unsupported way. The app will be re-routed to the Home Screen.");
+                document.location.href = '#travel'; //Re-route the landing page to the Travel Checklist Home Screen
 
-            //TODO might want to differentiate between back button pressed and home button pressed. 
-                //When Home button pressed, could go back one level in browser history or use location.replace
-                //Then it shouldn't be necessary to clear the history / go to initial page in history as is being done above.
-                //The problem is, how to propery listen for the Home button being pressed? Probably direclty between AppNavigationController and View (not using ListController)
-            //TODO a separate option, which I like less, could be that when the app loads, clear the browser history, then force re-route to #travel. 
-                //This should make the Home Screen always the first page, even within Chrome. 
-                //However, this seems like a poor solution, expecially when compare to the ones above. 
+                //TODO Problem here is that if you're at the Home Screen and manually input a valid List Screen URL, it treats that as valid, but doesn't actually navigate to the List Screen. 
+                    //If you then navigate to a different List Screen it detects that as going from List Screen to List Screen and forces the app back to Home Screen
+                    //Not much way around this edge case expect to handle 'Go To List' event here in AppNavigationController as well. 
+            }
         }
         else 
         {
-            window.DebugController.LogWarning("AppNavigationController: The URL Hash changed to an invalid value that is not part of the Travel Checklist.");
+            window.DebugController.LogWarning("AppNavigationController: The URL Hash changed to an invalid value that is not part of the Travel Checklist. The app will be re-routed to the Home Screen.");
+            document.location.href = '#travel'; //Re-route the landing page to the Travel Checklist Home Screen
         }
     }
 
     function isValidScreen(urlString)
     {
-        return (GetFragmentIdentifierPrefixFromUrlString(urlString) === 'travel') ? true : false;
+        const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
+        const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(urlString);
+        const _urlSlug = GetUrlSlug(urlString);
+
+        //If the full Fragment Identifier is set to 'travel', OR the Fragment Identifier prefix is set to 'travel', the full Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a valid page within the Checklist.
+        return (_fragmentIdentifier === 'travel' || (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13)) ? true : false;
+        //return (GetFragmentIdentifierPrefixFromUrlString(urlString) === 'travel') ? true : false;
+        //return (isHomeScreen(urlString) === true) ? true : false; //TODO circular dependency here... But continue to go down this route. I think it makes more sense for isValid to use isHomeScreen and isListScreen than the other way around. 
     }
 
     function isHomeScreen(urlString)
