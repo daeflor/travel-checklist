@@ -57,9 +57,23 @@ window.ChecklistUtilities = (function()
         return _listBalance;
     }
 
+    /**
+     * Gets the color value associated with the provided balance value
+     * @param {string} balance The List or List Item balance
+     * @returns {string} the color value associated with the provided balance
+     */
+    function getBorderColorFromBalance(balance)
+    {
+       return (balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
+            : (balance === ChecklistObjectBalance.Balanced)   ? 'mediumseagreen'
+            :                                                   'rgb(77, 77, 77)'; //"darkgrey" is also good;
+    }
+
+    //TODO All of these utilities have to do with Balance. Should this file be renamed to be specific to Balance utilities
     return {
         CalculateListItemBalance: calculateListItemBalance,
-        CalculateListBalance : calculateListBalance
+        CalculateListBalance: calculateListBalance,
+        GetBorderColorFromBalance: getBorderColorFromBalance
     };
 })();
 

@@ -10,7 +10,8 @@ window.CustomTemplates = (function ()
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
         var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listItem.id), 'buttonListItem buttonListItemName', listItem.name, 'NameButton-'.concat(listItem.id));
-        
+        //TODO could pass an optional toggleBorderColor parameter to the helper function above, to set an initial color for the list item toggle
+
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
 
@@ -20,6 +21,8 @@ window.CustomTemplates = (function ()
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
         for (var key in listItem.quantities)
         {
+            //TODO could forego the 3rd param (initialValue), and just have the controller call UpdateListItemQuantityText after adding the List Item...
+                //That seems like a lot of extra work though... But then at least this function would only need the list id and name (not the quantities at all)
             wrapper.appendChild(createListItemModifierFromTemplate(listItem.id, key, listItem.quantities[key])); 
         }
 
@@ -67,7 +70,7 @@ window.CustomTemplates = (function ()
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
             
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
-            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/'.concat(list.type).concat('/').concat(list.id)}); 
+            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#'.concat(list.type).concat('/').concat(list.id)}); 
             
             //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
 
@@ -98,6 +101,7 @@ window.CustomTemplates = (function ()
         }
     }
 
+    //TODO could forego the initialValue, and just have the controller call UpdateListItemQuantityText after adding the List Item... That seems like a lot of extra work though
     //TODO Is this method still necessary? Should probably at least be renamed 
     function createListItemModifierFromTemplate(listItemId, type, initialValue)
     {
@@ -181,7 +185,7 @@ window.CustomTemplates = (function ()
 
         for (var key in QuantityType)
         {
-            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key])); 
+            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key]));  //TODO could pass here just the key. That should allow removing the 'type' key from the QuantityType enums
         }
 
         return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;

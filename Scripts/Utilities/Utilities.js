@@ -68,9 +68,21 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
-function GetLocationHashRoute()
+function GetFragmentIdentifierPrefixFromUrlString(urlString)
 {
-    return document.location.hash.split('/')[1];
+    const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
+    
+    //return (_fragmentIdentifier != null) ? _fragmentIdentifier.split('/')[0] : null;
+
+    if (_fragmentIdentifier != null) //TODO replace with try catch
+    {
+        return _fragmentIdentifier.split('/')[0]; 
+        //TODO if there is no Hash Route, would it be better to return an empty string rather than 'undefined'?
+    }
+    else
+    {
+        window.DebugController.LogError("Fragment Identifier prefix requested but a valid Fragment Identifier string was not provided.");
+    }
 }
 
 /**
@@ -78,11 +90,11 @@ function GetLocationHashRoute()
  * @param {string} urlString The full URL string
  * @returns the Fragment Identifier (anchor tag) for the provided URL
  */
-function getFragmentIdentifierFromUrlString(urlString)
+function GetFragmentIdentifierFromUrlString(urlString)
 {
     if (urlString != null) //TODO replace with try catch
     {
-        return urlString.split('#')[1]; 
+        return urlString.split('#')[1];
         //TODO if there is no Fragment Identifier, would it be better to return an empty string rather than 'undefined'?
     }
     else
@@ -96,7 +108,7 @@ function getFragmentIdentifierFromUrlString(urlString)
  * @param {string} urlString The URL or portion of a URL
  * @returns the final path segment ("slug") of the provided URL
  */
-function getUrlSlug(urlString)
+function GetUrlSlug(urlString)
 {
     //Split the URL into the various path segments separated by '/'
     let _pathSegments = urlString.split('/');
@@ -106,6 +118,8 @@ function getUrlSlug(urlString)
 }
 
 /** Experimental & In Progress **/
+
+/** Unused Utilities **/
 
 /**
  * Validates that the provided object contains valid values for the given keys
@@ -143,8 +157,6 @@ function validateObjectContainsValidKVPs(object, keyArray)
         window.DebugController.LogError("Request received to validate that an object contains valid values for the given keys, but either an invalid object or invalid keys array was provided. Object: " + JSON.stringify(object));
     }
 }
-
-/** Unused Utilities **/
 
 function MergeObjects(target, source)
 {

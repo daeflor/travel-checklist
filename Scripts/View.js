@@ -44,6 +44,9 @@ window.View = (function()
         elements.listTitle = document.getElementById('headerCurrentListName');
         elements.listScreen = document.getElementById('divListScreen'); 
         elements.listScreenListElements = document.getElementById('divListScreenListElements');
+
+        //TODO Right now this assumes the header to display is the Travel type. Eventually this should be done in a separate method, depending on the checklist type.
+        elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
     }
 
     //TODO There could even be an optional options param that takes a quantity type
@@ -158,14 +161,12 @@ window.View = (function()
      * @param {function} callback - The callback to execute when the event listener is triggered
      * @param {object} parameters - An object containing additional parameters necessary to identify and locate the element being bound
      */
-    function bindChecklistObjectElement(prefix, eventType, callback, parameters)
+    function bindChecklistObjectElement(prefix, eventType, callback, id)
     {
-        let listObject = parameters.checklistObject;
-
-        if (listObject != null && listObject.id != null)
+        if (id != null)
         {
             //Set the behavior for when one of the Checklist Object's buttons is pressed
-            addListenerToChecklistElement({prefix:prefix, id:listObject.id}, eventType, callback);
+            addListenerToChecklistElement({prefix:prefix, id:id}, eventType, callback);
         }
         else { DebugController.LogError("A 'checklistObject' option with an 'id' key was expected but not provided. Bind could not be created."); }
     }
@@ -182,6 +183,8 @@ window.View = (function()
      */
     function bind(event, callback, parameters)
     {
+        //TODO could use: validateObjectContainsKVPs(parameters, [key1, key2, etc]) == true ? doAction() : logError();
+
         // if (event === 'HomeButtonPressed') 
         // {
         //     //Set the behavior for when the Home button is pressed
@@ -192,72 +195,17 @@ window.View = (function()
             //Set the behavior for when the Add List button is pressed
             addListenerToChecklistElement({id:'buttonAddList'}, 'click', callback);
         }
-        else if (event === 'GoToListButtonPressed') //Expected parameters: checklistObject
+        else if (event === 'GoToListButtonPressed') //Expected parameters: id
         {
             //Set the behavior for when a Go To List button is pressed
-            bindChecklistObjectElement('GoToList', 'click', callback, parameters);
+            bindChecklistObjectElement('GoToList', 'click', callback, parameters.id);
         }
         else if (event === 'NewListItemButtonPressed') 
         {
             //Set the behavior for when the Add List Item button is pressed
             addListenerToChecklistElement({id:'buttonAddRow'}, 'click', callback);                
         }
-        else if (event === 'NameEdited') //Expected parameters: checklistObject
-        {
-            let eventTriggeredCallback = function(event)
-            {
-                callback({updatedValue:event.target.value});
-            }
-            
-            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters);
-        }
-        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: checklistObject
-        {
-            //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters);
-        }
-        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: checklistObject
-        {
-            //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters);
-        }
-        else if (event === 'DecrementQuantityButtonPressed') 
-        {
-            addListenerToChecklistElement({id:'buttonMinus'}, 'click', callback);
-        }
-        else if (event === 'IncrementQuantityButtonPressed')
-        {
-            addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
-        }
-        else if (event === 'DeleteButtonPressed') //Expected parameters: checklistObject
-        {
-            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
-            bindChecklistObjectElement('Delete', 'click', callback, parameters);
-        }
-        else if (event === 'QuantityToggleSelected') //Expected parameters: checklistObject, quantityType
-        {
-            //TODO modify bindChecklistObjectElement so that it can support multiple parameters, incl. quantityType
-
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'click', callback);
-        }
-        else if (event === 'QuantityPopoverShown') //Expected parameters: checklistObject, quantityType
-        {
-            //Set the behavior for when the Quantity popover for the given quantity type is made visible
-            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.checklistObject.id}, 'shown.bs.popover', callback);
-
-            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and list Item Id: " + parameters.id);
-        }
-        else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
-        {
-            //Set the behavior for when the Quantity Header popover for the given quantity type is made visible
-            addListenerToChecklistElement({id:parameters.quantityType.concat('QuantityHeaderToggle')}, 'shown.bs.popover', callback);
-        }
-        else if (event === 'ClearButtonPressed') 
-        {
-            //Set the behavior for when a Clear button in the Header is pressed
-            addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
-        }
-        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: checklistObject
+        else if (event === 'SettingsViewExpansionStarted') //Expected parameters: id
         {
             let eventTriggeredCallback = function(event)
             {
@@ -276,7 +224,62 @@ window.View = (function()
                 //elements.activeSettingsView = event.target;
             }
 
-            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters);            
+            bindChecklistObjectElement('SettingsView', 'show.bs.collapse', eventTriggeredCallback, parameters.id);            
+        }
+        else if (event === 'NameEdited') //Expected parameters: id
+        {
+            let eventTriggeredCallback = function(event)
+            {
+                callback(event.target.value);
+            }
+            
+            bindChecklistObjectElement('EditName', 'change', eventTriggeredCallback, parameters.id);
+        }
+        else if (event === 'DeleteButtonPressed') //Expected parameters: id
+        {
+            //Set the behavior for when the Delete button is pressed in a List Item's Settings View
+            bindChecklistObjectElement('Delete', 'click', callback, parameters.id);
+        }
+        else if (event === 'MoveUpwardsButtonPressed') //Expected parameters: id
+        {
+            //Set the behavior for when the Move Upwards button is pressed in a List Item's Settings View
+            bindChecklistObjectElement('MoveUpwards', 'click', callback, parameters.id);
+        }
+        else if (event === 'MoveDownwardsButtonPressed') //Expected parameters: id
+        {
+            //Set the behavior for when the Move Downwards button is pressed in a List Item's Settings View
+            bindChecklistObjectElement('MoveDownwards', 'click', callback, parameters.id);
+        }
+        else if (event === 'DecrementQuantityButtonPressed') 
+        {
+            addListenerToChecklistElement({id:'buttonMinus'}, 'click', callback);
+        }
+        else if (event === 'IncrementQuantityButtonPressed')
+        {
+            addListenerToChecklistElement({id:'buttonPlus'}, 'click', callback);
+        }
+        else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
+        {
+            //TODO modify bindChecklistObjectElement so that it can support multiple parameters, incl. quantityType
+
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
+        }
+        else if (event === 'QuantityPopoverShown') //Expected parameters: id, quantityType
+        {
+            //Set the behavior for when the Quantity popover for the given quantity type is made visible
+            addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'shown.bs.popover', callback);
+
+            //window.DebugController.Print("Set binding for popover toggle of type: " + parameters.quantityType + ", and list Item Id: " + parameters.id);
+        }
+        else if (event === 'QuantityHeaderPopoverShown') //Expected parameters: quantityType
+        {
+            //Set the behavior for when the Quantity Header popover for the given quantity type is made visible
+            addListenerToChecklistElement({id:parameters.quantityType.concat('QuantityHeaderToggle')}, 'shown.bs.popover', callback);
+        }
+        else if (event === 'ClearButtonPressed') 
+        {
+            //Set the behavior for when a Clear button in the Header is pressed
+            addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
         }
         else if (event === 'ClickDetectedOutsidePopover')
         {
@@ -284,10 +287,6 @@ window.View = (function()
             addListenerToChecklistElement({id:'divChecklistBody'}, 'click', callback, {once:true});
 
             //window.DebugController.Print("A onetime onclick listener was added to the checklist body");
-        }
-        else if (event === 'HashChanged')
-        {
-            window.addEventListener("hashchange", callback, {once:false});
         }
     }
 
@@ -439,11 +438,8 @@ window.View = (function()
             UpdateNameToggleColor: function() //Expected parameters: id, balance
             {
                 let elementFoundCallback = function(element)
-                {                    
-                    //TODO might be better to change the class, and in css assign the colors to different classes for each balance
-                    element.style.borderColor = (parameters.balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
-                                              : (parameters.balance === ChecklistObjectBalance.Balanced)  ? 'mediumseagreen'
-                                              :                                     'rgb(77, 77, 77)'; //"darkgrey";
+                {      
+                    element.style.borderColor = window.ChecklistUtilities.GetBorderColorFromBalance(parameters.balance);
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');
@@ -481,12 +477,6 @@ window.View = (function()
             {
                 //Update the text value of the name toggle/button element which matches the given ID
                 updateChecklistElement('SetText', {type:'NameButton', id:parameters.id}, parameters.updatedValue);
-            },
-            GenerateQuantityHeader: function() //TODO not a consistent naming convention for creating/adding elements to the DOM
-            {
-                //TODO might be worth having a helper method specifically dedicated to updating / working with Bootstrap elements
-
-                elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
             },
             ShowQuantityPopover: function() //Expected parameters: id, quantityType
             {
