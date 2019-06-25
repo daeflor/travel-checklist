@@ -57,7 +57,7 @@ window.AppNavigationController = (function()
 
     function urlHashChanged(hashChangeEvent)
     {
-        window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The browser history length is: " + window.history.length);
+        window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The new URL is: " + hashChangeEvent.newURL + ". The browser history length is: " + window.history.length);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The old URL was: " + hashChangeEvent.oldURL);
         //window.DebugController.Print("AppNavigationController: The URL fragment identifier changed. The new prefix is: " + GetFragmentIdentifierPrefixFromCurrentUrl());
 
@@ -78,6 +78,8 @@ window.AppNavigationController = (function()
                 {
                     window.DebugController.Print("Browser history will be cleared on Pixel 2 devices.");
                     window.history.go(-(window.history.length-1));
+
+                    //TODO Note that clearing browser history will cause issues if the app is not being ran in PWA mode
 
                     //TODO might want to differentiate between back button pressed and home button pressed. 
                         //When Home button pressed, could go back one level in browser history or use location.replace
@@ -103,6 +105,8 @@ window.AppNavigationController = (function()
         {
             window.DebugController.LogWarning("AppNavigationController: The URL Hash changed to an invalid value that is not part of the Travel Checklist. The app will be re-routed to the Home Screen.");
             document.location.href = '#travel'; //Re-route the landing page to the Travel Checklist Home Screen
+
+            //TODO This may not always be the best resort because forcing the app to the home page may then subsequently result in the other error, that the URL changed in an unsupported way.
         }
     }
 
