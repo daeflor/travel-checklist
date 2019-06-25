@@ -78,6 +78,20 @@ window.Model = (function()
     {
         checklistData = window.StorageManager.RetrieveChecklistData();
 
+        //TEMP logic to convert Lists saved in old format to new format, so that the 'type' is a string instead of an integer
+            
+            //For each List loaded from Storage...
+            for (let i = 0; i < checklistData.lists.length; i++) 
+            {
+                console.log(checklistData.lists[i].type);
+                if (checklistData.lists[i].type === 0)
+                {
+                    checklistData.lists[i].type = ListType.Travel;
+                }
+            }
+
+            storeChecklistData();
+
         window.DebugController.Print("Checklist data retrieved from storage");
 
         //TODO Consider passing this callback through to the storage method call (above). (In case accessing the date from storage becomes async at some point). 
