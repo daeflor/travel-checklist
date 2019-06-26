@@ -67,6 +67,12 @@ window.AppNavigationController = (function()
             //Execute the ListController's hash changed callback function 
             hashChangedCallbacks.hashChanged();
 
+            //TODO Instead of trying to catch all the edge cases here, it might be easiest to just check if the new screen is a List Screen
+                //If it is, display the List. (This case might actually not be necessary because there are dedicated Go To List buttons/logic)
+                //If it isn't, force the page to the home, hide any active Lists, and clear the browser history
+                    //This may need new functionality to determine any non-hidden Lists, if activeListId doesn't suffice
+                //Or something roughly along these lines.
+
             //If the new page is the Home Screen and the previous page was a List Screen...
             if (isHomeScreen(hashChangeEvent.newURL) === true && isListScreen(hashChangeEvent.oldURL) === true)
             {                

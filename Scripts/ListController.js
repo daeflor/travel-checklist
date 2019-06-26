@@ -86,26 +86,19 @@ window.ListController = (function()
     {
         //TODO Might be best to keep renders, binds, and loads separate
 
-        //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
+        //TODO. View needs ID, name, and type (currently) 
+        //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType}); 
         window.View.Render('AddList', {list:list}); //Add the List elements to the DOM
 
         //TODO this doesn't need to be done in the case of new lists, only loaded ones
             //Assuming the stylesheet has a default color
-        fetchAndRenderListBalance(list.id);
+        renderListBalance(list.id); //TODO this part may be doable in the Model with the upcoming refactor (i.e. Controller may no longer have to call Model.GetListBalance() here). However, it still needs to be done when navigating home
 
         //TODO setupListeners_List
         
         listenForEvent_GoToListButtonPressed(list.id); //When the Go To List button is pressed, display the list
 
-        setupSettingsViewListeners(list.id); //Setup listeners related to the List's Settings View
-    }
-
-    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
-    {
-        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
-            //This is also the only Model call that doesn't require updates to the model but does access it get information.
-        let _listBalance = window.Model.GetListBalance(listId);
-        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
+        setupListeners_SettingsView(list.id); //Setup listeners related to the List's Settings View
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -117,33 +110,60 @@ window.ListController = (function()
      */
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
-        //TODO Should there be a View.Load method instead?
-        window.View.Render('AddListItem', {listId:listId, listItem:listItem});          
+        //TODO Should there be a View.Load method instead of using View.Render for this? Technically the List Item toggle does get rendered when added, so maybe it's ok as-is
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItem.id, listItemName:listItem.name}); //TODO. View needs ID, name, and quantities (currently)       
         
         //TODO this doesn't need to be done in the case of new list items, only loaded ones
             //Assuming the stylesheet has a default color
         window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
 
-        setupSettingsViewListeners(listItem.id); //Setup listeners related to the List Item's Settings View
+        setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
 
-        for (let key in QuantityType) //For each quantity type...
+        for (const key in QuantityType) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
+        
+            window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:key, updatedValue:listItem.quantities[key]});
         }        
+    } 
+
+    //setupListenersAndUI_List
+    //function addListItemListenersAndUI(listId, listItemId, listItemName)
+    function setupListenersAndUI_ListItem(listId, listItemId, listItemName)
+    {
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName});
+
+        setupListeners_SettingsView(listItemId); //Setup listeners related to the List Item's Settings View
+
+        for (const key in QuantityType) //For each quantity type...
+        {
+            listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
+            listenForEvent_QuantityPopoverShown(listItemId, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
+        }   
     }
+
+    //setupSettingsViewListeners
 
     /**
      * Sets up the listener for the various user interactions related to a List or List Item's Settings View
      * @param {string} id The ID of the List or List Item
      */
-    function setupSettingsViewListeners(id)
+    function setupListeners_SettingsView(id)
     {
         listenForEvent_SettingsViewExpansionStarted(id); //When the animation to expand the Settings View starts, hide the Active Settings View
         listenForEvent_NameEdited(id); //When the name text field is modified, update the name of the checklist object
         listenForEvent_DeleteButtonPressed(id); //When the delete button is pressed, remove the checklist object
         listenForEvent_MoveUpwardsButtonPressed(id); //When the Move Upwards button is pressed, move the checklist object up by one position
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
+    }
+
+    function renderListBalance(listId)
+    {
+        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
+            //This is also the only Model call that doesn't require updates to the model but does access it get information.
+        let _listBalance = window.Model.GetListBalance(listId);
+        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
     }
 
     function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
@@ -178,7 +198,7 @@ window.ListController = (function()
         const _viewReaction = function() {
             window.View.Render('HideList', {id:activeListId}); //Hide the List which was previously active
             window.View.Render('ShowHomeScreen'); //Display the Home Screen
-            fetchAndRenderListBalance(activeListId); //Calculate the balance of the List which was previously active
+            renderListBalance(activeListId); //Calculate the balance of the List which was previously active
             activeListId = null;
         };
         window.AppNavigationController.ListenForEvent('NavigatedHome', _viewReaction);
@@ -219,7 +239,7 @@ window.ListController = (function()
             //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
         const _eventTriggered = function() { 
             const _viewReaction = function(newListItem) {
-                renderAndBindLoadedListItem(activeListId, newListItem); //Add the new List Item to the DOM and setup listeners for its elements
+                setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name);//Add the new List Item to the DOM and setup listeners for its elements
                 window.View.Render('ExpandSettingsView', {id:newListItem.id}); //Once the new List Item has been added to the DOM, expand its Settings View
             };
             window.Model.AddNewListItem(activeListId, _viewReaction);
@@ -253,9 +273,6 @@ window.ListController = (function()
 
     function listenForEvent_NameEdited(id)
     {
-        //const _viewReaction = window.View.Render.bind('UpdateName', {id:id, updatedValue:this.updatedValue});
-        //handleModelInteraction.bind({id:id, updatedValue:inputArgument.updatedValue}, 'UpdateName');  
-
         const _viewReaction = function(updatedValue) {
             window.View.Render('UpdateName', {id:id, updatedValue:updatedValue});
         };

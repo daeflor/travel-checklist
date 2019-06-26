@@ -197,11 +197,13 @@ button {
     margin-bottom: 10px;
 }
 
-.buttonListItem {
+.buttonListItem { /*TODO This is a bad name because it's used by List Toggles and List Item Toggles. Clean these styles up.*/
     padding-left: 10px;
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;  
+
+    border-color: #4d4d4d;
     
     text-align: left;
    

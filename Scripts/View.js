@@ -402,13 +402,29 @@ window.View = (function()
                 //Find the List toggle element which matches the given ID, and then remove it
                 findChecklistElement(parameters.id, elementFoundCallback)
             },
-            AddListItem: function() //Expected parameters: listId, listItem
+            // AddListItem: function() //Expected parameters: listId, listItem
+            // {
+            //     //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+            //     let elementFoundCallback = function(element)
+            //     {          
+            //         //Create a new List Item element from the template, and append it to the List wrapper matching   
+            //         element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItem));
+
+            //         //Update the reorder buttons for all the List Items in the added element's parent List
+            //         updateReorderButtons(element);
+            //     };
+
+            //     //Find the List wrapper element which matches the given ID, and then add a new List Item to it
+            //     findChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+            // },
+            //TODO Add New List Item *could* be separate from load list item (not just in the short term)
+            AddListItem: function() //Expected parameters: listId, listItemId, listItemName
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 let elementFoundCallback = function(element)
                 {          
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItem));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName));
 
                     //Update the reorder buttons for all the List Items in the added element's parent List
                     updateReorderButtons(element);
