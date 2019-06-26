@@ -9,7 +9,7 @@ window.CustomTemplates = (function ()
         var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonListItem buttonListItemName', name, 'NameButton-'.concat(id));
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListItemToggle', name, 'NameButton-'.concat(id));
         //TODO could pass an optional toggleBorderColor parameter to the helper function above, to set an initial color for the list item toggle
 
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
@@ -21,9 +21,7 @@ window.CustomTemplates = (function ()
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
         for (const key in QuantityType) //For each quantity type...
         {
-            //TODO could forego the 3rd param (initialValue), and just have the controller call UpdateListItemQuantityText after adding the List Item...
-                //That seems like a lot of extra work though... But then at least this function would only need the list id and name (not the quantities at all)
-            wrapper.appendChild(createListItemModifierFromTemplate(id, key)); 
+            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key)); 
         }
 
         //Create the Settings View for the List Item
@@ -56,7 +54,7 @@ window.CustomTemplates = (function ()
             /* Name Toggle/Button */
 
             //Create the name button/toggle that can be selected to open or close the settings view for the List
-            var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonListItem buttonListToggle', list.name, 'NameButton-'.concat(list.id));
+            var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonNameToggle buttonListToggle', list.name, 'NameButton-'.concat(list.id));
             
             //Create the div wrapper for the List Name button/toggle
             var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
@@ -101,10 +99,7 @@ window.CustomTemplates = (function ()
         }
     }
 
-    //TODO could forego the initialValue, and just have the controller call UpdateListItemQuantityText after adding the List Item... That seems like a lot of extra work though
-    //TODO Is this method still necessary? Should probably at least be renamed 
-        //Eh.. I don't see what's wrong with it
-    function createListItemModifierFromTemplate(listItemId, type)
+    function createListItemQuantityToggleFromTemplate(listItemId, type)
     {
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
         var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});

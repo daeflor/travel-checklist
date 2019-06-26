@@ -197,7 +197,7 @@ button {
     margin-bottom: 10px;
 }
 
-.buttonListItem { /*TODO This is a bad name because it's used by List Toggles and List Item Toggles. Clean these styles up.*/
+.buttonNameToggle {
     padding-left: 10px;
     padding-right: 1px;
     padding-top: 1px;
@@ -222,7 +222,7 @@ button {
     background-color: aliceblue;
 }
 
-.buttonListItemName {     
+.buttonListItemToggle {     
     border-left-width: 1px;
     border-right-width: 3px;
     border-top-width: 1px;
@@ -231,8 +231,6 @@ button {
     border-style: solid;
 
     background-color: #edf7f7;
-
-    line-height: 1.25;
 }
 
 /** Quantity Toggles **/

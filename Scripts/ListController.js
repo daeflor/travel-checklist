@@ -110,7 +110,6 @@ window.ListController = (function()
      */
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
-        //TODO Should there be a View.Load method instead of using View.Render for this? Technically the List Item toggle does get rendered when added, so maybe it's ok as-is
         window.View.Render('AddListItem', {listId:listId, listItemId:listItem.id, listItemName:listItem.name}); //TODO. View needs ID, name, and quantities (currently)       
         
         //TODO this doesn't need to be done in the case of new list items, only loaded ones
@@ -142,8 +141,6 @@ window.ListController = (function()
             listenForEvent_QuantityPopoverShown(listItemId, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
         }   
     }
-
-    //setupSettingsViewListeners
 
     /**
      * Sets up the listener for the various user interactions related to a List or List Item's Settings View
