@@ -3,7 +3,7 @@ window.View = (function()
 {
     //TODO The Bind and Render calls could all use error handling
 
-    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityType)
+    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
     var elements = {  
         homeHeader : null,
         homeScreen : null,
@@ -439,7 +439,7 @@ window.View = (function()
             {
                 let elementFoundCallback = function(element)
                 {      
-                    element.style.borderColor = window.ChecklistUtilities.GetBorderColorFromBalance(parameters.balance);
+                    element.style.borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.balance);
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');

@@ -7,7 +7,7 @@ window.ListController = (function()
     function init()
     {     
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        for (let key in QuantityType)
+        for (const key in QuantityTypes)
         {
             listenForEvent_QuantityHeaderPopoverShown(key);
         }
@@ -78,11 +78,11 @@ window.ListController = (function()
         
         //TODO this doesn't need to be done in the case of new list items, only loaded ones
             //Assuming the stylesheet has a default color
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities)});
 
         setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
 
-        for (const key in QuantityType) //For each quantity type...
+        for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
@@ -109,7 +109,7 @@ window.ListController = (function()
 
         setupListeners_SettingsView(listItemId); //Setup listeners related to the List Item's Settings View
 
-        for (const key in QuantityType) //For each quantity type...
+        for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItemId, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements            
@@ -335,36 +335,3 @@ window.ListController = (function()
         Init : init
     };
 })();
-
-const ListType = {
-    Travel: 'travel',
-    Checklist: 'shopping'
-};
-
-//TODO Consider moving this to a separate file. Should this be in ChecklistUtilities instead?
-const QuantityType = {
-    needed: {
-        type: 'needed', //TODO this should be temp. Can the same be accomplished using 'key'?
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
-    },
-    luggage: {
-        type: 'luggage',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-suitcase fa-lg iconHeader'
-    },
-    wearing: {
-        type: 'wearing',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-male fa-lg iconHeader'
-    },
-    backpack: {
-        type: 'backpack',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
-        iconClass: 'fa fa-briefcase iconHeader'
-    },
-};

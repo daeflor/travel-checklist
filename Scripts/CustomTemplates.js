@@ -19,7 +19,7 @@ window.CustomTemplates = (function ()
         wrapper.appendChild(nameWrapper);
 
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
-        for (const key in QuantityType) //For each quantity type...
+        for (const key in QuantityTypes) //For each quantity type...
         {
             wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key)); 
         }
@@ -174,27 +174,27 @@ window.CustomTemplates = (function ()
         return wrapper;
     }
 
-    //TODO Maybe the QuantityType object should be passed as a parameter instead of being Global
+    //TODO Maybe the QuantityTypes object should be passed as a parameter instead of being Global
     function createTravelHeaderFromTemplate()
     {
         var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
 
-        for (var key in QuantityType)
+        for (const key in QuantityTypes)
         {
-            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key]));  //TODO could pass here just the key. That should allow removing the 'type' key from the QuantityType enums
+            headerWrapper.appendChild(createQuantityHeaderToggle(key));
         }
 
         return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;
     }
 
-    function createQuantityHeaderToggle(data)
+    function createQuantityHeaderToggle(quantityType)
     {
         var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
-        var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle({id:((data.type).concat('QuantityHeaderToggle')), class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+        var iconToggle = CreateNewElement('i', [ ['class',QuantityTypes[quantityType].iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle({id:(quantityType.concat('QuantityHeaderToggle')), class:QuantityTypes[quantityType].toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
 
-        return CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
+        return CreateNewElement('div', [ ['class', QuantityTypes[quantityType].wrapperClass] ], popoverToggle);
     }
 
     return {
