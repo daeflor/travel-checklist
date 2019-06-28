@@ -6,17 +6,7 @@ window.ListController = (function()
 
     function init()
     {     
-        listenForEvent_ScreenChanged(); //Whenever changes, hide the Active Settings View and Quantity Popover
-        listenForEvent_NavigatedHome(); //When the user navigates home, hide the List Screen and show the Home Screen. (Works using either the Home button or 'back' browser command).
-        listenForEvent_NewListButtonPressed(); //When the New List button is pressed, add a new List to the checklist data and the Dom
-        listenForEvent_NewListItemButtonPressed(); //When the New List Item button is pressed, add a new List Item to the checklist data and the Dom
-        listenForEvent_QuantityHeaderPopoverShown(); //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        // for (const key in QuantityTypes)
-        // {
-        //     listenForEvent_QuantityHeaderPopoverShown(key);
-        // }
+        setupListeners_Ongoing();
 
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
@@ -66,6 +56,17 @@ window.ListController = (function()
         window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
 
+    // function listItemQuantityValueUpdated(quantityType, listItemId, updatedValue, updatedBalance)
+    // {
+    //     window.View.Render('UpdateListItemQuantityText', {id:listItemId, quantityType:quantityType, updatedValue:updatedValue});
+    //     listItemBalanceUpdated(listItemId, updatedBalance);
+    // }
+
+    // function listItemBalanceUpdated(listItemId, updatedBalance)
+    // {
+    //     window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:updatedBalance});
+    // }
+
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
         //For example: setupListItemListeners or setupListeners_ListItem
     /**
@@ -84,14 +85,25 @@ window.ListController = (function()
         setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
 
         //TODO Does this 'for' need to be here or can it be done in the listen function
+            //If it's done in the listen functions then, in this case, it will be done twice instead of once...
         for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
         
+            //TODO this doesn't need to be done in the case of new list items, only loaded ones
             window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:key, updatedValue:listItem.quantities[key]});
         }        
     } 
+
+    function setupListeners_Ongoing()
+    {
+        listenForEvent_ScreenChanged(); //Whenever changes, hide the Active Settings View and Quantity Popover
+        listenForEvent_NavigatedHome(); //When the user navigates home, hide the List Screen and show the Home Screen. (Works using either the Home button or 'back' browser command).
+        listenForEvent_NewListButtonPressed(); //When the New List button is pressed, add a new List to the checklist data and the Dom
+        listenForEvent_NewListItemButtonPressed(); //When the New List Item button is pressed, add a new List Item to the checklist data and the Dom
+        listenForEvent_QuantityHeaderPopoverShown(); //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+    }
 
     function setupListenersAndUI_List(listId, listName, listType)
     {
@@ -103,8 +115,8 @@ window.ListController = (function()
     }
 
     //TODO Could extract the List ID from the List Item ID instead of passing it as a param, although that wouldn't be any easier
-    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantitiesArray)
-    {
+    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantities)
+    {   
         window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName});
 
         //let _quantitiesArray = listItemQuantitiesArray || [0,0,0,0];
@@ -215,10 +227,12 @@ window.ListController = (function()
         //const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
         //window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
 
+        let _controllerReaction;
+
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
         for (const key in QuantityTypes)
         {
-            const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
+            _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
             window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:key});
         }
     }
