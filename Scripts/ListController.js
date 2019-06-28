@@ -1,16 +1,7 @@
 'use strict';
-
 window.ListController = (function()
 {    
     let activeListId = null;
-
-    function init()
-    {     
-        setupListeners_Ongoing();
-
-        //Load the list data from storage and pass it along to the View
-        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
-    }
 
     /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
     //TODO ^ This description is no longer accurate
@@ -47,6 +38,8 @@ window.ListController = (function()
         }
     }
 
+    /** Private Helper Functions To Render Updates To Lists & List Items **/ 
+
     function renderListBalance(listId)
     {
         //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
@@ -60,6 +53,8 @@ window.ListController = (function()
         window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
         window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
+
+    /** Private Functions To Setup Collections Of Listeners **/ 
 
     function setupListeners_Ongoing()
     {
@@ -127,7 +122,7 @@ window.ListController = (function()
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
     }
 
-    /** Private Helper Methods To Setup Listeners For Lists & List Items **/
+    /** Private Functions To Setup Listeners For Individual Lists & List Items **/
 
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
@@ -332,11 +327,16 @@ window.ListController = (function()
         window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
     }
 
-    /** Publicly Exposed Methods To Setup UI & Load List Data **/
+    /** Publicly Exposed Method to Setup UI & Load List Data **/
 
-    /** Experimental & In Progress **/
+    function init()
+    {     
+        //Setup ongoing listeners for the app which are not dependent on specific Lists or List Items
+        setupListeners_Ongoing();
 
-    /** Publicly Exposed Methods **/
+        //Load the checklist data from storage and pass it along to the View
+        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+    }
 
     return {
         Init : init
