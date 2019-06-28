@@ -408,7 +408,7 @@ window.View = (function()
                 let elementFoundCallback = function(element)
                 {          
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities));
 
                     //Update the reorder buttons for all the List Items in the added element's parent List
                     updateReorderButtons(element);

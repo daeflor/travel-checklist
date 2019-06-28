@@ -3,7 +3,7 @@ window.CustomTemplates = (function ()
 {   
     //TODO re-order these methods for better readability
 
-    function createListItemFromTemplate(id, name)
+    function createListItemFromTemplate(id, name, quantities)
     {
         //Create the div wrapper for the entire List Item
         var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
@@ -18,10 +18,13 @@ window.CustomTemplates = (function ()
         //Add the List Item Name to the DOM as a child of the List Item div wrapper
         wrapper.appendChild(nameWrapper);
 
-        //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
         for (const key in QuantityTypes) //For each quantity type...
         {
-            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key)); 
+            //Assign the initial value which should be displayed for the given quantity type, either using the values loaded from storage, if provided, or defaulting to zero otherwise.
+            const _quantityValue = (quantities != null && quantities[key] != null) ? quantities[key] : 0;
+
+            //Create a quantity toggle element from the template and add it to the DOM as a child of the List Item div wrapper
+            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key, _quantityValue)); 
         }
 
         //Create the Settings View for the List Item
@@ -99,14 +102,14 @@ window.CustomTemplates = (function ()
         }
     }
 
-    function createListItemQuantityToggleFromTemplate(listItemId, type)
+    function createListItemQuantityToggleFromTemplate(listItemId, type, quantityValue)
     {
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
         var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
         var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
 
         //Create the element that toggles the visibility of the modifier's popover
-        var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:0, children:[buttonMinus, buttonPlus], trigger:'manual'});
+        var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:quantityValue, children:[buttonMinus, buttonPlus], trigger:'manual'});
 
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }
