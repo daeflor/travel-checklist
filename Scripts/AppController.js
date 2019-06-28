@@ -17,7 +17,7 @@
 window.AppNavigationController = (function() 
 {
     const hashChangedCallbacks = {
-        hashChanged: null,
+        screenChanged: null,
         navigatedHome: null
     };
 
@@ -65,7 +65,7 @@ window.AppNavigationController = (function()
         if (isValidScreen(hashChangeEvent.newURL) === true)
         {
             //Execute the ListController's hash changed callback function 
-            hashChangedCallbacks.hashChanged();
+            hashChangedCallbacks.screenChanged();
 
             //TODO Instead of trying to catch all the edge cases here, it might be easiest to just check if the new screen is a List Screen
                 //If it is, display the List. (This case might actually not be necessary because there are dedicated Go To List buttons/logic)
@@ -142,21 +142,11 @@ window.AppNavigationController = (function()
         return (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13) ? true : false;
     }
 
-    // function listenForEvent_HashChanged(callback)
-    // {
-    //     hashChangedCallbacks.hashChanged = callback;
-    // }
-
-    // function listenForEvent_NavigatedHome(callback)
-    // {
-    //     hashChangedCallbacks.navigatedHome = callback;
-    // }
-
     function listenForEvent(eventName, callback)
     {
-        if (eventName == 'HashChanged')
+        if (eventName == 'ScreenChanged')
         {
-            hashChangedCallbacks.hashChanged = callback;
+            hashChangedCallbacks.screenChanged = callback;
         }
         else if (eventName == 'NavigatedHome')
         {

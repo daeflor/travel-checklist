@@ -6,16 +6,17 @@ window.ListController = (function()
 
     function init()
     {     
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        for (const key in QuantityTypes)
-        {
-            listenForEvent_QuantityHeaderPopoverShown(key);
-        }
-
-        listenForEvent_HashChanged(); //When the URL Hash changes, hide the Active Settings View and Quantity Popover
+        listenForEvent_ScreenChanged(); //Whenever changes, hide the Active Settings View and Quantity Popover
         listenForEvent_NavigatedHome(); //When the user navigates home, hide the List Screen and show the Home Screen. (Works using either the Home button or 'back' browser command).
         listenForEvent_NewListButtonPressed(); //When the New List button is pressed, add a new List to the checklist data and the Dom
         listenForEvent_NewListItemButtonPressed(); //When the New List Item button is pressed, add a new List Item to the checklist data and the Dom
+        listenForEvent_QuantityHeaderPopoverShown(); //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+        // for (const key in QuantityTypes)
+        // {
+        //     listenForEvent_QuantityHeaderPopoverShown(key);
+        // }
 
         //Load the list data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
@@ -82,6 +83,7 @@ window.ListController = (function()
 
         setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
 
+        //TODO Does this 'for' need to be here or can it be done in the listen function
         for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
@@ -109,6 +111,7 @@ window.ListController = (function()
 
         setupListeners_SettingsView(listItemId); //Setup listeners related to the List Item's Settings View
 
+        //TODO Does this 'for' need to be here or can it be done in the listen function
         for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
@@ -139,15 +142,17 @@ window.ListController = (function()
     //TODO these functions may be more readable if more whitespace is included, with comments above instead of to the right. 
         //Re-assess once the whole listenForEvent transition is complete.
 
+    //TODO Document these methods with JSDOC
+
     //--- App Navigation ---//
 
-    function listenForEvent_HashChanged() //TODO maybe rename this to ScreenChanged?
+    function listenForEvent_ScreenChanged()
     {
         const _viewReaction = function() {
             window.View.Render('HideActiveSettingsView'); //Hide the Active Settings View
             window.View.Render('HideActiveQuantityPopover'); //Hide the Active Quantity Popover
         };
-        window.AppNavigationController.ListenForEvent('HashChanged', _viewReaction);
+        window.AppNavigationController.ListenForEvent('ScreenChanged', _viewReaction);
     }
 
     function listenForEvent_NavigatedHome() 
@@ -204,11 +209,18 @@ window.ListController = (function()
         window.View.Bind('NewListItemButtonPressed', _eventTriggered);
     }
 
-    function listenForEvent_QuantityHeaderPopoverShown(quantityType)
+    function listenForEvent_QuantityHeaderPopoverShown()
     {
         //Set up the listener so that When the Clear button is pressed, the quantity values for the List Item are cleared, for the given quantity type
-        const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
-        window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
+        //const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
+        //window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
+
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+        for (const key in QuantityTypes)
+        {
+            const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
+            window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:key});
+        }
     }
 
     function listenForEvent_ClearButtonPressed(quantityType)
