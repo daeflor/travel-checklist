@@ -37,7 +37,12 @@ window.ListController = (function()
             for (let j = 0; j < loadedListData[i].listItems.length; j++) 
             {
                 //Add the List Item's elements to the DOM and set up the binds for interactions with them
-                renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
+                //renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
+
+                //TODO this is temporary
+                    //In the future, may use Object.assign to pass quantity values without providing a reference to the actual values that get stored in local storage.
+                const _listItem = loadedListData[i].listItems[j];
+                setupListenersAndUI_ListItem(loadedListData[i].id, _listItem.id, _listItem.name, _listItem.quantities, window.ChecklistBalanceUtilities.CalculateListItemBalance(_listItem.quantities))
             }
         }
     }
@@ -55,46 +60,6 @@ window.ListController = (function()
         window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
         window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
-
-    // function listItemQuantityValueUpdated(quantityType, listItemId, updatedValue, updatedBalance)
-    // {
-    //     window.View.Render('UpdateListItemQuantityText', {id:listItemId, quantityType:quantityType, updatedValue:updatedValue});
-    //     listItemBalanceUpdated(listItemId, updatedBalance);
-    // }
-
-    // function listItemBalanceUpdated(listItemId, updatedBalance)
-    // {
-    //     window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:updatedBalance});
-    // }
-
-    //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
-        //For example: setupListItemListeners or setupListeners_ListItem
-    /**
-     * Sends to the View any data needed to render the specified List Item, and then sets up all applicable bindings
-     * @param {string} listId The unique identfier for the List to which the specified List Item belongs
-     * @param {object} listItem The object containing the data for the List Item to be rendered and bound
-     */
-    function renderAndBindLoadedListItem(listId, listItem)
-    {                  
-        window.View.Render('AddListItem', {listId:listId, listItemId:listItem.id, listItemName:listItem.name}); //TODO. View needs ID, name, and quantities (currently)       
-        
-        //TODO this doesn't need to be done in the case of new list items, only loaded ones
-            //Assuming the stylesheet has a default color
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities)});
-
-        setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
-
-        //TODO Does this 'for' need to be here or can it be done in the listen function
-            //If it's done in the listen functions then, in this case, it will be done twice instead of once...
-        for (const key in QuantityTypes) //For each quantity type...
-        {
-            listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
-            listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
-        
-            //TODO this doesn't need to be done in the case of new list items, only loaded ones
-            window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:key, updatedValue:listItem.quantities[key]});
-        }        
-    } 
 
     function setupListeners_Ongoing()
     {
@@ -114,16 +79,34 @@ window.ListController = (function()
         setupListeners_SettingsView(listId); //Setup listeners related to the List's Settings View
     }
 
+    //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
     //TODO Could extract the List ID from the List Item ID instead of passing it as a param, although that wouldn't be any easier
-    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantities)
+    //TODO listItemQuantities & listItemBalance could be optional or could be required. Either way can be done. Currently they are optional.   
+    /**
+     * Sends to the View any data needed to render the specified List Item, and then sets up all applicable listeners
+     * @param {string} listId The unique identfier for the List to which the specified List Item belongs
+     * @param {string} listItemId The unique identfier for the List Item being set up
+     * @param {string} listItemName The name of the List Item
+     * @param {object} [listItemQuantities] [Optional] An object containing the initial quantity values to display for the List Item
+     * @param {string} [listItemBalance] [Optional] The initial List Item balance string value, based on its quantity values
+     */
+    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantities, listItemBalance)
     {   
-        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName});
+        //Pass along to the View all the List Item data provided in order to generate its UI and add it to the DOM
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities});
 
-        //let _quantitiesArray = listItemQuantitiesArray || [0,0,0,0];
+        //If an initial balance was provided for the List Item (i.e. the List Item was loaded from Storage)...
+        if (listItemBalance != null)
+        {
+            //Update the color of the List Item's name toggle
+            window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:listItemBalance});
+        }
 
-        setupListeners_SettingsView(listItemId); //Setup listeners related to the List Item's Settings View
+        //Setup listeners related to the List Item's Settings View
+        setupListeners_SettingsView(listItemId); 
 
         //TODO Does this 'for' need to be here or can it be done in the listen function
+            //If it's done in the listen functions then, in this case, it will be done twice instead of once...
         for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
@@ -213,7 +196,7 @@ window.ListController = (function()
             //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
         const _eventTriggered = function() { 
             const _viewReaction = function(newListItem) {
-                setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name);//Add the new List Item to the DOM and setup listeners for its elements
+                setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name); //Add the new List Item to the DOM and setup listeners for its elements
                 window.View.Render('ExpandSettingsView', {id:newListItem.id}); //Once the new List Item has been added to the DOM, expand its Settings View
             };
             window.Model.AddNewListItem(activeListId, _viewReaction);
@@ -227,12 +210,10 @@ window.ListController = (function()
         //const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
         //window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
 
-        let _controllerReaction;
-
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
         for (const key in QuantityTypes)
         {
-            _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
+            const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
             window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:key});
         }
     }
