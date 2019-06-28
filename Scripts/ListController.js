@@ -1,33 +1,5 @@
 'use strict';
 
-const ChecklistEvents = {
-    //App
-    HashChanged: 'HashChanged', //Can result in up to three reactions. They are not mutually exclusive. 
-
-    //Home Screen
-    GoToListButtonPressed: 'GoToListButtonPressed',
-    NewListButtonPressed: 'NewListButtonPressed',
-
-    //List Screen Headers & Footers
-    NewListItemButtonPressed: 'NewListItemButtonPressed',
-    QuantityHeaderPopoverShown: 'QuantityHeaderPopoverShown',
-    ClearButtonPressed: 'ClearButtonPressed',
-
-    //Settings Views
-    SettingsViewExpansionStarted: 'SettingsViewExpansionStarted',
-    NameEdited: 'NameEdited',
-    DeleteButtonPressed: 'DeleteButtonPressed', //TODO Can result in two separate actions. They are currently mutually exclusive. 
-    MoveUpwardsButtonPressed: 'MoveUpwardsButtonPressed',
-    MoveDownwardsButtonPressed: 'MoveDownwardsButtonPressed',
-
-    //Quantity Toggles & Popovers
-    QuantityToggleSelected: 'QuantityToggleSelected',
-    QuantityPopoverShown: 'QuantityPopoverShown',
-    DecrementQuantityButtonPressed: 'DecrementQuantityButtonPressed',
-    IncrementQuantityButtonPressed: 'IncrementQuantityButtonPressed',
-    ClickDetectedOutsidePopover: 'ClickDetectedOutsidePopover'
-};
-
 window.ListController = (function()
 {    
     let activeListId = null;
@@ -35,7 +7,7 @@ window.ListController = (function()
     function init()
     {     
         //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        for (let key in QuantityType)
+        for (const key in QuantityTypes)
         {
             listenForEvent_QuantityHeaderPopoverShown(key);
         }
@@ -66,7 +38,9 @@ window.ListController = (function()
         for (let i = 0; i < loadedListData.length; i++) 
         {
             //Add the List elements to the DOM and set up the binds for interactions with them
-            renderAndBindLoadedList(loadedListData[i]);
+            //renderAndBindLoadedList(loadedListData[i]);
+            setupListenersAndUI_List(loadedListData[i].id, loadedListData[i].name, loadedListData[i].type); //Add the new List to the DOM and setup listeners for its elements
+            renderListBalance(loadedListData[i].id); //TODO this part may be doable in the Model with the upcoming refactor (i.e. Controller may no longer have to call Model.GetListBalance() here). However, it still needs to be done when navigating home
             
             //For each List Item in the List...
             for (let j = 0; j < loadedListData[i].listItems.length; j++) 
@@ -77,35 +51,18 @@ window.ListController = (function()
         }
     }
 
-    //TODO why the name "loaded"? Seems unnecessary. And should rendering / adding the list to the DOM be done separately than creating the binds?
-    /**
-     * Sends to the View any data needed to render the specified List, and then sets up all applicable bindings
-     * @param {object} list The object containing the data for the List to be rendered and bound
-     */
-    function renderAndBindLoadedList(list)
-    {
-        //TODO Might be best to keep renders, binds, and loads separate
-
-        //window.View.Render('AddList', {listId:list.id, listName:list.name, listType:checklistType});
-        window.View.Render('AddList', {list:list}); //Add the List elements to the DOM
-
-        //TODO this doesn't need to be done in the case of new lists, only loaded ones
-            //Assuming the stylesheet has a default color
-        fetchAndRenderListBalance(list.id);
-
-        //TODO setupListeners_List
-        
-        listenForEvent_GoToListButtonPressed(list.id); //When the Go To List button is pressed, display the list
-
-        setupSettingsViewListeners(list.id); //Setup listeners related to the List's Settings View
-    }
-
-    function fetchAndRenderListBalance(listId) //TODO This name no longer makes much sense, since the balance isn't being fetched
+    function renderListBalance(listId)
     {
         //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
             //This is also the only Model call that doesn't require updates to the model but does access it get information.
         let _listBalance = window.Model.GetListBalance(listId);
         window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
+    }
+
+    function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
+    {
+        window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
+        window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -117,39 +74,59 @@ window.ListController = (function()
      */
     function renderAndBindLoadedListItem(listId, listItem)
     {                  
-        //TODO Should there be a View.Load method instead?
-        window.View.Render('AddListItem', {listId:listId, listItem:listItem});          
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItem.id, listItemName:listItem.name}); //TODO. View needs ID, name, and quantities (currently)       
         
         //TODO this doesn't need to be done in the case of new list items, only loaded ones
             //Assuming the stylesheet has a default color
-        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities)});
+        window.View.Render('UpdateNameToggleColor', {id:listItem.id, balance:window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities)});
 
-        setupSettingsViewListeners(listItem.id); //Setup listeners related to the List Item's Settings View
+        setupListeners_SettingsView(listItem.id); //Setup listeners related to the List Item's Settings View
 
-        for (let key in QuantityType) //For each quantity type...
+        for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItem.id, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItem.id, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements
+        
+            window.View.Render('UpdateListItemQuantityText', {id:listItem.id, quantityType:key, updatedValue:listItem.quantities[key]});
         }        
+    } 
+
+    function setupListenersAndUI_List(listId, listName, listType)
+    {
+        window.View.Render('AddList', {listId:listId, listName:listName, listType:listType}); //Add the List elements to the DOM
+        
+        listenForEvent_GoToListButtonPressed(listId); //When the Go To List button is pressed, display the list
+
+        setupListeners_SettingsView(listId); //Setup listeners related to the List's Settings View
+    }
+
+    //TODO Could extract the List ID from the List Item ID instead of passing it as a param, although that wouldn't be any easier
+    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantitiesArray)
+    {
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName});
+
+        //let _quantitiesArray = listItemQuantitiesArray || [0,0,0,0];
+
+        setupListeners_SettingsView(listItemId); //Setup listeners related to the List Item's Settings View
+
+        for (const key in QuantityTypes) //For each quantity type...
+        {
+            listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
+            listenForEvent_QuantityPopoverShown(listItemId, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements            
+        }
     }
 
     /**
      * Sets up the listener for the various user interactions related to a List or List Item's Settings View
      * @param {string} id The ID of the List or List Item
      */
-    function setupSettingsViewListeners(id)
+    function setupListeners_SettingsView(id)
     {
         listenForEvent_SettingsViewExpansionStarted(id); //When the animation to expand the Settings View starts, hide the Active Settings View
         listenForEvent_NameEdited(id); //When the name text field is modified, update the name of the checklist object
         listenForEvent_DeleteButtonPressed(id); //When the delete button is pressed, remove the checklist object
         listenForEvent_MoveUpwardsButtonPressed(id); //When the Move Upwards button is pressed, move the checklist object up by one position
         listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
-    }
-
-    function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
-    {
-        window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
-        window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
     }
 
     /** Private Helper Methods To Setup Listeners For Lists & List Items **/
@@ -178,7 +155,7 @@ window.ListController = (function()
         const _viewReaction = function() {
             window.View.Render('HideList', {id:activeListId}); //Hide the List which was previously active
             window.View.Render('ShowHomeScreen'); //Display the Home Screen
-            fetchAndRenderListBalance(activeListId); //Calculate the balance of the List which was previously active
+            renderListBalance(activeListId); //Calculate the balance of the List which was previously active
             activeListId = null;
         };
         window.AppNavigationController.ListenForEvent('NavigatedHome', _viewReaction);
@@ -200,7 +177,7 @@ window.ListController = (function()
     function listenForEvent_NewListButtonPressed()
     {
         const _viewReaction = function(newList) {
-            renderAndBindLoadedList(newList); //Add the new List to the DOM and setup listeners for its elements
+            setupListenersAndUI_List(newList.id, newList.name, newList.type); //Add the new List to the DOM and setup listeners for its elements
             window.View.Render('ExpandSettingsView', {id:newList.id}); //Once the new List has been added to the DOM, expand its Settings View
         };
         const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction); //TODO it's confusing using bind and Bind
@@ -219,7 +196,7 @@ window.ListController = (function()
             //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
         const _eventTriggered = function() { 
             const _viewReaction = function(newListItem) {
-                renderAndBindLoadedListItem(activeListId, newListItem); //Add the new List Item to the DOM and setup listeners for its elements
+                setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name);//Add the new List Item to the DOM and setup listeners for its elements
                 window.View.Render('ExpandSettingsView', {id:newListItem.id}); //Once the new List Item has been added to the DOM, expand its Settings View
             };
             window.Model.AddNewListItem(activeListId, _viewReaction);
@@ -253,9 +230,6 @@ window.ListController = (function()
 
     function listenForEvent_NameEdited(id)
     {
-        //const _viewReaction = window.View.Render.bind('UpdateName', {id:id, updatedValue:this.updatedValue});
-        //handleModelInteraction.bind({id:id, updatedValue:inputArgument.updatedValue}, 'UpdateName');  
-
         const _viewReaction = function(updatedValue) {
             window.View.Render('UpdateName', {id:id, updatedValue:updatedValue});
         };
@@ -361,36 +335,3 @@ window.ListController = (function()
         Init : init
     };
 })();
-
-const ListType = {
-    Travel: 'travel',
-    Checklist: 'shopping'
-};
-
-//TODO Consider moving this to a separate file. Should this be in ChecklistUtilities instead?
-const QuantityType = {
-    needed: {
-        type: 'needed', //TODO this should be temp. Can the same be accomplished using 'key'?
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
-    },
-    luggage: {
-        type: 'luggage',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-suitcase fa-lg iconHeader'
-    },
-    wearing: {
-        type: 'wearing',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-male fa-lg iconHeader'
-    },
-    backpack: {
-        type: 'backpack',
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
-        iconClass: 'fa fa-briefcase iconHeader'
-    },
-};

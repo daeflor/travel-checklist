@@ -1,10 +1,16 @@
 'use strict';
-window.ChecklistUtilities = (function()
+window.ChecklistBalanceUtilities = (function()
 {
+    const BalanceCategories = {
+        None: 'None',
+        Balanced: 'Balanced',
+        Unbalanced: 'Unbalanced'
+    };
+
     /**
      * Calculates the balance of a List Item based on its different quantity values
      * @param {object} quantities The List Item's 'quantities' object
-     * @returns The balance of the List Item, in the form of a ChecklistObjectBalance value
+     * @returns {string} The balance of the List Item, in the form of a BalanceCategories string value
      */
     function calculateListItemBalance(quantities)
     {
@@ -13,27 +19,27 @@ window.ChecklistUtilities = (function()
 
         if (_listItemBalance !== 0) //If the balance is not equal to zero, return Unbalanced
         {
-            return ChecklistObjectBalance.Unbalanced;
+            return BalanceCategories.Unbalanced;
         } 
         else if (quantities.needed !== 0) //Else, if the 'needed' quantity is not equal to zero, return Balanced
         {
-            return ChecklistObjectBalance.Balanced;
+            return BalanceCategories.Balanced;
         }
         else //Else return None
         {
-            return ChecklistObjectBalance.None;
+            return BalanceCategories.None;
         }
     }
 
     /**
      * Calculates the balance of a List based on the balance of its List Items
      * @param {array} listItems The array of List Items that the List comprises
-     * @returns The balance of the List, in the form of a ChecklistObjectBalance value
+     * @returns {string} The balance of the List, in the form of a BalanceCategories string value
      */
     function calculateListBalance(listItems)
     {
         //Set the List's balance as None by default
-        let _listBalance = ChecklistObjectBalance.None;
+        let _listBalance = BalanceCategories.None;
 
         //For each List Item in the List...
         for (let i = 0; i < listItems.length; i++)
@@ -42,15 +48,15 @@ window.ChecklistUtilities = (function()
             let _listItemBalance = calculateListItemBalance(listItems[i].quantities);
 
             //If the List Item is Unbalanced, then the List must also be, so set the List's balance as Unbalanced
-            if (_listItemBalance === ChecklistObjectBalance.Unbalanced)
+            if (_listItemBalance === BalanceCategories.Unbalanced)
             {
-                _listBalance = ChecklistObjectBalance.Unbalanced;
+                _listBalance = BalanceCategories.Unbalanced;
                 break;
             } 
             //Else, if the List Item is Balanced, then set the List's balance as Balanced (as it can no longer be None, and has not yet been determined to be Unbalanced)
-            else if (_listItemBalance === ChecklistObjectBalance.Balanced)
+            else if (_listItemBalance === BalanceCategories.Balanced)
             {
-                _listBalance = ChecklistObjectBalance.Balanced;
+                _listBalance = BalanceCategories.Balanced;
             }
         }
 
@@ -64,12 +70,11 @@ window.ChecklistUtilities = (function()
      */
     function getBorderColorFromBalance(balance)
     {
-       return (balance === ChecklistObjectBalance.Unbalanced) ? 'peru' //lightsalmon is also good
-            : (balance === ChecklistObjectBalance.Balanced)   ? 'mediumseagreen'
+       return (balance === BalanceCategories.Unbalanced) ? 'peru' //lightsalmon is also good
+            : (balance === BalanceCategories.Balanced)   ? 'mediumseagreen'
             :                                                   'rgb(77, 77, 77)'; //"darkgrey" is also good;
     }
 
-    //TODO All of these utilities have to do with Balance. Should this file be renamed to be specific to Balance utilities
     return {
         CalculateListItemBalance: calculateListItemBalance,
         CalculateListBalance: calculateListBalance,
@@ -77,11 +82,32 @@ window.ChecklistUtilities = (function()
     };
 })();
 
-//TODO Not sure if this should be inside the namespace or not. 
-    //Or in another file altogether, along with all other checklist enums.
-        //Or should all the other checklist enums be brought into this file?
-const ChecklistObjectBalance = {
-    None: 'None',
-    Balanced: 'Balanced',
-    Unbalanced: 'Unbalanced'
+//TODO Not sure if these checklist enums should be in another file altogether, separate from the ChecklistBalanceUtilities
+
+const ListTypes = {
+    Travel: 'travel',
+    Checklist: 'shopping'
+};
+
+const QuantityTypes = {
+    needed: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
+    },
+    luggage: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-suitcase fa-lg iconHeader'
+    },
+    wearing: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-male fa-lg iconHeader'
+    },
+    backpack: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
+        iconClass: 'fa fa-briefcase iconHeader'
+    },
 };

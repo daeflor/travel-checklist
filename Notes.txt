@@ -15,7 +15,6 @@ TO-DOs:
 
 Upcoming To-Do List:
 - Address the TODOs in the ListController from recent commit
-- Tag and delete old branches
 - WIP: Reduce reliance on options object, where possible (or at least not always pass around the whole object)
     - Meanwhile/alternately, for any functions that take an 'options' parameters, maybe assign the used properties to local variables that will be used throughout the function (e.g. const listId = options.checklistObject.id) 
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
@@ -44,6 +43,7 @@ Features:
         - Could also consider using a different font library, if not going to be using CDN anyway.
 - Does it make sense to have a 'Car' or 'Other' column in the Travel Checklist
 - Make columns modular, so that they can be added or removed by the user, and the user can choose what icon to use for them (and therefore choose the category).
+- Could have a dark mode toggle
 
 Usability & Appearance (UX & UI):
 - It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list

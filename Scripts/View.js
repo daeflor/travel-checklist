@@ -3,7 +3,7 @@ window.View = (function()
 {
     //TODO The Bind and Render calls could all use error handling
 
-    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityType)
+    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
     var elements = {  
         homeHeader : null,
         homeScreen : null,
@@ -366,16 +366,16 @@ window.View = (function()
                     window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
                 }
             }, 
-            AddList: function() //Expected parameters: list
+            AddList: function() //Expected parameters: listId, listName, listType
             {
                 //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
                 
                 //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.list));
+                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType));
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
-                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.list.id));
+                elements.listScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
                 //Update the reorder buttons for all the List toggles in the Home Screen
                 updateReorderButtons(elements.homeScreenListElements);
@@ -402,13 +402,13 @@ window.View = (function()
                 //Find the List toggle element which matches the given ID, and then remove it
                 findChecklistElement(parameters.id, elementFoundCallback)
             },
-            AddListItem: function() //Expected parameters: listId, listItem
+            AddListItem: function() //Expected parameters: listId, listItemId, listItemName
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 let elementFoundCallback = function(element)
                 {          
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItem));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName));
 
                     //Update the reorder buttons for all the List Items in the added element's parent List
                     updateReorderButtons(element);
@@ -439,7 +439,7 @@ window.View = (function()
             {
                 let elementFoundCallback = function(element)
                 {      
-                    element.style.borderColor = window.ChecklistUtilities.GetBorderColorFromBalance(parameters.balance);
+                    element.style.borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.balance);
                 };
 
                 findChecklistElement(parameters.id, elementFoundCallback, 'NameButton');

@@ -93,7 +93,7 @@ window.Model = (function()
         let newList = {
 			id : new Date().getTime(), 
             name : '',
-            type: ListType.Travel, //TODO this is currently hard-coded
+            type: ListTypes.Travel, //TODO this is currently hard-coded
             listItems : []
         };
         
@@ -230,7 +230,7 @@ window.Model = (function()
     function modifyQuantity(id, callback, modification, quantityType)
     {
         //If a valid modification and quantity type is provided...
-        if (QuantityType[quantityType] != null && (modification === 'Decrement' || modification === 'Increment' || modification === 'Clear'))
+        if (QuantityTypes[quantityType] != null && (modification === 'Decrement' || modification === 'Increment' || modification === 'Clear'))
         {
             //Whenever an individual List Item's quantity value gets updated, store the checklist data and execute the callback function
             const _onSuccessfulModification = function(listItem) 
@@ -239,7 +239,7 @@ window.Model = (function()
                 storeChecklistData();
 
                 //Calculate the updated List Item's new balance
-                const _listItemBalance = window.ChecklistUtilities.CalculateListItemBalance(listItem.quantities);
+                const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities);
 
                 //Execute the callback, passing as arguments the List Item's ID, updated quantity value, and balance
                 callback(listItem.id, listItem.quantities[quantityType], _listItemBalance);
@@ -308,9 +308,9 @@ window.Model = (function()
 
     //TODO This is currently not being used
     // /**
-    //  * Get a the balance of a List Item matching the provided ID, and using the calculation function in ChecklistUtilities
+    //  * Get a the balance of a List Item matching the provided ID, and using the calculation function in ChecklistBalanceUtilities
     //  * @param {string} listItemId The ID of the List Item
-    //  * @returns {string} the List Item's balance, in the form of a ChecklistObjectBalance value
+    //  * @returns {string} the List Item's balance, in the form of a BalanceCategories value
     //  */
     // function getListItemBalance(listItemId)
     // {
@@ -319,7 +319,7 @@ window.Model = (function()
 
     //     if (_data.object.quantities != null)
     //     {
-    //         return window.ChecklistUtilities.CalculateListItemBalance(_data.object.quantities);
+    //         return window.ChecklistBalanceUtilities.CalculateListItemBalance(_data.object.quantities);
     //     }
     //     else
     //     {
@@ -328,9 +328,9 @@ window.Model = (function()
     // }
 
     /**
-     * Get a the balance of a List matching the provided ID, and using the calculation function in ChecklistUtilities
+     * Get a the balance of a List matching the provided ID, using the calculation function in ChecklistBalanceUtilities
      * @param {string} listId The ID of the List
-     * @returns {string} the List's balance, in the form of a ChecklistObjectBalance value
+     * @returns {string} the List's balance, in the form of a string
      */
     function getListBalance(listId)
     {
@@ -339,7 +339,7 @@ window.Model = (function()
 
         if (_data.object.listItems != null)
         {
-            return window.ChecklistUtilities.CalculateListBalance(_data.object.listItems);
+            return window.ChecklistBalanceUtilities.CalculateListBalance(_data.object.listItems);
         }
         else
         {

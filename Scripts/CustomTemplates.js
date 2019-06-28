@@ -3,13 +3,13 @@ window.CustomTemplates = (function ()
 {   
     //TODO re-order these methods for better readability
 
-    function createListItemFromTemplate(listItem)
+    function createListItemFromTemplate(id, name)
     {
         //Create the div wrapper for the entire List Item
-        var wrapper = CreateNewElement('div', [ ['id',listItem.id], ['class','row divItemRow'] ]);
+        var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(listItem.id), 'buttonListItem buttonListItemName', listItem.name, 'NameButton-'.concat(listItem.id));
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListItemToggle', name, 'NameButton-'.concat(id));
         //TODO could pass an optional toggleBorderColor parameter to the helper function above, to set an initial color for the list item toggle
 
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
@@ -19,17 +19,15 @@ window.CustomTemplates = (function ()
         wrapper.appendChild(nameWrapper);
 
         //Create Modifier elements from the template and add them to the DOM as children of the List Item div wrapper
-        for (var key in listItem.quantities)
+        for (const key in QuantityTypes) //For each quantity type...
         {
-            //TODO could forego the 3rd param (initialValue), and just have the controller call UpdateListItemQuantityText after adding the List Item...
-                //That seems like a lot of extra work though... But then at least this function would only need the list id and name (not the quantities at all)
-            wrapper.appendChild(createListItemModifierFromTemplate(listItem.id, key, listItem.quantities[key])); 
+            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key)); 
         }
 
         //Create the Settings View for the List Item
         var settingsWrapper = createSettingsViewFromTemplate(
-            listItem.id, 
-            listItem.name, 
+            id, 
+            name, 
             'row', 
             function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
         );
@@ -45,18 +43,18 @@ window.CustomTemplates = (function ()
         return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
     }
 
-    function createListToggleFromTemplate(list)
+    function createListToggleFromTemplate(id, name, type)
     {
-        if (list != null) //TODO Use try catch instead
+        if (id != null && name != null && type != null) //TODO Use try catch instead
         {
             //window.DebugController.Print("Request received to create a List Toggle from the Template, for List ID: " + list.id);
 
-            var wrapper = CreateNewElement('div', [ ['id',list.id], ['class','row divItemRow divListToggleWrapper'] ]);
+            var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow divListToggleWrapper'] ]);
 
             /* Name Toggle/Button */
 
             //Create the name button/toggle that can be selected to open or close the settings view for the List
-            var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(list.id), 'buttonListItem buttonListToggle', list.name, 'NameButton-'.concat(list.id));
+            var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListToggle', name, 'NameButton-'.concat(id));
             
             //Create the div wrapper for the List Name button/toggle
             var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
@@ -70,7 +68,7 @@ window.CustomTemplates = (function ()
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:(document.location.hash).concat('/').concat(data.listId)}); //'#'.concat(data.listType).concat('/').concat(data.listId) - I kind of like forcing it to the given list type...
             
             //var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'html/list.html#/'.concat(data.listType).concat('/').concat(data.listId)}); 
-            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(list.id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#'.concat(list.type).concat('/').concat(list.id)}); 
+            var navButton = CreateHyperlinkWithIcon({buttonId:('GoToList-'.concat(id)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#'.concat(type).concat('/').concat(id)}); 
             
             //var navButton = CreateButtonWithHyperlink({buttonId:('GoToList-'.concat(data.listId)), buttonClass:'buttonNavigateToList', iconClass:'fa fa-angle-double-right', hyperlink:'#/list/'.concat(data.listId)});
 
@@ -81,8 +79,8 @@ window.CustomTemplates = (function ()
 
             //Create the Settings View for the List
             var settingsWrapper = createSettingsViewFromTemplate(
-                list.id, 
-                list.name, 
+                id, 
+                name, 
                 'list', 
                 function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
             );
@@ -97,20 +95,18 @@ window.CustomTemplates = (function ()
         }
         else
         {
-            window.DebugController.LogError("Request received to create a List Toggle but no valid List object was provided.");
+            window.DebugController.LogError("Request received to create a List Toggle but valid List data was not provided. Expected a valid list ID, name, and type.");
         }
     }
 
-    //TODO could forego the initialValue, and just have the controller call UpdateListItemQuantityText after adding the List Item... That seems like a lot of extra work though
-    //TODO Is this method still necessary? Should probably at least be renamed 
-    function createListItemModifierFromTemplate(listItemId, type, initialValue)
+    function createListItemQuantityToggleFromTemplate(listItemId, type)
     {
         //Create the 'plus' and 'minus' button elements that will appear in the modifier's popover
         var buttonMinus = CreateButtonWithIcon({buttonId:'buttonMinus', buttonClass:'popoverElement', iconClass:'fa fa-minus-circle fa-lg popoverElement'});
         var buttonPlus = CreateButtonWithIcon({buttonId:'buttonPlus', buttonClass:'popoverElement', iconClass:'fa fa-plus-circle fa-lg popoverElement'});
 
         //Create the element that toggles the visibility of the modifier's popover
-        var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:initialValue, children:[buttonMinus, buttonPlus], trigger:'manual'});
+        var popoverToggle = CreatePopoverToggle({id:type.concat('QuantityToggle-').concat(listItemId), class:'btn-sm buttonQuantity', display:0, children:[buttonMinus, buttonPlus], trigger:'manual'});
 
         return CreateNewElement('div', [ ['class','col divListItemModifier'] ], popoverToggle);
     }
@@ -178,27 +174,27 @@ window.CustomTemplates = (function ()
         return wrapper;
     }
 
-    //TODO Maybe the QuantityType object should be passed as a parameter instead of being Global
+    //TODO Maybe the QuantityTypes object should be passed as a parameter instead of being Global
     function createTravelHeaderFromTemplate()
     {
         var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
 
-        for (var key in QuantityType)
+        for (const key in QuantityTypes)
         {
-            headerWrapper.appendChild(createQuantityHeaderToggle(QuantityType[key]));  //TODO could pass here just the key. That should allow removing the 'type' key from the QuantityType enums
+            headerWrapper.appendChild(createQuantityHeaderToggle(key));
         }
 
         return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;
     }
 
-    function createQuantityHeaderToggle(data)
+    function createQuantityHeaderToggle(quantityType)
     {
         var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
 
-        var iconToggle = CreateNewElement('i', [ ['class',data.iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle({id:((data.type).concat('QuantityHeaderToggle')), class:data.toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+        var iconToggle = CreateNewElement('i', [ ['class',QuantityTypes[quantityType].iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle({id:(quantityType.concat('QuantityHeaderToggle')), class:QuantityTypes[quantityType].toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
 
-        return CreateNewElement('div', [ ['class', data.wrapperClass] ], popoverToggle);
+        return CreateNewElement('div', [ ['class', QuantityTypes[quantityType].wrapperClass] ], popoverToggle);
     }
 
     return {

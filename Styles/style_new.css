@@ -197,11 +197,13 @@ button {
     margin-bottom: 10px;
 }
 
-.buttonListItem {
+.buttonNameToggle {
     padding-left: 10px;
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;  
+
+    border-color: #4d4d4d;
     
     text-align: left;
    
@@ -220,7 +222,7 @@ button {
     background-color: aliceblue;
 }
 
-.buttonListItemName {     
+.buttonListItemToggle {     
     border-left-width: 1px;
     border-right-width: 3px;
     border-top-width: 1px;
@@ -229,8 +231,6 @@ button {
     border-style: solid;
 
     background-color: #edf7f7;
-
-    line-height: 1.25;
 }
 
 /** Quantity Toggles **/
