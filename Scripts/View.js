@@ -261,6 +261,7 @@ window.View = (function()
         else if (event === 'QuantityToggleSelected') //Expected parameters: id, quantityType
         {
             //TODO modify bindChecklistObjectElement so that it can support multiple parameters, incl. quantityType
+                //Or maybe don't use such a generic abstracted helper function...
 
             addListenerToChecklistElement({prefix:parameters.quantityType.concat('QuantityToggle'), id:parameters.id}, 'click', callback);
         }
