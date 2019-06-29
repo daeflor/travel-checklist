@@ -72,7 +72,7 @@ window.ChecklistBalanceUtilities = (function()
     {
        return (balance === BalanceCategories.Unbalanced) ? 'peru' //lightsalmon is also good
             : (balance === BalanceCategories.Balanced)   ? 'mediumseagreen'
-            :                                                   'rgb(77, 77, 77)'; //"darkgrey" is also good;
+            :                                              'rgb(77, 77, 77)'; //"darkgrey" is also good;
     }
 
     return {

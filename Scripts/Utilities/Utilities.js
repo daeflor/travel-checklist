@@ -121,80 +121,80 @@ function GetUrlSlug(urlString)
 
 /** Unused Utilities **/
 
-/**
- * Validates that the provided object contains valid values for the given keys
- * @param {Object} object the object to validate
- * @param {string[]} keyArray an array of key strings to validate
- * @returns {boolean} whether or not the object contains valid valid values for the given keys. 
- */
-function validateObjectContainsValidKVPs(object, keyArray)
-{
-    //TODO would it be better to use the arguments[] variable here, so that the user can just input mulitple keys as individual parameters?
+// /**
+//  * Validates that the provided object contains valid values for the given keys
+//  * @param {Object} object the object to validate
+//  * @param {string[]} keyArray an array of key strings to validate
+//  * @returns {boolean} whether or not the object contains valid valid values for the given keys. 
+//  */
+// function validateObjectContainsValidKVPs(object, keyArray)
+// {
+//     //TODO would it be better to use the arguments[] variable here, so that the user can just input mulitple keys as individual parameters?
 
-    //If a valid object and array of keys was provided...
-    if (object != null && keyArray != null) //TODO should also validate that keyArray is actually an array, and not empty (currently this function will return true in those cases)
-    {
-        let _validResults = true;
+//     //If a valid object and array of keys was provided...
+//     if (object != null && keyArray != null) //TODO should also validate that keyArray is actually an array, and not empty (currently this function will return true in those cases)
+//     {
+//         let _validResults = true;
         
-        //For each key in the provided array of keys
-        for (let i = 0; i < keyArray.length; i++)
-        {
-            //If the object does not contain that key, or the value for that key is null, log an error and return false.
-            if (object[keyArray[i]] == null)
-            {
-                _validResults = false;
-                window.DebugController.LogError("Object does not contain valid values for the given keys. Object: " + JSON.stringify(object));
-                break;
-            }
-        } 
+//         //For each key in the provided array of keys
+//         for (let i = 0; i < keyArray.length; i++)
+//         {
+//             //If the object does not contain that key, or the value for that key is null, log an error and return false.
+//             if (object[keyArray[i]] == null)
+//             {
+//                 _validResults = false;
+//                 window.DebugController.LogError("Object does not contain valid values for the given keys. Object: " + JSON.stringify(object));
+//                 break;
+//             }
+//         } 
 
-        window.DebugController.Print("Object contains valid values for the given keys. Object: " + JSON.stringify(object));
-        return _validResults;
-    }
-    else
-    {
-        //TODO Does it makes sense to be using the DebugController in the Utilities file? Maybe the DebugController should also be made to be more generic (like this file) rather than specific to the Checklist app. 
-        window.DebugController.LogError("Request received to validate that an object contains valid values for the given keys, but either an invalid object or invalid keys array was provided. Object: " + JSON.stringify(object));
-    }
-}
+//         window.DebugController.Print("Object contains valid values for the given keys. Object: " + JSON.stringify(object));
+//         return _validResults;
+//     }
+//     else
+//     {
+//         //TODO Does it makes sense to be using the DebugController in the Utilities file? Maybe the DebugController should also be made to be more generic (like this file) rather than specific to the Checklist app. 
+//         window.DebugController.LogError("Request received to validate that an object contains valid values for the given keys, but either an invalid object or invalid keys array was provided. Object: " + JSON.stringify(object));
+//     }
+// }
 
-function MergeObjects(target, source)
-{
-    //If a source object is provided
-    if (source !== undefined)
-    {
-        //If the target is undefined, assign an empty object to it
-        if (target === undefined)
-        {
-            target = {};
-        }
+// function MergeObjects(target, source)
+// {
+//     //If a source object is provided
+//     if (source !== undefined)
+//     {
+//         //If the target is undefined, assign an empty object to it
+//         if (target === undefined)
+//         {
+//             target = {};
+//         }
 
-        //Merge any properties from the source object to the target object
-        Object.assign(target, source);
+//         //Merge any properties from the source object to the target object
+//         Object.assign(target, source);
 
-        //window.DebugController.Print("Merged two objects into the following target object: ");
-        //window.DebugController.Print(target);
-    }
+//         //window.DebugController.Print("Merged two objects into the following target object: ");
+//         //window.DebugController.Print(target);
+//     }
 
-    return target;
-}
+//     return target;
+// }
 
-function htmlEscape(str) 
-{
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
+// function htmlEscape(str) 
+// {
+//     return str
+//         .replace(/&/g, '&amp;')
+//         .replace(/"/g, '&quot;')
+//         .replace(/'/g, '&#39;')
+//         .replace(/</g, '&lt;')
+//         .replace(/>/g, '&gt;');
+// }
 
-function htmlUnescape(str)
-{
-    return str
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&');
-}
+// function htmlUnescape(str)
+// {
+//     return str
+//         .replace(/&quot;/g, '"')
+//         .replace(/&#39;/g, "'")
+//         .replace(/&lt;/g, '<')
+//         .replace(/&gt;/g, '>')
+//         .replace(/&amp;/g, '&');
+// }
