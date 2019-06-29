@@ -163,8 +163,8 @@ window.ListController = (function()
     }
 
     function listenForEvent_NewListButtonPressed()
-    {
-        const _viewReaction = function(newList) {
+    {//TODO need to not pass back the full List object
+        const _viewReaction = function(newList) { 
             setupListenersAndUI_List(newList.id, newList.name, newList.type); //Add the new List to the DOM and setup listeners for its elements
             window.View.Render('ExpandSettingsView', {id:newList.id}); //Once the new List has been added to the DOM, expand its Settings View
         };
@@ -183,7 +183,7 @@ window.ListController = (function()
         //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?... 
             //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
         const _eventTriggered = function() { 
-            const _viewReaction = function(newListItem) {
+            const _viewReaction = function(newListItem) { //TODO need to not pass back the full List object
                 setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name); //Add the new List Item to the DOM and setup listeners for its elements
                 window.View.Render('ExpandSettingsView', {id:newListItem.id}); //Once the new List Item has been added to the DOM, expand its Settings View
             };
@@ -328,9 +328,9 @@ window.ListController = (function()
         setupListeners_Ongoing();
 
         //Load the checklist data from storage and pass it along to the View
-        window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+        //window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
 
-        //window.Model.LoadChecklistData(setupListenersAndUI_List, setupListenersAndUI_ListItem);
+        window.Model.LoadChecklistData(setupListenersAndUI_List, setupListenersAndUI_ListItem);
     }
 
     return {

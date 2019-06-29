@@ -2,7 +2,7 @@
 window.Model = (function() 
 {
     //TODO using 'self' makes it more obvious when accessing 'global' variables (even though these aren't actually global)
-    var checklistData;
+    let checklistData;
 
     /** Private Checklist Data Utility Methods **/
 
@@ -82,6 +82,44 @@ window.Model = (function()
 
         //TODO Consider passing this callback through to the storage method call (above). (In case accessing the date from storage becomes async at some point). 
         callback(checklistData.lists);        
+    }
+
+    function loadChecklistData(loadedListCallback, loadedListItemCallback)
+    {
+        //TODO This line could be done in a separate init method, though it wouldn't make much difference. Might actually become more complicated if accessing data from storage becomes async at some point). 
+        //Retrieve the checklist data from Storage
+        checklistData = window.StorageManager.RetrieveChecklistData();
+
+        //TODO Consider passing all the logic below as a callback function through to the storage method call (above). (In case accessing the data from storage becomes async at some point). 
+        //For each List in the checklist data...
+        for (let i = 0; i < checklistData.lists.length; i++) 
+        {
+            //Assign a variable to track the current List being loaded
+            const _list = checklistData.lists[i];
+
+            //Assign a variable to track the List's balance value
+            const _listBalance = window.ChecklistBalanceUtilities.CalculateListBalance(_list.listItems);
+
+            //Execute the callback, passing the List's ID, name, and type as arguments
+            loadedListCallback(_list.id, _list.name, _list.type, _listBalance);
+            //loadedListCallback(checklistData.lists[i].id, checklistData.lists[i].name, checklistData.lists[i].type, window.ChecklistBalanceUtilities.CalculateListBalance(checklistData.lists[i].listItems));
+
+            //For each List Item in the List...
+            for (let j = 0; j < _list.listItems.length; j++) 
+            {
+                //Assign a variable to track the current List Item being loaded
+                const _listItem = _list.listItems[j];
+
+                //Clone the List Item's 'quantities' object so that it can be safely passed outside of the Model, without allowing the underlying data to be modified
+                const _listItemQuantitiesClone = Object.assign({}, _listItem.quantities);
+
+                //Assign a variable to track the List Item's balance value
+                const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(_listItem.quantities);
+
+                //Execute the callback, passing the List's ID, along with the List Item's ID, name, quantities object clone, and balance value as arguments
+                loadedListItemCallback(_list.id, _listItem.id, _listItem.name, _listItemQuantitiesClone, _listItemBalance);
+            }
+        }
     }
 
     /**
@@ -337,8 +375,10 @@ window.Model = (function()
         //Retrieve data about the List based on its ID
         let _data = getChecklistObjectDataFromId(listId);
 
+        //If the List's data object contains a valid 'listItems' object...
         if (_data.object.listItems != null)
         {
+            //Return the List's balance, calculated from the combination of its List Items
             return window.ChecklistBalanceUtilities.CalculateListBalance(_data.object.listItems);
         }
         else
@@ -381,6 +421,7 @@ window.Model = (function()
 
     return {
         RetrieveChecklistData : retrieveChecklistData,
+        LoadChecklistData: loadChecklistData,
         AddNewList : addNewList,
         AddNewListItem: addNewListItem,
         ModifyName: modifyName,
