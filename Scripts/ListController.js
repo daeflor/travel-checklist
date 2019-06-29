@@ -43,8 +43,12 @@ window.ListController = (function()
         //When the New List Item button is pressed, add a new List Item to the checklist data and the DOM
         listenForEvent_NewListItemButtonPressed();
 
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        listenForEvent_QuantityHeaderPopoverShown();
+        //For each quantity type supported by the checklist...
+        for (const key in QuantityTypes)
+        {
+            //When that quantity's Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity's column
+            listenForEvent_QuantityHeaderPopoverShown(key);
+        }
     }
 
     /**
@@ -209,7 +213,7 @@ window.ListController = (function()
      */
     function listenForEvent_GoToListButtonPressed(listId) //TODO is this necessary or can HashChanged just be used?
     {
-        window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed, {id:listId});
+        window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed.bind(null, listId), {id:listId});
     }
 
     function reactToEvent_GoToListButtonPressed(listId)
@@ -246,48 +250,52 @@ window.ListController = (function()
     //List Screen Headers & Footers
     //#region ==============================
 
+    /**
+     * Informs the View to listen for an event indicating the 'New List Item' button has been pressed
+     */
     function listenForEvent_NewListItemButtonPressed()
     {
-        //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?... 
-            //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
-        const _eventTriggered = function() { 
-            const _viewReaction = setupListenersAndUI_ListItem.bind(null, false, activeListId); 
-            window.Model.AddNewListItem(activeListId, _viewReaction);
-        };
+        window.View.Bind('NewListItemButtonPressed', reactToEvent_NewListItemButtonPressed);
+    }
 
-        //Inform the View to listen for an event indicating the 'New List Item' button has been pressed
-        window.View.Bind('NewListItemButtonPressed', _eventTriggered);
+    function reactToEvent_NewListItemButtonPressed()
+    {
+        //Once the Model has created a new List Item object, pass any necessary data to the View to set up the listeners and UI for it
+        const _viewReaction = setupListenersAndUI_ListItem.bind(null, false, activeListId);
+
+        //Inform the Model to create a new List Item data object and then execute the passed callback function
+        window.Model.AddNewListItem(activeListId, _viewReaction);
     }
 
     /**
-     * Sets up a listener for when a Quantity Header Popover is shown
+     * Informs the View to listen for an event indicating that a Quantity Header Popover has been shown
      */
-    function listenForEvent_QuantityHeaderPopoverShown()
+    function listenForEvent_QuantityHeaderPopoverShown(quantityType)
     {
-        //Set up the listener so that When the Clear button is pressed, the quantity values for the List Item are cleared, for the given quantity type
-        //const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, quantityType);
-        //window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:quantityType});
-
-        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
-        //For each quantity type supported by the checklist...
-        for (const key in QuantityTypes)
-        {
-            const _controllerReaction = listenForEvent_ClearButtonPressed.bind(null, key);
-
-            //Inform the View to listen for an event indicating that that quantity's Header Popover has been shown
-            window.View.Bind('QuantityHeaderPopoverShown', _controllerReaction, {quantityType:key});
-        }
+        window.View.Bind('QuantityHeaderPopoverShown', reactToEvent_QuantityHeaderPopoverShown.bind(null, quantityType), {quantityType:quantityType});
     }
 
+    function reactToEvent_QuantityHeaderPopoverShown(quantityType)
+    {
+        listenForEvent_ClearButtonPressed(quantityType);
+    }
+
+    /**
+     * Informs the View to listen for an event indicating the 'Clear' button has been pressed
+     * @param {string} quantityType The type of quantity associated with clear button that was pressed
+     */
     function listenForEvent_ClearButtonPressed(quantityType)
     {
-        const _eventTriggered = function() { //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?...
-            const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
-            window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
-        };
+        window.View.Bind('ClearButtonPressed', reactToEvent_ClearButtonPressed.bind(null, quantityType));
+    }
 
-        //Inform the View to listen for an event indicating the 'Clear' button has been pressed
-        window.View.Bind('ClearButtonPressed', _eventTriggered);
+    function reactToEvent_ClearButtonPressed(quantityType)
+    {
+        //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
+        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
+
+        //Inform the Model to modify the specified quantity for the all List Items in the active List, and execute the passed callback function for each modified List Item
+        window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
     }
     //#endregion
 
