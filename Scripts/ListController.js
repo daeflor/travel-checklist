@@ -3,50 +3,7 @@ window.ListController = (function()
 {    
     let activeListId = null;
 
-    /** Private Methods To Handle Bind & Render Logic For New Or Updated Lists & List Items **/ 
-    //TODO ^ This description is no longer accurate
-
-    //TODO What if the model does some work here and sends back more specific info... (which can't be tampered with maybe)
-        //Hmm doesn't really seem feasible... Actually...
-        //ExtractListData, ExtractListItemData
-        //Each of those has a callback which does a thing, rather than using a for loop here in the controller
-        //Similar to the new ModifyQuantity function
-        //Then, theoretically, the actual data object never leaves the Model
-    function loadChecklistDataIntoView(loadedListData)
-    {
-        window.DebugController.Print("Number of Lists retrieved from Model: " + loadedListData.length);
-
-        //For each List loaded from Storage...
-        for (let i = 0; i < loadedListData.length; i++) 
-        {
-            //Add the List elements to the DOM and set up the binds for interactions with them
-            //renderAndBindLoadedList(loadedListData[i]);
-            setupListenersAndUI_List(loadedListData[i].id, loadedListData[i].name, loadedListData[i].type); //Add the new List to the DOM and setup listeners for its elements
-            renderListBalance(loadedListData[i].id); //TODO this part may be doable in the Model with the upcoming refactor (i.e. Controller may no longer have to call Model.GetListBalance() here). However, it still needs to be done when navigating home
-            
-            //For each List Item in the List...
-            for (let j = 0; j < loadedListData[i].listItems.length; j++) 
-            {
-                //Add the List Item's elements to the DOM and set up the binds for interactions with them
-                //renderAndBindLoadedListItem(loadedListData[i].id, loadedListData[i].listItems[j]);
-
-                //TODO this is temporary
-                    //In the future, may use Object.assign to pass quantity values without providing a reference to the actual values that get stored in local storage.
-                const _listItem = loadedListData[i].listItems[j];
-                setupListenersAndUI_ListItem(loadedListData[i].id, _listItem.id, _listItem.name, _listItem.quantities, window.ChecklistBalanceUtilities.CalculateListItemBalance(_listItem.quantities))
-            }
-        }
-    }
-
-    /** Private Helper Functions To Render Updates To Lists & List Items **/ 
-
-    function renderListBalance(listId)
-    {
-        //TODO This is the only Model call that returns instead of relying on callbacks. Is that ok?
-            //This is also the only Model call that doesn't require updates to the model but does access it get information.
-        let _listBalance = window.Model.GetListBalance(listId);
-        window.View.Render('UpdateNameToggleColor', {id:listId, balance:_listBalance});
-    }
+    /** Private Helper Function To Render Updates To Lists & List Items **/ 
 
     function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
     {
@@ -77,9 +34,11 @@ window.ListController = (function()
         //Pass along to the View all the List data provided in order to generate its UI and add it to the DOM
         window.View.Render('AddList', {listId:listId, listName:listName, listType:listType, listBalance:listBalance});
         
-        listenForEvent_GoToListButtonPressed(listId); //When the Go To List button is pressed, display the list
+        //When the Go To List button is pressed, display the list
+        listenForEvent_GoToListButtonPressed(listId); 
 
-        setupListeners_SettingsView(listId); //Setup listeners related to the List's Settings View
+        //Setup listeners related to the List's Settings View
+        setupListeners_SettingsView(listId); 
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -151,7 +110,8 @@ window.ListController = (function()
         const _viewReaction = function() {
             window.View.Render('HideList', {id:activeListId}); //Hide the List which was previously active
             window.View.Render('ShowHomeScreen'); //Display the Home Screen
-            renderListBalance(activeListId); //Calculate the balance of the List which was previously active
+            //TODO This is the only Model call that returns instead of relying on callbacks, and which doesn't require updates to the model but does access it get information. Is that ok?
+            window.View.Render('UpdateNameToggleColor', {id:activeListId, balance:window.Model.GetListBalance(activeListId)}); //Calculate and render the balance of the List which was previously active
             activeListId = null;
         };
         window.AppNavigationController.ListenForEvent('NavigatedHome', _viewReaction);
@@ -162,7 +122,6 @@ window.ListController = (function()
     function listenForEvent_GoToListButtonPressed(id) //TODO is this necessary or can HashChanged just be used?
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
-
         const _viewReaction = function() {
             window.View.Render('DisplayList', {id:id}); //Display the specified List
             activeListId = id; //Set the newly selected List as the Active List
@@ -180,9 +139,8 @@ window.ListController = (function()
         window.View.Bind('NewListButtonPressed', _modelReaction);
     }
     //TODO Maybe these event/action combo functions could be split into two small functions. 
-        //For example: listenForEvent_NewListButtonPressed, listenForEvent_AddListItem
-        //Basically just some way to not have too many levels of nested callbacks in one function, to increase readability
-        //Re-assess once the whole listenForEvent transition is complete.
+        //For example: listenForEvent_NewListButtonPressed (after user interaction), listenForEvent_AddListItem (after model update)
+        //Basically just some way to not have too many levels of nested callbacks in one function, to increase readability. Re-assess once the whole listenForEvent transition is complete.
         
     //--- List Screen Headers & Footers ---//
 
@@ -249,8 +207,6 @@ window.ListController = (function()
     function listenForEvent_DeleteButtonPressed(id)
     {
         const _viewReaction = function() {
-            // const _renderAction = (activeListId == null) ? 'RemoveList' : 'RemoveListItem';
-            // window.View.Render(_renderAction, {id:id});
             (activeListId == null) ? window.View.Render('RemoveList', {id:id}) : window.View.Render('RemoveListItem', {id:id});
             //TODO- DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
         };
@@ -260,10 +216,6 @@ window.ListController = (function()
 
     function listenForEvent_MoveUpwardsButtonPressed(id)
     {
-        // const _viewReaction = handleModelInteraction.bind({moveUpwardsId:id}, 'MoveUpwards'); 
-        // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
-        // window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
-
         const _viewReaction = function(swappedChecklistObjectId) {
             window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
         };
@@ -335,9 +287,7 @@ window.ListController = (function()
         //Setup ongoing listeners for the app which are not dependent on specific Lists or List Items
         setupListeners_Ongoing();
 
-        //Load the checklist data from storage and pass it along to the View
-        //window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
-
+        //Load the checklist data from storage and then set up UI and listeners for the loaded Lists and List Items
         window.Model.LoadChecklistData(setupListenersAndUI_List, setupListenersAndUI_ListItem);
     }
 
