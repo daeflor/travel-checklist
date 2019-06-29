@@ -366,12 +366,13 @@ window.View = (function()
                     window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
                 }
             }, 
-            AddList: function() //Expected parameters: listId, listName, listType
-            {
-                //window.DebugController.Print("Request received to create and render List Toggle & Wrapper for List ID: " + parameters.listId);
-                
+            AddList: function() //Expected parameters: listId, listName, listType, listBalance (optional)
+            {                
+                //Assign a border color for the List's name toggle based on the provided balance
+                const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listBalance);
+
                 //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
-                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType));
+                elements.homeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType, _borderColor));
                 
                 //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
@@ -402,7 +403,7 @@ window.View = (function()
                 //Find the List toggle element which matches the given ID, and then remove it
                 findChecklistElement(parameters.id, elementFoundCallback)
             },
-            AddListItem: function() //Expected parameters: listId, listItemId, listItemName
+            AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 let elementFoundCallback = function(element)

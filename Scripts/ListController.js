@@ -65,9 +65,17 @@ window.ListController = (function()
         listenForEvent_QuantityHeaderPopoverShown(); //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
     }
 
-    function setupListenersAndUI_List(listId, listName, listType)
+    /**
+     * Sends to the View any data needed to render the specified List, and then sets up all applicable listeners
+     * @param {string} listId The unique identfier for the List being set up
+     * @param {string} listName The name of the List being set up
+     * @param {string} listType The type of List being set up
+     * @param {string} [listBalance] [Optional] The initial List balance string value, based on its List Items' quantity values
+     */
+    function setupListenersAndUI_List(listId, listName, listType, listBalance)
     {
-        window.View.Render('AddList', {listId:listId, listName:listName, listType:listType}); //Add the List elements to the DOM
+        //Pass along to the View all the List data provided in order to generate its UI and add it to the DOM
+        window.View.Render('AddList', {listId:listId, listName:listName, listType:listType, listBalance:listBalance});
         
         listenForEvent_GoToListButtonPressed(listId); //When the Go To List button is pressed, display the list
 

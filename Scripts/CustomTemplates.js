@@ -48,7 +48,7 @@ window.CustomTemplates = (function ()
         return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
     }
 
-    function createListToggleFromTemplate(id, name, type)
+    function createListToggleFromTemplate(id, name, type, borderColor)
     {
         if (id != null && name != null && type != null) //TODO Use try catch instead
         {
@@ -61,6 +61,9 @@ window.CustomTemplates = (function ()
             //Create the name button/toggle that can be selected to open or close the settings view for the List
             var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListToggle', name, 'NameButton-'.concat(id));
             
+            //Set name toggle's border color to the value provided
+            nameToggle.style.borderColor = borderColor;
+
             //Create the div wrapper for the List Name button/toggle
             var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
 
