@@ -135,11 +135,14 @@ window.Model = (function()
             listItems : []
         };
         
+        //Add the new List to the Lists array in the checklist data
         getLists().push(newList);
 
+        //Store the updated checklist data
         storeChecklistData();
-
-        callback(newList);
+        
+        //Execute the provided callback function, passing the new List's ID, name, and type as arguments
+        callback(newList.id, newList.name, newList.type);
     }
 
     /**
@@ -169,8 +172,8 @@ window.Model = (function()
         //Store the updated checklist data
         storeChecklistData();
 
-        //Execute the provided callback function, passing the new List Item object as an argument
-        callback(newListItem);
+        //Execute the provided callback function, passing the new List Item's ID and name as arguments
+        callback(newListItem.id, newListItem.name);
     }
 
     /**

@@ -29,7 +29,7 @@ window.ListController = (function()
      * @param {string} listType The type of List being set up
      * @param {string} [listBalance] [Optional] The initial List balance string value, based on its List Items' quantity values
      */
-    function setupListenersAndUI_List(listId, listName, listType, listBalance)
+    function setupListenersAndUI_List(isLoadedFromStorage, listId, listName, listType, listBalance)
     {
         //Pass along to the View all the List data provided in order to generate its UI and add it to the DOM
         window.View.Render('AddList', {listId:listId, listName:listName, listType:listType, listBalance:listBalance});
@@ -39,6 +39,13 @@ window.ListController = (function()
 
         //Setup listeners related to the List's Settings View
         setupListeners_SettingsView(listId); 
+
+        //If the List was not loaded from Storage (i.e. was newly created through the checklist's UI)...
+        if (isLoadedFromStorage == false)
+        {
+            //Expand the List's Settings View
+            window.View.Render('ExpandSettingsView', {id:listId}); 
+        }
     }
 
     //TODO Maybe split this up into things that need to be rendered, and things that need to be bound
@@ -52,20 +59,27 @@ window.ListController = (function()
      * @param {object} [listItemQuantities] [Optional] An object containing the initial quantity values to display for the List Item
      * @param {string} [listItemBalance] [Optional] The initial List Item balance string value, based on its quantity values
      */
-    function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantities, listItemBalance)
+    function setupListenersAndUI_ListItem(isLoadedFromStorage, listId, listItemId, listItemName, listItemQuantities, listItemBalance)
     {   
         //Pass along to the View all the List Item data provided in order to generate its UI and add it to the DOM
         window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities, listItemBalance:listItemBalance});
 
-        //Setup listeners related to the List Item's Settings View
-        setupListeners_SettingsView(listItemId); 
-
         //TODO Does this 'for' need to be here or can it be done in the listen function
-            //If it's done in the listen functions then, in this case, it will be done twice instead of once...
+        //If it's done in the listen functions then, in this case, it will be done twice instead of once...
         for (const key in QuantityTypes) //For each quantity type...
         {
             listenForEvent_QuantityToggleSelected(listItemId, key); //When the Quantity Toggle is selected, show the Quantity Popover for that toggle
             listenForEvent_QuantityPopoverShown(listItemId, key); //When the Quantity Popover is shown (and added to the DOM), set up the listeners for its sub-elements            
+        }
+
+        //Setup listeners related to the List Item's Settings View
+        setupListeners_SettingsView(listItemId); 
+
+        //If the List Item was not loaded from Storage (i.e. was newly created through the checklist's UI)...
+        if (isLoadedFromStorage == false)
+        {
+            //Expand the List Item's Settings View
+            window.View.Render('ExpandSettingsView', {id:listItemId}); 
         }
     }
 
@@ -130,11 +144,8 @@ window.ListController = (function()
     }
 
     function listenForEvent_NewListButtonPressed()
-    {//TODO need to not pass back the full List object
-        const _viewReaction = function(newList) { 
-            setupListenersAndUI_List(newList.id, newList.name, newList.type); //Add the new List to the DOM and setup listeners for its elements
-            window.View.Render('ExpandSettingsView', {id:newList.id}); //Once the new List has been added to the DOM, expand its Settings View
-        };
+    {
+        const _viewReaction = setupListenersAndUI_List.bind(null, false); 
         const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction); //TODO it's confusing using bind and Bind
         window.View.Bind('NewListButtonPressed', _modelReaction);
     }
@@ -149,10 +160,7 @@ window.ListController = (function()
         //TODO had to do this to get accurate activeListID. Is there a better way? Maybe from URL?... 
             //Or maybe use an object to contain the activeListId, though it would be weird to pass that around to other files
         const _eventTriggered = function() { 
-            const _viewReaction = function(newListItem) { //TODO need to not pass back the full List object
-                setupListenersAndUI_ListItem(activeListId, newListItem.id, newListItem.name); //Add the new List Item to the DOM and setup listeners for its elements
-                window.View.Render('ExpandSettingsView', {id:newListItem.id}); //Once the new List Item has been added to the DOM, expand its Settings View
-            };
+            const _viewReaction = setupListenersAndUI_ListItem.bind(null, false, activeListId); 
             window.Model.AddNewListItem(activeListId, _viewReaction);
         };
         window.View.Bind('NewListItemButtonPressed', _eventTriggered);
@@ -288,7 +296,7 @@ window.ListController = (function()
         setupListeners_Ongoing();
 
         //Load the checklist data from storage and then set up UI and listeners for the loaded Lists and List Items
-        window.Model.LoadChecklistData(setupListenersAndUI_List, setupListenersAndUI_ListItem);
+        window.Model.LoadChecklistData(setupListenersAndUI_List.bind(null, true), setupListenersAndUI_ListItem.bind(null, true));
     }
 
     return {
