@@ -4,8 +4,8 @@ window.ListController = (function()
     //Assign a variable to track the ID of the active List
     let activeListId = null;
 
-    //#region Private Helper Function To Render Updates To Lists & List Items
-    //====================================================================================================
+    //Private Helper Function To Render Updates To Lists & List Items
+    //#region ================================================================================
 
     /**
      * 
@@ -23,11 +23,9 @@ window.ListController = (function()
         window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
     //#endregion
-    //====================================================================================================
 
-    //#region Private Functions To Setup Collections Of Listeners
-    //====================================================================================================
-
+    //Private Functions To Setup Collections Of Listeners
+    //#region ================================================================================
     /**
      * Sets up any ongoing listeners for the app which are not dependent on specific Lists or List Items
      */
@@ -141,12 +139,11 @@ window.ListController = (function()
 
         //When the Move Downwards button is pressed, move the checklist object down by one position
         listenForEvent_MoveDownwardsButtonPressed(id);
-    }
+    } 
     //#endregion
-    //====================================================================================================
 
-    //#region Private Functions To Setup Listeners For Individual Lists & List Items
-    //====================================================================================================
+    //Private Functions To Setup Listeners For Individual Lists & List Items
+    //#region ================================================================================
 
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
@@ -158,8 +155,8 @@ window.ListController = (function()
 
     //TODO Document these methods with JSDOC
 
-    //#region App Navigation
-    //==============================
+    //App Navigation
+    //#region ==============================
 
     /**
      * Informs the AppNavigationController to listen for an event indicating the screen has changed
@@ -202,38 +199,52 @@ window.ListController = (function()
         activeListId = null;
     }
     //#endregion
-    //==============================
 
-    //--- Home Screen ---//
+    //Home Screen
+    //#region ==============================
 
-    function listenForEvent_GoToListButtonPressed(id) //TODO is this necessary or can HashChanged just be used?
+    /**
+     * Informs the View to listen for an event indicating a 'Go To List' button has been pressed
+     * @param {string} listId The unique identfier for the List which was selected to be displayed
+     */
+    function listenForEvent_GoToListButtonPressed(listId) //TODO is this necessary or can HashChanged just be used?
+    {
+        window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed, {id:listId});
+    }
+
+    function reactToEvent_GoToListButtonPressed(listId)
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
-        const _viewReaction = function() {
-            //Display the specified List
-            window.View.Render('DisplayList', {id:id});
 
-            //Set the newly selected List as the Active List
-            activeListId = id;
-        };
+        //Inform the View to display the specified List
+        window.View.Render('DisplayList', {id:listId});
 
-        //Inform the View to listen for an event indicating a 'Go To List' button has been pressed
-        window.View.Bind('GoToListButtonPressed', _viewReaction, {id:id});
+        //Set the newly selected List as the Active List
+        activeListId = listId;
     }
 
+    /**
+     * Informs the View to listen for an event indicating the 'New List' button has been pressed
+     */
     function listenForEvent_NewListButtonPressed()
     {
-        const _viewReaction = setupListenersAndUI_List.bind(null, false); 
-        const _modelReaction = window.Model.AddNewList.bind(null, _viewReaction); //TODO it's confusing using bind and Bind
-        
-        //Inform the View to listen for an event indicating the 'New List' button has been pressed
-        window.View.Bind('NewListButtonPressed', _modelReaction);
+        window.View.Bind('NewListButtonPressed', reactToEvent_NewListButtonPressed);
     }
-    //TODO Maybe these event/action combo functions could be split into two small functions. 
-        //For example: listenForEvent_NewListButtonPressed (after user interaction), listenForEvent_AddListItem (after model update)
-        //Basically just some way to not have too many levels of nested callbacks in one function, to increase readability. Re-assess once the whole listenForEvent transition is complete.
-        
-    //--- List Screen Headers & Footers ---//
+
+    function reactToEvent_NewListButtonPressed()
+    {
+        //TODO it's confusing using bind and Bind
+
+        //Once the Model has created a new List object, pass any necessary data to the View to set up the listeners and UI for it
+        const _viewReaction = setupListenersAndUI_List.bind(null, false); 
+
+        //Inform the Model to create a new List data object and then execute the passed callback function
+        window.Model.AddNewList.bind(null, _viewReaction);
+    }
+    //#endregion
+
+    //List Screen Headers & Footers
+    //#region ==============================
 
     function listenForEvent_NewListItemButtonPressed()
     {
@@ -278,8 +289,10 @@ window.ListController = (function()
         //Inform the View to listen for an event indicating the 'Clear' button has been pressed
         window.View.Bind('ClearButtonPressed', _eventTriggered);
     }
+    //#endregion
 
-    //--- Settings Views ---//
+    //Settings Views
+    //#region ==============================
 
     function listenForEvent_SettingsViewExpansionStarted(id)
     {
@@ -346,8 +359,10 @@ window.ListController = (function()
         //Inform the View to listen for an event indicating a List or List Item's 'Move Downwards' button has been pressed
         window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
     }
+    //#endregion
 
-    //--- Quantity Modifier Toggles & Popovers ---//
+    //Quantity Modifier Toggles & Popovers
+    //#region ==============================
 
     function listenForEvent_QuantityToggleSelected(listItemId, quantityType)
     {
@@ -410,10 +425,10 @@ window.ListController = (function()
         window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
     }
     //#endregion
-    //====================================================================================================
+    //#endregion
 
-    //#region Publicly Exposed Method to Setup UI & Load List Data
-    //====================================================================================================
+    //Publicly Exposed Method to Setup UI & Load List Data
+    //#region ================================================================================
 
     function init()
     {     
@@ -424,7 +439,6 @@ window.ListController = (function()
         window.Model.LoadChecklistData(setupListenersAndUI_List.bind(null, true), setupListenersAndUI_ListItem.bind(null, true));
     }
     //#endregion
-    //====================================================================================================
 
     return {
         Init : init
