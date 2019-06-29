@@ -1,25 +1,48 @@
 'use strict';
 window.ListController = (function()
 {    
+    //Assign a variable to track the ID of the active List
     let activeListId = null;
 
     /** Private Helper Function To Render Updates To Lists & List Items **/ 
 
-    function renderListItemQuantityAndBalance(quantityType, id, updatedValue, balance)
+    /**
+     * 
+     * @param {string} quantityType The type of quantity that has been modified for the List Item
+     * @param {string} listItemId The unique identfier for the List Item which had one of its quantities modified
+     * @param {*} updatedValue The updated value of the quantity which was modified
+     * @param {*} balance The updated balance of the List Item calculated after one of its quantity values was modified
+     */
+    function renderListItemQuantityAndBalance(quantityType, listItemId, updatedValue, balance)
     {
-        window.View.Render('UpdateListItemQuantityText', {id:id, quantityType:quantityType, updatedValue:updatedValue});
-        window.View.Render('UpdateNameToggleColor', {id:id, balance:balance});
+        //Update the text value of the quantity toggle for the List Item quantity type that was modified
+        window.View.Render('UpdateListItemQuantityText', {id:listItemId, quantityType:quantityType, updatedValue:updatedValue});
+
+        //Update the List Item's name toggle color based on its updated balance
+        window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
 
     /** Private Functions To Setup Collections Of Listeners **/ 
 
+    /**
+     * Sets up any ongoing listeners for the app which are not dependent on specific Lists or List Items
+     */
     function setupListeners_Ongoing()
     {
-        listenForEvent_ScreenChanged(); //Whenever changes, hide the Active Settings View and Quantity Popover
-        listenForEvent_NavigatedHome(); //When the user navigates home, hide the List Screen and show the Home Screen. (Works using either the Home button or 'back' browser command).
-        listenForEvent_NewListButtonPressed(); //When the New List button is pressed, add a new List to the checklist data and the Dom
-        listenForEvent_NewListItemButtonPressed(); //When the New List Item button is pressed, add a new List Item to the checklist data and the Dom
-        listenForEvent_QuantityHeaderPopoverShown(); //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+        //Whenever changes, hide the Active Settings View and Quantity Popover
+        listenForEvent_ScreenChanged();
+
+        //When the user navigates home, hide the List Screen and show the Home Screen. (Works using either the Home button or 'back' browser command).
+        listenForEvent_NavigatedHome();
+
+        //When the New List button is pressed, add a new List to the checklist data and the DOM
+        listenForEvent_NewListButtonPressed();
+
+        //When the New List Item button is pressed, add a new List Item to the checklist data and the DOM
+        listenForEvent_NewListItemButtonPressed();
+
+        //When a Quantity Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity column
+        listenForEvent_QuantityHeaderPopoverShown();
     }
 
     /**
@@ -89,11 +112,20 @@ window.ListController = (function()
      */
     function setupListeners_SettingsView(id)
     {
-        listenForEvent_SettingsViewExpansionStarted(id); //When the animation to expand the Settings View starts, hide the Active Settings View
-        listenForEvent_NameEdited(id); //When the name text field is modified, update the name of the checklist object
-        listenForEvent_DeleteButtonPressed(id); //When the delete button is pressed, remove the checklist object
-        listenForEvent_MoveUpwardsButtonPressed(id); //When the Move Upwards button is pressed, move the checklist object up by one position
-        listenForEvent_MoveDownwardsButtonPressed(id); //When the Move Downwards button is pressed, move the checklist object down by one position
+        //When the animation to expand the Settings View starts, hide the Active Settings View
+        listenForEvent_SettingsViewExpansionStarted(id);
+
+        //When the edit name text field is modified, update the name of the checklist object
+        listenForEvent_NameEdited(id);
+
+        //When the delete button is pressed, remove the checklist object
+        listenForEvent_DeleteButtonPressed(id);
+
+        //When the Move Upwards button is pressed, move the checklist object up by one position
+        listenForEvent_MoveUpwardsButtonPressed(id);
+
+        //When the Move Downwards button is pressed, move the checklist object down by one position
+        listenForEvent_MoveDownwardsButtonPressed(id);
     }
 
     /** Private Functions To Setup Listeners For Individual Lists & List Items **/
@@ -293,7 +325,7 @@ window.ListController = (function()
 
     function init()
     {     
-        //Setup ongoing listeners for the app which are not dependent on specific Lists or List Items
+        //Set up ongoing listeners for the app which are not dependent on specific Lists or List Items
         setupListeners_Ongoing();
 
         //Load the checklist data from storage and then set up UI and listeners for the loaded Lists and List Items
