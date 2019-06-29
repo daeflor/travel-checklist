@@ -3,15 +3,17 @@ window.CustomTemplates = (function ()
 {   
     //TODO re-order these methods for better readability
 
-    function createListItemFromTemplate(id, name, quantities)
+    function createListItemFromTemplate(id, name, quantities, borderColor)
     {
         //Create the div wrapper for the entire List Item
         var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
 
         //Create the name toggle that can be selected to open or close the Settings View for the List Item
         var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListItemToggle', name, 'NameButton-'.concat(id));
-        //TODO could pass an optional toggleBorderColor parameter to the helper function above, to set an initial color for the list item toggle
-
+        
+        //Set name toggle's border color to the value provided
+        nameToggle.style.borderColor = borderColor;
+        
         //Create the div wrapper for the List Item Name, with the name toggle as a child 
         var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
 

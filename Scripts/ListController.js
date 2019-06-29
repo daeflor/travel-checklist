@@ -88,14 +88,7 @@ window.ListController = (function()
     function setupListenersAndUI_ListItem(listId, listItemId, listItemName, listItemQuantities, listItemBalance)
     {   
         //Pass along to the View all the List Item data provided in order to generate its UI and add it to the DOM
-        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities});
-
-        //If an initial balance was provided for the List Item (i.e. the List Item was loaded from Storage)...
-        if (listItemBalance != null)
-        {
-            //Update the color of the List Item's name toggle
-            window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:listItemBalance});
-        }
+        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities, listItemBalance:listItemBalance});
 
         //Setup listeners related to the List Item's Settings View
         setupListeners_SettingsView(listItemId); 
@@ -336,6 +329,8 @@ window.ListController = (function()
 
         //Load the checklist data from storage and pass it along to the View
         window.Model.RetrieveChecklistData(loadChecklistDataIntoView);
+
+        //window.Model.LoadChecklistData(setupListenersAndUI_List, setupListenersAndUI_ListItem);
     }
 
     return {

@@ -407,8 +407,11 @@ window.View = (function()
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 let elementFoundCallback = function(element)
                 {          
+                    //Assign a border color for the List Item's name toggle based on the provided balance
+                    const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listItemBalance);
+
                     //Create a new List Item element from the template, and append it to the List wrapper matching   
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities));
+                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities, _borderColor));
 
                     //Update the reorder buttons for all the List Items in the added element's parent List
                     updateReorderButtons(element);
