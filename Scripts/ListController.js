@@ -243,7 +243,7 @@ window.ListController = (function()
         const _viewReaction = setupListenersAndUI_List.bind(null, false); 
 
         //Inform the Model to create a new List data object and then execute the passed callback function
-        window.Model.AddNewList.bind(null, _viewReaction);
+        window.Model.AddNewList(_viewReaction);
     }
     //#endregion
 
@@ -302,30 +302,38 @@ window.ListController = (function()
     //Settings Views
     //#region ==============================
 
+    /**
+     * Informs the View to listen for an event indicating a Settings View has begun expansion
+     * @param {string} id The unique identfier for the List or List Item which has had its Settings View begin to expand
+     */
     function listenForEvent_SettingsViewExpansionStarted(id)
     {
-        const _viewReaction = window.View.Render.bind(null, 'HideActiveSettingsView');
-
-        //Inform the View to listen for an event indicating a Settings View has begun expansion
-        window.View.Bind('SettingsViewExpansionStarted', _viewReaction, {id:id});
+        window.View.Bind('SettingsViewExpansionStarted', reactToEvent_SettingsViewExpansionStarted, {id:id});
     }
 
+    function reactToEvent_SettingsViewExpansionStarted()
+    {
+        //Inform the View to hide the Active Settings View
+        window.View.Render.bind(null, 'HideActiveSettingsView');
+    }
+
+    /**
+     * Informs the View to listen for an event indicating a List or List Item's 'Edit Name' text field has been modified
+     * @param {string} id The unique identfier for the List or List Item which has had its name edited
+     */
     function listenForEvent_NameEdited(id)
     {
-        //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
-        const _viewReaction = function(updatedValue) {
-            window.View.Render('UpdateName', {id:id, updatedValue:updatedValue});
-        };
-        const _modelReaction = window.Model.ModifyName.bind(null, id, _viewReaction);
+        window.View.Bind('NameEdited', reactToEvent_NameEdited.bind(null, id), {id:id});
+    }
 
-        //Inform the View to listen for an event indicating a List or List Item's 'Edit Name' text field has been modified
-        window.View.Bind('NameEdited', _modelReaction, {id:id});
-
-        // const _eventTriggered = function(updatedValue) {
-        //     const _viewReaction = window.View.Render.bind(null, 'UpdateName', {id:id, updatedValue:updatedValue});
-        //     window.Model.ModifyName(id, _viewReaction, updatedValue);
-        // };
-        // window.View.Bind('NameEdited', _eventTriggered, {id:id});
+    function reactToEvent_NameEdited(id, updatedValue)
+    {
+        //TODO Would be able to use the updated name from the Model here if eventually the Render commands in the View are also split up to be handled individually
+        //Once the Model has modified the List or List Item name, pass any necessary data to the View to update its name toggle
+        const _viewReaction = window.View.Render.bind(null, 'UpdateName', {id:id, updatedValue:updatedValue});
+        
+        //Inform the Model to modify the specified List or List Item's name, and then execute the passed callback function
+        window.Model.ModifyName(id, _viewReaction, updatedValue);
     }
 
     function listenForEvent_DeleteButtonPressed(id)

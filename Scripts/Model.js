@@ -193,8 +193,8 @@ window.Model = (function()
             //Store the updated checklist data
             storeChecklistData();
 
-            //Execute the provided callback function, passing the updated name as an argument
-            callback(updatedValue);
+            //Execute the provided callback function
+            callback();
         }
         else
         {
