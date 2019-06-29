@@ -298,6 +298,7 @@ window.View = (function()
 
     //TODO maybe split this between View.HomeScreen and View.ListScreen? 
         //Maybe the parent View could redirect to the correct subView so that it is abstracted from the Controller?
+     //TODO I think I'd prefer splitting this into ViewListenerController and ViewRendererController, if anything
 
     //TODO could split out rendering things (showing/hiding) from adding them to the view/DOM (regardless of whether they are actually visible yet/currently)
     function render(command, parameters)

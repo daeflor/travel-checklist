@@ -199,6 +199,7 @@ window.ListController = (function()
 
     function listenForEvent_NameEdited(id)
     {
+        //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
         const _viewReaction = function(updatedValue) {
             window.View.Render('UpdateName', {id:id, updatedValue:updatedValue});
         };
