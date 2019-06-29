@@ -4,7 +4,8 @@ window.ListController = (function()
     //Assign a variable to track the ID of the active List
     let activeListId = null;
 
-    /** Private Helper Function To Render Updates To Lists & List Items **/ 
+    //#region Private Helper Function To Render Updates To Lists & List Items
+    //====================================================================================================
 
     /**
      * 
@@ -21,8 +22,11 @@ window.ListController = (function()
         //Update the List Item's name toggle color based on its updated balance
         window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
+    //#endregion
+    //====================================================================================================
 
-    /** Private Functions To Setup Collections Of Listeners **/ 
+    //#region Private Functions To Setup Collections Of Listeners
+    //====================================================================================================
 
     /**
      * Sets up any ongoing listeners for the app which are not dependent on specific Lists or List Items
@@ -138,8 +142,11 @@ window.ListController = (function()
         //When the Move Downwards button is pressed, move the checklist object down by one position
         listenForEvent_MoveDownwardsButtonPressed(id);
     }
+    //#endregion
+    //====================================================================================================
 
-    /** Private Functions To Setup Listeners For Individual Lists & List Items **/
+    //#region Private Functions To Setup Listeners For Individual Lists & List Items
+    //====================================================================================================
 
     //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
         //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
@@ -151,45 +158,51 @@ window.ListController = (function()
 
     //TODO Document these methods with JSDOC
 
-    //--- App Navigation ---//
+    //#region App Navigation
+    //==============================
 
     /**
      * Informs the AppNavigationController to listen for an event indicating the screen has changed
      */
     function listenForEvent_ScreenChanged()
     {
-        const _viewReaction = function() {
-            //Inform the View to hide the Active Settings View
-            window.View.Render('HideActiveSettingsView');
-
-            //Inform the View to hide the Active Quantity Popover
-            window.View.Render('HideActiveQuantityPopover');
-        };
-
-        //Inform the AppNavigationController to listen for an event indicating the screen has changed
-        window.AppNavigationController.ListenForEvent('ScreenChanged', _viewReaction);
+        window.AppNavigationController.ListenForEvent('ScreenChanged', reactToEvent_ScreenChanged);
     }
 
+    function reactToEvent_ScreenChanged()
+    {
+        //Inform the View to hide the Active Settings View
+        window.View.Render('HideActiveSettingsView');
+
+        //Inform the View to hide the Active Quantity Popover
+        window.View.Render('HideActiveQuantityPopover');
+    }
+
+    /**
+     * Informs the AppNavigationController to listen for an event indicating the user has navigated to the Home Screen
+     */
     function listenForEvent_NavigatedHome() 
     {
-        const _viewReaction = function() {
-            //Hide the List which was previously active
-            window.View.Render('HideList', {id:activeListId});
-
-            //Display the Home Screen
-            window.View.Render('ShowHomeScreen');
-
-            //TODO This is the only Model call that returns instead of relying on callbacks, and which doesn't require updates to the model but does access it get information. Is that ok?
-            //Calculate and render the balance of the List which was previously active
-            window.View.Render('UpdateNameToggleColor', {id:activeListId, balance:window.Model.GetListBalance(activeListId)});
-
-            //Set the Active List ID to null, now that there is no active List
-            activeListId = null;
-        };
-
-        //Inform the AppNavigationController to listen for an event indicating the user has navigated to the Home Screen
-        window.AppNavigationController.ListenForEvent('NavigatedHome', _viewReaction);
+        window.AppNavigationController.ListenForEvent('NavigatedHome', reactToEvent_NavigatedHome);
     }
+
+    function reactToEvent_NavigatedHome()
+    {
+        //Inform the View to hide the List which was previously active
+        window.View.Render('HideList', {id:activeListId});
+
+        //Inform the View to display the Home Screen
+        window.View.Render('ShowHomeScreen');
+
+        //TODO This is the only Model call that returns instead of relying on callbacks, and which doesn't require updates to the model but does access it get information. Is that ok?
+        //Calculate the balance of the List which was previously active, and inform the View to update the color of List's name toggle accordingly
+        window.View.Render('UpdateNameToggleColor', {id:activeListId, balance:window.Model.GetListBalance(activeListId)});
+
+        //Set the Active List ID to null, now that there is no active List
+        activeListId = null;
+    }
+    //#endregion
+    //==============================
 
     //--- Home Screen ---//
 
@@ -396,8 +409,11 @@ window.ListController = (function()
         //Inform the View to listen for an event indicating a click has been detected outside of a popover
         window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
     }
+    //#endregion
+    //====================================================================================================
 
-    /** Publicly Exposed Method to Setup UI & Load List Data **/
+    //#region Publicly Exposed Method to Setup UI & Load List Data
+    //====================================================================================================
 
     function init()
     {     
@@ -407,6 +423,8 @@ window.ListController = (function()
         //Load the checklist data from storage and then set up UI and listeners for the loaded Lists and List Items
         window.Model.LoadChecklistData(setupListenersAndUI_List.bind(null, true), setupListenersAndUI_ListItem.bind(null, true));
     }
+    //#endregion
+    //====================================================================================================
 
     return {
         Init : init
