@@ -216,10 +216,13 @@ window.ListController = (function()
         window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed.bind(null, listId), {id:listId});
     }
 
+    /**
+     * Displays the specified List and sets it as the Active List
+     * @param {string} listId The unique identfier for the List to be displayed
+     */
     function reactToEvent_GoToListButtonPressed(listId)
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
-
         //Inform the View to display the specified List
         window.View.Render('DisplayList', {id:listId});
 
@@ -269,26 +272,35 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating that a Quantity Header Popover has been shown
+     * @param {string} quantityType The quantity type of the header popover that will be shown
      */
     function listenForEvent_QuantityHeaderPopoverShown(quantityType)
     {
         window.View.Bind('QuantityHeaderPopoverShown', reactToEvent_QuantityHeaderPopoverShown.bind(null, quantityType), {quantityType:quantityType});
     }
 
+    /**
+     * Sets up a listener for when a 'Clear' button is pressed, which can only happen when the Quantity Header Popover is shown
+     * @param {string} quantityType The quantity type of the header popover that was shown
+     */
     function reactToEvent_QuantityHeaderPopoverShown(quantityType)
     {
         listenForEvent_ClearButtonPressed(quantityType);
     }
 
     /**
-     * Informs the View to listen for an event indicating the 'Clear' button has been pressed
-     * @param {string} quantityType The type of quantity associated with clear button that was pressed
+     * Informs the View to listen for an event indicating a 'Clear' button has been pressed
+     * @param {string} quantityType The quantity type associated with clear button
      */
     function listenForEvent_ClearButtonPressed(quantityType)
     {
         window.View.Bind('ClearButtonPressed', reactToEvent_ClearButtonPressed.bind(null, quantityType));
     }
 
+    /**
+     * Clears the quantity value for all List Items of the given quantity type in the Active List, and updates the checklist's data and UI accordingly
+     * @param {string} quantityType The quantity type associated with the clear button that was pressed
+     */
     function reactToEvent_ClearButtonPressed(quantityType)
     {
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
@@ -314,7 +326,7 @@ window.ListController = (function()
     function reactToEvent_SettingsViewExpansionStarted()
     {
         //Inform the View to hide the Active Settings View
-        window.View.Render.bind(null, 'HideActiveSettingsView');
+        window.View.Render('HideActiveSettingsView');
     }
 
     /**
@@ -326,6 +338,11 @@ window.ListController = (function()
         window.View.Bind('NameEdited', reactToEvent_NameEdited.bind(null, id), {id:id});
     }
 
+    /**
+     * Updates the name of a given List or List Item, both in the checklist's underlying data and UI
+     * @param {string} id The unique identfier for the List or List Item which has had its name edited
+     * @param {string} updatedValue The updated name value of the List or List Item, received from user input to the checklist
+     */
     function reactToEvent_NameEdited(id, updatedValue)
     {
         //TODO Would be able to use the updated name from the Model here if eventually the Render commands in the View are also split up to be handled individually
@@ -336,44 +353,79 @@ window.ListController = (function()
         window.Model.ModifyName(id, _viewReaction, updatedValue);
     }
 
+    /**
+     * Informs the View to listen for an event indicating a List or List Item's 'Delete' button has been pressed
+     * @param {string} id The unique identfier for the List or List Item which has been selected to be deleted
+     */
     function listenForEvent_DeleteButtonPressed(id)
     {
-        const _viewReaction = function() {
-            (activeListId == null) ? window.View.Render('RemoveList', {id:id}) : window.View.Render('RemoveListItem', {id:id});
-            //TODO- DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
-        };
-        const _modelReaction = window.Model.Remove.bind(null, id, _viewReaction);
-
-        //Inform the View to listen for an event indicating a List or List Item's 'Delete' button has been pressed
-        window.View.Bind('DeleteButtonPressed', _modelReaction, {id:id});
+        window.View.Bind('DeleteButtonPressed', reactToEvent_DeleteButtonPressed.bind(null, id), {id:id});
     }
 
+    /**
+     * Removes the given List or List Item from both the checklist's underlying data and UI
+     * @param {string} id The unique identfier for the List or List Item to be deleted
+     */
+    function reactToEvent_DeleteButtonPressed(id)
+    {
+        //TODO DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
+        //Once the Model has removed the List or List Item, pass any necessary data to the View to remove it from the UI
+        const _viewReaction = (activeListId == null) ? window.View.Render.bind(null, 'RemoveList', {id:id}) : window.View.Render.bind(null, 'RemoveListItem', {id:id});
+
+        //Inform the Model to remove the specified List or List Item, and then execute the passed callback function
+        window.Model.Remove(id, _viewReaction);
+    }
+
+    /**
+     * Informs the View to listen for an event indicating a List or List Item's 'Move Upwards' button has been pressed
+     * @param {string} id The unique identfier for the List or List Item selected to be moved upwards
+     */
     function listenForEvent_MoveUpwardsButtonPressed(id)
     {
-        const _viewReaction = function(swappedChecklistObjectId) {
-            //Inform the View to swap the UI for the specified List Item and the one above it in the List
-            window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
-        };
-        const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Upwards');
-
-        //Inform the View to listen for an event indicating a List or List Item's 'Move Upwards' button has been pressed
-        window.View.Bind('MoveUpwardsButtonPressed', _modelReaction, {id:id});
+        window.View.Bind('MoveUpwardsButtonPressed', reactToEvent_MoveUpwardsButtonPressed.bind(null, id), {id:id});
     }
 
+    /**
+     * Moves the given List or List Item upwards in its parent list/array, both in the checklist's underlying data and UI
+     * @param {string} id The unique identfier for the List or List Item to move upwards
+     */
+    function reactToEvent_MoveUpwardsButtonPressed(id)
+    {
+        //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
+        //Once the Model has moved the List or List Item upwards in the checklist data, pass any necessary data to the View to do the same in the UI
+        const _viewReaction = function(swappedChecklistObjectId) {
+            //Inform the View to swap the UI for the specified List or List Item and the one above it in its parent list
+            window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
+        };
+        
+        //Inform the Model to move the specified List or List Item upwards, and then execute the passed callback function
+        window.Model.ModifyPosition(id, _viewReaction, 'Upwards');
+    }
+
+    /**
+     * Informs the View to listen for an event indicating a List or List Item's 'Move Downwards' button has been pressed
+     * @param {string} id The unique identfier for the List or List Item selected to be moved downwards
+     */
     function listenForEvent_MoveDownwardsButtonPressed(id)
     {
-        // const _viewReaction = handleModelInteraction.bind({moveDownwardsId:id}, 'MoveDownwards'); 
-        // const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
-        // window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
+        window.View.Bind('MoveDownwardsButtonPressed', reactToEvent_MoveDownwardsButtonPressed.bind(null, id), {id:id});
+    }
 
+    /**
+     * Moves the given List or List Item downwards in its parent list/array, both in the checklist's underlying data and UI
+     * @param {string} id The unique identfier for the List or List Item to move downwards
+     */
+    function reactToEvent_MoveDownwardsButtonPressed(id)
+    {
+        //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
+        //Once the Model has moved the List or List Item downwards in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = function(swappedChecklistObjectId) {
-            //Inform the View to swap the UI for the specified List Item and the one below it in the List
+            //Inform the View to swap the UI for the specified List or List Item and the one below it in its parent list
             window.View.Render('SwapListObjects', {moveUpwardsId:swappedChecklistObjectId, moveDownwardsId:id});
         };
-        const _modelReaction = window.Model.ModifyPosition.bind(null, id, _viewReaction, 'Downwards');
-
-        //Inform the View to listen for an event indicating a List or List Item's 'Move Downwards' button has been pressed
-        window.View.Bind('MoveDownwardsButtonPressed', _modelReaction, {id:id});
+        
+        //Inform the Model to move the specified List or List Item downwards, and then execute the passed callback function
+        window.Model.ModifyPosition(id, _viewReaction, 'Downwards');
     }
     //#endregion
 
