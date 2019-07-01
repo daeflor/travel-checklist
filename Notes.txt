@@ -3,15 +3,15 @@ TO-DOs:
     - AppController.js      : 10
     - CustomTemplates.js    : 8
     - DebugUtilities.js     : 6
-	- ListController.js     : 17
+	- ListController.js     : 12
     - Model.js              : 14
     - StandardTemplates.js  : 6
     - StorageManager.js     : 3
     - ChecklistUtilities    : 1
     - Utilities.js          : 10
-    - View.js               : 33
+    - View.js               : 34
     - style_new.css         : 3
-    - - - Total             : 114
+    - - - Total             : 110
 
 Upcoming To-Do List:
 - Backup or cloud storage functionality

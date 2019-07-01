@@ -193,8 +193,8 @@ window.Model = (function()
             //Store the updated checklist data
             storeChecklistData();
 
-            //Execute the provided callback function, passing the updated name as an argument
-            callback(updatedValue);
+            //Execute the provided callback function
+            callback();
         }
         else
         {
@@ -423,9 +423,9 @@ window.Model = (function()
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     return {
-        RetrieveChecklistData : retrieveChecklistData,
+        RetrieveChecklistData: retrieveChecklistData,
         LoadChecklistData: loadChecklistData,
-        AddNewList : addNewList,
+        AddNewList: addNewList,
         AddNewListItem: addNewListItem,
         ModifyName: modifyName,
         Remove: remove,
