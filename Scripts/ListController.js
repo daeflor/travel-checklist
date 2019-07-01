@@ -162,9 +162,7 @@ window.ListController = (function()
     //App Navigation
     //#region ==============================
 
-    /**
-     * Informs the AppNavigationController to listen for an event indicating the screen has changed
-     */
+    /** Informs the AppNavigationController to listen for an event indicating the screen has changed */
     function listenForEvent_ScreenChanged()
     {
         window.AppNavigationController.ListenForEvent('ScreenChanged', reactToEvent_ScreenChanged);
@@ -179,9 +177,7 @@ window.ListController = (function()
         window.View.Render('HideActiveQuantityPopover');
     }
 
-    /**
-     * Informs the AppNavigationController to listen for an event indicating the user has navigated to the Home Screen
-     */
+    /** Informs the AppNavigationController to listen for an event indicating the user has navigated to the Home Screen */
     function listenForEvent_NavigatedHome() 
     {
         window.AppNavigationController.ListenForEvent('NavigatedHome', reactToEvent_NavigatedHome);
@@ -230,9 +226,7 @@ window.ListController = (function()
         activeListId = listId;
     }
 
-    /**
-     * Informs the View to listen for an event indicating the 'New List' button has been pressed
-     */
+    /** Informs the View to listen for an event indicating the 'New List' button has been pressed */
     function listenForEvent_NewListButtonPressed()
     {
         window.View.Bind('NewListButtonPressed', reactToEvent_NewListButtonPressed);
@@ -253,9 +247,7 @@ window.ListController = (function()
     //List Screen Headers & Footers
     //#region ==============================
 
-    /**
-     * Informs the View to listen for an event indicating the 'New List Item' button has been pressed
-     */
+    /** Informs the View to listen for an event indicating the 'New List Item' button has been pressed */
     function listenForEvent_NewListItemButtonPressed()
     {
         window.View.Bind('NewListItemButtonPressed', reactToEvent_NewListItemButtonPressed);
@@ -411,6 +403,7 @@ window.ListController = (function()
         window.View.Bind('MoveDownwardsButtonPressed', reactToEvent_MoveDownwardsButtonPressed.bind(null, id), {id:id});
     }
 
+    //TODO maybe it isn't necessary to document reactToEvent... functions unless there is an expected parameter for user input (e.g. updated name value), which might otherwise not be clear.
     /**
      * Moves the given List or List Item downwards in its parent list/array, both in the checklist's underlying data and UI
      * @param {string} id The unique identfier for the List or List Item to move downwards
@@ -432,65 +425,104 @@ window.ListController = (function()
     //Quantity Modifier Toggles & Popovers
     //#region ==============================
 
+    /**
+     * Informs the View to listen for an event indicating a List Item's quantity toggle has been selected
+     * @param {string} listItemId The unique identfier for the List Item which has had one of its quantity toggles selected
+     * @param {string} quantityType The quantity type of the toggle selected
+     */
     function listenForEvent_QuantityToggleSelected(listItemId, quantityType)
     {
-        //Define how the UI should react when the user selects a List Item's quantity toggle
-        const _viewReaction = function(clickEvent) {
-            if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
-            {
-                //Prevent the event from bubbling up to other elements in the checklist (which would in turn trigger the 'ClickDetectedOutsidePopover' event and hide the popover)
-                clickEvent.stopPropagation();
-
-                //Inform the View to display the popover associated with the selected quantity toggle
-                window.View.Render('ShowQuantityPopover', {id:listItemId, quantityType:quantityType});   
-            }
-        };
-
-        //Inform the View to listen for an event indicating a List Item's quantity toggle has been selected
-        window.View.Bind('QuantityToggleSelected', _viewReaction, {id:listItemId, quantityType:quantityType});
+        window.View.Bind('QuantityToggleSelected', reactToEvent_QuantityToggleSelected.bind(null, listItemId, quantityType), {id:listItemId, quantityType:quantityType});
     }
 
-    function listenForEvent_QuantityPopoverShown(id, quantityType)
+    /**
+     * Displays the Quantity Popover associated with toggle selected, given that there is no currently Active Quantity Popover or Settings View
+     * @param {string} listItemId The unique identfier for the List Item which has had one of its quantity toggles selected
+     * @param {string} quantityType The quantity type of the toggle selected
+     * @param {MouseEvent} clickEvent The click event received from user input to the checklist
+     */
+    function reactToEvent_QuantityToggleSelected(listItemId, quantityType, clickEvent)
     {
-        const _controllerReaction = function() {
-            //Listen for the event to decrement a List Item's quantity value
-            listenForEvent_DecrementQuantityButtonPressed(id, quantityType);
+        //If there is no Active Settings View and there is no Active Quantity Popover...
+        if (window.View.IsSettingsViewActive() === false && window.View.IsQuantityPopoverActive() === false)
+        {
+            //Prevent the event from bubbling up to other elements in the checklist (which would in turn trigger the 'ClickDetectedOutsidePopover' event and hide the popover)
+            clickEvent.stopPropagation();
 
-            //Listen for the event to increment a List Item's quantity value
-            listenForEvent_IncrementQuantityButtonPressed(id, quantityType);
-
-            //Listen for the event to hide the active Quantity Popover
-            listenForEvent_ClickDetectedOutsidePopover();
-        };
-
-        //Inform the View to listen for an event indicating a List Item's quantty popover has been added to the DOM and shown
-        window.View.Bind('QuantityPopoverShown', _controllerReaction, {id:id, quantityType:quantityType});
+            //Inform the View to display the popover associated with the selected quantity toggle
+            window.View.Render('ShowQuantityPopover', {id:listItemId, quantityType:quantityType});   
+        }
     }
 
-    function listenForEvent_DecrementQuantityButtonPressed(id, quantityType)
+    /**
+     * Informs the View to listen for an event indicating a List Item's quantty popover has been added to the DOM and shown
+     * @param {string} listItemId The unique identfier for the List Item which the popover corresponds to
+     * @param {string} quantityType The quantity type of the popover
+     */
+    function listenForEvent_QuantityPopoverShown(listItemId, quantityType)
     {
+        window.View.Bind('QuantityPopoverShown', reactToEvent_QuantityPopoverShown.bind(null, listItemId, quantityType), {id:listItemId, quantityType:quantityType});
+    }
+
+    function reactToEvent_QuantityPopoverShown(listItemId, quantityType)
+    {
+        //Listen for the event to decrement a List Item's quantity value
+        listenForEvent_DecrementQuantityButtonPressed(listItemId, quantityType);
+
+        //Listen for the event to increment a List Item's quantity value
+        listenForEvent_IncrementQuantityButtonPressed(listItemId, quantityType);
+
+        //Listen for the event to hide the active Quantity Popover
+        listenForEvent_ClickDetectedOutsidePopover();
+    }
+
+    /**
+     * Informs the View to listen for an event indicating a List Item's 'Decrement quantity' button has been pressed
+     * @param {string} listItemId The unique identfier for the List Item
+     * @param {string} quantityType The quantity type to be decremented
+     */
+    function listenForEvent_DecrementQuantityButtonPressed(listItemId, quantityType)
+    {
+        window.View.Bind('DecrementQuantityButtonPressed', reactToEvent_DecrementQuantityButtonPressed.bind(null, listItemId, quantityType));
+    }
+
+    function reactToEvent_DecrementQuantityButtonPressed(listItemId, quantityType)
+    {
+        //Once the Model has decremented the List Item's quantity value in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
-        const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Decrement', quantityType);
 
-        //Inform the View to listen for an event indicating a List Item's 'Decrement quantity' button has been pressed
-        window.View.Bind('DecrementQuantityButtonPressed', _modelReaction);
+        //Inform the Model to decrement the specified quantity value for the given List Item, and then execute the passed callback function
+        window.Model.ModifyQuantity(listItemId, _viewReaction, 'Decrement', quantityType);
     }
 
-    function listenForEvent_IncrementQuantityButtonPressed(id, quantityType)
+    /**
+     * Informs the View to listen for an event indicating a List Item's 'Increment quantity' button has been pressed
+     * @param {string} listItemId The unique identfier for the List Item
+     * @param {string} quantityType The quantity type to be incremented
+     */
+    function listenForEvent_IncrementQuantityButtonPressed(listItemId, quantityType)
     {
-        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
-        const _modelReaction = window.Model.ModifyQuantity.bind(null, id, _viewReaction, 'Increment', quantityType);
-
-        //Inform the View to listen for an event indicating a List Item's 'Increment quantity' button has been pressed
-        window.View.Bind('IncrementQuantityButtonPressed', _modelReaction);
+        window.View.Bind('IncrementQuantityButtonPressed', reactToEvent_IncrementQuantityButtonPressed.bind(null, listItemId, quantityType));
     }
 
+    function reactToEvent_IncrementQuantityButtonPressed(listItemId, quantityType)
+    {
+        //Once the Model has incremented the List Item's quantity value in the checklist data, pass any necessary data to the View to do the same in the UI
+        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
+
+        //Inform the Model to increment the specified quantity value for the given List Item, and then execute the passed callback function
+        window.Model.ModifyQuantity(listItemId, _viewReaction, 'Increment', quantityType);
+    }
+
+    /** Informs the View to listen for an event indicating a click has been detected outside of a popover */
     function listenForEvent_ClickDetectedOutsidePopover()
     {
-        const _viewReaction = window.View.Render.bind(null, 'HideActiveQuantityPopover');
+        window.View.Bind('ClickDetectedOutsidePopover', reactToEvent_ClickDetectedOutsidePopover);
+    }
 
-        //Inform the View to listen for an event indicating a click has been detected outside of a popover
-        window.View.Bind('ClickDetectedOutsidePopover', _viewReaction);
+    function reactToEvent_ClickDetectedOutsidePopover()
+    {
+        window.View.Render('HideActiveQuantityPopover');
     }
     //#endregion
     //#endregion
