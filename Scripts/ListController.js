@@ -105,13 +105,6 @@ window.ListController = (function()
             listenForEvent_QuantityPopoverShown(listItemId, key);            
         }
 
-        // //When a Quantity Toggle is selected, show the Quantity Popover for that toggle
-        // listenForEvent_QuantityToggleSelected(listItemId);
-
-        // //When a Quantity Popover is added to the DOM and shown, set up the listeners for its children elements
-        // listenForEvent_QuantityPopoverShown(listItemId);
-
-
         //Setup listeners related to the List Item's Settings View
         setupListeners_SettingsView(listItemId); 
 
@@ -154,13 +147,8 @@ window.ListController = (function()
         //TODO Maybe document the required properties elsewhere as well? (e.g. in the Model's Modify methods or the View's Bind and Render methods)
             //i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
 
-    //TODO these functions may be more readable if more whitespace is included, with comments above instead of to the right. 
-        //Re-assess once the whole listenForEvent transition is complete.
-
-    //TODO Document these methods with JSDOC
-
     //App Navigation
-    //#region ==============================
+    //#region ========================================
 
     /** Informs the AppNavigationController to listen for an event indicating the screen has changed */
     function listenForEvent_ScreenChanged()
@@ -201,7 +189,7 @@ window.ListController = (function()
     //#endregion
 
     //Home Screen
-    //#region ==============================
+    //#region ========================================
 
     /**
      * Informs the View to listen for an event indicating a 'Go To List' button has been pressed
@@ -212,10 +200,6 @@ window.ListController = (function()
         window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed.bind(null, listId), {id:listId});
     }
 
-    /**
-     * Displays the specified List and sets it as the Active List
-     * @param {string} listId The unique identfier for the List to be displayed
-     */
     function reactToEvent_GoToListButtonPressed(listId)
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
@@ -245,7 +229,7 @@ window.ListController = (function()
     //#endregion
 
     //List Screen Headers & Footers
-    //#region ==============================
+    //#region ========================================
 
     /** Informs the View to listen for an event indicating the 'New List Item' button has been pressed */
     function listenForEvent_NewListItemButtonPressed()
@@ -264,19 +248,16 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating that a Quantity Header Popover has been shown
-     * @param {string} quantityType The quantity type of the header popover that will be shown
+     * @param {string} quantityType The quantity type of the popover
      */
     function listenForEvent_QuantityHeaderPopoverShown(quantityType)
     {
         window.View.Bind('QuantityHeaderPopoverShown', reactToEvent_QuantityHeaderPopoverShown.bind(null, quantityType), {quantityType:quantityType});
     }
 
-    /**
-     * Sets up a listener for when a 'Clear' button is pressed, which can only happen when the Quantity Header Popover is shown
-     * @param {string} quantityType The quantity type of the header popover that was shown
-     */
     function reactToEvent_QuantityHeaderPopoverShown(quantityType)
     {
+        //When the 'Clear' button for the specified quantity type is pressed, clear the corresponding quantity values for all the List Items in the Active List
         listenForEvent_ClearButtonPressed(quantityType);
     }
 
@@ -289,26 +270,22 @@ window.ListController = (function()
         window.View.Bind('ClearButtonPressed', reactToEvent_ClearButtonPressed.bind(null, quantityType));
     }
 
-    /**
-     * Clears the quantity value for all List Items of the given quantity type in the Active List, and updates the checklist's data and UI accordingly
-     * @param {string} quantityType The quantity type associated with the clear button that was pressed
-     */
     function reactToEvent_ClearButtonPressed(quantityType)
     {
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
         const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
 
-        //Inform the Model to modify the specified quantity for the all List Items in the active List, and execute the passed callback function for each modified List Item
+        //Inform the Model to clear the specified quantity values for the all List Items in the active List, and execute the passed callback function for each modified List Item
         window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
     }
     //#endregion
 
     //Settings Views
-    //#region ==============================
+    //#region ========================================
 
     /**
-     * Informs the View to listen for an event indicating a Settings View has begun expansion
-     * @param {string} id The unique identfier for the List or List Item which has had its Settings View begin to expand
+     * Informs the View to listen for an event indicating a List or List Item's Settings View has begun expansion
+     * @param {string} id The unique identfier for the List or List Item
      */
     function listenForEvent_SettingsViewExpansionStarted(id)
     {
@@ -323,7 +300,7 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating a List or List Item's 'Edit Name' text field has been modified
-     * @param {string} id The unique identfier for the List or List Item which has had its name edited
+     * @param {string} id The unique identfier for the List or List Item
      */
     function listenForEvent_NameEdited(id)
     {
@@ -347,17 +324,13 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating a List or List Item's 'Delete' button has been pressed
-     * @param {string} id The unique identfier for the List or List Item which has been selected to be deleted
+     * @param {string} id The unique identfier for the List or List Item
      */
     function listenForEvent_DeleteButtonPressed(id)
     {
         window.View.Bind('DeleteButtonPressed', reactToEvent_DeleteButtonPressed.bind(null, id), {id:id});
     }
 
-    /**
-     * Removes the given List or List Item from both the checklist's underlying data and UI
-     * @param {string} id The unique identfier for the List or List Item to be deleted
-     */
     function reactToEvent_DeleteButtonPressed(id)
     {
         //TODO DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
@@ -370,23 +343,18 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating a List or List Item's 'Move Upwards' button has been pressed
-     * @param {string} id The unique identfier for the List or List Item selected to be moved upwards
+     * @param {string} id The unique identfier for the List or List Item
      */
     function listenForEvent_MoveUpwardsButtonPressed(id)
     {
         window.View.Bind('MoveUpwardsButtonPressed', reactToEvent_MoveUpwardsButtonPressed.bind(null, id), {id:id});
     }
 
-    /**
-     * Moves the given List or List Item upwards in its parent list/array, both in the checklist's underlying data and UI
-     * @param {string} id The unique identfier for the List or List Item to move upwards
-     */
     function reactToEvent_MoveUpwardsButtonPressed(id)
     {
         //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
         //Once the Model has moved the List or List Item upwards in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = function(swappedChecklistObjectId) {
-            //Inform the View to swap the UI for the specified List or List Item and the one above it in its parent list
             window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
         };
         
@@ -396,24 +364,18 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating a List or List Item's 'Move Downwards' button has been pressed
-     * @param {string} id The unique identfier for the List or List Item selected to be moved downwards
+     * @param {string} id The unique identfier for the List or List Item
      */
     function listenForEvent_MoveDownwardsButtonPressed(id)
     {
         window.View.Bind('MoveDownwardsButtonPressed', reactToEvent_MoveDownwardsButtonPressed.bind(null, id), {id:id});
     }
 
-    //TODO maybe it isn't necessary to document reactToEvent... functions unless there is an expected parameter for user input (e.g. updated name value), which might otherwise not be clear.
-    /**
-     * Moves the given List or List Item downwards in its parent list/array, both in the checklist's underlying data and UI
-     * @param {string} id The unique identfier for the List or List Item to move downwards
-     */
     function reactToEvent_MoveDownwardsButtonPressed(id)
     {
         //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
         //Once the Model has moved the List or List Item downwards in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = function(swappedChecklistObjectId) {
-            //Inform the View to swap the UI for the specified List or List Item and the one below it in its parent list
             window.View.Render('SwapListObjects', {moveUpwardsId:swappedChecklistObjectId, moveDownwardsId:id});
         };
         
@@ -423,11 +385,11 @@ window.ListController = (function()
     //#endregion
 
     //Quantity Modifier Toggles & Popovers
-    //#region ==============================
+    //#region ========================================
 
     /**
      * Informs the View to listen for an event indicating a List Item's quantity toggle has been selected
-     * @param {string} listItemId The unique identfier for the List Item which has had one of its quantity toggles selected
+     * @param {string} listItemId The unique identfier for the List Item
      * @param {string} quantityType The quantity type of the toggle selected
      */
     function listenForEvent_QuantityToggleSelected(listItemId, quantityType)
@@ -437,7 +399,7 @@ window.ListController = (function()
 
     /**
      * Displays the Quantity Popover associated with toggle selected, given that there is no currently Active Quantity Popover or Settings View
-     * @param {string} listItemId The unique identfier for the List Item which has had one of its quantity toggles selected
+     * @param {string} listItemId The unique identfier for the List Item to which the selected quantity toggle corresponds
      * @param {string} quantityType The quantity type of the toggle selected
      * @param {MouseEvent} clickEvent The click event received from user input to the checklist
      */
@@ -456,8 +418,8 @@ window.ListController = (function()
 
     /**
      * Informs the View to listen for an event indicating a List Item's quantty popover has been added to the DOM and shown
-     * @param {string} listItemId The unique identfier for the List Item which the popover corresponds to
-     * @param {string} quantityType The quantity type of the popover
+     * @param {string} listItemId The unique identfier for the List Item to which the popover corresponds
+     * @param {string} quantityType The quantity type of the popover shown
      */
     function listenForEvent_QuantityPopoverShown(listItemId, quantityType)
     {
