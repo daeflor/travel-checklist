@@ -160,7 +160,7 @@ window.DebugView = (function()
     }
 
     return {
-        Init : init,
+        Init: init,
         Bind: bind,
         Render: render
     };

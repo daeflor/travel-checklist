@@ -63,7 +63,7 @@ window.StorageManager = (function ()
     }
   
     return {
-        RetrieveChecklistData : retrieveChecklistData,
-        StoreChecklistData : storeChecklistData
+        RetrieveChecklistData: retrieveChecklistData,
+        StoreChecklistData: storeChecklistData
     };
 })();  

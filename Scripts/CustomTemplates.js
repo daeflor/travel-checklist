@@ -206,9 +206,9 @@ window.CustomTemplates = (function ()
     }
 
     return {
-        CreateListWrapperFromTemplate : createListWrapperFromTemplate,
-        CreateListToggleFromTemplate : createListToggleFromTemplate,
-        CreateListItemFromTemplate : createListItemFromTemplate,
-        CreateTravelHeaderFromTemplate : createTravelHeaderFromTemplate
+        CreateListWrapperFromTemplate: createListWrapperFromTemplate,
+        CreateListToggleFromTemplate: createListToggleFromTemplate,
+        CreateListItemFromTemplate: createListItemFromTemplate,
+        CreateTravelHeaderFromTemplate: createTravelHeaderFromTemplate
     };
 })();  

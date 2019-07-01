@@ -423,9 +423,9 @@ window.Model = (function()
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     return {
-        RetrieveChecklistData : retrieveChecklistData,
+        RetrieveChecklistData: retrieveChecklistData,
         LoadChecklistData: loadChecklistData,
-        AddNewList : addNewList,
+        AddNewList: addNewList,
         AddNewListItem: addNewListItem,
         ModifyName: modifyName,
         Remove: remove,

@@ -175,6 +175,9 @@ window.View = (function()
         //e.g. Binds could be in the past tense (e.g. SettingsViewExpanded, ButtonPressed), and Render could be commands (e.g. ExpandSettingsView, ShowHomeScreen)
         //Update all Bind and Render casing (e.g. upper vs lower) and naming convention to be consistent
 
+    //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
+        //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
+
     //TODO standardize between parameter, parameters, options, data, etc.
     /**
      * @param {string} event The name used to identify the event being bound
@@ -552,7 +555,7 @@ window.View = (function()
     }
 
     return {
-        Init : init,
+        Init: init,
         Bind: bind,
         Render: render,
         IsSettingsViewActive: isSettingsViewActive,

@@ -4,11 +4,11 @@ window.ListController = (function()
     //Assign a variable to track the ID of the active List
     let activeListId = null;
 
-    //Private Helper Function To Render Updates To Lists & List Items
-    //#region ================================================================================
+//Helper Function To Render Updates To List Item Quantity Values
+//#region ============================================================
 
     /**
-     * 
+     * Informs the View to update a List Item's quantity value and name toggle color in the UI based on changes to the underlying data
      * @param {string} quantityType The type of quantity that has been modified for the List Item
      * @param {string} listItemId The unique identfier for the List Item which had one of its quantities modified
      * @param {*} updatedValue The updated value of the quantity which was modified
@@ -22,10 +22,11 @@ window.ListController = (function()
         //Update the List Item's name toggle color based on its updated balance
         window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
-    //#endregion
+//#endregion
 
-    //Private Functions To Setup Collections Of Listeners
-    //#region ================================================================================
+//Functions To Setup Collections Of Listeners
+//#region ============================================================
+
     /**
      * Sets up any ongoing listeners for the app which are not dependent on specific Lists or List Items
      */
@@ -137,18 +138,10 @@ window.ListController = (function()
         //When the Move Downwards button is pressed, move the checklist object down by one position
         listenForEvent_MoveDownwardsButtonPressed(id);
     } 
-    //#endregion
+//#endregion
 
-    //Private Functions To Setup Listeners For Individual Lists & List Items
-    //#region ================================================================================
-
-    //TODO Maybe put error handling in the functions below to ensure the expected parameters have been passed.
-        //For example: if (validateObjectContainsValidKVPs(options, ['quantityType']) == true) ~OR~ validateObjectContainsKVPs(options, [key1, key2, etc]) == true ? doAction() : logError();
-        //TODO Maybe document the required properties elsewhere as well? (e.g. in the Model's Modify methods or the View's Bind and Render methods)
-            //i.e. be more dilligent about specifying expected parameters. Maybe could mix this with additional error handling in Model and View
-
-    //App Navigation
-    //#region ========================================
+//App Navigation Listeners
+//#region ============================================================
 
     /** Informs the AppNavigationController to listen for an event indicating the screen has changed */
     function listenForEvent_ScreenChanged()
@@ -186,10 +179,10 @@ window.ListController = (function()
         //Set the Active List ID to null, now that there is no active List
         activeListId = null;
     }
-    //#endregion
+//#endregion
 
-    //Home Screen
-    //#region ========================================
+//Home Screen Listeners
+//#region ============================================================
 
     /**
      * Informs the View to listen for an event indicating a 'Go To List' button has been pressed
@@ -226,10 +219,10 @@ window.ListController = (function()
         //Inform the Model to create a new List data object and then execute the passed callback function
         window.Model.AddNewList(_viewReaction);
     }
-    //#endregion
+//#endregion
 
-    //List Screen Headers & Footers
-    //#region ========================================
+//List Screen Header & Footer Listeners
+//#region ============================================================
 
     /** Informs the View to listen for an event indicating the 'New List Item' button has been pressed */
     function listenForEvent_NewListItemButtonPressed()
@@ -278,10 +271,10 @@ window.ListController = (function()
         //Inform the Model to clear the specified quantity values for the all List Items in the active List, and execute the passed callback function for each modified List Item
         window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
     }
-    //#endregion
+//#endregion
 
-    //Settings Views
-    //#region ========================================
+//Settings View  Listeners
+//#region ============================================================
 
     /**
      * Informs the View to listen for an event indicating a List or List Item's Settings View has begun expansion
@@ -382,10 +375,10 @@ window.ListController = (function()
         //Inform the Model to move the specified List or List Item downwards, and then execute the passed callback function
         window.Model.ModifyPosition(id, _viewReaction, 'Downwards');
     }
-    //#endregion
+//#endregion
 
-    //Quantity Modifier Toggles & Popovers
-    //#region ========================================
+//Quantity Toggle & Popover Listeners
+//#region ============================================================
 
     /**
      * Informs the View to listen for an event indicating a List Item's quantity toggle has been selected
@@ -486,12 +479,12 @@ window.ListController = (function()
     {
         window.View.Render('HideActiveQuantityPopover');
     }
-    //#endregion
-    //#endregion
+//#endregion
 
-    //Publicly Exposed Method to Setup UI & Load List Data
-    //#region ================================================================================
+//Publicly Exposed Method to Setup UI & Load List Data
+//#region ============================================================
 
+    /** Sets up ongoing listeners for the checklist, loads the checklist data, and then sets up listeners related to the loaded Lists and List Items */
     function init()
     {     
         //Set up ongoing listeners for the app which are not dependent on specific Lists or List Items
@@ -500,9 +493,7 @@ window.ListController = (function()
         //Load the checklist data from storage and then set up UI and listeners for the loaded Lists and List Items
         window.Model.LoadChecklistData(setupListenersAndUI_List.bind(null, true), setupListenersAndUI_ListItem.bind(null, true));
     }
-    //#endregion
+//#endregion
 
-    return {
-        Init : init
-    };
+    return {Init: init};
 })();
