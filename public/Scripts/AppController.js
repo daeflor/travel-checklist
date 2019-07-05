@@ -29,15 +29,18 @@ window.AppNavigationController = (function()
         {
             console.log("The page was (re)loaded.");
 
+            /*
             if (result.credential) 
             {
               // This gives you a Google Access Token. You can use it to access the Google API.
               var token = result.credential.accessToken;
               // ...
             }
+            */
             // The signed-in user info.
             var user = result.user;
             console.log(user);
+            
 
             //If a user signed in and the current screen is the Home Screen...
             if (user != null && isHomeScreen(document.location.href) === true)
@@ -69,6 +72,21 @@ window.AppNavigationController = (function()
             {
                 //Re-route the landing page to the Authentication Screen
                 document.location.href = '#auth'; //TODO This doesn't really accomplish anything right now...
+                
+                //TODO need to have some sort of loading / signing in / splash screen in between here. With lower internet speeds, it looks janky right now, because after the user has signed in the sign in button will still be displayed briefly. 
+                    //Maybe the first page should not be the sign in screen, but actually some more generic loading screen.
+                        //Flow:
+                        //1) If the screen is *not* LANDING SCREEN, re-route to LANDING SCREEN
+                        //2) If the screen is LANDING SCREEN, check if user is signed in
+                        //3) If user is *not* signed in, navigate to AUTH SCREEN
+                            //3a) Once user selects the sign in button, hide the auth screen and set the URl Hash to the LANDING SCREEN
+                            //3b) Once user completes sign-in flow and page reloads, should end up at Step 2. 
+                        //4) If user is signed in, navigate to HOME SCREEN
+
+                    //TODO Need a better / more seamless connection/interaction between screens changing in AppNavigationController & View
+                        //Would be good to figure out a strategy for this before cleaning up the flow laid out above
+                        //Maybe View should have dedicated 'change screen' section
+
                 document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
                 window.DebugController.Print("AppNavigationController: App re-routed to the Auth Screen. Current Hash: " + document.location.hash);
             }

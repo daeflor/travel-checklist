@@ -1,53 +1,6 @@
 'use strict';
 window.CustomTemplates = (function () 
-{   
-    //TODO re-order these methods for better readability
-
-    function createListItemFromTemplate(id, name, quantities, borderColor)
-    {
-        //Create the div wrapper for the entire List Item
-        var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
-
-        //Create the name toggle that can be selected to open or close the Settings View for the List Item
-        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListItemToggle', name, 'NameButton-'.concat(id));
-        
-        //Set name toggle's border color to the value provided
-        nameToggle.style.borderColor = borderColor;
-        
-        //Create the div wrapper for the List Item Name, with the name toggle as a child 
-        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
-
-        //Add the List Item Name to the DOM as a child of the List Item div wrapper
-        wrapper.appendChild(nameWrapper);
-
-        for (const key in QuantityTypes) //For each quantity type...
-        {
-            //Assign the initial value which should be displayed for the given quantity type, either using the values loaded from storage, if provided, or defaulting to zero otherwise.
-            const _quantityValue = (quantities != null && quantities[key] != null) ? quantities[key] : 0;
-
-            //Create a quantity toggle element from the template and add it to the DOM as a child of the List Item div wrapper
-            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key, _quantityValue)); 
-        }
-
-        //Create the Settings View for the List Item
-        var settingsWrapper = createSettingsViewFromTemplate(
-            id, 
-            name, 
-            'row', 
-            function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
-        );
-
-        //Add the Settings View to the DOM as a child of the List Item div wrapper
-        wrapper.appendChild(settingsWrapper);   
-
-        return wrapper;
-    }
-
-    function createListWrapperFromTemplate(listId)
-    {
-        return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
-    }
-
+{
     function createListToggleFromTemplate(id, name, type, borderColor)
     {
         if (id != null && name != null && type != null) //TODO Use try catch instead
@@ -65,7 +18,7 @@ window.CustomTemplates = (function ()
             nameToggle.style.borderColor = borderColor;
 
             //Create the div wrapper for the List Name button/toggle
-            var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName divListToggleName'] ], nameToggle);
+            var nameWrapper = CreateNewElement('div', [ ['class','col-7 divItemName divListToggleName'] ], nameToggle);
 
             /* Navigation Button */
 
@@ -105,6 +58,74 @@ window.CustomTemplates = (function ()
         {
             window.DebugController.LogError("Request received to create a List Toggle but valid List data was not provided. Expected a valid list ID, name, and type.");
         }
+    }
+
+    function createListWrapperFromTemplate(listId)
+    {
+        return CreateNewElement('div', [ ['id','ListWrapper-'.concat(listId)], ['class','container-fluid'], ['hidden', 'true'] ]);
+    }
+
+    //TODO Maybe the QuantityTypes object should be passed as a parameter instead of being Global
+    function createTravelHeaderFromTemplate()
+    {
+        var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
+
+        for (const key in QuantityTypes)
+        {
+            headerWrapper.appendChild(createQuantityHeaderToggle(key));
+        }
+
+        return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;
+    }
+
+    function createQuantityHeaderToggle(quantityType)
+    {
+        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
+
+        var iconToggle = CreateNewElement('i', [ ['class',QuantityTypes[quantityType].iconClass] ]);    
+        var popoverToggle = CreatePopoverToggle({id:(quantityType.concat('QuantityHeaderToggle')), class:QuantityTypes[quantityType].toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
+
+        return CreateNewElement('div', [ ['class', QuantityTypes[quantityType].wrapperClass] ], popoverToggle);
+    }
+
+    function createListItemFromTemplate(id, name, quantities, borderColor)
+    {
+        //Create the div wrapper for the entire List Item
+        var wrapper = CreateNewElement('div', [ ['id',id], ['class','row divItemRow'] ]);
+
+        //Create the name toggle that can be selected to open or close the Settings View for the List Item
+        var nameToggle = CreateToggleForCollapsibleView('SettingsView-'.concat(id), 'buttonNameToggle buttonListItemToggle', name, 'NameButton-'.concat(id));
+        
+        //Set name toggle's border color to the value provided
+        nameToggle.style.borderColor = borderColor;
+        
+        //Create the div wrapper for the List Item Name, with the name toggle as a child 
+        var nameWrapper = CreateNewElement('div', [ ['class','col-5 divItemName'] ], nameToggle);
+
+        //Add the List Item Name to the DOM as a child of the List Item div wrapper
+        wrapper.appendChild(nameWrapper);
+
+        for (const key in QuantityTypes) //For each quantity type...
+        {
+            //Assign the initial value which should be displayed for the given quantity type, either using the values loaded from storage, if provided, or defaulting to zero otherwise.
+            const _quantityValue = (quantities != null && quantities[key] != null) ? quantities[key] : 0;
+
+            //Create a quantity toggle element from the template and add it to the DOM as a child of the List Item div wrapper
+            wrapper.appendChild(createListItemQuantityToggleFromTemplate(id, key, _quantityValue)); 
+        }
+
+        //Create the Settings View for the List Item
+        var settingsWrapper = createSettingsViewFromTemplate(
+            id, 
+            name, 
+            'row', 
+            function() { wrapper.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});}
+        );
+
+        //Add the Settings View to the DOM as a child of the List Item div wrapper
+        wrapper.appendChild(settingsWrapper);   
+
+        return wrapper;
     }
 
     function createListItemQuantityToggleFromTemplate(listItemId, type, quantityValue)
@@ -180,29 +201,6 @@ window.CustomTemplates = (function ()
         });
 
         return wrapper;
-    }
-
-    //TODO Maybe the QuantityTypes object should be passed as a parameter instead of being Global
-    function createTravelHeaderFromTemplate()
-    {
-        var headerWrapper = CreateNewElement('div', [ ['class', 'row'] ]); //TODO Is there no better way to get the formatting right than to have this extra div?
-
-        for (const key in QuantityTypes)
-        {
-            headerWrapper.appendChild(createQuantityHeaderToggle(key));
-        }
-
-        return CreateNewElement('div', [ ['class', 'col'] ], headerWrapper);;
-    }
-
-    function createQuantityHeaderToggle(quantityType)
-    {
-        var buttonClear = CreateButtonWithIcon({buttonId:'buttonClear', buttonClass:'btn-lg buttonClear', iconClass:'fa fa-lg fa-eraser'});
-
-        var iconToggle = CreateNewElement('i', [ ['class',QuantityTypes[quantityType].iconClass] ]);    
-        var popoverToggle = CreatePopoverToggle({id:(quantityType.concat('QuantityHeaderToggle')), class:QuantityTypes[quantityType].toggleClass, display:iconToggle, children:[buttonClear], trigger:'focus'});
-
-        return CreateNewElement('div', [ ['class', QuantityTypes[quantityType].wrapperClass] ], popoverToggle);
     }
 
     return {

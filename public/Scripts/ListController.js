@@ -144,6 +144,8 @@ window.ListController = (function()
 //#region ============================================================
 
     /** Informs the AppNavigationController to listen for an event indicating the screen has changed */
+    //TODO these event listeners could possibly be handled elsewhere (perhaps AppNavigationController)
+
     function listenForEvent_ScreenChanged()
     {
         window.AppNavigationController.ListenForEvent('ScreenChanged', reactToEvent_ScreenChanged);
