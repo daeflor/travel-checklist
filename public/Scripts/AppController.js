@@ -6,11 +6,11 @@
 
     function init()
     {
-        //Initialize the View and the other Controllers
-        window.AppNavigationController.Init();
-        window.View.Init();
+        //Initialize the Debug Controller to enable debug capabilities and update the UI as needed
         window.DebugController.Init();
-        window.ListController.Init();
+
+        //Initialize the App Navigation Controller to handle navigation throughout the app
+        window.AppNavigationController.Init();
     }    
 })();  
 
@@ -23,24 +23,148 @@ window.AppNavigationController = (function()
 
     function init()
     {
-        window.DebugController.Print("AppNavigationController: Setting up app. Current Hash: " + document.location.hash);
+        window.DebugController.Print("AppNavigationController: Setting up app navigation. Current Hash: " + document.location.hash);
 
-        //If the landing page is the Travel Checklist Home Screen...
-        if (isHomeScreen(document.location.href) === true)
+        firebase.auth().getRedirectResult().then(function(result) 
         {
-            //Set up the listener for whenever the hash changes throughout the app session
-            setupPersistentHashChangedEventListener();
-        }
-        else //Else, if the landing page is set to an invalid initial url
+            console.log("The page was (re)loaded.");
+
+            if (result.credential) 
+            {
+              // This gives you a Google Access Token. You can use it to access the Google API.
+              var token = result.credential.accessToken;
+              // ...
+            }
+            // The signed-in user info.
+            var user = result.user;
+            console.log(user);
+
+            //If a user signed in and the current screen is the Home Screen...
+            if (user != null && isHomeScreen(document.location.href) === true)
+            {
+                window.DebugController.Print("AppNavigationController: The user is signed in the current screen is the Home Screen. Current Hash: " + document.location.hash);
+
+                //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+                window.View.Init();
+
+                //Inform the View to hide the Auth Screen
+                window.View.Render('HideAuthScreen');
+
+                //Inform the View to display the Home Screen
+                window.View.Render('ShowHomeScreen');
+
+                //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
+                window.ListController.Init();
+
+                //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
+                setupPersistentHashChangedEventListener();
+            }
+            //Else, if no user is signed in and the current screen is the Authentication Screen...
+            else if (user == null && isAuthScreen(document.location.href) === true)
+            {
+                document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            }
+            //Else, if no user is signed in and the current screen is not the Authentication Screen...
+            else if (user == null && isAuthScreen(document.location.href) !== true)
+            {
+                //Re-route the landing page to the Authentication Screen
+                document.location.href = '#auth'; //TODO This doesn't really accomplish anything right now...
+                document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+                window.DebugController.Print("AppNavigationController: App re-routed to the Auth Screen. Current Hash: " + document.location.hash);
+            }
+        }).catch(function(error) 
         {
-            window.DebugController.LogWarning("AppNavigationController: The app loaded at a page other than the Home Screen. Current Hash: " + document.location.hash);
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+            console.log("REDIRECT CALLBACK ERROR CALLED");
+            console.log(error);
+        });
+
+        // //If the landing page is not the Checklist Authentication Screen...
+        // if (isAuthScreen(document.location.href) !== true)
+        // {
+        //     //Re-route the landing page to the Checklist Auth Screen
+        //     document.location.href = '#auth';
+        //     window.DebugController.Print("AppNavigationController: App re-routed to the Auth Screen. Current Hash: " + document.location.hash);
+        // }
+
+        // document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+
+        // if (isHomeScreen(document.location.href) === true)
+        // {
             
-            //Listen for a one-time hash change event, which will fire when the app is re-routed to the correct landing page, at which point a persistent hash change listener can be set up.
-            window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
+        // }
 
-            //Re-route the landing page to the Travel Checklist Home Screen
-            document.location.href = '#travel'; 
-        }
+    ///////////////////////////////////////////////////////////////////////////
+
+        // //If the landing page is the Checklist Auth Screen...
+        // if (isAuthScreen(document.location.href) === true)
+        // {
+        //     beginAuthentication();
+        // }
+        // else //Else, if the landing page is any other URL
+        // {
+        //     window.DebugController.LogWarning("AppNavigationController: The app loaded at a page other than the Auth Screen. Current Hash: " + document.location.hash);
+            
+        //     //Listen for a one-time hash change event, which will fire when the app is re-routed to the correct landing page
+        //     window.addEventListener('hashchange', beginAuthentication, {once:true});
+
+        //     //Re-route the landing page to the Checklist Auth Screen
+        //     document.location.href = '#auth'; 
+        // }
+
+        // //If the landing page is the Travel Checklist Home Screen...
+        // if (isHomeScreen(document.location.href) === true)
+        // {
+        //     //Set up the listener for whenever the hash changes throughout the app session
+        //     setupPersistentHashChangedEventListener();
+        // }
+        // else //Else, if the landing page is set to an invalid initial url
+        // {
+        //     window.DebugController.LogWarning("AppNavigationController: The app loaded at a page other than the Home Screen. Current Hash: " + document.location.hash);
+            
+        //     //Listen for a one-time hash change event, which will fire when the app is re-routed to the correct landing page, at which point a persistent hash change listener can be set up.
+        //     window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
+
+        //     //Re-route the landing page to the Travel Checklist Home Screen
+        //     document.location.href = '#travel'; 
+        // }
+    }
+
+    function beginAuthentication()
+    {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('https://www.googleapis.com/auth/appstate');
+        firebase.auth().useDeviceLanguage();
+
+        //Set the URL Hash to the Travel Checklist Home Screen, so that when the user is redirected to the app's landing page, they will immediately get redirected to the Home Screen
+        document.location.href = '#travel';
+
+        firebase.auth().signInWithRedirect(provider);
+    }
+
+    function directToHomeScreen()
+    {        
+        //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+        window.View.Init();
+
+        //Inform the View to display the Home Screen
+        window.View.Render('ShowHomeScreen');
+
+        //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
+        window.ListController.Init();
+
+        //Listen for a one-time hash change event, which will fire when the app is re-routed to the Home Screen, at which point a persistent hash change listener can be set up.
+        window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
+
+        //Re-route to the Travel Checklist Home Screen
+        document.location.href = '#travel';
     }
 
     function setupPersistentHashChangedEventListener() 
@@ -124,6 +248,12 @@ window.AppNavigationController = (function()
 
         //If the URL string matches either the Home Screen or a List Screen, return true, else return false.
         return (isHomeScreen(urlString) === true || isListScreen(urlString) === true) ? true : false;
+    }
+
+    function isAuthScreen(urlString)
+    {
+        //If the entire Fragment Identifier of the URL string matches the Auth Screen for the Checklist, return true, else return false
+        return (GetFragmentIdentifierFromUrlString(urlString) === 'auth') ? true : false;
     }
 
     function isHomeScreen(urlString)

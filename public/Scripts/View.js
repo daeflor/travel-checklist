@@ -5,6 +5,7 @@ window.View = (function()
 
     //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
     var elements = {  
+        authScreen : null,
         homeScreen : null,
         homeScreenListElements : null,
         listHeader : null,
@@ -32,6 +33,9 @@ window.View = (function()
         // }
 
         //TODO Could have a ReturnElement util function with a try catch maybe? Instead of callbacks...
+
+        //Assign the Auth Screen elements
+        elements.authScreen = document.getElementById('divAuthScreen');
 
         //Assign the Home Screen elements
         elements.homeScreen = document.getElementById('divHomeScreen');
@@ -307,6 +311,11 @@ window.View = (function()
     {
         let viewCommands = 
         {
+            HideAuthScreen: function() 
+            {
+                //Hide the Auth Screen
+                elements.authScreen.hidden = true;
+            },
             ShowHomeScreen: function() 
             {
                 //TODO this can probably all be put into a Toggle helper method.
