@@ -5,7 +5,6 @@ window.View = (function()
 
     //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
     var elements = {  
-        homeHeader : null,
         homeScreen : null,
         homeScreenListElements : null,
         listHeader : null,
@@ -35,8 +34,7 @@ window.View = (function()
         //TODO Could have a ReturnElement util function with a try catch maybe? Instead of callbacks...
 
         //Assign the Home Screen elements
-        elements.homeHeader = document.getElementById('divHomeHeader');
-        elements.homeScreen = document.getElementById('divHomeScreen'); 
+        elements.homeScreen = document.getElementById('divHomeScreen');
         elements.homeScreenListElements = document.getElementById('divHomeScreenListElements'); 
 
         //Assign the List Screen elements
@@ -320,9 +318,6 @@ window.View = (function()
                 //Hide the List Screen
                 elements.listScreen.hidden = true;
 
-                //Show the Home Header
-                elements.homeHeader.hidden = false;
-
                 //Show the Home Screen
                 elements.homeScreen.hidden = false;
 
@@ -331,9 +326,6 @@ window.View = (function()
             },
             DisplayList: function() //Expected parameters: id
             {
-                //Hide the Home Header when an individual List is displayed
-                elements.homeHeader.hidden = true;
-
                 //Hide the Home Screen when an individual List is displayed
                 elements.homeScreen.hidden = true;
 

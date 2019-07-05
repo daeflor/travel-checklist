@@ -16,6 +16,7 @@ TO-DOs:
 Upcoming To-Do List:
 - Backup or cloud storage functionality
 - Look into (unit) testing possibilities 
+- Remove loading of any firebase scripts that aren't actually needed
 - Address miscellaneous todos
 - Replace var with const and let
     - Replace with some lets with consts
