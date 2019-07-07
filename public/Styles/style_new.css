@@ -5,7 +5,7 @@ html {
 }
 
 body {
-    font-family: system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
+    font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
 
     background-color: aliceblue;
 
@@ -95,7 +95,7 @@ button {
 
     justify-content: left;
 
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     font-size: 1.1rem;
     color: white;
     text-shadow: 1px 1px 10px black;
@@ -145,7 +145,7 @@ button {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     color: white;
     text-shadow: 1px 1px 10px black;
 }
@@ -167,7 +167,7 @@ button {
 /** Item & List Rows **/
 
 #divChecklistBody {
-    min-height: 100%;
+    height: 100%;
 }
 
 .divItemRow {
@@ -192,13 +192,14 @@ button {
     padding-bottom: 6px;  
 }
 
+/*TODO This should be renamed and re-organized*/
 .divListToggleName {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
 .buttonNameToggle {
-    padding-left: 10px;
+    padding-left: 5px;
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;  
@@ -209,6 +210,8 @@ button {
    
     width: 100%;
     height: 30px;
+
+    font-size: 0.9rem;
 }
 
 .buttonListToggle {
@@ -475,4 +478,20 @@ button {
 
 .disallowBrowserRefresh {
     overscroll-behavior-y: contain;
+}
+
+#divLandingScreen {
+    display: flex;
+    flex-direction: column;
+    height: 95%;
+
+    text-align: center;
+
+    justify-content: center;
+}
+
+#divDebug {
+    display: flex;
+    flex-direction: column;
+    height: 5%;
 }

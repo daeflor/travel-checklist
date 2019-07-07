@@ -16,6 +16,12 @@
 
 window.AppNavigationController = (function() 
 {
+    const StaticScreens = {
+        Landing: '',
+        //Authentication: 'Auth',
+        Home: 'travel',
+    };
+
     const hashChangedCallbacks = {
         screenChanged: null,
         navigatedHome: null
@@ -24,6 +30,30 @@ window.AppNavigationController = (function()
     function init()
     {
         window.DebugController.Print("AppNavigationController: Setting up app navigation. Current Hash: " + document.location.hash);
+
+        //TODO need to have some sort of loading / signing in / splash screen in between here. With lower internet speeds, it looks janky right now, because after the user has signed in the sign in button will still be displayed briefly. 
+            //Maybe the first page should not be the sign in screen, but actually some more generic loading screen.
+                //Flow:
+                //1) If the screen is *not* LANDING SCREEN, re-route to LANDING SCREEN
+                //2) If the screen is LANDING SCREEN, check if user is signed in
+                //3) If user is *not* signed in, navigate to AUTH SCREEN
+                    //3a) Once user selects the sign in button, hide the auth screen and set the URl Hash to the LANDING SCREEN
+                    //3b) Once user completes sign-in flow and page reloads, should end up at Step 2. 
+                //4) If user is signed in, navigate to HOME SCREEN
+
+            //TODO Need a better / more seamless connection/interaction between screens changing in AppNavigationController & View
+                //Would be good to figure out a strategy for this before cleaning up the flow laid out above
+                //Maybe View should have dedicated 'change screen' section
+        
+        //if (isScreen(StaticScreens.Landing) === true)
+        //if (isScreen('Landing') === true)
+
+        //TODO Alternate, more concise flow:
+        //1) Check if user is signed in
+        //2) If user is *not* signed in, navigate to / show AUTH SCREEN
+            //2a) Once user selects the sign in button, hide the auth screen (and set the URl Hash to the LANDING SCREEN?)
+            //2b) Once user completes sign-in flow and page reloads, should end up at Step 1. 
+        //3) If user is signed in, navigate to HOME SCREEN
 
         firebase.auth().getRedirectResult().then(function(result) 
         {
@@ -40,56 +70,86 @@ window.AppNavigationController = (function()
             // The signed-in user info.
             var user = result.user;
             console.log(user);
-            
 
-            //If a user signed in and the current screen is the Home Screen...
-            if (user != null && isHomeScreen(document.location.href) === true)
+            //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+            window.View.Init();
+
+            if (result.user == null)
+            {
+                //Inform the View to hide the Landing Screen
+                window.View.Render('HideLandingScreen');
+
+                //Inform the View to show the Authentication Screen
+                window.View.Render('ShowAuthScreen');
+
+                document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            }
+            else
             {
                 window.DebugController.Print("AppNavigationController: The user is signed in the current screen is the Home Screen. Current Hash: " + document.location.hash);
 
-                //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
-                window.View.Init();
-
-                //Inform the View to hide the Auth Screen
-                window.View.Render('HideAuthScreen');
+                //Inform the View to hide the Landing Screen
+                window.View.Render('HideLandingScreen');
 
                 //Inform the View to display the Home Screen
                 window.View.Render('ShowHomeScreen');
+
+                //TODO Think about how necessary it is to actually use hash values in the URl. Maybe limit use to only when actually useful. 
+                    //For example, it turned out not being useful for the auth screen
+                //Route the app to the Travel Checklist Home Screen
+                //document.location.href = '#travel'; 
+                //TODO ^ Need to re-work the above or make it work like it used to, where a one-time hash listener is set up which then sets a parsistent one.
+                    //As it is currently the first time the list screen is opened, an 'invalid URL interaction' error will be hit.
 
                 //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
                 window.ListController.Init();
 
                 //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
-                setupPersistentHashChangedEventListener();
-            }
-            //Else, if no user is signed in and the current screen is the Authentication Screen...
-            else if (user == null && isAuthScreen(document.location.href) === true)
-            {
-                document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
-            }
-            //Else, if no user is signed in and the current screen is not the Authentication Screen...
-            else if (user == null && isAuthScreen(document.location.href) !== true)
-            {
-                //Re-route the landing page to the Authentication Screen
-                document.location.href = '#auth'; //TODO This doesn't really accomplish anything right now...
-                
-                //TODO need to have some sort of loading / signing in / splash screen in between here. With lower internet speeds, it looks janky right now, because after the user has signed in the sign in button will still be displayed briefly. 
-                    //Maybe the first page should not be the sign in screen, but actually some more generic loading screen.
-                        //Flow:
-                        //1) If the screen is *not* LANDING SCREEN, re-route to LANDING SCREEN
-                        //2) If the screen is LANDING SCREEN, check if user is signed in
-                        //3) If user is *not* signed in, navigate to AUTH SCREEN
-                            //3a) Once user selects the sign in button, hide the auth screen and set the URl Hash to the LANDING SCREEN
-                            //3b) Once user completes sign-in flow and page reloads, should end up at Step 2. 
-                        //4) If user is signed in, navigate to HOME SCREEN
+                //window.onhashchange = urlHashChanged;
 
-                    //TODO Need a better / more seamless connection/interaction between screens changing in AppNavigationController & View
-                        //Would be good to figure out a strategy for this before cleaning up the flow laid out above
-                        //Maybe View should have dedicated 'change screen' section
 
-                document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
-                window.DebugController.Print("AppNavigationController: App re-routed to the Auth Screen. Current Hash: " + document.location.hash);
+                //TODO maybe use same model/format that ListController uses for listeners, now that there are actually quite a few in this file
+                //Listen for a one-time hash change event, which will fire when the app is re-routed to the Travel Checklist Home Screen, at which point a persistent hash change listener can be set up.
+                window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
+
+                //Route the app to the Travel Checklist Home Screen
+                document.location.href = '#travel'; 
             }
+
+            // //If a user signed in and the current screen is the Home Screen...
+            // if (user != null && isHomeScreen(document.location.href) === true)
+            // {
+            //     window.DebugController.Print("AppNavigationController: The user is signed in the current screen is the Home Screen. Current Hash: " + document.location.hash);
+
+            //     //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+            //     window.View.Init();
+
+            //     //Inform the View to hide the Auth Screen
+            //     window.View.Render('HideAuthScreen');
+
+            //     //Inform the View to display the Home Screen
+            //     window.View.Render('ShowHomeScreen');
+
+            //     //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
+            //     window.ListController.Init();
+
+            //     //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
+            //     setupPersistentHashChangedEventListener();
+            // }
+            // //Else, if no user is signed in and the current screen is the Authentication Screen...
+            // else if (user == null && isAuthScreen(document.location.href) === true)
+            // {
+            //     document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            // }
+            // //Else, if no user is signed in and the current screen is not the Authentication Screen...
+            // else if (user == null && isAuthScreen(document.location.href) !== true)
+            // {
+            //     //Re-route the landing page to the Authentication Screen
+            //     document.location.href = '#auth'; //TODO This doesn't really accomplish anything right now...
+
+            //     document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            //     window.DebugController.Print("AppNavigationController: App re-routed to the Auth Screen. Current Hash: " + document.location.hash);
+            // }
         }).catch(function(error) 
         {
             // Handle Errors here.
@@ -157,12 +217,18 @@ window.AppNavigationController = (function()
 
     function beginAuthentication()
     {
+        //Inform the View to hide the Auth Screen
+        window.View.Render('HideAuthScreen');
+
+        //Inform the View to show the Landing Screen
+        window.View.Render('ShowLandingScreen');
+        
         var provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('https://www.googleapis.com/auth/appstate');
         firebase.auth().useDeviceLanguage();
 
         //Set the URL Hash to the Travel Checklist Home Screen, so that when the user is redirected to the app's landing page, they will immediately get redirected to the Home Screen
-        document.location.href = '#travel';
+        //document.location.href = '#travel';
 
         firebase.auth().signInWithRedirect(provider);
     }
@@ -258,6 +324,7 @@ window.AppNavigationController = (function()
         }
     }
 
+    //TODO This is no longer entirely accurate, since additional screens have been added
     function isValidScreen(urlString)
     {
         const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
@@ -266,6 +333,105 @@ window.AppNavigationController = (function()
 
         //If the URL string matches either the Home Screen or a List Screen, return true, else return false.
         return (isHomeScreen(urlString) === true || isListScreen(urlString) === true) ? true : false;
+    }
+
+    /**
+     * Checks if the provided screen name matches the provided hash or, if no hash is provided, the hash of the current page
+     * @param {string} screenName The name of the screen to match
+     * @param {string} [hash] [Optional] The hash to match. If no hash is provided, this defaults to the hash of the current page
+     * @returns {boolean} true if the screen name and hash match, otherwise false
+     */
+    function isScreen(screenName, hash)
+    {
+        //If a URL hash was provided, use that value, otherwise use the hash from the current page
+        const _hash = (hash != null) ? hash : document.location.hash;
+
+        //If the name provided is for a List Screen...
+        if (screenName === 'List')
+        {
+            const _hashPrefix = GetFragmentIdentifierPrefix(_hash);
+            const _urlSlug = GetUrlSlug(_hash);
+
+            //If the Fragment Identifier prefix is set to 'travel', the full Fragment Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a List Screen within the Checklist and return true, else return false.
+            return (_hashPrefix === 'travel' && _hash.length === 20 && _urlSlug.length === 13) ? true : false;
+        }
+        //Else, if any other screen name was provided...
+        else
+        {
+            //If the hash value is a match for the screen name provided, return true, else return false
+            return (_hash === StaticScreens[screenName]) ? true : false;
+        }
+    }
+
+    // /**
+    //  * Checks if the provided screen name matches the provided URL or, if no URL is provided, the URL of the current page
+    //  * @param {string} screenName The name of the screen to match
+    //  * @param {string} [urlString] [Optional] The URL string to match. If no URL string is provided, this defaults to the URL of the current page
+    //  * @returns {boolean} true if the screen name and URL match, otherwise false
+    //  */
+    // function isScreen(screenName, urlString)
+    // {
+    //     //If a URL string was provided, use that, otherwise use the URL from the current page
+    //     const _urlString = urlString || document.location.href;
+
+    //     //Get the hash (Fragment Identifier) from the URL string
+    //     const _hash = GetFragmentIdentifierFromUrlString(_urlString);
+
+    //     //If the name provided is for a List Screen...
+    //     if (screenName === 'List')
+    //     {
+    //         const _hashPrefix = GetFragmentIdentifierPrefixFromUrlString(_urlString);
+    //         const _urlSlug = GetUrlSlug(_hash);
+
+    //         //If the Fragment Identifier prefix is set to 'travel', the full Fragment Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a List Screen within the Checklist and return true, else return false.
+    //         return (_hashPrefix === 'travel' && _hash.length === 20 && _urlSlug.length === 13) ? true : false;
+    //     }
+    //     //Else, if any other screen name was provided...
+    //     else
+    //     {
+    //         //If the hash value is a match for the screen name provided, return true, else return false
+    //         return (_hash === StaticScreens[screenName]) ? true : false;
+    //     }
+    // }
+
+    function isCurrentStaticScreen(screenName)
+    {
+        //return (GetFragmentIdentifierFromUrlString(urlString) === StaticScreens[screenName]) ? true : false;
+        return (document.location.hash === StaticScreens[screenName]) ? true : false;
+    }
+
+    function getCurrentScreenName()
+    {
+        //For each static screen within the Checklist App...
+        for (const key in StaticScreens)
+        {
+            //If the screen's hash value matches the hash of the currently displayed screen...
+            if (StaticScreens[key] === document.location.hash)
+            {
+                //Return the screen's name
+                return key;
+            }
+        }
+
+        const _fragmentIdentifier = document.location.hash;
+        const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefixFromUrlString(document.location.href);
+        const _urlSlug = GetUrlSlug(document.location.hash);
+
+        //If the Fragment Identifier prefix is set to 'travel', the full Fragment Identifier is 20 characters long and the URL Slug is 13 characters long, assume this is a List Screen within the Checklist.
+        if (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13)
+        {
+            return 'List';
+        }
+
+        //TODO maybe could have a DynamicScreens object and each time a List screen is opened, add it to the object, if it isn't already tracked.
+
+        window.DebugController.LogError("Request received to get the current screen name, but the current screen hash did not match any accepted values. Current Hash: " + document.location.hash);
+    }
+
+    function isLandingScreen(urlString)
+    {
+        //If the Fragment Identifier of the URL string is blank, return true, else return false
+        return (GetFragmentIdentifierFromUrlString(urlString) === '') ? true : false;
     }
 
     function isAuthScreen(urlString)

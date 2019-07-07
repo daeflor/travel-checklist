@@ -5,6 +5,7 @@ window.View = (function()
 
     //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
     var elements = {  
+        landingScreen : null,
         authScreen : null,
         homeScreen : null,
         homeScreenListElements : null,
@@ -34,7 +35,10 @@ window.View = (function()
 
         //TODO Could have a ReturnElement util function with a try catch maybe? Instead of callbacks...
 
-        //Assign the Auth Screen elements
+        //Assign the Landing Screen elements
+        elements.landingScreen = document.getElementById('divLandingScreen');
+
+        //Assign the Authentication Screen elements
         elements.authScreen = document.getElementById('divAuthScreen');
 
         //Assign the Home Screen elements
@@ -311,6 +315,21 @@ window.View = (function()
     {
         let viewCommands = 
         {
+            ShowLandingScreen: function() 
+            {
+                //Show the Landing Screen
+                elements.landingScreen.hidden = false;
+            },
+            HideLandingScreen: function() 
+            {
+                //Hide the Landing Screen
+                elements.landingScreen.hidden = true;
+            },
+            ShowAuthScreen: function() 
+            {
+                //Show the Auth Screen
+                elements.authScreen.hidden = false;
+            },
             HideAuthScreen: function() 
             {
                 //Hide the Auth Screen
