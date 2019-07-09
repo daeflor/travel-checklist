@@ -193,6 +193,7 @@ window.ListController = (function()
     function listenForEvent_GoToListButtonPressed(listId) //TODO is this necessary or can HashChanged just be used?
     {
         window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed.bind(null, listId), {id:listId});
+        //TODO callback could be something like: window.AppNavigationController.ListenForEvent.bind(null, 'NavigatedToList', reactToEvent_GoToListButtonPressed);
     }
 
     function reactToEvent_GoToListButtonPressed(listId)
@@ -203,6 +204,10 @@ window.ListController = (function()
 
         //Set the newly selected List as the Active List
         activeListId = listId;
+
+        // window.history.replaceState({screen:'List'}, window.document.title);
+        // console.log("PRINTING HISTORY after go to list button pressed");
+        // console.log(window.history.state);
     }
 
     /** Informs the View to listen for an event indicating the 'New List' button has been pressed */
