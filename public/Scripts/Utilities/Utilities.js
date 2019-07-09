@@ -90,6 +90,8 @@ function GetFragmentIdentifierPrefix(fragmentIdentifier)
 {    
     //return (_fragmentIdentifier != null) ? _fragmentIdentifier.split('/')[0] : null;
 
+    window.DebugController.Print("Utilities: Request received to get the prefix for the following fragment identifier: " + fragmentIdentifier);
+
     if (fragmentIdentifier != null) //TODO replace with try catch
     {
         return fragmentIdentifier.split('/')[0]; 

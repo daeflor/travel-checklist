@@ -358,7 +358,7 @@ window.View = (function()
                 elements.homeScreen.hidden = true;
 
                 //Set up the callback method to execute when a name button matching the given ID is found
-                let _updateListTitle = function(element)
+                const _updateListTitle = function(element)
                 {                    
                     //Set the List title to match the text content of the name button element
                     elements.listTitle.textContent = element.textContent;
@@ -412,7 +412,7 @@ window.View = (function()
                 updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.id});
 
                 //Set up the callback method to execute when the List toggle element is found which matches the given ID
-                let elementFoundCallback = function(element)
+                const elementFoundCallback = function(element)
                 {                    
                     //Remove the List toggle element
                     element.remove();
@@ -431,7 +431,7 @@ window.View = (function()
             AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                let elementFoundCallback = function(element)
+                const elementFoundCallback = function(element)
                 {          
                     //Assign a border color for the List Item's name toggle based on the provided balance
                     const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listItemBalance);
@@ -449,7 +449,7 @@ window.View = (function()
             RemoveListItem: function() //Expected parameters: id
             {
                 //Set up the callback method to execute when the List Item element is found which matches the given ID
-                let elementFoundCallback = function(element)
+                const elementFoundCallback = function(element)
                 {     
                     //Store a reference to the List Item's parent List wrapper element
                     let listWrapper = element.parentElement;     
@@ -466,7 +466,7 @@ window.View = (function()
             },
             UpdateNameToggleColor: function() //Expected parameters: id, balance
             {
-                let elementFoundCallback = function(element)
+                const elementFoundCallback = function(element)
                 {      
                     element.style.borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.balance);
                 };
@@ -481,7 +481,7 @@ window.View = (function()
                 
                 //TODO could we not just update everything related to a list item in one go? Or does that not make this any easier?
 
-                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
+                const elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
 
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, parameters.updatedValue);
@@ -510,12 +510,12 @@ window.View = (function()
             ShowQuantityPopover: function() //Expected parameters: id, quantityType
             {
                 //Show the popover element which matches the given ID and quantity type
-                let elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
+                const elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
                 updateChecklistElement('ShowPopover', elementData);
             },
             HideActiveQuantityPopover: function()
             {
-                let activePopover = getActiveQuantityPopover();
+                const activePopover = getActiveQuantityPopover();
 
                 if (activePopover != null)
                 {
@@ -527,12 +527,12 @@ window.View = (function()
             {
                 //TODO Should this use findChecklistElement or other helpers with error handling?
 
-                let elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
-                let elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
+                const elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
+                const elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
 
                 if (elementToMoveUpwards != null && elementToMoveDownwards != null)
                 {
-                    let wrapper = elementToMoveUpwards.parentElement;
+                    const wrapper = elementToMoveUpwards.parentElement;
 
                     wrapper.insertBefore(elementToMoveUpwards, elementToMoveDownwards);
     

@@ -15,6 +15,7 @@ TO-DOs:
 
 Upcoming To-Do List:
 - Clean up mess in AppController from recent commit(s).
+- Start using replaceState or pushState in more cases within AppNavigationController
 - Add user state persistence so that sign-in is not necessary every launch of the App
     - This will also require some way to sign out.
 - Make the Auth screen and UI prettier
