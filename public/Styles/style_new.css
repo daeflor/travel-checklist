@@ -86,6 +86,26 @@ button {
     /* background-color: rgb(70, 130, 180, 0.8); */
 }
 
+#buttonHome {
+    padding-left: 6px;
+    
+    background-color:inherit;
+
+    color:white;
+}  /*TODO Unclear why, as a class ruleset, this doesn't take precedence over the 'a' style ruleset, 
+    but once the app navigation flow is updated and uses 'buttons' instead of 'a' tags, 
+    it should no longer be an issue. */
+
+#buttonSignOut {
+    padding-left: 6px;
+    
+    background-color:inherit;
+
+    color:white;
+
+    border-width: 0px;
+}
+
 #divHomeHeader {
     padding-left: 25px;
 
@@ -113,27 +133,6 @@ button {
 
     /* background-color: ghostwhite; */
 }
-
-#buttonHome {
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 3px;
-    padding-bottom: 3px;  
-
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-bottom-width: 1px;
-    border-color: white;
-    
-    background-color:inherit;
-    /* background-color:ghostwhite; */
-    /*background-color: #EFDEB4; /*rgb(248, 242, 227);*/
-
-    margin-left: 0;
-
-    color:white;
-}  
 
 #headerCurrentListName {
     padding-left: 10px;
