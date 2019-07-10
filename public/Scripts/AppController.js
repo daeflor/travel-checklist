@@ -57,30 +57,21 @@ window.AppNavigationController = (function()
             //2b) Once user completes sign-in flow and page reloads, should end up at Step 1. 
         //3) If user is signed in, navigate to HOME SCREEN
 
-        firebase.auth().getRedirectResult().then(function(result) 
+        //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
+            //Perhaps AppView, ChecklistView, & ListView, where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
+        //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+        window.View.Init();
+
+        //Inform the View to hide the Loading Screen
+        window.View.Render('HideLoadingScreen');
+
+        firebase.auth().onAuthStateChanged(function(user) 
         {
-            console.log("The page was (re)loaded.");
-
-            /*
-            if (result.credential) 
-            {
-              // This gives you a Google Access Token. You can use it to access the Google API.
-              var token = result.credential.accessToken;
-              // ...
-            }
-            */
-
-            //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
-                //Perhaps AppView, ChecklistView, & ListView, where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
-            //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
-            window.View.Init();
-
-            //Inform the View to hide the Loading Screen
-            window.View.Render('HideLoadingScreen');
-
             //If there is no user signed into the app...
-            if (result.user == null)
+            if (user == null)
             {
+                console.log('USER NOT SIGNED IN');
+
                 //Inform the View to show the Authentication Screen
                 window.View.Render('ShowAuthScreen');
 
@@ -105,29 +96,10 @@ window.AppNavigationController = (function()
 
                 //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
                 window.onhashchange = urlHashChanged;
-               
+                
                 // //TODO Think about how necessary it is to actually use hash values in the URl. Maybe limit use to only when actually useful. 
                 //     //For example, it turned out not being useful for the auth screen
-                // //TODO maybe use same model/format that ListController uses for listeners, now that there are actually quite a few in this file
-                
-                // //Listen for a one-time hash change event, which will fire when the app is re-routed to the Travel Checklist Home Screen, at which point a persistent hash change listener can be set up.
-                // window.addEventListener('hashchange', setupPersistentHashChangedEventListener, {once:true});
-
-                //Route the app to the Travel Checklist Home Screen
-                // window.document.location.hash = '#travel'; 
             }
-        }).catch(function(error) 
-        {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            var email = error.email;
-            // The firebase.auth.AuthCredential type that was used.
-            var credential = error.credential;
-            // ...
-            console.log("REDIRECT CALLBACK ERROR CALLED");
-            console.log(error);
         });
     }
 
@@ -354,6 +326,7 @@ window.AppNavigationController = (function()
         return (_fragmentIdentifierPrefix === 'travel' && _fragmentIdentifier.length === 20 && _urlSlug.length === 13) ? true : false;
     }
 
+    //TODO maybe use same model/format that ListController uses for listeners, now that there are actually quite a few in this file
     function listenForEvent(eventName, callback)
     {
         if (eventName == 'ScreenChanged')
