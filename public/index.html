@@ -9,6 +9,7 @@
     
       <link rel="manifest" href="./manifest.json">
     
+      <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
       <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
       <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
       <link rel='stylesheet' type='text/css' href='Styles/style_new.css?version=0.0.4'>
@@ -18,9 +19,9 @@
       <script defer src="/__/firebase/6.2.4/firebase-app.js"></script>
       <!-- include only the Firebase features as you need -->
       <script defer src="/__/firebase/6.2.4/firebase-auth.js"></script>
-      <script defer src="/__/firebase/6.2.4/firebase-database.js"></script>
+      <!-- <script defer src="/__/firebase/6.2.4/firebase-database.js"></script>
       <script defer src="/__/firebase/6.2.4/firebase-messaging.js"></script>
-      <script defer src="/__/firebase/6.2.4/firebase-storage.js"></script>
+      <script defer src="/__/firebase/6.2.4/firebase-storage.js"></script> -->
       <!-- initialize the SDK after all desired features are loaded -->
       <script defer src="/__/firebase/init.js"></script>
     
@@ -42,22 +43,29 @@
   <body>
     <div id='divChecklistBody'>
 
-      <!-- <div id='divAuthScreen'>
-          <button id='buttonSignIn' type='button'>
+        <div id='divLoadingScreen'>
+          Loading...
+        </div>
+
+      <div id='divAuthScreen' hidden='true'>
+          <button id='buttonGoogleSignIn' type='button'>
               Sign In
           </button>   
-      </div> -->
+      </div>
 
-      <div id='divHomeScreen'> <!--TODO Nothing uses this ID -->
-            
-        <div class='row divHeader' id='divHomeHeader'>TraveLists</div>
+      <div id='divHomeScreen' hidden='true'>
+        <div class='row divHeader' id='divHomeHeader'>
+          <button id='buttonSignOut' class='buttonHomeHeader' type='button'>
+              <i class='fa fa-sign-out'></i>
+          </button>     
+          TraveLists
+        </div>
         <div class='divListElements' id='divHomeScreenListElements'></div>
         <div class='newRow' id='newListRow'>
           <button class='buttonNewRow' id='buttonAddList' type='button'>
             <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
           </button>                  
         </div>
-    
       </div>  
     
       <div id='divListScreen' hidden='true'>
@@ -66,7 +74,7 @@
       
           <div class='row divHeader' id='divListHeader'>
             <div class='col-1 divSmallPadding'>
-              <a id='buttonHome' type='button' href='#travel'> 
+              <a id='buttonHome' class='buttonHomeHeader' type='button' href='#travel'> 
                     <i class='fa fa-home'></i>
               </a>  
             </div>

@@ -5,7 +5,7 @@ html {
 }
 
 body {
-    font-family: system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
+    font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
 
     background-color: aliceblue;
 
@@ -86,6 +86,26 @@ button {
     /* background-color: rgb(70, 130, 180, 0.8); */
 }
 
+#buttonHome {
+    padding-left: 6px;
+    
+    background-color:inherit;
+
+    color:white;
+}  /*TODO Unclear why, as a class ruleset, this doesn't take precedence over the 'a' style ruleset, 
+    but once the app navigation flow is updated and uses 'buttons' instead of 'a' tags, 
+    it should no longer be an issue. */
+
+#buttonSignOut {
+    padding-left: 6px;
+    
+    background-color:inherit;
+
+    color:white;
+
+    border-width: 0px;
+}
+
 #divHomeHeader {
     padding-left: 25px;
 
@@ -95,7 +115,7 @@ button {
 
     justify-content: left;
 
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     font-size: 1.1rem;
     color: white;
     text-shadow: 1px 1px 10px black;
@@ -114,27 +134,6 @@ button {
     /* background-color: ghostwhite; */
 }
 
-#buttonHome {
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 3px;
-    padding-bottom: 3px;  
-
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-bottom-width: 1px;
-    border-color: white;
-    
-    background-color:inherit;
-    /* background-color:ghostwhite; */
-    /*background-color: #EFDEB4; /*rgb(248, 242, 227);*/
-
-    margin-left: 0;
-
-    color:white;
-}  
-
 #headerCurrentListName {
     padding-left: 10px;
     padding-right: 0px;
@@ -145,7 +144,7 @@ button {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     color: white;
     text-shadow: 1px 1px 10px black;
 }
@@ -167,7 +166,7 @@ button {
 /** Item & List Rows **/
 
 #divChecklistBody {
-    min-height: 100%;
+    height: 100%;
 }
 
 .divItemRow {
@@ -192,13 +191,14 @@ button {
     padding-bottom: 6px;  
 }
 
+/*TODO This should be renamed and re-organized*/
 .divListToggleName {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
 .buttonNameToggle {
-    padding-left: 10px;
+    padding-left: 5px;
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;  
@@ -209,6 +209,8 @@ button {
    
     width: 100%;
     height: 30px;
+
+    font-size: 0.9rem;
 }
 
 .buttonListToggle {
@@ -475,4 +477,20 @@ button {
 
 .disallowBrowserRefresh {
     overscroll-behavior-y: contain;
+}
+
+#divLoadingScreen {
+    display: flex;
+    flex-direction: column;
+    height: 95%;
+
+    text-align: center;
+
+    justify-content: center;
+}
+
+#divDebug {
+    display: flex;
+    flex-direction: column;
+    height: 5%;
 }

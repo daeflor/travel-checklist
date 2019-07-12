@@ -68,6 +68,7 @@ function GetArrayIndexOfObjectWithKVP(array, key, value)
     window.DebugController.LogError("ERROR: Unable to find an object with a key matching the given value. Key: " + key + ", Value: " + value);
 }
 
+//TODO see if this is still necessary after upcoming changes to AppNavigationController
 function GetFragmentIdentifierPrefixFromUrlString(urlString)
 {
     const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
@@ -77,6 +78,23 @@ function GetFragmentIdentifierPrefixFromUrlString(urlString)
     if (_fragmentIdentifier != null) //TODO replace with try catch
     {
         return _fragmentIdentifier.split('/')[0]; 
+        //TODO if there is no Hash Route, would it be better to return an empty string rather than 'undefined'?
+    }
+    else
+    {
+        window.DebugController.LogError("Fragment Identifier prefix requested but a valid Fragment Identifier string was not provided.");
+    }
+}
+
+function GetFragmentIdentifierPrefix(fragmentIdentifier)
+{    
+    //return (_fragmentIdentifier != null) ? _fragmentIdentifier.split('/')[0] : null;
+
+    window.DebugController.Print("Utilities: Request received to get the prefix for the following fragment identifier: " + fragmentIdentifier);
+
+    if (fragmentIdentifier != null) //TODO replace with try catch
+    {
+        return fragmentIdentifier.split('/')[0]; 
         //TODO if there is no Hash Route, would it be better to return an empty string rather than 'undefined'?
     }
     else

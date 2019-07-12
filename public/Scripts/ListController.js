@@ -144,6 +144,8 @@ window.ListController = (function()
 //#region ============================================================
 
     /** Informs the AppNavigationController to listen for an event indicating the screen has changed */
+    //TODO these event listeners could possibly be handled elsewhere (perhaps AppNavigationController)
+
     function listenForEvent_ScreenChanged()
     {
         window.AppNavigationController.ListenForEvent('ScreenChanged', reactToEvent_ScreenChanged);
@@ -191,16 +193,25 @@ window.ListController = (function()
     function listenForEvent_GoToListButtonPressed(listId) //TODO is this necessary or can HashChanged just be used?
     {
         window.View.Bind('GoToListButtonPressed', reactToEvent_GoToListButtonPressed.bind(null, listId), {id:listId});
+        //TODO callback could be something like: window.AppNavigationController.ListenForEvent.bind(null, 'NavigatedToList', reactToEvent_GoToListButtonPressed);
     }
 
     function reactToEvent_GoToListButtonPressed(listId)
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
+        
+        //Inform the View to Hide the Home Screen, since an individual List will be displayed instead
+        window.View.Render('HideHomeScreen');
+        
         //Inform the View to display the specified List
         window.View.Render('DisplayList', {id:listId});
 
         //Set the newly selected List as the Active List
         activeListId = listId;
+
+        // window.history.replaceState({screen:'List'}, window.document.title);
+        // console.log("PRINTING HISTORY after go to list button pressed");
+        // console.log(window.history.state);
     }
 
     /** Informs the View to listen for an event indicating the 'New List' button has been pressed */

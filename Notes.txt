@@ -14,6 +14,11 @@ TO-DOs:
     - - - Total             : 110
 
 Upcoming To-Do List:
+- Make the Auth screen and UI prettier
+- Clean up mess in AppController from recent commit(s).
+- Start using replaceState or pushState in more cases within AppNavigationController
+- Merge debug section into 'New' row 
+    - This might not work with the new landing/loading screen/page
 - Backup or cloud storage functionality
 - Look into (unit) testing possibilities 
 - Remove loading of any firebase scripts that aren't actually needed
@@ -23,6 +28,8 @@ Upcoming To-Do List:
 - Every time an unreported error is hit, add error handling for it
 - Revamp CreateNewElement
 - Consider filing bugs in a dedicated location, to avoid bogging up the code with comments that may potentially not even need to be addressed in some cases (i.e. not all issues necessarily need to get fixed in the foreseeable future).
+- Quantity popovers could be to the right of the toggles. The inc/decrement buttons within the popover could be aligned vertically instead of horizontally, and they could use up/down arrow/triangle icons instead of +/-.
+- Look over https://www.toptal.com/javascript/10-most-common-javascript-mistakes
 
 Features:
 - ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
