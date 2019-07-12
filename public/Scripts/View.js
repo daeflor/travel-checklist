@@ -352,11 +352,13 @@ window.View = (function()
                 //Allow browser refresh when scrolling to the top of the Home Screen
                 document.body.classList.remove("disallowBrowserRefresh");
             },
+            HideHomeScreen: function()
+            {
+                //Hide the Home Screen
+                elements.homeScreen.hidden = true;
+            },
             DisplayList: function() //Expected parameters: id
             {
-                //Hide the Home Screen when an individual List is displayed
-                elements.homeScreen.hidden = true;
-
                 //Set up the callback method to execute when a name button matching the given ID is found
                 const _updateListTitle = function(element)
                 {                    

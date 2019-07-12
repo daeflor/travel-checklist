@@ -65,42 +65,7 @@ window.AppNavigationController = (function()
         //Inform the View to hide the Loading Screen
         window.View.Render('HideLoadingScreen');
 
-        firebase.auth().onAuthStateChanged(function(user) 
-        {
-            //If there is no user signed into the app...
-            if (user == null)
-            {
-                console.log('USER NOT SIGNED IN');
-
-                //Inform the View to show the Authentication Screen
-                window.View.Render('ShowAuthScreen');
-
-                //Add a listener to the 'Sign In' button so that when it is pressed, the authentication process is initiated
-                window.document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
-            }
-            //Else, if there is a user signed into the app...
-            else
-            {
-                window.DebugController.Print("AppNavigationController: The user is signed in so the Home Screen will be displayed.");
-
-                //Inform the View to display the Home Screen
-                window.View.Render('ShowHomeScreen');
-
-                //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
-                window.ListController.Init();
-
-                window.history.replaceState({screen:'Home'}, window.document.title, window.location.pathname + '#travel'); //TODO not sure if pushState or replaceState is best here... Depends on flow on mobile, and on other screens that may be added. But right now there is no reason to allow the user to return to the loading screen.
-
-                //TODO may want to clear history so user can't go back to Google sign-in page. 
-                    //Need to test this flow on mobile. Will be easier to test once there is a sign-out option.
-
-                //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
-                window.onhashchange = urlHashChanged;
-                
-                // //TODO Think about how necessary it is to actually use hash values in the URl. Maybe limit use to only when actually useful. 
-                //     //For example, it turned out not being useful for the auth screen
-            }
-        });
+        firebase.auth().onAuthStateChanged(reactToAuthStateChange);
     }
 
     function beginAuthentication()
@@ -116,6 +81,67 @@ window.AppNavigationController = (function()
         firebase.auth().useDeviceLanguage();
 
         firebase.auth().signInWithRedirect(provider);
+    }
+
+    function reactToAuthStateChange(user)
+    {
+        //If there is no user signed into the app...
+        if (user == null)
+        {
+            //Inform the View to show the Authentication Screen
+            window.View.Render('ShowAuthScreen');
+
+            //TODO is there a good way to tell if this has already been done? Currently, it will get called if the user signs out, even though the button listener is already set up
+            //Add a listener to the 'Sign Out' button so that when it is pressed, the user is signed out
+            window.document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+        }
+        //Else, if there is a user signed into the app...
+        else
+        {
+            window.DebugController.Print("AppNavigationController: The user is signed in so the Home Screen will be displayed.");
+
+            //Inform the View to display the Home Screen
+            window.View.Render('ShowHomeScreen');
+
+            //Add a listener to the 'Sign In' button so that when it is pressed, the authentication process is initiated
+            window.document.getElementById('buttonSignOut').onclick = signOut;
+
+            //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
+            window.ListController.Init();
+
+            window.history.replaceState({screen:'Home'}, window.document.title, window.location.pathname + '#travel'); //TODO not sure if pushState or replaceState is best here... Depends on flow on mobile, and on other screens that may be added. But right now there is no reason to allow the user to return to the loading screen.
+
+            //TODO may want to clear history so user can't go back to Google sign-in page. 
+                //Need to test this flow on mobile. Will be easier to test once there is a sign-out option.
+
+            //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
+            window.onhashchange = urlHashChanged;
+            
+            // //TODO Think about how necessary it is to actually use hash values in the URl. Maybe limit use to only when actually useful. 
+            //     //For example, it turned out not being useful for the auth screen. It should only be necessary when a user needs to be able to navigate backward or forward to that page. 
+        }
+    }
+
+    function signOut()
+    {
+        //TODO could possibly show loading screen here, but it likely isn't necessary
+
+        firebase.auth().signOut().then(function() {
+            //Inform the View to hide the Home Screen
+            window.View.Render('HideHomeScreen');
+
+            window.history.replaceState({screen:'Auth'}, window.document.title, window.location.pathname);
+
+            //The reactToAuthStateChange function will also be automatically called here, which will show the auth screen
+
+            //TODO what happens if user signs in again after signing out? Everything *should* work because the page would reloud and everything would get re-initialized, but it would be good to confirm/test
+                //Seems like everything is working fine.
+
+        }).catch(function(error) {
+            // An error happened.
+            window.DebugController.LogError("An error was encountered when trying to sign the user out. Error below: ");
+            window.DebugController.LogError(error);
+          });
     }
 
     function setupPersistentHashChangedEventListener() 

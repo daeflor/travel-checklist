@@ -199,6 +199,10 @@ window.ListController = (function()
     function reactToEvent_GoToListButtonPressed(listId)
     {
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
+        
+        //Inform the View to Hide the Home Screen, since an individual List will be displayed instead
+        window.View.Render('HideHomeScreen');
+        
         //Inform the View to display the specified List
         window.View.Render('DisplayList', {id:listId});
 
