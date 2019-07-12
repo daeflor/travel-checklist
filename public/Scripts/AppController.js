@@ -91,9 +91,46 @@ window.AppNavigationController = (function()
             //Inform the View to show the Authentication Screen
             window.View.Render('ShowAuthScreen');
 
-            //TODO is there a good way to tell if this has already been done? Currently, it will get called if the user signs out, even though the button listener is already set up
-            //Add a listener to the 'Sign Out' button so that when it is pressed, the user is signed out
-            window.document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            // Initialize the FirebaseUI Widget using Firebase.
+            var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+            var uiConfig = {
+                callbacks: {
+                  signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                    // User successfully signed in.
+                    // Return type determines whether we continue the redirect automatically
+                    // or whether we leave that to developer to handle.
+                    return true;
+                  },
+                  uiShown: function() {
+                    // The widget is rendered.
+                    // Hide the loader.
+                    document.getElementById('loader').style.display = 'none';
+                  }
+                },
+                signInFlow: 'redirect',
+                signInSuccessUrl: window.location.pathname,
+                signInOptions : [
+                    {
+                      provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                      scopes: [
+                        'https://www.googleapis.com/auth/appstate'
+                      ],
+                      customParameters: {
+                        // Forces account selection even when one account is available.
+                        prompt: 'select_account'
+                      }
+                    }
+                ]
+            };
+
+
+            // The start method will wait until the DOM is loaded.
+            ui.start('#firebaseui-auth-container', uiConfig);
+
+            // //TODO is there a good way to tell if this has already been done? Currently, it will get called if the user signs out, even though the button listener is already set up
+            // //Add a listener to the 'Sign Out' button so that when it is pressed, the user is signed out
+            // window.document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
         }
         //Else, if there is a user signed into the app...
         else

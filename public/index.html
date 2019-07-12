@@ -9,6 +9,7 @@
     
       <link rel="manifest" href="./manifest.json">
     
+      <!--TODO Replace all FontAwesome icons with Material icons-->
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
       <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
@@ -25,6 +26,9 @@
       <!-- initialize the SDK after all desired features are loaded -->
       <script defer src="/__/firebase/init.js"></script>
 
+      <script src="https://cdn.firebase.com/libs/firebaseui/4.0.0/firebaseui.js"></script>
+      <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/4.0.0/firebaseui.css" />
+    
       <script src='Libraries/jquery-3.2.1.slim.js'></script>
       <script src='Libraries/popper.min.js'></script>
       <script src='Libraries/bootstrap.min.js'></script>
@@ -51,6 +55,10 @@
           <button id='buttonGoogleSignIn' type='button'>
               Sign In
           </button>   
+          <!-- The surrounding HTML is left untouched by FirebaseUI.
+              Your app may use that space for branding, controls and other customizations.-->
+        <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div>
       </div>
 
       <div id='divHomeScreen' hidden='true'>
