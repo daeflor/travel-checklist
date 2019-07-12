@@ -9,13 +9,13 @@
     
       <link rel="manifest" href="./manifest.json">
     
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
       <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
       <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
       <link rel='stylesheet' type='text/css' href='Styles/style_new.css?version=0.0.4'>
 
       <!-- update the version number as needed -->
-      <!--TODO remove any firebase scripts that aren't actually needed-->
       <script defer src="/__/firebase/6.2.4/firebase-app.js"></script>
       <!-- include only the Firebase features as you need -->
       <script defer src="/__/firebase/6.2.4/firebase-auth.js"></script>
@@ -24,7 +24,7 @@
       <script defer src="/__/firebase/6.2.4/firebase-storage.js"></script> -->
       <!-- initialize the SDK after all desired features are loaded -->
       <script defer src="/__/firebase/init.js"></script>
-    
+
       <script src='Libraries/jquery-3.2.1.slim.js'></script>
       <script src='Libraries/popper.min.js'></script>
       <script src='Libraries/bootstrap.min.js'></script>
@@ -56,7 +56,7 @@
       <div id='divHomeScreen' hidden='true'>
         <div class='row divHeader' id='divHomeHeader'>
           <button id='buttonSignOut' class='buttonHomeHeader' type='button'>
-              <i class='fa fa-sign-out'></i>
+            <i class="material-icons">exit_to_app</i>
           </button>     
           TraveLists
         </div>
@@ -75,7 +75,7 @@
           <div class='row divHeader' id='divListHeader'>
             <div class='col-1 divSmallPadding'>
               <a id='buttonHome' class='buttonHomeHeader' type='button' href='#travel'> 
-                    <i class='fa fa-home'></i>
+                <i class="material-icons">home</i>
               </a>  
             </div>
             <div class='col-4' id='headerCurrentListName'></div>
