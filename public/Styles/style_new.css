@@ -88,6 +88,7 @@ button {
 
 #buttonHome {
     padding-left: 6px;
+    padding-top: 6px;
     
     background-color:inherit;
 
@@ -97,7 +98,8 @@ button {
     it should no longer be an issue. */
 
 #buttonSignOut {
-    padding-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 0px;
     
     background-color:inherit;
 
@@ -494,3 +496,69 @@ button {
     flex-direction: column;
     height: 5%;
 }
+
+/* div.mdl-progress::after {
+    font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
+    display: block;
+    color: black;
+    content: "Authenticating...";
+    text-align: center;
+    justify-content: center;
+    height: 5%;
+} */
+
+/* .firebaseui-info-bar {
+    margin-top: 20px;
+}*/
+
+/* .mdl-shadow--2dp {
+    box-shadow: none;
+} */
+
+/* .mdl-progress {
+    height: 5px;
+}  */
+
+div.mdl-progress::after {
+    /* background-color: aliceblue; */
+
+    text-align: center;
+    font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
+    content: 'Authenticating...';
+
+    /* display: block; 
+    margin: 20px auto;  */
+}
+
+/*
+.firebaseui-busy-indicator {
+    color: blue;
+} */
+
+.mdl-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 5%;
+
+    justify-content: center;
+}
+
+#firebaseui-auth-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+
+    background-color: aliceblue;
+}
+
+
+#divAuthScreen {
+    display: flex;
+    flex-direction: column;
+    height: 95%;
+
+    justify-content: center;
+
+    background-color: aliceblue;
+} 
