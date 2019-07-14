@@ -96,16 +96,10 @@ window.AppNavigationController = (function()
         //If there is no user signed into the app...
         if (user == null)
         {
-            window.DebugController.Print("AppNavigationController: There is no user signed in so the Auth Screen will be displayed.");
-
-            // //Inform the View to hide the Loading Screen
-            // window.View.Render('HideLoadingScreen');
-            
-            //Inform the View to show the Authentication Screen
-            //window.View.Render('ShowAuthScreen');
+            window.DebugController.Print("AppNavigationController: There is no user signed in so the FirebaseUI Authentication flow will be initiated.");
 
             //Start the Firebase Authentication UI flow
-            startFirebaseAuthUIFlow();
+            startFirebaseUIAuthFlow();
         }
         //Else, if there is a user signed into the app...
         else
@@ -138,13 +132,12 @@ window.AppNavigationController = (function()
         }
     }
 
-    function startFirebaseAuthUIFlow()
+    function startFirebaseUIAuthFlow()
     {
-        window.DebugController.Print("AppNavigationController: Starting Firebase UI flow.");
-
-        //Declare a variable to hold the configuration for the Firebase Auth UI flow
+        //Declare a variable to hold the configuration for the FirebaseUI Authentication flow
         let _uiConfig;
 
+        //TODO Maybe could/should instead use: firebaseui.auth.AuthUI.getInstance()
         //If a Firebase AuthUI instance does not already exist, set up a new instance along with a configuration
         if (authUI == null)
         {
@@ -153,34 +146,28 @@ window.AppNavigationController = (function()
             //Initialize the FirebaseUI Widget using Firebase.
             authUI = new firebaseui.auth.AuthUI(firebase.auth());
 
-            console.log("Auth UI instance is being created. IS PENDING REDIRECT?");
-            console.log(authUI.isPendingRedirect());
+            console.log("AppNavigationController: Firebase Auth UI instance was created and will be started. IS PENDING REDIRECT?: " + authUI.isPendingRedirect());
 
             _uiConfig = {
                 callbacks: {
                     uiShown: function() {
-                        console.log("UI SHOWN Triggered");
-                        console.log("IS PENDING REDIRECT?");
-                        console.log(authUI.isPendingRedirect());
-                        // The widget is rendered.
-                        
-                        //Inform the View to hide the Loading Screen
-                        window.View.Render('HideLoadingScreen');
-                        
-                        //Inform the View to show the Authentication Screen
-                        window.View.Render('ShowAuthScreen');
+                        console.log("The Firebase widget UI was rendered. IS PENDING REDIRECT?: " + authUI.isPendingRedirect());
 
-                        replaceFirebaseUIAuthProgressBarWithCustomVariant();
-
-                // //If there is no user signed into the app...
-                // if (firebase.auth().currentUser != null)
-                // {
-                //     //Inform the View to hide the Auth Screen
-                //     window.View.Render('HideAuthScreen');
-
-                //     //Inform the View to show the Loading Screen
-                //     window.View.Render('ShowLoadingScreen');
-                // }
+                        //If there is a pending redirect following an authentication attempt...
+                        if (authUI.isPendingRedirect() == true)
+                        {
+                            //Replace the FirebaseUI progress bar with a custom loading screen 
+                            replaceFirebaseUIAuthProgressBarWithCustomVariant();
+                        }
+                        //Else, if there is no pending redirect...
+                        else
+                        {
+                            //Inform the View to hide the Loading Screen
+                            window.View.Render('HideLoadingScreen');
+                            
+                            //Inform the View to show the Authentication Screen
+                            window.View.Render('ShowAuthScreen');
+                        }
                 
                     },
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
@@ -203,35 +190,31 @@ window.AppNavigationController = (function()
                             'https://www.googleapis.com/auth/appstate'
                         ],
                         customParameters: {
-                            // Forces account selection even when one account is available.
-                            prompt: 'select_account'
+                            prompt: 'select_account' //Forces account selection even when one account is available.
                         }
                     }
                 ]
             };
         }
 
-        console.log("Auth UI is about to be started. IS PENDING REDIRECT?");
-        console.log(authUI.isPendingRedirect());
-
         authUI.start('#firebaseui-auth-container', _uiConfig);
     }
 
     function replaceFirebaseUIAuthProgressBarWithCustomVariant()
     {
-        //TODO The logic below is a hacky way of getting rid of the ugly firebase authenicating widget and replacing it with a minimalistic variant
         let _progressBar = document.getElementsByClassName('mdl-card');
 
         if (_progressBar[0] != null)
         {
+            //Remove the FirebaseUI Authentication widget
             _progressBar[0].remove();
 
-            //Inform the View to hide the Auth Screen
-            window.View.Render('HideAuthScreen');
-
-            //Inform the View to show the Loading Screen
+            //Change the text of the Loading Screen to indicate that authentication is in progress
             document.getElementById('divLoadingScreen').textContent = "Authenticating...";
-            window.View.Render('ShowLoadingScreen');
+        }
+        else
+        {
+            window.DebugController.LogError("Attempted to remove the FirebaseUI Authentication widget but the expected corresponding HTML element could not be found.");
         }
     }
 
