@@ -5,7 +5,7 @@ html {
 }
 
 body {
-    font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
+    font-family: 'Montserrat',system-ui,sans-serif;
 
     background-color: aliceblue;
 
@@ -117,7 +117,6 @@ button {
 
     justify-content: left;
 
-    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     font-size: 1.1rem;
     color: white;
     text-shadow: 1px 1px 10px black;
@@ -146,7 +145,6 @@ button {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
     color: white;
     text-shadow: 1px 1px 10px black;
 }
@@ -390,6 +388,13 @@ button {
     color:white;
 }
 
+.iconNewRow {
+    color:#333333;
+    background-color: white;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
 .divListItemModifier {
     padding-left: 0px;
     padding-right: 0px;
@@ -422,7 +427,11 @@ button {
     
     background-color:inherit;
 
-    color: white;
+    /* color: white; */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .debug {
@@ -519,22 +528,24 @@ button {
     height: 5px;
 }  */
 
+/*
 div.mdl-progress::after {
     /* background-color: aliceblue; */
-
+/*
     text-align: center;
     font-family: 'Montserrat',system-ui,Futura,"Trebuchet MS",Arial,sans-serif;
     content: 'Authenticating...';
 
     /* display: block; 
     margin: 20px auto;  */
-}
+/*}
 
 /*
 .firebaseui-busy-indicator {
     color: blue;
 } */
 
+/*
 .mdl-card {
     display: flex;
     flex-direction: column;
@@ -542,6 +553,7 @@ div.mdl-progress::after {
 
     justify-content: center;
 }
+*/
 
 #firebaseui-auth-container {
     display: flex;

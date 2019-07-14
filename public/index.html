@@ -10,9 +10,13 @@
       <link rel="manifest" href="./manifest.json">
     
       <!-- Material Design icon font -->
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <!--TODO Replace all FontAwesome icons with Material icons-->
-      <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">   
+      <!--TODO Replace all FontAwesome icons with Material icons
+          TODO Limit it to only download necessary icons, if possible
+      -->
+
+      <link href="https://fonts.googleapis.com/css?family=Montserrat&display=block" rel="stylesheet">
+
       <link rel='stylesheet' type='text/css' href='Libraries/font-awesome-4.7.0/css/font-awesome.min.css'>
       <link rel='stylesheet' type='text/css' href='Libraries/bootstrap.min.css'>
       <link rel='stylesheet' type='text/css' href='Styles/style_new.css?version=0.0.4'>
@@ -72,7 +76,7 @@
         <div class='divListElements' id='divHomeScreenListElements'></div>
         <div class='newRow' id='newListRow'>
           <button class='buttonNewRow' id='buttonAddList' type='button'>
-            <i class='fa fa-plus-square-o fa-lg iconHeader'></i>
+            <i class="material-icons iconNewRow">add_box</i>
           </button>                  
         </div>
       </div>  
@@ -95,7 +99,9 @@
         <div>
           <div class='divListElements' id='divListScreenListElements'></div>
           <div class='newRow' id='newListItemRow'>
-              <button class='buttonNewRow' id='buttonAddRow' type='button'><i class='fa fa-plus-square-o fa-lg iconHeader'></i></button>
+              <button class='buttonNewRow' id='buttonAddRow' type='button'>
+                  <i class="material-icons iconNewRow">add_box</i>
+              </button>
           </div>
         </div>  
   
