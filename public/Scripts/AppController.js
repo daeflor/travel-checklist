@@ -28,7 +28,6 @@ window.AppNavigationController = (function()
     };
 
     let authUI;
-    //let uiConfig;
 
     // function printPoppedState(event)
     // {
@@ -43,7 +42,6 @@ window.AppNavigationController = (function()
         //window.onpopstate = printPoppedState;
 
         //Clear any hash value from the URL, since the app will start at the default landing page regardless of any URL hash provided
-        //window.document.location.hash = ''; 
         window.history.replaceState({}, window.document.title, window.location.pathname);
 
         //TODO Need a better / more seamless connection/interaction between screens changing in AppNavigationController & View
@@ -53,14 +51,8 @@ window.AppNavigationController = (function()
         //if (isScreen(StaticScreens.Loading) === true)
         //if (isScreen('Loading') === true)
 
-        //TODO Alternate, more concise flow:
-        //1) Check if user is signed in
-        //2) If user is *not* signed in, navigate to / show AUTH SCREEN
-            //2a) Once user selects the sign in button, hide the auth screen (and set the URl Hash to the LANDING SCREEN?)
-            //2b) Once user completes sign-in flow and page reloads, should end up at Step 1. 
-        //3) If user is signed in, navigate to HOME SCREEN
 
-
+        //When the authentication state of user changes, either show the Authentication Screen or Home Screen, depending on the state
         listenForEvent_AuthStateChanged();
     }
 
@@ -86,12 +78,6 @@ window.AppNavigationController = (function()
             //Perhaps AppView, ChecklistView, & ListView, where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
         //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
         window.View.Init();
-
-        //Inform the View to hide the Loading Screen, as either the Auth Screen or Home Screen will be displayed, based on the authentication state
-        //window.View.Render('HideLoadingScreen');
-
-        //TODO (remove this note)
-            //Here, isPendingRedirect would be true after sign-in attempt
 
         //If there is no user signed into the app...
         if (user == null)
@@ -243,33 +229,6 @@ window.AppNavigationController = (function()
             window.DebugController.LogError("An error was encountered when trying to sign the user out. Error (below): ");
             window.DebugController.LogError(error);
           });
-    }
-
-    // function beginAuthentication()
-    // {
-    //     //Inform the View to hide the Auth Screen
-    //     window.View.Render('HideAuthScreen');
-
-    //     //Inform the View to show the Loading Screen
-    //     window.View.Render('ShowLoadingScreen');
-        
-    //     var provider = new firebase.auth.GoogleAuthProvider();
-    //     provider.addScope('https://www.googleapis.com/auth/appstate');
-    //     firebase.auth().useDeviceLanguage();
-
-    //     firebase.auth().signInWithRedirect(provider);
-    // }
-
-    function setupPersistentHashChangedEventListener() 
-    {
-        //Set the behavior for when the URL fragment identifier changes
-        window.onhashchange = urlHashChanged;
-        window.DebugController.Print("AppNavigationController: A persistent Hash Changed event listener has been set up.");
-    
-        //TODO Maybe a different approach to this would be, in urlHashChanged, to use the browser history to tell if the app was just launched / is on the first page. If so, then ignore the event...
-            //This would also only work on mobile for the same reasons as clearing browser history though... On regular Chrome, the landing page may not actually be the first page in history.
-            //Maybe instead, look at previous page in history (if possible). If it exists, and is not part of the travel checklist, then you know this is the first launch of the app.
-            //That seems hackier than the current solution though, which is actually fine. 
     }
 
     function urlHashChanged(hashChangeEvent)
