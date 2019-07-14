@@ -27,8 +27,6 @@ window.AppNavigationController = (function()
         navigatedHome: null
     };
 
-    let authUI;
-
     // function printPoppedState(event)
     // {
     //     console.log("PRINTING POPPED STATE EVENT");
@@ -90,6 +88,8 @@ window.AppNavigationController = (function()
         //Else, if there is a user signed into the app...
         else
         {
+            //TODO could put all the logic below into a dedicated function, which could potentially be called by the authUI's signInSuccessWithAuthResult callback, instead of here.
+
             window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
 
             //Inform the View to hide the Loading Screen
@@ -120,51 +120,34 @@ window.AppNavigationController = (function()
 
     function startFirebaseUIAuthFlow()
     {
-        //Declare a variable to hold the configuration for the FirebaseUI Authentication flow
+        let _authUI = firebaseui.auth.AuthUI.getInstance();
         let _uiConfig;
 
-        //TODO Maybe could/should instead use: firebaseui.auth.AuthUI.getInstance()
         //If a Firebase AuthUI instance does not already exist, set up a new instance along with a configuration
-        if (authUI == null)
+        if (_authUI == null)
         {
             window.DebugController.Print("AppNavigationController: A Firebase AuthUI instance does not already exist, so setting up a new one.");
 
             //Initialize the FirebaseUI Widget using Firebase.
-            authUI = new firebaseui.auth.AuthUI(firebase.auth());
+            _authUI = new firebaseui.auth.AuthUI(firebase.auth());
 
-            console.log("AppNavigationController: Firebase Auth UI instance was created and will be started. IS PENDING REDIRECT?: " + authUI.isPendingRedirect());
+            console.log("AppNavigationController: Firebase Auth UI instance was created and will be started. IS PENDING REDIRECT?: " + _authUI.isPendingRedirect());
 
+            //Specify configuration details for the FirebaseUI Authentication widget
             _uiConfig = {
                 callbacks: {
-                    uiShown: function() {
-                        console.log("The Firebase widget UI was rendered. IS PENDING REDIRECT?: " + authUI.isPendingRedirect());
-
-                        //If there is a pending redirect following an authentication attempt...
-                        if (authUI.isPendingRedirect() == true)
-                        {
-                            //Replace the FirebaseUI progress bar with a custom loading screen 
-                            replaceFirebaseUIAuthProgressBarWithCustomVariant();
-                        }
-                        //Else, if there is no pending redirect...
-                        else
-                        {
-                            //Inform the View to hide the Loading Screen
-                            window.View.Render('HideLoadingScreen');
-                            
-                            //Inform the View to show the Authentication Screen
-                            window.View.Render('ShowAuthScreen');
-                        }
-                
-                    },
+                    uiShown: reactToEvent_FirebaseUIWidgetShown.bind(null, _authUI),
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-                        console.log("SUCCESSFUL SIGN IN");
-                        console.log("IS PENDING REDIRECT?");
-                        console.log(authUI.isPendingRedirect());
                         // User successfully signed in.
+
+                        //TODO figure if it would be helpful to make use of this callback
         
-                        // Return type determines whether we continue the redirect automatically
-                        // or whether we leave that to developer to handle.
-                        return false;
+                        return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
+                    },
+                    signInFailure: function(error)
+                    {
+                        window.DebugController.LogError("An error was encountered during the authentication process. Error (below):");
+                        cowindow.DebugController.Print(error);
                     }
                 },
                 signInFlow: 'redirect',
@@ -183,7 +166,29 @@ window.AppNavigationController = (function()
             };
         }
 
-        authUI.start('#firebaseui-auth-container', _uiConfig);
+        _authUI.start('#firebaseui-auth-container', _uiConfig);
+    }
+
+    function reactToEvent_FirebaseUIWidgetShown(authUI)
+    {
+        //TODO - Issue: If the user presses back at the Google account picker, when they return to the app, isPendingRedirect will be set to true.
+            //Perhaps resetting it in this case would resolve the issue, assuming it's possible to recognize this edge case.
+
+        //If there is a pending redirect following an authentication attempt...
+        if (authUI.isPendingRedirect() == true)
+        {
+            //Replace the FirebaseUI progress bar with a custom loading screen 
+            replaceFirebaseUIAuthProgressBarWithCustomVariant();
+        }
+        //Else, if there is no pending redirect...
+        else
+        {
+            //Inform the View to hide the Loading Screen
+            window.View.Render('HideLoadingScreen');
+            
+            //Inform the View to show the Authentication Screen
+            window.View.Render('ShowAuthScreen');
+        }
     }
 
     function replaceFirebaseUIAuthProgressBarWithCustomVariant()
