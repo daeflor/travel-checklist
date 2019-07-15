@@ -35,12 +35,11 @@ window.AppNavigationController = (function()
 
     function init()
     {
-        window.DebugController.Print("AppNavigationController: Setting up app navigation. Current Hash: " + window.document.location.hash);
+        window.DebugController.Print("AppNavigationController: Initializing Application... Current Hash: " + window.document.location.hash);
 
         //window.onpopstate = printPoppedState;
 
         //Clear any hash value from the URL, since the app will start at the default landing page regardless of any URL hash provided
-        //window.document.location.hash = ''; 
         window.history.replaceState({}, window.document.title, window.location.pathname);
 
         //TODO Need a better / more seamless connection/interaction between screens changing in AppNavigationController & View
@@ -50,69 +49,66 @@ window.AppNavigationController = (function()
         //if (isScreen(StaticScreens.Loading) === true)
         //if (isScreen('Loading') === true)
 
-        //TODO Alternate, more concise flow:
-        //1) Check if user is signed in
-        //2) If user is *not* signed in, navigate to / show AUTH SCREEN
-            //2a) Once user selects the sign in button, hide the auth screen (and set the URl Hash to the LANDING SCREEN?)
-            //2b) Once user completes sign-in flow and page reloads, should end up at Step 1. 
-        //3) If user is signed in, navigate to HOME SCREEN
+
+        //When the authentication state of user changes, either show the Authentication Screen or Home Screen, depending on the state
+        listenForEvent_AuthStateChanged();
+    }
+
+    /**
+     * Listens for a change in the authentication state of the current user of the application
+     */
+    function listenForEvent_AuthStateChanged()
+    {
+        firebase.auth().onAuthStateChanged(reactToEvent_AuthStateChanged);
+    }
+
+    /**
+     * Reacts to a change in the authentication state of the current user of the application. 
+     * If they are not signed in, the Authentication Screen is displayed and Firebase Google Authentication UI is initiated.
+     * If they are signed in, the Home Screen is displayed.
+     * @param {object} user The object representing the data for the authenticated user, if one exists
+     */
+    function reactToEvent_AuthStateChanged(user)
+    {
+        window.DebugController.Print("AppNavigationController: Auth state changed. User signed in?: " + (user != null));
 
         //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
-            //Perhaps AppView, ChecklistView, & ListView, where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
-        //Initialize the View so that it can assign references to various persistent UI elements within the Checklist
+            //Perhaps AppView, ChecklistView, & ListView, (& AuthView?) where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
+        //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
         window.View.Init();
 
-        //Inform the View to hide the Loading Screen
-        window.View.Render('HideLoadingScreen');
-
-        firebase.auth().onAuthStateChanged(reactToAuthStateChange);
-    }
-
-    function beginAuthentication()
-    {
-        //Inform the View to hide the Auth Screen
-        window.View.Render('HideAuthScreen');
-
-        //Inform the View to show the Loading Screen
-        window.View.Render('ShowLoadingScreen');
-        
-        var provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/appstate');
-        firebase.auth().useDeviceLanguage();
-
-        firebase.auth().signInWithRedirect(provider);
-    }
-
-    function reactToAuthStateChange(user)
-    {
         //If there is no user signed into the app...
         if (user == null)
         {
-            //Inform the View to show the Authentication Screen
-            window.View.Render('ShowAuthScreen');
+            window.DebugController.Print("AppNavigationController: There is no user signed in so the FirebaseUI Authentication flow will be initiated.");
 
-            //TODO is there a good way to tell if this has already been done? Currently, it will get called if the user signs out, even though the button listener is already set up
-            //Add a listener to the 'Sign Out' button so that when it is pressed, the user is signed out
-            window.document.getElementById('buttonGoogleSignIn').onclick = beginAuthentication;
+            //Start the Firebase Authentication UI flow
+            startFirebaseUIAuthFlow();
         }
         //Else, if there is a user signed into the app...
         else
         {
-            window.DebugController.Print("AppNavigationController: The user is signed in so the Home Screen will be displayed.");
+            //TODO could put all the logic below into a dedicated function, which could potentially be called by the authUI's signInSuccessWithAuthResult callback, instead of here.
+
+            window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
+
+            //Inform the View to hide the Loading Screen
+            window.View.Render('HideLoadingScreen');
 
             //Inform the View to display the Home Screen
             window.View.Render('ShowHomeScreen');
 
-            //Add a listener to the 'Sign In' button so that when it is pressed, the authentication process is initiated
-            window.document.getElementById('buttonSignOut').onclick = signOut;
+            //When the Sign-Out button is pressed, sign the user out and show the Authentication Screen
+            listenForEvent_SignOutButtonPressed();
 
             //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage
             window.ListController.Init();
 
-            window.history.replaceState({screen:'Home'}, window.document.title, window.location.pathname + '#travel'); //TODO not sure if pushState or replaceState is best here... Depends on flow on mobile, and on other screens that may be added. But right now there is no reason to allow the user to return to the loading screen.
+            //TODO not sure if pushState or replaceState is best here... Depends on flow on mobile, and on other screens that may be added. But right now there is no reason to allow the user to return to the loading screen.
+            window.history.replaceState({screen:'Home'}, window.document.title, window.location.pathname + '#travel');
 
             //TODO may want to clear history so user can't go back to Google sign-in page. 
-                //Need to test this flow on mobile. Will be easier to test once there is a sign-out option.
+                //Need to test this flow on mobile. 
 
             //Set up a persistent hash change listener to handle various navigation scenarios within the app flow
             window.onhashchange = urlHashChanged;
@@ -122,38 +118,85 @@ window.AppNavigationController = (function()
         }
     }
 
-    function signOut()
+    function startFirebaseUIAuthFlow()
     {
-        //TODO could possibly show loading screen here, but it likely isn't necessary
+        let _authUI = firebaseui.auth.AuthUI.getInstance();
+        let _uiConfig;
 
+        //If a Firebase AuthUI instance does not already exist, set up a new instance along with a configuration
+        if (_authUI == null)
+        {
+            window.DebugController.Print("AppNavigationController: A Firebase AuthUI instance does not already exist, so setting up a new one.");
+
+            //Initialize the FirebaseUI Widget using Firebase.
+            _authUI = new firebaseui.auth.AuthUI(firebase.auth());
+
+            console.log("AppNavigationController: Firebase Auth UI instance was created and will be started. IS PENDING REDIRECT?: " + _authUI.isPendingRedirect());
+
+            //Specify configuration details for the FirebaseUI Authentication widget
+            _uiConfig = {
+                callbacks: {
+                    uiShown: function() {
+                        //Inform the View to hide the Loading Screen
+                        window.View.Render('HideLoadingScreen');
+
+                        //Inform the View to show the Authentication Screen
+                        window.View.Render('ShowAuthScreen');
+                    },
+                    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                        //Inform the View to hide the Authentication Screen
+                        window.View.Render('HideAuthScreen');
+        
+                        return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
+                    },
+                    signInFailure: function(error)
+                    {
+                        window.DebugController.LogError("An error was encountered during the authentication process. Error (below):");
+                        cowindow.DebugController.Print(error);
+                    }
+                },
+                signInFlow: 'redirect',
+                //signInSuccessUrl: '#travel',
+                signInOptions : [
+                    {
+                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        scopes: [
+                            'https://www.googleapis.com/auth/appstate'
+                        ],
+                        customParameters: {
+                            prompt: 'select_account' //Forces account selection even when one account is available.
+                        }
+                    }
+                ]
+            };
+        }
+
+        _authUI.start('#firebaseui-auth-container', _uiConfig);
+    }
+
+    /**
+     * Listens for an event indicting the Sign-Out button has been pressed
+     */
+    function listenForEvent_SignOutButtonPressed()
+    {
+        window.document.getElementById('buttonSignOut').onclick = reactToEvent_SignOutButtonPressed;
+    }
+
+    function reactToEvent_SignOutButtonPressed()
+    {
         firebase.auth().signOut().then(function() {
             //Inform the View to hide the Home Screen
             window.View.Render('HideHomeScreen');
 
             window.history.replaceState({screen:'Auth'}, window.document.title, window.location.pathname);
 
-            //The reactToAuthStateChange function will also be automatically called here, which will show the auth screen
-
-            //TODO what happens if user signs in again after signing out? Everything *should* work because the page would reloud and everything would get re-initialized, but it would be good to confirm/test
-                //Seems like everything is working fine.
+            //The onAuthStateChanged listener will also be triggered at this point, which will in turn show the auth screen
 
         }).catch(function(error) {
             // An error happened.
-            window.DebugController.LogError("An error was encountered when trying to sign the user out. Error below: ");
+            window.DebugController.LogError("An error was encountered when trying to sign the user out. Error (below): ");
             window.DebugController.LogError(error);
           });
-    }
-
-    function setupPersistentHashChangedEventListener() 
-    {
-        //Set the behavior for when the URL fragment identifier changes
-        window.onhashchange = urlHashChanged;
-        window.DebugController.Print("AppNavigationController: A persistent Hash Changed event listener has been set up.");
-    
-        //TODO Maybe a different approach to this would be, in urlHashChanged, to use the browser history to tell if the app was just launched / is on the first page. If so, then ignore the event...
-            //This would also only work on mobile for the same reasons as clearing browser history though... On regular Chrome, the landing page may not actually be the first page in history.
-            //Maybe instead, look at previous page in history (if possible). If it exists, and is not part of the travel checklist, then you know this is the first launch of the app.
-            //That seems hackier than the current solution though, which is actually fine. 
     }
 
     function urlHashChanged(hashChangeEvent)
@@ -268,9 +311,9 @@ window.AppNavigationController = (function()
     //TODO This is no longer entirely accurate, since additional screens have been added
     function isValidScreen(urlString)
     {
-        const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
-        const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefix(_fragmentIdentifier);
-        const _urlSlug = GetUrlSlug(urlString);
+        //const _fragmentIdentifier = GetFragmentIdentifierFromUrlString(urlString);
+        //const _fragmentIdentifierPrefix = GetFragmentIdentifierPrefix(_fragmentIdentifier);
+        //const _urlSlug = GetUrlSlug(urlString);
 
         //If the URL string matches either the Home Screen or a List Screen, return true, else return false.
         return (isHomeScreen(urlString) === true || isListScreen(urlString) === true) ? true : false;
