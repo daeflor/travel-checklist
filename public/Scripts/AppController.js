@@ -136,12 +136,14 @@ window.AppNavigationController = (function()
             //Specify configuration details for the FirebaseUI Authentication widget
             _uiConfig = {
                 callbacks: {
-                    uiShown: reactToEvent_FirebaseUIWidgetShown,
+                    uiShown: function() {
+                        //Inform the View to hide the Loading Screen
+                        window.View.Render('HideLoadingScreen');
+
+                        //Inform the View to show the Authentication Screen
+                        window.View.Render('ShowAuthScreen');
+                    },
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-                        // User successfully signed in.
-
-                        //TODO figure if it would be helpful to make use of this callback
-
                         //Inform the View to hide the Authentication Screen
                         window.View.Render('HideAuthScreen');
         
@@ -172,52 +174,6 @@ window.AppNavigationController = (function()
         _authUI.start('#firebaseui-auth-container', _uiConfig);
     }
 
-    function reactToEvent_FirebaseUIWidgetShown()
-    {
-        window.DebugController.Print("AppNavigationController: The FirebaseUI Authentication widget was shown.");
-
-        //Inform the View to hide the Loading Screen
-        window.View.Render('HideLoadingScreen');
-
-        //Inform the View to show the Authentication Screen
-        window.View.Render('ShowAuthScreen');
-
-        //If the FirebaseUI Authentication progress bar is shown (and therefore authentication is presumed to be in progress)...
-        if (document.getElementsByClassName('firebaseui-id-page-callback').length > 0)
-        {
-            //TODO should this logic be handled in existing View, some new View, or somethine else altogether?
-            
-            let firebaseUIWidgetContainer = document.getElementsByClassName('firebaseui-id-page-callback')[0];
-            firebaseUIWidgetContainer.classList.add('authenticating');
-
-            let firebaseUIProgressBarContainer = document.getElementsByClassName('firebaseui-callback-indicator-container')[0];
-            firebaseUIProgressBarContainer.classList.add('progressBarContainer');
-
-            //document.getElementById('divFirebaseAuthenticationMessage').hidden = false;
-            //firebaseUIAuthContainer.textContent = "Authenticating...";
-
-            // console.log(document.getElementsByClassName('firebaseui-id-page-callback'));
-
-            // window.DebugController.Print("AppNavigationController: The FirebaseUI Authentication widget progress bar was shown, and will be replaced with a custom loading screen.");
-            
-            // //Change the text of the Loading Screen to indicate that authentication is in progress (and don't show the Auth Screen)
-            // document.getElementById('divLoadingScreen').textContent = "Authenticating...";
-        }
-        //Else, if the FirebaseUI Authentication progress bar is not shown...
-        // else
-        // {
-        //     //document.getElementById('divFirebaseAuthenticationMessage').hidden = true;
-
-
-
-        //     //Inform the View to hide the Loading Screen
-        //     window.View.Render('HideLoadingScreen');
-            
-        //     //Inform the View to show the Authentication Screen
-        //     window.View.Render('ShowAuthScreen');
-        // }
-    }
-
     /**
      * Listens for an event indicting the Sign-Out button has been pressed
      */
@@ -228,8 +184,6 @@ window.AppNavigationController = (function()
 
     function reactToEvent_SignOutButtonPressed()
     {
-        //TODO could possibly show loading screen here, but it likely isn't necessary
-
         firebase.auth().signOut().then(function() {
             //Inform the View to hide the Home Screen
             window.View.Render('HideHomeScreen');
