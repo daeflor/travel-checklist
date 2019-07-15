@@ -73,7 +73,7 @@ window.AppNavigationController = (function()
         window.DebugController.Print("AppNavigationController: Auth state changed. User signed in?: " + (user != null));
 
         //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
-            //Perhaps AppView, ChecklistView, & ListView, where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
+            //Perhaps AppView, ChecklistView, & ListView, (& AuthView?) where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
         //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
         window.View.Init();
 
@@ -136,11 +136,14 @@ window.AppNavigationController = (function()
             //Specify configuration details for the FirebaseUI Authentication widget
             _uiConfig = {
                 callbacks: {
-                    uiShown: reactToEvent_FirebaseUIWidgetShown.bind(null, _authUI),
+                    uiShown: reactToEvent_FirebaseUIWidgetShown,
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
                         // User successfully signed in.
 
                         //TODO figure if it would be helpful to make use of this callback
+
+                        //Inform the View to hide the Authentication Screen
+                        window.View.Render('HideAuthScreen');
         
                         return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
                     },
@@ -169,44 +172,50 @@ window.AppNavigationController = (function()
         _authUI.start('#firebaseui-auth-container', _uiConfig);
     }
 
-    function reactToEvent_FirebaseUIWidgetShown(authUI)
+    function reactToEvent_FirebaseUIWidgetShown()
     {
-        //TODO - Issue: If the user presses back at the Google account picker, when they return to the app, isPendingRedirect will be set to true.
-            //Perhaps resetting it in this case would resolve the issue, assuming it's possible to recognize this edge case.
+        window.DebugController.Print("AppNavigationController: The FirebaseUI Authentication widget was shown.");
 
-        //If there is a pending redirect following an authentication attempt...
-        if (authUI.isPendingRedirect() == true)
+        //Inform the View to hide the Loading Screen
+        window.View.Render('HideLoadingScreen');
+
+        //Inform the View to show the Authentication Screen
+        window.View.Render('ShowAuthScreen');
+
+        //If the FirebaseUI Authentication progress bar is shown (and therefore authentication is presumed to be in progress)...
+        if (document.getElementsByClassName('firebaseui-id-page-callback').length > 0)
         {
-            //Replace the FirebaseUI progress bar with a custom loading screen 
-            replaceFirebaseUIAuthProgressBarWithCustomVariant();
-        }
-        //Else, if there is no pending redirect...
-        else
-        {
-            //Inform the View to hide the Loading Screen
-            window.View.Render('HideLoadingScreen');
+            //TODO should this logic be handled in existing View, some new View, or somethine else altogether?
             
-            //Inform the View to show the Authentication Screen
-            window.View.Render('ShowAuthScreen');
-        }
-    }
+            let firebaseUIWidgetContainer = document.getElementsByClassName('firebaseui-id-page-callback')[0];
+            firebaseUIWidgetContainer.classList.add('authenticating');
 
-    function replaceFirebaseUIAuthProgressBarWithCustomVariant()
-    {
-        let _progressBar = document.getElementsByClassName('mdl-card');
+            let firebaseUIProgressBarContainer = document.getElementsByClassName('firebaseui-callback-indicator-container')[0];
+            firebaseUIProgressBarContainer.classList.add('progressBarContainer');
 
-        if (_progressBar[0] != null)
-        {
-            //Remove the FirebaseUI Authentication widget
-            _progressBar[0].remove();
+            //document.getElementById('divFirebaseAuthenticationMessage').hidden = false;
+            //firebaseUIAuthContainer.textContent = "Authenticating...";
 
-            //Change the text of the Loading Screen to indicate that authentication is in progress
-            document.getElementById('divLoadingScreen').textContent = "Authenticating...";
+            // console.log(document.getElementsByClassName('firebaseui-id-page-callback'));
+
+            // window.DebugController.Print("AppNavigationController: The FirebaseUI Authentication widget progress bar was shown, and will be replaced with a custom loading screen.");
+            
+            // //Change the text of the Loading Screen to indicate that authentication is in progress (and don't show the Auth Screen)
+            // document.getElementById('divLoadingScreen').textContent = "Authenticating...";
         }
-        else
-        {
-            window.DebugController.LogError("Attempted to remove the FirebaseUI Authentication widget but the expected corresponding HTML element could not be found.");
-        }
+        //Else, if the FirebaseUI Authentication progress bar is not shown...
+        // else
+        // {
+        //     //document.getElementById('divFirebaseAuthenticationMessage').hidden = true;
+
+
+
+        //     //Inform the View to hide the Loading Screen
+        //     window.View.Render('HideLoadingScreen');
+            
+        //     //Inform the View to show the Authentication Screen
+        //     window.View.Render('ShowAuthScreen');
+        // }
     }
 
     /**
