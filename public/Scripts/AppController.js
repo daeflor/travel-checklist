@@ -50,6 +50,11 @@ window.AppNavigationController = (function()
         //if (isScreen('Loading') === true)
 
 
+        //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
+            //Perhaps AppView, ChecklistView, & ListView, (& AuthView?) where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
+        //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
+        window.View.Init();
+
         //When the authentication state of user changes, either show the Authentication Screen or Home Screen, depending on the state
         listenForEvent_AuthStateChanged();
     }
@@ -72,11 +77,6 @@ window.AppNavigationController = (function()
     {
         window.DebugController.Print("AppNavigationController: Auth state changed. User signed in?: " + (user != null));
 
-        //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
-            //Perhaps AppView, ChecklistView, & ListView, (& AuthView?) where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
-        //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
-        window.View.Init();
-
         //If there is no user signed into the app...
         if (user == null)
         {
@@ -89,6 +89,7 @@ window.AppNavigationController = (function()
         else
         {
             //TODO could put all the logic below into a dedicated function, which could potentially be called by the authUI's signInSuccessWithAuthResult callback, instead of here.
+                //Actually wouldn't want to use signInSuccessWithAuthResult for that, because in the case where the user is already signed in, we don't even need/want to create and start a FirebaseUI instance
 
             window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
 
