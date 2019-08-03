@@ -132,8 +132,6 @@ window.AppNavigationController = (function()
             //Initialize the FirebaseUI Widget using Firebase.
             _authUI = new firebaseui.auth.AuthUI(firebase.auth());
 
-            console.log("AppNavigationController: Firebase Auth UI instance was created and will be started. IS PENDING REDIRECT?: " + _authUI.isPendingRedirect());
-
             //Specify configuration details for the FirebaseUI Authentication widget
             _uiConfig = {
                 callbacks: {
