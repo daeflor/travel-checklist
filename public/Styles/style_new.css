@@ -70,20 +70,35 @@ button {
 
 /** Header Rows **/
 
-/* TODO Border Width is stated explicitly more than seems necessary through this stylesheet. */
+/* TODO Border Width is stated explicitly more than seems necessary throughout this stylesheet. */
 .divHeader {
-    border-left-width: 0px;
+    /* border-left-width: 0px;
     border-right-width: 0px;
-    border-top-width: 2px;
+    border-top-width: 2px; */
+
     border-bottom-width: 1px;
+    border-bottom-style: outset;
+    border-bottom-color: white;
 
     align-items: center;
 
-    height: 45px;
+    /*TODO This probably shouldn't be absolute*/
+    height: 45px; 
 
     background-color: #333333;
-    /* background-color: ghostwhite; */
-    /* background-color: rgb(70, 130, 180, 0.8); */
+    
+    color: white;
+    text-shadow: 1px 1px 10px black;
+}
+
+#divHomeHeader {
+    padding-left: 25px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+
+    font-size: 1.1rem;
 }
 
 #buttonHome {
@@ -108,45 +123,15 @@ button {
     border-width: 0px;
 }
 
-#divHomeHeader {
-    padding-left: 25px;
-
-    border-bottom-width: 1px;
-    border-bottom-style: outset;
-    border-bottom-color: white;
-
-    justify-content: left;
-
-    font-size: 1.1rem;
-    color: white;
-    text-shadow: 1px 1px 10px black;
-}
-
-/* TODO Should both headers have the same border? Probably... */
-#divListHeader {
-    /* border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 1px; */
-
-    border-style: solid;
-    border-color: black;
-
-    /* background-color: ghostwhite; */
-}
-
 #headerCurrentListName {
     padding-left: 10px;
     padding-right: 0px;
-    padding-top: 0px;
+    padding-top: 5px;
     padding-bottom: 0px; 
     
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
-
-    color: white;
-    text-shadow: 1px 1px 10px black;
 }
 
 .divQuantityHeader {
