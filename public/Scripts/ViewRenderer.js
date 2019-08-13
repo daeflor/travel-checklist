@@ -3,8 +3,44 @@ window.ViewRenderer = (function()
 {
     //TODO The Bind and Render calls could all use error handling
 
-    //TODO maybe each of these should track both the element and the ID of the element. (like in QuantityTypes)
-    var elements = {  
+    //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
+    
+    // var elements = {  
+    //     loadingScreen : {
+    //         element: null,
+    //         id: 'divLoadingScreen'
+    //     },
+    //     authScreen : {
+    //         element: null,
+    //         id: 'divAuthScreen'
+    //     },
+    //     homeScreen : {
+    //         element: null,
+    //         id: 'divHomeScreen'
+    //     },
+    //     homeScreenListElements : {
+    //         element: null,
+    //         id: 'divHomeScreenListElements'
+    //     },
+    //     listHeader : {
+    //         element: null,
+    //         id: 'divListHeader'
+    //     },
+    //     listTitle : {
+    //         element: null,
+    //         id: 'headerCurrentListName'
+    //     },
+    //     listScreen : {
+    //         element: null,
+    //         id: 'divListScreen'
+    //     },
+    //     listScreenListElements : {
+    //         element: null,
+    //         id: 'divListScreenListElements'
+    //     },
+    // };
+
+    let elements = {  
         loadingScreen : null,
         authScreen : null,
         homeScreen : null,
@@ -15,40 +51,26 @@ window.ViewRenderer = (function()
         listScreenListElements : null,
     };
 
+    let elementIds = {  
+        loadingScreen : 'divLoadingScreen',
+        authScreen : 'divAuthScreen',
+        homeScreen : 'divHomeScreen',
+        homeScreenListElements : 'divHomeScreenListElements',
+        listHeader : 'divListHeader',
+        listTitle : 'headerCurrentListName',
+        listScreen : 'divListScreen',
+        listScreenListElements : 'divListScreenListElements',
+    };
+
     function init()
     {
-        //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
+        //Assign the elements based on their specified IDs
+        for (let key in elements)
+        {
+            elements[key] = document.getElementById(elementIds[key]);
 
-        //TODO should be possible to use this if the element names get standardized
-        // var elementFoundCallback;
-
-        // for (var key in elements)
-        // {
-        //     elementFoundCallback = function(element)
-        //     {
-        //         elements[key] = element;
-        //     };
- 
-        //     GetElement(key, elementFoundCallback);
-        // }
-
-        //TODO Could have a ReturnElement util function with a try catch maybe? Instead of callbacks...
-
-        //Assign the Loading Screen elements
-        elements.loadingScreen = document.getElementById('divLoadingScreen');
-
-        //Assign the Authentication Screen elements
-        elements.authScreen = document.getElementById('divAuthScreen');
-
-        //Assign the Home Screen elements
-        elements.homeScreen = document.getElementById('divHomeScreen');
-        elements.homeScreenListElements = document.getElementById('divHomeScreenListElements'); 
-
-        //Assign the List Screen elements
-        elements.listHeader = document.getElementById('divListHeader');
-        elements.listTitle = document.getElementById('headerCurrentListName');
-        elements.listScreen = document.getElementById('divListScreen'); 
-        elements.listScreenListElements = document.getElementById('divListScreenListElements');
+            //TODO since it doesn't really make sense to use GetElement here (because of the callback), could maybe have a ReturnElement util function with a try catch instead of callbacks...
+        }
 
         //TODO Right now this assumes the header to display is the Travel type. Eventually this should be done in a separate method, depending on the checklist type.
         elements.listHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
