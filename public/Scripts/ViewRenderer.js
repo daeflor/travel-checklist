@@ -4,41 +4,6 @@ window.ViewRenderer = (function()
     //TODO The Bind and Render calls could all use error handling
 
     //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
-    
-    // var elements = {  
-    //     loadingScreen : {
-    //         element: null,
-    //         id: 'divLoadingScreen'
-    //     },
-    //     authScreen : {
-    //         element: null,
-    //         id: 'divAuthScreen'
-    //     },
-    //     homeScreen : {
-    //         element: null,
-    //         id: 'divHomeScreen'
-    //     },
-    //     homeScreenListElements : {
-    //         element: null,
-    //         id: 'divHomeScreenListElements'
-    //     },
-    //     listHeader : {
-    //         element: null,
-    //         id: 'divListHeader'
-    //     },
-    //     listTitle : {
-    //         element: null,
-    //         id: 'headerCurrentListName'
-    //     },
-    //     listScreen : {
-    //         element: null,
-    //         id: 'divListScreen'
-    //     },
-    //     listScreenListElements : {
-    //         element: null,
-    //         id: 'divListScreenListElements'
-    //     },
-    // };
 
     let elements = {  
         loadingScreen : null,
