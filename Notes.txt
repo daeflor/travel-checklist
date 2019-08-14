@@ -14,6 +14,7 @@ TO-DOs:
     - - - Total             : 110
 
 Upcoming To-Do List:
+- Looks like I broke clearing
 - Maybe ViewListener should be separated from the rest of the View, instead of ViewRenderer (since ViewListener is what would need to be replaced during test scenarios)
     - Or have a 3rd file/class that manages/tracks View state
 - Whenever there is an urge to use console.log to debug something, try a different approach instead.

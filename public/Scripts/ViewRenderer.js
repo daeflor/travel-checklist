@@ -5,7 +5,7 @@ window.ViewRenderer = (function()
 
     //TODO Several of these (both variable name and element ID) could probably be renamed for clarity
 
-    let elements = {  
+    const elements = {  
         loadingScreen : null,
         authScreen : null,
         homeScreen : null,
@@ -16,7 +16,7 @@ window.ViewRenderer = (function()
         listScreenListElements : null,
     };
 
-    let elementIds = {  
+    const elementIds = {  
         loadingScreen : 'divLoadingScreen',
         authScreen : 'divAuthScreen',
         homeScreen : 'divHomeScreen',
@@ -188,6 +188,7 @@ window.ViewRenderer = (function()
                     window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
                 }
             }, 
+            //TODO the commands above could possibly all be split into a ToggleScreen function, which takes a screenName, enabled, and optional listId params. Or something like that
             AddList: function() //Expected parameters: listId, listName, listType, listBalance (optional)
             {                
                 //Assign a border color for the List's name toggle based on the provided balance
