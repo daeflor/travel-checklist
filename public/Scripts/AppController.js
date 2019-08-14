@@ -94,10 +94,10 @@ window.AppNavigationController = (function()
             window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
 
             //Inform the View to hide the Loading Screen
-            window.ViewRenderer.Render('HideLoadingScreen');
+            window.ViewRenderer.ToggleScreen('LoadingScreen', false);
 
             //Inform the View to display the Home Screen
-            window.ViewRenderer.Render('ShowHomeScreen');
+            window.ViewRenderer.ToggleScreen('HomeScreen', true);
 
             //When the Sign-Out button is pressed, sign the user out and show the Authentication Screen
             listenForEvent_SignOutButtonPressed();
@@ -137,14 +137,14 @@ window.AppNavigationController = (function()
                 callbacks: {
                     uiShown: function() {
                         //Inform the View to hide the Loading Screen
-                        window.ViewRenderer.Render('HideLoadingScreen');
+                        window.ViewRenderer.ToggleScreen('LoadingScreen', false);
 
                         //Inform the View to show the Authentication Screen
-                        window.ViewRenderer.Render('ShowAuthScreen');
+                        window.ViewRenderer.ToggleScreen('AuthScreen', true);
                     },
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
                         //Inform the View to hide the Authentication Screen
-                        window.ViewRenderer.Render('HideAuthScreen');
+                        window.ViewRenderer.ToggleScreen('AuthScreen', false);
         
                         return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
                     },
@@ -185,7 +185,7 @@ window.AppNavigationController = (function()
     {
         firebase.auth().signOut().then(function() {
             //Inform the View to hide the Home Screen
-            window.ViewRenderer.Render('HideHomeScreen');
+            window.ViewRenderer.ToggleScreen('HomeScreen', false);
 
             window.history.replaceState({screen:'Auth'}, window.document.title, window.location.pathname);
 

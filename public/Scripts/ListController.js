@@ -172,7 +172,7 @@ window.ListController = (function()
         window.ViewRenderer.Render('HideList', {id:activeListId});
 
         //Inform the View to display the Home Screen
-        window.ViewRenderer.Render('ShowHomeScreen');
+        window.ViewRenderer.ToggleScreen('HomeScreen', true);
 
         //TODO This is the only Model call that returns instead of relying on callbacks, and which doesn't require updates to the model but does access it get information. Is that ok?
         //Calculate the balance of the List which was previously active, and inform the View to update the color of List's name toggle accordingly
@@ -201,7 +201,7 @@ window.ListController = (function()
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
         
         //Inform the View to Hide the Home Screen, since an individual List will be displayed instead
-        window.ViewRenderer.Render('HideHomeScreen');
+        window.ViewRenderer.ToggleScreen('HomeScreen', false);
         
         //Inform the View to display the specified List
         window.ViewRenderer.Render('DisplayList', {id:listId});
