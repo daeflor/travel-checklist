@@ -94,10 +94,10 @@ window.AppNavigationController = (function()
             window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
 
             //Inform the View to hide the Loading Screen
-            window.ViewRenderer.ToggleScreen('LoadingScreen', false);
+            window.ViewRenderer.ToggleScreenVisibility('LoadingScreen', false);
 
             //Inform the View to display the Home Screen
-            window.ViewRenderer.ToggleScreen('HomeScreen', true);
+            window.ViewRenderer.ToggleScreenVisibility('HomeScreen', true);
 
             //When the Sign-Out button is pressed, sign the user out and show the Authentication Screen
             listenForEvent_SignOutButtonPressed();
@@ -137,14 +137,14 @@ window.AppNavigationController = (function()
                 callbacks: {
                     uiShown: function() {
                         //Inform the View to hide the Loading Screen
-                        window.ViewRenderer.ToggleScreen('LoadingScreen', false);
+                        window.ViewRenderer.ToggleScreenVisibility('LoadingScreen', false);
 
                         //Inform the View to show the Authentication Screen
-                        window.ViewRenderer.ToggleScreen('AuthScreen', true);
+                        window.ViewRenderer.ToggleScreenVisibility('AuthScreen', true);
                     },
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
                         //Inform the View to hide the Authentication Screen
-                        window.ViewRenderer.ToggleScreen('AuthScreen', false);
+                        window.ViewRenderer.ToggleScreenVisibility('AuthScreen', false);
         
                         return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
                     },
@@ -185,7 +185,7 @@ window.AppNavigationController = (function()
     {
         firebase.auth().signOut().then(function() {
             //Inform the View to hide the Home Screen
-            window.ViewRenderer.ToggleScreen('HomeScreen', false);
+            window.ViewRenderer.ToggleScreenVisibility('HomeScreen', false);
 
             window.history.replaceState({screen:'Auth'}, window.document.title, window.location.pathname);
 

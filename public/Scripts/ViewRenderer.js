@@ -104,16 +104,17 @@ window.ViewRenderer = (function()
 
     //TODO why is the format in bind and render different? Seems like it could be the same
 
-    function toggleScreen(screenName, visible)
+    function toggleScreenVisibility(screenName, visible)
     {
         screens[screenName].element.hidden = !visible;
     }
 
-    function render(command, parameters)
+    function toggleListVisibility(listId, visible)
     {
-        let viewCommands = 
+        //If a non-null List ID was provided, toggle the visibility of the wrapper element for the matching List
+        if (listId != null)
         {
-            DisplayList: function() //Expected parameters: id
+            if (visible === true)
             {
                 //TODO this could possibly all be put into a Toggle helper method.
                     //But first should probably move the headers into their respective screens
@@ -126,10 +127,10 @@ window.ViewRenderer = (function()
                 };
 
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
-                window.View.FindChecklistElement(parameters.id, _updateListTitle, 'NameButton');
+                window.View.FindChecklistElement(listId, _updateListTitle, 'NameButton');
 
                 //Show the wrapper element for the List matching the given ID
-                updateChecklistElement('Show', {type:'ListWrapper', id:parameters.id});
+                updateChecklistElement('Show', {type:'ListWrapper', id:listId});
                 
                 //Show the List Header when an individual List is displayed
                 headerElements.ListHeader.element.hidden = false;
@@ -139,28 +140,31 @@ window.ViewRenderer = (function()
 
                 //Disallow browser refresh when scrolling to the top of the List Screen
                 document.body.classList.add("disallowBrowserRefresh");
-            },
-            HideList: function() //Expected parameters: id
+            }
+            else
             {
-                //If a non-null List ID was provided, hide the wrapper element for the matching List
-                if (parameters.id != null)
-                {
-                    updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.id});
+                updateChecklistElement('Hide', {type:'ListWrapper', id:listId});
 
-                    //Hide the List Header
-                    headerElements.ListHeader.element.hidden = true;
+                //Hide the List Header
+                headerElements.ListHeader.element.hidden = true;
 
-                    //Hide the List Screen
-                    screens.ListScreen.element.hidden = true;
+                //Hide the List Screen
+                screens.ListScreen.element.hidden = true;
 
-                    //Allow browser refresh when scrolling to the top of the Home Screen
-                    document.body.classList.remove("disallowBrowserRefresh");
-                }
-                else 
-                {
-                    window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
-                }
-            }, 
+                //Allow browser refresh when scrolling to the top of the Home Screen
+                document.body.classList.remove("disallowBrowserRefresh");
+            }
+        }
+        else 
+        {
+            window.DebugController.LogError("Tried to toggle a List's visibility but a valid List ID was not provided.");
+        }
+    }
+
+    function render(command, parameters)
+    {
+        let viewCommands = 
+        {
             AddList: function() //Expected parameters: listId, listName, listType, listBalance (optional)
             {                
                 //Assign a border color for the List's name toggle based on the provided balance
@@ -199,6 +203,8 @@ window.ViewRenderer = (function()
             },
             AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
+                //TODO is it necessary to past list ID AND list item ID now that list item ID includes the list ID?
+
                 //Set up the callback method to execute when the List wrapper element is found which matches the given ID
                 const elementFoundCallback = function(element)
                 {          
@@ -334,7 +340,8 @@ window.ViewRenderer = (function()
 
     return {
         Init: init,
-        ToggleScreen: toggleScreen,
+        ToggleScreenVisibility: toggleScreenVisibility,
+        ToggleListVisibility: toggleListVisibility,
         Render: render
     };
 })();
