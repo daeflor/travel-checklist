@@ -3,49 +3,51 @@ window.ViewRenderer = (function()
 {
     //TODO The Bind and Render calls could all use error handling
 
-    const elements = {  
-        LoadingScreen : null,
-        AuthScreen : null,
-        HomeScreen : null,
-        HomeScreenListElements : null,
-        ListHeader : null,
-        ListTitle : null,
-        ListScreen : null,
-        ListScreenListElements : null,
+    const screens = {
+        LoadingScreen : {id:'divLoadingScreen', element:null},
+        AuthScreen : {id:'divAuthScreen', element:null},
+        HomeScreen : {id:'divHomeScreen', element:null},
+        ListScreen : {id:'divListScreen', element:null}
     };
 
-    const elementIds = {  
-        LoadingScreen : 'divLoadingScreen',
-        AuthScreen : 'divAuthScreen',
-        HomeScreen : 'divHomeScreen',
-        HomeScreenListElements : 'divHomeScreenListElements',
-        ListHeader : 'divListHeader',
-        ListTitle : 'divListTitle',
-        ListScreen : 'divListScreen',
-        ListScreenListElements : 'divListScreenListElements',
+    const listWrappers = {
+        HomeScreenListElements : {id:'divHomeScreenListElements', element:null},
+        ListScreenListElements : {id:'divListScreenListElements', element:null}
     };
 
-    // const screenNames = {
-    //     loadingScreen : 'LoadingScreen',
-    //     authScreen : 'AuthScreen',
-    //     homeScreen : 'HomeScreen',
-    // };
+    const headerElements = {
+        ListHeader : {id:'divListHeader', element:null},
+        ListTitle : {id:'divListTitle', element:null}
+    };
 
     function init()
     {
-        //Assign the elements based on their specified IDs
-        for (let key in elements)
-        {
-            elements[key] = document.getElementById(elementIds[key]);
+        //TODO since it doesn't really make sense to use GetElement here (because of the callback), could maybe have a ReturnElement util function with a try catch instead of callbacks...
 
-            //TODO since it doesn't really make sense to use GetElement here (because of the callback), could maybe have a ReturnElement util function with a try catch instead of callbacks...
+        //For each screen in the app...
+        for (const key in screens)
+        {
+            //Get the element based on its ID, and store it in the screens object
+            screens[key].element = document.getElementById(screens[key].id);
+        }
+
+        //For each list wrapper in the app...
+        for (const key in listWrappers)
+        {
+            //Get the element based on its ID, and store it in the listWrappers object
+            listWrappers[key].element = document.getElementById(listWrappers[key].id);
+        }
+
+        //For each header element in the app...
+        for (const key in headerElements)
+        {
+            //Get the element based on its ID, and store it in the headerElements object
+            headerElements[key].element = document.getElementById(headerElements[key].id);
         }
 
         //TODO Right now this assumes the header to display is the Travel type. Eventually this should be done in a separate method, depending on the checklist type.
-        elements.ListHeader.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
+        headerElements.ListHeader.element.appendChild(window.CustomTemplates.CreateTravelHeaderFromTemplate()); 
     }
-
-    //TODO Maybe it *is* worth having a more general checklist data blob for these, and then they all follow the same standard format
     
     //TODO make other methods throughout View match the format used here
     /**
@@ -104,129 +106,13 @@ window.ViewRenderer = (function()
 
     function toggleScreen(screenName, visible)
     {
-        elements[screenName].hidden = !visible;
+        screens[screenName].element.hidden = !visible;
     }
-
-    // function toggleScreen(screenName, visible)
-    // {
-    //     if (screenName === 'LoadingScreen')
-    //     {
-    //         elements.loadingScreen.hidden = !visible;
-    //     }
-    //     else if (screenName === 'AuthScreen')
-    //     {
-    //         elements.authScreen.hidden = !visible;
-    //     }
-    //     else if (screenName === 'HomeScreen')
-    //     {
-    //         if (visible === true)
-    //         {
-    //             //TODO this can probably all be put into a Toggle helper method.
-    //                 //But first should probably move the headers into their respective screens
-
-    //             //Hide the List Header
-    //             elements.listHeader.hidden = true;
-
-    //             //Hide the List Screen
-    //             elements.listScreen.hidden = true;
-
-    //             //Show the Home Screen
-    //             elements.homeScreen.hidden = false;
-
-    //             //Allow browser refresh when scrolling to the top of the Home Screen
-    //             document.body.classList.remove("disallowBrowserRefresh");
-    //         }
-    //         else
-    //         {
-    //             //Hide the Home Screen
-    //             elements.homeScreen.hidden = true;
-    //         }
-    //     }
-    // }
-
-    // function toggleLoadingScreen(visible)
-    // {
-    //     elements.loadingScreen.hidden = !visible;
-    // }
-
-    // function toggleAuthenticationScreen(visible)
-    // {
-    //     elements.authScreen.hidden = !visible;
-    // }
-
-    // function toggleHomeScreen(visible)
-    // {
-    //     if (visible === true)
-    //     {
-    //         //TODO this can probably all be put into a Toggle helper method.
-    //             //But first should probably move the headers into their respective screens
-
-    //         //Hide the List Header
-    //         elements.listHeader.hidden = true;
-
-    //         //Hide the List Screen
-    //         elements.listScreen.hidden = true;
-
-    //         //Show the Home Screen
-    //         elements.homeScreen.hidden = false;
-
-    //         //Allow browser refresh when scrolling to the top of the Home Screen
-    //         document.body.classList.remove("disallowBrowserRefresh");
-    //     }
-    //     else
-    //     {
-    //         //Hide the Home Screen
-    //         elements.homeScreen.hidden = true;
-    //     }
-    // }
-
 
     function render(command, parameters)
     {
         let viewCommands = 
         {
-            // ShowLoadingScreen: function() 
-            // {
-            //     //Show the Loading Screen
-            //     elements.loadingScreen.hidden = false;
-            // },
-            // HideLoadingScreen: function() 
-            // {
-            //     //Hide the Loading Screen
-            //     elements.loadingScreen.hidden = true;
-            // },
-            // ShowAuthScreen: function() 
-            // {
-            //     //Show the Auth Screen
-            //     elements.authScreen.hidden = false;
-            // },
-            // HideAuthScreen: function() 
-            // {
-            //     //Hide the Auth Screen
-            //     elements.authScreen.hidden = true;
-            // },
-            // ShowHomeScreen: function() 
-            // {
-            //     //TODO this can probably all be put into a Toggle helper method.
-            //         //But first should probably move the headers into their respective screens
-
-            //     //Hide the List Header
-            //     elements.listHeader.hidden = true;
-
-            //     // //Hide the List Screen
-            //     // elements.listScreen.hidden = true;
-
-            //     // //Show the Home Screen
-            //     // elements.homeScreen.hidden = false;
-
-            //     // //Allow browser refresh when scrolling to the top of the Home Screen
-            //     // document.body.classList.remove("disallowBrowserRefresh");
-            // },
-            // HideHomeScreen: function()
-            // {
-            //     //Hide the Home Screen
-            //     elements.homeScreen.hidden = true;
-            // },
             DisplayList: function() //Expected parameters: id
             {
                 //TODO this could possibly all be put into a Toggle helper method.
@@ -236,7 +122,7 @@ window.ViewRenderer = (function()
                 const _updateListTitle = function(element)
                 {                    
                     //Set the List title to match the text content of the name button element
-                    elements.ListTitle.textContent = element.textContent;
+                    headerElements.ListTitle.element.textContent = element.textContent;
                 };
 
                 //Find the name button element for the List matching the given ID, and then update the List title to match it
@@ -246,10 +132,10 @@ window.ViewRenderer = (function()
                 updateChecklistElement('Show', {type:'ListWrapper', id:parameters.id});
                 
                 //Show the List Header when an individual List is displayed
-                elements.ListHeader.hidden = false;
+                headerElements.ListHeader.element.hidden = false;
 
                 //Show the List Screen when an individual List is displayed
-                elements.ListScreen.hidden = false;
+                screens.ListScreen.element.hidden = false;
 
                 //Disallow browser refresh when scrolling to the top of the List Screen
                 document.body.classList.add("disallowBrowserRefresh");
@@ -262,10 +148,10 @@ window.ViewRenderer = (function()
                     updateChecklistElement('Hide', {type:'ListWrapper', id:parameters.id});
 
                     //Hide the List Header
-                    elements.ListHeader.hidden = true;
+                    headerElements.ListHeader.element.hidden = true;
 
                     //Hide the List Screen
-                    elements.ListScreen.hidden = true;
+                    screens.ListScreen.element.hidden = true;
 
                     //Allow browser refresh when scrolling to the top of the Home Screen
                     document.body.classList.remove("disallowBrowserRefresh");
@@ -275,21 +161,19 @@ window.ViewRenderer = (function()
                     window.DebugController.LogError("Tried to hide a List but a valid List ID was not provided.");
                 }
             }, 
-            //TODO the commands above could possibly all be split into a ToggleScreen function, which takes a screenName, enabled, and optional listId params. Or something like that
             AddList: function() //Expected parameters: listId, listName, listType, listBalance (optional)
             {                
                 //Assign a border color for the List's name toggle based on the provided balance
                 const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listBalance);
 
                 //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
-                elements.HomeScreenListElements.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType, _borderColor));
+                listWrappers.HomeScreenListElements.element.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType, _borderColor));
                 
-                //TODO Should be consistent on either prefixing or suffixing element vars with 'element'. Right now both are used...
                 //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
-                elements.ListScreenListElements.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
+                listWrappers.ListScreenListElements.element.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
 
                 //Update the reorder buttons for all the List toggles in the Home Screen
-                updateReorderButtons(elements.HomeScreenListElements);
+                updateReorderButtons(listWrappers.HomeScreenListElements.element);
             },
             RemoveList: function() //Expected parameters: id
             {
@@ -303,7 +187,7 @@ window.ViewRenderer = (function()
                     element.remove();
 
                     //Update the reorder buttons for all the List toggles in the Home Screen
-                    updateReorderButtons(elements.HomeScreenListElements);
+                    updateReorderButtons(listWrappers.HomeScreenListElements.element);
 
                     //TODO Seems that this could easily use the same command logic as RemoveListItem. 
                         //This command just needs to reference the parent element instead of homeScreenListElements
@@ -365,6 +249,7 @@ window.ViewRenderer = (function()
                 //TODO can/should we save references to the list item quantity modifiers to not always have to search for them
                 
                 //TODO could we not just update everything related to a list item in one go? Or does that not make this any easier?
+                    //(i.e. merge logic to UpdateNameToggleColor with UpdateListItemQuantityText)
 
                 const elementData = {type:'QuantityToggle', id:parameters.id, quantityType:parameters.quantityType};
 
@@ -413,6 +298,9 @@ window.ViewRenderer = (function()
             SwapListObjects: function()
             {
                 //TODO Should this use findChecklistElement or other helpers with error handling?
+                    //Maybe a ReturnElement helper?
+                    //Maybe GetElement could execute a callback if one is provided, otherwise return the element.
+                        //That seems confusing...
 
                 const elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
                 const elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
