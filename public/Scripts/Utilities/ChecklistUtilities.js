@@ -1,4 +1,53 @@
 'use strict';
+
+//TODO Not sure if these checklist enums should be in another file altogether, separate from the ChecklistBalanceUtilities
+
+const ListTypes = {
+    Travel: 'travel',
+    Checklist: 'shopping'
+};
+
+const QuantityTypes = {
+    needed: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
+    },
+    luggage: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-suitcase fa-lg iconHeader'
+    },
+    wearing: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader',
+        iconClass: 'fa fa-male fa-lg iconHeader'
+    },
+    backpack: {
+        wrapperClass: 'col divQuantityHeader',
+        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
+        iconClass: 'fa fa-briefcase iconHeader'
+    },
+};
+
+window.ChecklistUtilities = (function()
+{
+    /**
+     * Returns the List ID associated with the given Checklist Object ID
+     * @param {string} id The ID of the Checklist Object from which to extract a List ID
+     * @returns {string} The List ID extracted from the given Checklist Object ID
+     */
+    function getListIdFromChecklistObjectId(id)
+    {
+        return id.toString().split('-')[0];
+    }
+
+    return {
+        GetListIdFromChecklistObjectId: getListIdFromChecklistObjectId
+    };
+
+})();
+
 window.ChecklistBalanceUtilities = (function()
 {
     const BalanceCategories = {
@@ -81,33 +130,3 @@ window.ChecklistBalanceUtilities = (function()
         GetBorderColorFromBalance: getBorderColorFromBalance
     };
 })();
-
-//TODO Not sure if these checklist enums should be in another file altogether, separate from the ChecklistBalanceUtilities
-
-const ListTypes = {
-    Travel: 'travel',
-    Checklist: 'shopping'
-};
-
-const QuantityTypes = {
-    needed: {
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-pie-chart fa-lg iconHeader'
-    },
-    luggage: {
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-suitcase fa-lg iconHeader'
-    },
-    wearing: {
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader',
-        iconClass: 'fa fa-male fa-lg iconHeader'
-    },
-    backpack: {
-        wrapperClass: 'col divQuantityHeader',
-        toggleClass: 'toggleQuantityHeader toggleSmallIcon',
-        iconClass: 'fa fa-briefcase iconHeader'
-    },
-};
