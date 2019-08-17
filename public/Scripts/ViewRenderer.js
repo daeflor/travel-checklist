@@ -104,6 +104,8 @@ window.ViewRenderer = (function()
 
     //TODO why is the format in bind and render different? Seems like it could be the same
 
+    //TODO Add JSDocs for these functions
+
     function toggleScreenVisibility(screenName, visible)
     {
         screens[screenName].element.hidden = !visible;
@@ -161,6 +163,100 @@ window.ViewRenderer = (function()
         }
     }
 
+    function addListToggle(id, name, listType, borderColor)
+    {
+        //Assign a border color for the List's name toggle based on the provided balance
+        //const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listBalance);
+
+        //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
+        listWrappers.HomeScreenListElements.element.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(id, name, listType, borderColor));
+        
+        //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
+        listWrappers.ListScreenListElements.element.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(id));
+
+        //Update the reorder buttons for all the List toggles in the Home Screen
+        updateReorderButtons(listWrappers.HomeScreenListElements.element);
+    }
+
+    function addListItemToggle(id, name, borderColor)
+    {
+        //Get the List wrapper element which matches the given id
+        const listWrapper = window.View.GetChecklistElement(window.ChecklistUtilities.GetListIdFromChecklistObjectId(id), 'ListWrapper');
+
+        //Create a new List Item element from the template, and append it to the List wrapper
+        element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(id, name, parameters.listItemQuantities, _borderColor));
+
+        //Update the reorder buttons for all the List Items in the added element's parent List
+        updateReorderButtons(element);
+    }
+
+    function addChecklistObjectElements(id, name, balance, listType)
+    {
+
+    }
+
+    function AddChecklistObjectElement(checklistObjectType, id, name, balance, listType)
+    {
+
+    }
+
+    function AddChecklistObjectElement(typeData, id, name, balance, listType)
+    {
+        if (typeData.checklistObjectType === 'list' || typeData.checklistObjectType === 'listItem')
+        {
+            const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(balance);
+
+            //const wrapperElement = (typeData.checklistObjectType === 'list') ? listWrappers.HomeScreenListElements.element : 
+        }
+        else {
+            //ERROR
+        }
+        
+        if (typeData.checklistObjectType === 'list')
+        {
+            /////////
+            
+            //Assign a border color for the List's name toggle based on the provided balance
+            const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listBalance);
+
+            //Create a new List toggle element from the template, and append it to the Home Screen List Elements div
+            listWrappers.HomeScreenListElements.element.appendChild(window.CustomTemplates.CreateListToggleFromTemplate(parameters.listId, parameters.listName, parameters.listType, _borderColor));
+
+            //Create a new List wrapper element from the template, and append it to the List Screen List Elements div
+            listWrappers.ListScreenListElements.element.appendChild(window.CustomTemplates.CreateListWrapperFromTemplate(parameters.listId));
+
+            //Update the reorder buttons for all the List toggles in the Home Screen
+            updateReorderButtons(listWrappers.HomeScreenListElements.element);
+        }
+        else (typeData.checklistObjectType === 'listItem')
+        {
+
+
+            /////////
+            
+            //TODO is it necessary to past list ID AND list item ID now that list item ID includes the list ID?
+
+            //Set up the callback method to execute when the List wrapper element is found which matches the given ID
+            const elementFoundCallback = function(element)
+            {          
+                //Assign a border color for the List Item's name toggle based on the provided balance
+                const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listItemBalance);
+
+                //Create a new List Item element from the template, and append it to the List wrapper matching   
+                element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities, _borderColor));
+
+                //Update the reorder buttons for all the List Items in the added element's parent List
+                updateReorderButtons(element);
+            };
+
+            //Find the List wrapper element which matches the given ID, and then add a new List Item to it
+            window.View.FindChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+        }
+
+        //Update the reorder buttons for all the Lists or List Items in the given wrapper element
+        updateReorderButtons(wrapperElement);
+    }
+
     function render(command, parameters)
     {
         let viewCommands = 
@@ -196,10 +292,12 @@ window.ViewRenderer = (function()
                     //TODO Seems that this could easily use the same command logic as RemoveListItem. 
                         //This command just needs to reference the parent element instead of homeScreenListElements
                         //Actually, removing the List Wrapper makes this a bit more complicated
+
+                        //TODO Maybe at least RemoveChecklistObjectToggle is something that could be standardized...
                 };
 
                 //Find the List toggle element which matches the given ID, and then remove it
-                window.View.FindChecklistElement(parameters.id, elementFoundCallback)
+                window.View.FindChecklistElement(parameters.id, elementFoundCallback);
             },
             AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
