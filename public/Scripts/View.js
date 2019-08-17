@@ -23,7 +23,23 @@ window.View = (function()
                       : (quantityType == null) ? elementType.concat('-').concat(id)
                                                : quantityType.concat(elementType).concat('-').concat(id);
         
-        GetElement(elementId, callback);
+        FindElement(elementId, callback);
+    }
+
+    /**
+     * Returns an element in the DOM based on its ID and, optionally, some other parameters
+     * @param {string} id - The identifier of the element to search for
+     * @param {string} [elementType] - An optional string specifying the type of checklist element to search for
+     * @param {string} [quantityType] - An optional string specifyin the quantity type of the checklist element to search for, if applicable
+     * @returns {Element} The element matching the given parameters
+     */
+    function getChecklistElement(id, elementType, quantityType)
+    {
+        let elementId = (elementType == null)  ? id
+                      : (quantityType == null) ? elementType.concat('-').concat(id)
+                                               : quantityType.concat(elementType).concat('-').concat(id);
+
+        return GetElement(elementId);
     }
 
     //TODO Should there be some sort of template "checklist element". You provide a method with the id, elementType, and quantityType, and it returns a data object in a standard format that is used consistently throughout the View...?
@@ -225,6 +241,7 @@ window.View = (function()
 
     return {
         FindChecklistElement: findChecklistElement,
+        GetChecklistElement: getChecklistElement,
         Bind: bind,
         IsSettingsViewActive: isSettingsViewActive,
         GetActiveQuantityPopover: getActiveQuantityPopover,

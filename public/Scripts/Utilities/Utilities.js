@@ -31,13 +31,27 @@ function RemoveElementFromArray(array, index)
 }
 
 //TODO Might be useful to use Try/Catch here
-function GetElement(id, callback)
+function FindElement(id, callback)
 {
     let element = document.getElementById(id);
 
     if (element != null)
     {
         callback(element);
+    }
+    else
+    {
+        window.DebugController.LogError("ERROR: Failed to find element with an ID of: " + id);
+    }
+}
+
+function GetElement(id)
+{
+    let element = document.getElementById(id);
+
+    if (element != null)
+    {
+        return element
     }
     else
     {
