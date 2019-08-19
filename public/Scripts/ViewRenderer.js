@@ -163,6 +163,16 @@ window.ViewRenderer = (function()
         }
     }
 
+    // function RemoveElement_ChecklistObjectToggle(id)
+    // {
+
+    // }
+
+    // function ModifyElement_ChecklistObject(command, id, updatedValue, quantityType)
+    // {
+
+    // }
+
     function render(command, parameters)
     {
         let viewCommands = 
@@ -186,62 +196,67 @@ window.ViewRenderer = (function()
                 //Remove the List wrapper element which matches the given ID
                 updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.id});
 
-                //Set up the callback method to execute when the List toggle element is found which matches the given ID
-                const elementFoundCallback = function(element)
-                {                    
+                //Get the List toggle element which matches the given ID
+                const _listToggle = window.View.GetChecklistElement(parameters.id);
+
+                //If a valid List toggle was found...
+                if (_listToggle != null)
+                {
                     //Remove the List toggle element
-                    element.remove();
+                    _listToggle.remove();
 
                     //Update the reorder buttons for all the List toggles in the Home Screen
                     updateReorderButtons(listWrappers.HomeScreenListElements.element);
-
-                    //TODO Seems that this could easily use the same command logic as RemoveListItem. 
-                        //This command just needs to reference the parent element instead of homeScreenListElements
-                        //Actually, removing the List Wrapper makes this a bit more complicated
-
-                        //TODO Maybe at least RemoveChecklistObjectToggle is something that could be standardized...
-                };
-
-                //Find the List toggle element which matches the given ID, and then remove it
-                window.View.FindChecklistElement(parameters.id, elementFoundCallback);
+                }
+                else
+                {
+                    window.DebugController.Print("Request received to remove a List toggle, but no toggle matching the given ID was found. ID provided: " + parameters.id + ".");
+                }
             },
             AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
-                //TODO is it necessary to past list ID AND list item ID now that list item ID includes the list ID?
+                //Get the List wrapper element which matches the given List Item ID
+                //const _listWrapper = window.View.GetChecklistElement(window.ChecklistUtilities.GetListIdFromChecklistObjectId(parameters.listItemId), 'ListWrapper');
+                const _listWrapper = window.View.GetChecklistElement(parameters.listId, 'ListWrapper');
 
-                //Set up the callback method to execute when the List wrapper element is found which matches the given ID
-                const elementFoundCallback = function(element)
-                {          
-                    //Assign a border color for the List Item's name toggle based on the provided balance
-                    const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listItemBalance);
+                //Assign a border color for the List Item's name toggle based on the provided balance
+                const _borderColor = window.ChecklistBalanceUtilities.GetBorderColorFromBalance(parameters.listItemBalance);
 
-                    //Create a new List Item element from the template, and append it to the List wrapper matching the given List ID
-                    element.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities, _borderColor));
-
-                    //Update the reorder buttons for all the List Items in the added element's parent List
-                    updateReorderButtons(element);
-                };
-
-                //Find the List wrapper element which matches the given ID, and then add a new List Item to it
-                window.View.FindChecklistElement(parameters.listId, elementFoundCallback, 'ListWrapper');
+                //If a valid List wrapper was found...
+                if (_listWrapper != null)
+                {
+                    //Create a new List Item element from the template, and append it to the List wrapper element
+                    _listWrapper.appendChild(window.CustomTemplates.CreateListItemFromTemplate(parameters.listItemId, parameters.listItemName, parameters.listItemQuantities, _borderColor));
+    
+                    //Update the reorder buttons for all the List Items within the parent List wrapper
+                    updateReorderButtons(_listWrapper);
+                }
+                else
+                {
+                    window.DebugController.Print("Request received to add a List Item, but no List wrapper matching the given ID was found. List ID provided: " + parameters.listId + ".");
+                }
             },
             RemoveListItem: function() //Expected parameters: id
             {
-                //Set up the callback method to execute when the List Item element is found which matches the given ID
-                const elementFoundCallback = function(element)
-                {     
+                //Get the List Item element which matches the given ID
+                const _listItem = window.View.GetChecklistElement(parameters.id);
+
+                //If a valid List Item element was found...
+                if (_listItem != null)
+                {
                     //Store a reference to the List Item's parent List wrapper element
-                    let listWrapper = element.parentElement;     
+                    let _listWrapper = _listItem.parentElement; 
 
                     //Remove the List Item element
-                    element.remove();
+                    _listItem.remove();
 
                     //Update the reorder buttons for all the List Items in the removed element's parent List
-                    updateReorderButtons(listWrapper);
-                };
-
-                //Find the List Item element which matches the given ID, and then remove it
-                window.View.FindChecklistElement(parameters.id, elementFoundCallback);
+                    updateReorderButtons(_listWrapper);
+                }
+                else
+                {
+                    window.DebugController.Print("Request received to remove a List Item, but no element matching the given ID was found. ID provided: " + parameters.id + ".");
+                }
             },
             UpdateNameToggleColor: function() //Expected parameters: id, balance
             {
@@ -266,7 +281,7 @@ window.ViewRenderer = (function()
                 //Update the text value of the quantity toggle for the List Item which matches the given ID
                 updateChecklistElement('SetText', elementData, parameters.updatedValue);
             },
-            ExpandSettingsView: function() 
+            ExpandSettingsView: function() //Expected parameters: id
             {
                 //Expand the collapsible element which matches the given ID
                 updateChecklistElement('Expand', {type:'SettingsView', id:parameters.id});
@@ -305,7 +320,7 @@ window.ViewRenderer = (function()
                     $(activePopover).popover('hide');
                 }
             },
-            SwapListObjects: function()
+            SwapListObjects: function() //Expected parameters: moveUpwardsId, moveDownwardsId
             {
                 //TODO Should this use findChecklistElement or other helpers with error handling?
                     //Maybe a ReturnElement helper?
