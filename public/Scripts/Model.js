@@ -41,7 +41,7 @@ window.Model = (function()
     {
         if (id != null)
         {
-            let _listId = window.ChecklistUtilities.GetListIdFromChecklistObjectId(id);
+            let _listId = window.ChecklistUtilities.GetListIdFromChecklistItemId(id);
             let _listItemSuffix = id.toString().split('-')[1];
             let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
     

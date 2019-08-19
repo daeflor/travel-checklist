@@ -33,19 +33,41 @@ const QuantityTypes = {
 window.ChecklistUtilities = (function()
 {
     /**
-     * Returns the List ID associated with the given Checklist Object ID
-     * @param {string} id The ID of the Checklist Object from which to extract a List ID
-     * @returns {string} The List ID extracted from the given Checklist Object ID
+     * Returns the List ID associated with the given Checklist Item ID
+     * @param {*} id The ID of the Checklist Item (can be a number or a string)
+     * @returns {string} The List ID extracted from the given Checklist Item ID
      */
-    function getListIdFromChecklistObjectId(id)
+    function getListIdFromChecklistItemId(id)
     {
         return id.toString().split('-')[0];
     }
 
-    return {
-        GetListIdFromChecklistObjectId: getListIdFromChecklistObjectId
-    };
+    /**
+     * Returns the Checklist Item type (List or List Item) based on its ID
+     * @param {*} id The ID of the Checklist Item (can be a number or a string)
+     * @returns {string} The Checklist Item type determined by the ID provided
+     */
+    function getChecklistItemTypeFromId(id)
+    {
+        if (typeof(id) === 'number') //List IDs are stored as numbers
+        {
+            return 'list';
+        }
+        else if (typeof(id) === 'string') //List Item IDs include the '-' character, and so are stored as strings
+        {
+            return 'listItem';
+        }
+        else
+        {
+            window.DebugController.LogError("Request received to get Checklist Item type from its ID, but an invalid ID was provided. ID provided: " + id);
+        }
+    }
 
+    return {
+        GetListIdFromChecklistItemId: getListIdFromChecklistItemId,
+        GetChecklistItemTypeFromId: getChecklistItemTypeFromId
+    };
+13
 })();
 
 window.ChecklistBalanceUtilities = (function()

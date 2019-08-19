@@ -163,10 +163,35 @@ window.ViewRenderer = (function()
         }
     }
 
-    // function RemoveElement_ChecklistObjectToggle(id)
-    // {
+    function removeChecklistItem(id)
+    {
+        //If the Checklist Item to remove is a List...
+        if (window.ChecklistUtilities.GetChecklistItemTypeFromId(id) === 'list')
+        {
+            //Remove the List wrapper element which matches the given ID
+            updateChecklistElement('Remove', {type:'ListWrapper', id:id});
+        }
+        
+        //Get the Checklist Item row element which matches the given ID
+        const _checklistItemRow = window.View.GetChecklistElement(id);
 
-    // }
+        //If a valid Checklist Item row element was found...
+        if (_checklistItemRow != null)
+        {
+            //Store a reference to the row element's parent wrapper element
+            let _parentWrapper = _checklistItemRow.parentElement; 
+
+            //Remove the row element
+            _checklistItemRow.remove();
+
+            //Update the reorder buttons for all the elements within the removed row element's parent wrapper
+            updateReorderButtons(_parentWrapper);
+        }
+        else
+        {
+            window.DebugController.Print("Request received to remove a List or List Item, but no element matching the given ID was found. ID provided: " + id);
+        }
+    }
 
     // function ModifyElement_ChecklistObject(command, id, updatedValue, quantityType)
     // {
@@ -191,28 +216,6 @@ window.ViewRenderer = (function()
                 //Update the reorder buttons for all the List toggles in the Home Screen
                 updateReorderButtons(listWrappers.HomeScreenListElements.element);
             },
-            RemoveList: function() //Expected parameters: id
-            {
-                //Remove the List wrapper element which matches the given ID
-                updateChecklistElement('Remove', {type:'ListWrapper', id:parameters.id});
-
-                //Get the List toggle element which matches the given ID
-                const _listToggle = window.View.GetChecklistElement(parameters.id);
-
-                //If a valid List toggle was found...
-                if (_listToggle != null)
-                {
-                    //Remove the List toggle element
-                    _listToggle.remove();
-
-                    //Update the reorder buttons for all the List toggles in the Home Screen
-                    updateReorderButtons(listWrappers.HomeScreenListElements.element);
-                }
-                else
-                {
-                    window.DebugController.Print("Request received to remove a List toggle, but no toggle matching the given ID was found. ID provided: " + parameters.id + ".");
-                }
-            },
             AddListItem: function() //Expected parameters: listId, listItemId, listItemName, listItemBalance (optional)
             {
                 //Get the List wrapper element which matches the given List Item ID
@@ -234,28 +237,6 @@ window.ViewRenderer = (function()
                 else
                 {
                     window.DebugController.Print("Request received to add a List Item, but no List wrapper matching the given ID was found. List ID provided: " + parameters.listId + ".");
-                }
-            },
-            RemoveListItem: function() //Expected parameters: id
-            {
-                //Get the List Item element which matches the given ID
-                const _listItem = window.View.GetChecklistElement(parameters.id);
-
-                //If a valid List Item element was found...
-                if (_listItem != null)
-                {
-                    //Store a reference to the List Item's parent List wrapper element
-                    let _listWrapper = _listItem.parentElement; 
-
-                    //Remove the List Item element
-                    _listItem.remove();
-
-                    //Update the reorder buttons for all the List Items in the removed element's parent List
-                    updateReorderButtons(_listWrapper);
-                }
-                else
-                {
-                    window.DebugController.Print("Request received to remove a List Item, but no element matching the given ID was found. ID provided: " + parameters.id + ".");
                 }
             },
             UpdateNameToggleColor: function() //Expected parameters: id, balance
@@ -361,6 +342,7 @@ window.ViewRenderer = (function()
         Init: init,
         ToggleScreenVisibility: toggleScreenVisibility,
         ToggleListVisibility: toggleListVisibility,
+        RemoveChecklistItem: removeChecklistItem,
         Render: render
     };
 })();

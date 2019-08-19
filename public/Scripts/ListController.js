@@ -339,7 +339,8 @@ window.ListController = (function()
     {
         //TODO DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
         //Once the Model has removed the List or List Item, pass any necessary data to the View to remove it from the UI
-        const _viewReaction = (activeListId == null) ? window.ViewRenderer.Render.bind(null, 'RemoveList', {id:id}) : window.ViewRenderer.Render.bind(null, 'RemoveListItem', {id:id});
+        //const _viewReaction = (activeListId == null) ? window.ViewRenderer.Render.bind(null, 'RemoveList', {id:id}) : window.ViewRenderer.Render.bind(null, 'RemoveListItem', {id:id});
+        const _viewReaction = window.ViewRenderer.RemoveChecklistItem.bind(null, id);
 
         //Inform the Model to remove the specified List or List Item, and then execute the passed callback function
         window.Model.Remove(id, _viewReaction);
