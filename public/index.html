@@ -46,6 +46,7 @@
       <script src='Scripts/StorageManager.js'></script>
       <script src='Scripts/Model.js'></script>
       <script src='Scripts/View.js'></script>
+      <script src='Scripts/ViewRenderer.js'></script>
       <script src='Scripts/ListController.js'></script>
       <script src='Scripts/AppController.js'></script>
   </head>
@@ -62,7 +63,7 @@
 
       <div id='divHomeScreen' hidden='true'>
         <div class='divHeader' id='divHomeHeader'>
-          <button id='buttonSignOut' class='buttonHomeHeader' type='button'>
+          <button id='buttonSignOut' type='button'>
             <i class="material-icons">exit_to_app</i>
           </button>     
           TraveLists
@@ -80,12 +81,12 @@
         <div class='container-fluid'>  <!--TODO Does this still need to be fluid and is it still necessary to use rows?-->
       
           <div class='row divHeader' id='divListHeader'>
-            <div class='col-1 divSmallPadding'>
-              <a id='buttonHome' class='buttonHomeHeader' type='button' href='#travel'> 
+            <div class='col-1'>
+              <a id='buttonHome' type='button' href='#travel'> 
                 <i class="material-icons">home</i>
               </a>  
             </div>
-            <div class='col-4' id='headerCurrentListName'></div>
+            <div class='col-4' id='divListTitle'></div>
           </div>
     
         </div>

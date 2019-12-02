@@ -17,10 +17,10 @@ window.ListController = (function()
     function renderListItemQuantityAndBalance(quantityType, listItemId, updatedValue, balance)
     {
         //Update the text value of the quantity toggle for the List Item quantity type that was modified
-        window.View.Render('UpdateListItemQuantityText', {id:listItemId, quantityType:quantityType, updatedValue:updatedValue});
+        window.ViewRenderer.Render('UpdateListItemQuantityText', {id:listItemId, quantityType:quantityType, updatedValue:updatedValue});
 
         //Update the List Item's name toggle color based on its updated balance
-        window.View.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
+        window.ViewRenderer.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
 //#endregion
 
@@ -62,7 +62,7 @@ window.ListController = (function()
     function setupListenersAndUI_List(isLoadedFromStorage, listId, listName, listType, listBalance)
     {
         //Pass along to the View all the List data provided in order to generate its UI and add it to the DOM
-        window.View.Render('AddList', {listId:listId, listName:listName, listType:listType, listBalance:listBalance});
+        window.ViewRenderer.Render('AddList', {listId:listId, listName:listName, listType:listType, listBalance:listBalance});
         
         //When the Go To List button is pressed, display the list
         listenForEvent_GoToListButtonPressed(listId); 
@@ -74,7 +74,7 @@ window.ListController = (function()
         if (isLoadedFromStorage == false)
         {
             //Expand the List's Settings View
-            window.View.Render('ExpandSettingsView', {id:listId}); 
+            window.ViewRenderer.Render('ExpandSettingsView', {id:listId}); 
         }
     }
 
@@ -92,7 +92,7 @@ window.ListController = (function()
     function setupListenersAndUI_ListItem(isLoadedFromStorage, listId, listItemId, listItemName, listItemQuantities, listItemBalance)
     {   
         //Pass along to the View all the List Item data provided in order to generate its UI and add it to the DOM
-        window.View.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities, listItemBalance:listItemBalance});
+        window.ViewRenderer.Render('AddListItem', {listId:listId, listItemId:listItemId, listItemName:listItemName, listItemQuantities:listItemQuantities, listItemBalance:listItemBalance});
 
         //TODO Does this 'for' need to be here or can it be done in the listen function
             //If it's done in the listen functions then, in this case, it will be done twice instead of once...
@@ -113,7 +113,7 @@ window.ListController = (function()
         if (isLoadedFromStorage == false)
         {
             //Expand the List Item's Settings View
-            window.View.Render('ExpandSettingsView', {id:listItemId}); 
+            window.ViewRenderer.Render('ExpandSettingsView', {id:listItemId}); 
         }
     }
 
@@ -154,10 +154,10 @@ window.ListController = (function()
     function reactToEvent_ScreenChanged()
     {
         //Inform the View to hide the Active Settings View
-        window.View.Render('HideActiveSettingsView');
+        window.ViewRenderer.Render('HideActiveSettingsView');
 
         //Inform the View to hide the Active Quantity Popover
-        window.View.Render('HideActiveQuantityPopover');
+        window.ViewRenderer.Render('HideActiveQuantityPopover');
     }
 
     /** Informs the AppNavigationController to listen for an event indicating the user has navigated to the Home Screen */
@@ -169,14 +169,14 @@ window.ListController = (function()
     function reactToEvent_NavigatedHome()
     {
         //Inform the View to hide the List which was previously active
-        window.View.Render('HideList', {id:activeListId});
+        window.ViewRenderer.ToggleListVisibility(activeListId, false);
 
         //Inform the View to display the Home Screen
-        window.View.Render('ShowHomeScreen');
+        window.ViewRenderer.ToggleScreenVisibility('HomeScreen', true);
 
         //TODO This is the only Model call that returns instead of relying on callbacks, and which doesn't require updates to the model but does access it get information. Is that ok?
         //Calculate the balance of the List which was previously active, and inform the View to update the color of List's name toggle accordingly
-        window.View.Render('UpdateNameToggleColor', {id:activeListId, balance:window.Model.GetListBalance(activeListId)});
+        window.ViewRenderer.Render('UpdateNameToggleColor', {id:activeListId, balance:window.Model.GetListBalance(activeListId)});
 
         //Set the Active List ID to null, now that there is no active List
         activeListId = null;
@@ -201,10 +201,10 @@ window.ListController = (function()
         //TODO It would be possible to get the List ID from the URL instead. That doesn't seem like the safest approach though.. Would be fine but doesn't really offer any benefit
         
         //Inform the View to Hide the Home Screen, since an individual List will be displayed instead
-        window.View.Render('HideHomeScreen');
+        window.ViewRenderer.ToggleScreenVisibility('HomeScreen', false);
         
         //Inform the View to display the specified List
-        window.View.Render('DisplayList', {id:listId});
+        window.ViewRenderer.ToggleListVisibility(listId, true);
 
         //Set the newly selected List as the Active List
         activeListId = listId;
@@ -299,7 +299,7 @@ window.ListController = (function()
     function reactToEvent_SettingsViewExpansionStarted()
     {
         //Inform the View to hide the Active Settings View
-        window.View.Render('HideActiveSettingsView');
+        window.ViewRenderer.Render('HideActiveSettingsView');
     }
 
     /**
@@ -320,7 +320,7 @@ window.ListController = (function()
     {
         //TODO Would be able to use the updated name from the Model here if eventually the Render commands in the View are also split up to be handled individually
         //Once the Model has modified the List or List Item name, pass any necessary data to the View to update its name toggle
-        const _viewReaction = window.View.Render.bind(null, 'UpdateName', {id:id, updatedValue:updatedValue});
+        const _viewReaction = window.ViewRenderer.Render.bind(null, 'UpdateName', {id:id, updatedValue:updatedValue});
         
         //Inform the Model to modify the specified List or List Item's name, and then execute the passed callback function
         window.Model.ModifyName(id, _viewReaction, updatedValue);
@@ -339,7 +339,8 @@ window.ListController = (function()
     {
         //TODO DeleteButtonPressed event could be split into RemoveListButtonPressed and RemoveListItemButtonPressed, but it would actually require more code
         //Once the Model has removed the List or List Item, pass any necessary data to the View to remove it from the UI
-        const _viewReaction = (activeListId == null) ? window.View.Render.bind(null, 'RemoveList', {id:id}) : window.View.Render.bind(null, 'RemoveListItem', {id:id});
+        //const _viewReaction = (activeListId == null) ? window.ViewRenderer.Render.bind(null, 'RemoveList', {id:id}) : window.ViewRenderer.Render.bind(null, 'RemoveListItem', {id:id});
+        const _viewReaction = window.ViewRenderer.RemoveChecklistItem.bind(null, id);
 
         //Inform the Model to remove the specified List or List Item, and then execute the passed callback function
         window.Model.Remove(id, _viewReaction);
@@ -359,7 +360,7 @@ window.ListController = (function()
         //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
         //Once the Model has moved the List or List Item upwards in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = function(swappedChecklistObjectId) {
-            window.View.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
+            window.ViewRenderer.Render('SwapListObjects', {moveUpwardsId:id, moveDownwardsId:swappedChecklistObjectId});
         };
         
         //Inform the Model to move the specified List or List Item upwards, and then execute the passed callback function
@@ -380,7 +381,7 @@ window.ListController = (function()
         //TODO Would be able to just use a one-line bind call here if eventually the Render commands in the View are also split up to be handled individually
         //Once the Model has moved the List or List Item downwards in the checklist data, pass any necessary data to the View to do the same in the UI
         const _viewReaction = function(swappedChecklistObjectId) {
-            window.View.Render('SwapListObjects', {moveUpwardsId:swappedChecklistObjectId, moveDownwardsId:id});
+            window.ViewRenderer.Render('SwapListObjects', {moveUpwardsId:swappedChecklistObjectId, moveDownwardsId:id});
         };
         
         //Inform the Model to move the specified List or List Item downwards, and then execute the passed callback function
@@ -416,7 +417,7 @@ window.ListController = (function()
             clickEvent.stopPropagation();
 
             //Inform the View to display the popover associated with the selected quantity toggle
-            window.View.Render('ShowQuantityPopover', {id:listItemId, quantityType:quantityType});   
+            window.ViewRenderer.Render('ShowQuantityPopover', {id:listItemId, quantityType:quantityType});   
         }
     }
 
@@ -488,7 +489,7 @@ window.ListController = (function()
 
     function reactToEvent_ClickDetectedOutsidePopover()
     {
-        window.View.Render('HideActiveQuantityPopover');
+        window.ViewRenderer.Render('HideActiveQuantityPopover');
     }
 //#endregion
 

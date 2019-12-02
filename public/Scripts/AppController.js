@@ -53,7 +53,7 @@ window.AppNavigationController = (function()
         //TODO would be nice if only necessary components of the View were loaded at certain points (i.e. separate Loading & Auth Screens from Travel Checklist Screens)
             //Perhaps AppView, ChecklistView, & ListView, (& AuthView?) where a Checklist is a collection of related Lists (e.g. a Travel Checklist containing a Clothes List)
         //Initialize the View so that it can show and hide screens as needed throughout the authentication flow
-        window.View.Init();
+        window.ViewRenderer.Init();
 
         //When the authentication state of user changes, either show the Authentication Screen or Home Screen, depending on the state
         listenForEvent_AuthStateChanged();
@@ -94,10 +94,10 @@ window.AppNavigationController = (function()
             window.DebugController.Print("AppNavigationController: A user is signed in so the Home Screen will be displayed.");
 
             //Inform the View to hide the Loading Screen
-            window.View.Render('HideLoadingScreen');
+            window.ViewRenderer.ToggleScreenVisibility('LoadingScreen', false);
 
             //Inform the View to display the Home Screen
-            window.View.Render('ShowHomeScreen');
+            window.ViewRenderer.ToggleScreenVisibility('HomeScreen', true);
 
             //When the Sign-Out button is pressed, sign the user out and show the Authentication Screen
             listenForEvent_SignOutButtonPressed();
@@ -137,14 +137,14 @@ window.AppNavigationController = (function()
                 callbacks: {
                     uiShown: function() {
                         //Inform the View to hide the Loading Screen
-                        window.View.Render('HideLoadingScreen');
+                        window.ViewRenderer.ToggleScreenVisibility('LoadingScreen', false);
 
                         //Inform the View to show the Authentication Screen
-                        window.View.Render('ShowAuthScreen');
+                        window.ViewRenderer.ToggleScreenVisibility('AuthScreen', true);
                     },
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
                         //Inform the View to hide the Authentication Screen
-                        window.View.Render('HideAuthScreen');
+                        window.ViewRenderer.ToggleScreenVisibility('AuthScreen', false);
         
                         return false; // Return type determines whether we continue the redirect automatically or whether we leave that to developer to handle.
                     },
@@ -185,7 +185,7 @@ window.AppNavigationController = (function()
     {
         firebase.auth().signOut().then(function() {
             //Inform the View to hide the Home Screen
-            window.View.Render('HideHomeScreen');
+            window.ViewRenderer.ToggleScreenVisibility('HomeScreen', false);
 
             window.history.replaceState({screen:'Auth'}, window.document.title, window.location.pathname);
 
