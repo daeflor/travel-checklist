@@ -55,7 +55,7 @@ function GetElement(id)
     }
     else
     {
-        window.DebugController.LogError("ERROR: Failed to find element with an ID of: " + id);
+        window.DebugController.LogError("ERROR: Failed to get element with an ID of: " + id);
     }
 }
 

@@ -22,27 +22,25 @@ window.ViewRenderer = (function()
 
     function init()
     {
-        //TODO since it doesn't really make sense to use GetElement here (because of the callback), could maybe have a ReturnElement util function with a try catch instead of callbacks...
-
         //For each screen in the app...
         for (const key in screens)
         {
             //Get the element based on its ID, and store it in the screens object
-            screens[key].element = document.getElementById(screens[key].id);
+            screens[key].element = window.View.GetChecklistElement(screens[key].id);
         }
 
         //For each list wrapper in the app...
         for (const key in listWrappers)
         {
             //Get the element based on its ID, and store it in the listWrappers object
-            listWrappers[key].element = document.getElementById(listWrappers[key].id);
+            listWrappers[key].element = window.View.GetChecklistElement(listWrappers[key].id);
         }
 
         //For each header element in the app...
         for (const key in headerElements)
         {
             //Get the element based on its ID, and store it in the headerElements object
-            headerElements[key].element = document.getElementById(headerElements[key].id);
+            headerElements[key].element = window.View.GetChecklistElement(headerElements[key].id);
         }
 
         //TODO Right now this assumes the header to display is the Travel type. Eventually this should be done in a separate method, depending on the checklist type.
@@ -303,13 +301,8 @@ window.ViewRenderer = (function()
             },
             SwapListObjects: function() //Expected parameters: moveUpwardsId, moveDownwardsId
             {
-                //TODO Should this use findChecklistElement or other helpers with error handling?
-                    //Maybe a ReturnElement helper?
-                    //Maybe GetElement could execute a callback if one is provided, otherwise return the element.
-                        //That seems confusing...
-
-                const elementToMoveUpwards = document.getElementById(parameters.moveUpwardsId);
-                const elementToMoveDownwards = document.getElementById(parameters.moveDownwardsId);
+                const elementToMoveUpwards = window.View.GetChecklistElement(parameters.moveUpwardsId);
+                const elementToMoveDownwards = window.View.GetChecklistElement(parameters.moveDownwardsId);
 
                 if (elementToMoveUpwards != null && elementToMoveDownwards != null)
                 {

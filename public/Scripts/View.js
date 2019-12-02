@@ -26,6 +26,7 @@ window.View = (function()
         FindElement(elementId, callback);
     }
 
+    //TODO Maybe this should be in ChecklistUtilities (or a future ViewState file)?
     /**
      * Returns an element in the DOM based on its ID and, optionally, some other parameters
      * @param {string} id - The identifier of the element to search for
