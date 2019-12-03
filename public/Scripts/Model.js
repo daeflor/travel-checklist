@@ -69,20 +69,20 @@ window.Model = (function()
 
     /** Publicly Exposed Methods To Access & Modify List Data **/
 
-    //TODO it might make more sense to do this in some sort of init method
-    /**
-     * Fetches the Checklist data from storage and then executes the provided callback function
-     * @param {function} callback The function to execute once the Checklist data has been retrieved from storage
-     */
-    function retrieveChecklistData(callback)
-    {
-        checklistData = window.StorageManager.RetrieveChecklistData();
+    // //TODO it might make more sense to do this in some sort of init method
+    // /**
+    //  * Fetches the Checklist data from storage and then executes the provided callback function
+    //  * @param {function} callback The function to execute once the Checklist data has been retrieved from storage
+    //  */
+    // function retrieveChecklistData(callback)
+    // {
+    //     checklistData = window.StorageManager.RetrieveChecklistData();
 
-        window.DebugController.Print("Checklist data retrieved from storage");
+    //     window.DebugController.Print("Checklist data retrieved from storage");
 
-        //TODO Consider passing this callback through to the storage method call (above). (In case accessing the date from storage becomes async at some point). 
-        callback(checklistData.lists);        
-    }
+    //     //TODO Consider passing this callback through to the storage method call (above). (In case accessing the date from storage becomes async at some point). 
+    //     callback(checklistData.lists);        
+    // }
 
     function loadChecklistData(loadedListCallback, loadedListItemCallback)
     {
@@ -423,7 +423,6 @@ window.Model = (function()
     //TODO RemoveObject and EditName could help consolidate code, here, in StorageManager, and Controllers
 
     return {
-        RetrieveChecklistData: retrieveChecklistData,
         LoadChecklistData: loadChecklistData,
         AddNewList: addNewList,
         AddNewListItem: addNewListItem,
