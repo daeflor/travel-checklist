@@ -3,6 +3,8 @@ window.StorageManager = (function ()
 {
     //TODO Add JSDoc comments to each of the methods below, and add any other comments as needed
 
+    let firestoreDatabase;
+
     /** General Storage Utility Methods **/
 
     //TODO does it make sense to use alerts here but nowhere else?
@@ -25,6 +27,20 @@ window.StorageManager = (function ()
         {
             localStorage.setItem(name, value);
             window.DebugController.Print('Pair added to localstorage, with name "' + name + '" and value "' + value + '".');
+        
+            //Get a reference to a new or exisiting document for the currently authenticated user in the "users" collection
+            const userDocument = firestoreDatabase.collection("users").doc(firebase.auth().currentUser.uid);
+
+            //Update the user's document with their latest app data, merging it with the previous data if the document already existed.
+            userDocument.set({
+                TraveListData: value
+            }, { merge: true })
+            .then(function() {
+                console.log("Document successfully written!");
+            })
+            .catch(function(error) {
+                console.error("Error writing document: ", error);
+            });
         } 
         else 
         {
@@ -55,6 +71,11 @@ window.StorageManager = (function ()
 
     function retrieveChecklistData()
     {
+        if (firestoreDatabase == null)
+        {            
+            firestoreDatabase = firebase.firestore();
+        }
+        
         //Try to load the raw data from storage. If there is none, create new template data.
         var rawStorageData = loadValueFromLocalStorage(getStorageKey()) || '{"lists":[]}';
 
