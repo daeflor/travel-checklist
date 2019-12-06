@@ -54,6 +54,7 @@ window.ListController = (function()
 
     /**
      * Sends to the View any data needed to render the specified List, and then sets up all applicable listeners
+     * @param {boolean} isLoadedFromStorage Whether or not the List was loaded from storage (as opposed to being created through the app's UI)
      * @param {string} listId The unique identfier for the List being set up
      * @param {string} listName The name of the List being set up
      * @param {string} listType The type of List being set up
@@ -83,6 +84,7 @@ window.ListController = (function()
     //TODO listItemQuantities & listItemBalance could be optional or could be required. Either way can be done. Currently they are optional.   
     /**
      * Sends to the View any data needed to render the specified List Item, and then sets up all applicable listeners
+     * @param {boolean} isLoadedFromStorage Whether or not the List Item was loaded from storage (as opposed to being created through the app's UI)
      * @param {string} listId The unique identfier for the List to which the specified List Item belongs
      * @param {string} listItemId The unique identfier for the List Item being set up
      * @param {string} listItemName The name of the List Item
