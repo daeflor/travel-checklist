@@ -55,6 +55,8 @@ Features:
 - Does it make sense to have a 'Car' or 'Other' column in the Travel Checklist
 - Make columns modular, so that they can be added or removed by the user, and the user can choose what icon to use for them (and therefore choose the category).
 - Could have a dark mode toggle
+- Consider storing data in both Cloud Firestore and local storage in case local/offline data is more up-to-date than cloud data. Could store a timestamp for comparison. 
+    - Could also consider including a debug toggle to change storage location between local storage and Cloud Firestore, but it doesn't seem necessary
 
 Usability & Appearance (UX & UI):
 - It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list

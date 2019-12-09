@@ -84,13 +84,10 @@ window.Model = (function()
     //     callback(checklistData.lists);        
     // }
 
-    function loadChecklistData(loadedListCallback, loadedListItemCallback)
+    function parseLoadedChecklistData(loadedListCallback, loadedListItemCallback, loadedChecklistData)
     {
-        //TODO This line could be done in a separate init method, though it wouldn't make much difference. Might actually become more complicated if accessing data from storage becomes async at some point). 
-        //Retrieve the checklist data from Storage
-        checklistData = window.StorageManager.RetrieveChecklistData();
+        checklistData = loadedChecklistData;
 
-        //TODO Consider passing all the logic below as a callback function through to the storage method call (above). (In case accessing the data from storage becomes async at some point). 
         //For each List in the checklist data...
         for (let i = 0; i < checklistData.lists.length; i++) 
         {
@@ -102,7 +99,6 @@ window.Model = (function()
 
             //Execute the callback, passing the List's ID, name, and type as arguments
             loadedListCallback(_list.id, _list.name, _list.type, _listBalance);
-            //loadedListCallback(checklistData.lists[i].id, checklistData.lists[i].name, checklistData.lists[i].type, window.ChecklistBalanceUtilities.CalculateListBalance(checklistData.lists[i].listItems));
 
             //For each List Item in the List...
             for (let j = 0; j < _list.listItems.length; j++) 
@@ -120,6 +116,14 @@ window.Model = (function()
                 loadedListItemCallback(_list.id, _listItem.id, _listItem.name, _listItemQuantitiesClone, _listItemBalance);
             }
         }
+    }
+
+    function loadChecklistData(loadedListCallback, loadedListItemCallback)
+    {
+        //TODO This line could be done in a separate init method, though it wouldn't make much difference. Might actually become more complicated if accessing data from storage becomes async at some point). 
+        
+        //Request the StorageManager to retrieve the checklist data from Storage, passing as a paramter a callback function which will parse the data returned from storage
+        window.StorageManager.RetrieveChecklistData(parseLoadedChecklistData.bind(null, loadedListCallback, loadedListItemCallback));
     }
 
     /**
