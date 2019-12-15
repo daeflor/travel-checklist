@@ -149,6 +149,7 @@ function GetUrlSlug(urlString)
     return _pathSegments[_pathSegments.length-1]; 
 }
 
+//TODO It probably makes the most sense to have a Utilitites file dedicated to Firebase logic
 /**
  * Adds a provided key-value-pair into the user data document in the specified collection
  * @param {string} collection the Cloud Firestore collection to update

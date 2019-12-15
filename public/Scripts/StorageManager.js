@@ -42,8 +42,7 @@ window.StorageManager = (function ()
         userDocument.get().then(function(doc) 
         {
             //If the user's document already contains app data in Cloud Firestore, attmept to load it. Otherwise create new template data.
-            const rawStorageData = doc.exists ? doc.data().TraveListData : '{"lists":[]}'; 
-            //TODO this is hard-coded; should use getStorageKey() instead
+            const rawStorageData = doc.exists ? doc.data()[getStorageKey()] : '{"lists":[]}'; 
             
             //Execute the provided callback function, passing as a parameter the data object parsed from the JSON string in Firestore
             callback(JSON.parse(rawStorageData));
