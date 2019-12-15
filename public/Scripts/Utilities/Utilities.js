@@ -149,9 +149,54 @@ function GetUrlSlug(urlString)
     return _pathSegments[_pathSegments.length-1]; 
 }
 
+/**
+ * Adds a provided key-value-pair into the user data document in the specified collection
+ * @param {string} collection the Cloud Firestore collection to update
+ * @param {string} key The key of the key-value-pair
+ * @param {string} value the value of key-value-pair
+ */
+function saveKeyValuePairToCloudFirestoreUserData(collection, key, value)
+{
+    //Get a reference to a new or exisiting document for the currently authenticated user in the specified collection
+    const userDocument = collection.doc(firebase.auth().currentUser.uid);
+
+    //Add the provided key-value-pair to the document, merging it with any existing data in the document, if applicable
+    userDocument.set({
+        [key]: value 
+    }, { merge: true })
+    .catch(function(error) {
+        window.DebugController.LogError("Error writing document to storage:" + error);
+    });
+}
+
 /** Experimental & In Progress **/
 
 /** Unused Utilities **/
+
+    // function loadValueFromLocalStorage(key)
+    // {
+    //     if (typeof(Storage) !== "undefined") 
+    //     {
+    //         return localStorage.getItem(key);
+    //     } 
+    //     else 
+    //     {
+    //         alert('No Local Storage Available');
+    //     }
+    // }
+
+    // function saveKeyValuePairToLocalStorage(key, value)
+    // {
+    //     if (typeof(Storage) !== "undefined") 
+    //     {
+    //         localStorage.setItem(key, value);
+    //         //window.DebugController.Print('Pair added to localstorage, with key "' + key + '" and value "' + value + '".');
+    //     } 
+    //     else 
+    //     {
+    //         alert('No Local Storage Available');
+    //     }
+    // }
 
 // /**
 //  * Validates that the provided object contains valid values for the given keys
