@@ -54,6 +54,7 @@ window.DebugController = (function()
     function logError(logString)
     {
         console.error(logString);
+        console.trace();
 
         window.DebugView.Render('SetVersionVisibility', {debugMode:true}); //TODO this is janky
         window.DebugView.Render('UpdateDebugButtonColor', {debugMode:'Error'});
