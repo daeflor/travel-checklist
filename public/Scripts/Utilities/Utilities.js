@@ -149,26 +149,24 @@ function GetUrlSlug(urlString)
     return _pathSegments[_pathSegments.length-1]; 
 }
 
-//TODO It probably makes the most sense to have a Utilitites file dedicated to Firebase logic
-/**
- * Adds a provided key-value-pair into the user data document in the specified collection
- * @param {string} collection the Cloud Firestore collection to update
- * @param {string} key The key of the key-value-pair
- * @param {string} value the value of key-value-pair
- */
-function saveKeyValuePairToCloudFirestoreUserData(collection, key, value)
-{
-    //Get a reference to a new or exisiting document for the currently authenticated user in the specified collection
-    const userDocument = collection.doc(firebase.auth().currentUser.uid);
+//TODO If there are more utility functions like this, it probably makes the most sense to have a Utilitites file dedicated to Firebase logic
+// /**
+//  * Adds a provided key-value-pair into the user data document in the specified collection
+//  * @param {string} collection the Cloud Firestore collection to update
+//  * @param {string} key The key of the key-value-pair
+//  * @param {object} value the object value of key-value-pair
+//  */
+// function saveKeyValuePairToCloudFirestoreUserData(collection, key, value)
+// {
+//     //Get a reference to a new or exisiting document for the currently authenticated user in the specified collection
+//     const userDocument = collection.doc(firebase.auth().currentUser.uid);
 
-    //Add the provided key-value-pair to the document, merging it with any existing data in the document, if applicable
-    userDocument.set({
-        [key]: value 
-    }, { merge: true })
-    .catch(function(error) {
-        window.DebugController.LogError("Error writing document to storage:" + error);
-    });
-}
+//     //Add the provided key-value-pair to the document, merging it with any existing data in the document, if applicable
+//     userDocument.set(value, { merge: true })
+//     .catch(function(error) {
+//         window.DebugController.LogError("Error writing document to storage:" + error);
+//     });
+// }
 
 /** Experimental & In Progress **/
 

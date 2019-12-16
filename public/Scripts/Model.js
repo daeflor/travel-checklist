@@ -41,8 +41,13 @@ window.Model = (function()
     {
         if (id != null)
         {
+            //Get the List ID from the Checklist Item's full ID
             let _listId = window.ChecklistUtilities.GetListIdFromChecklistItemId(id);
+
+            //Get the ListItem Suffix ID from the Checklist Item's full ID
             let _listItemSuffix = id.toString().split('-')[1];
+
+            //Get the index of the Checklist Item's List within the Lists array
             let _listIndex = GetArrayIndexOfObjectWithKVP(getLists(), 'id', _listId);
     
             if (_listIndex != null)
@@ -86,13 +91,17 @@ window.Model = (function()
 
     function parseLoadedChecklistData(loadedListCallback, loadedListItemCallback, loadedChecklistData)
     {
+        //Store the model in memory
         checklistData = loadedChecklistData;
 
+        //Get a reference to the array of Lists
+        const _lists = getLists();
+
         //For each List in the checklist data...
-        for (let i = 0; i < checklistData.lists.length; i++) 
+        for (let i = 0; i < _lists.length; i++) 
         {
             //Assign a variable to track the current List being loaded
-            const _list = checklistData.lists[i];
+            const _list = _lists[i];
 
             //Assign a variable to track the List's balance value
             const _listBalance = window.ChecklistBalanceUtilities.CalculateListBalance(_list.listItems);
@@ -141,6 +150,7 @@ window.Model = (function()
         
         //Add the new List to the Lists array in the checklist data
         getLists().push(newList);
+        //getLists()[newList.id] = newList;
 
         //Store the updated checklist data
         storeChecklistData();

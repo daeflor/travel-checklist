@@ -21,10 +21,15 @@ window.StorageManager = (function ()
     }
 
     function storeChecklistData(data)
-    {
-        //Stringify the data object to JSON and then store it in Cloud Firestore
-        saveKeyValuePairToCloudFirestoreUserData(firestoreDatabase.collection("users"), getStorageKey(), JSON.stringify(data)); 
-        //TODO is it really necessary to stringify the data if it's just going to be added to an object right away again?
+    {    
+        //Get a reference to a new or exisiting document for the currently authenticated user in the 'UserListData' collection
+        const userListData = firestoreDatabase.collection("UserListData").doc(firebase.auth().currentUser.uid);
+
+        //Add the provided list data to the document, merging it with any existing data in the document, if applicable
+        userListData.set(data, { merge: true })
+        .catch(function(error) {
+            window.DebugController.LogError("Error writing document to storage:" + error);
+        });
     }
 
     function retrieveChecklistData(callback)
@@ -34,18 +39,51 @@ window.StorageManager = (function ()
         {            
             firestoreDatabase = firebase.firestore();
         }
+
+//////
+
+//This code snippet was used to transfer stringified data in old collection to object data in new collection
+
+        // let parsedData;
+        // let userDocument = firestoreDatabase.collection("users").doc(firebase.auth().currentUser.uid);
+        // //Attempt to extract app data from the document
+        // userDocument.get().then(function(doc) 
+        // {
+        //     //If the user's document already contains app data in Cloud Firestore, attmept to load it. Otherwise create new template data.
+        //     const rawStorageData = doc.exists ? doc.data()[getStorageKey()] : {}; 
+
+        //     parsedData = JSON.parse(rawStorageData);
+
+        //     userDocument = firestoreDatabase.collection("UserListData").doc(firebase.auth().currentUser.uid);
+
+        //     userDocument.set(parsedData, { merge: true })
+        //     .catch(function(error) {
+        //         window.DebugController.LogError("Error writing document to storage:" + error);
+        //     });
+        // })
+        // .catch(function(error) {
+        //     window.DebugController.LogError("Error getting document from storage:" + error);
+        // });
+
+//////
         
-        //Get a reference to a new or exisiting document for the currently authenticated user in the "users" collection
-        let userDocument = firestoreDatabase.collection("users").doc(firebase.auth().currentUser.uid);
+        //Get a reference to a new or exisiting document for the currently authenticated user in the "UserListData" collection
+        let userListData = firestoreDatabase.collection("UserListData").doc(firebase.auth().currentUser.uid);
 
         //Attempt to extract app data from the document
-        userDocument.get().then(function(doc) 
+        userListData.get().then(function(doc) 
         {
             //If the user's document already contains app data in Cloud Firestore, attmept to load it. Otherwise create new template data.
-            const rawStorageData = doc.exists ? doc.data()[getStorageKey()] : '{"lists":[]}'; 
+            const rawStorageData = doc.exists ? doc.data() : {}; 
+
+            //If the data object does not contain a 'lists' key, add one to it
+            if (rawStorageData.hasOwnProperty('lists') == false)
+            {
+                rawStorageData.lists = [];
+            }
             
             //Execute the provided callback function, passing as a parameter the data object parsed from the JSON string in Firestore
-            callback(JSON.parse(rawStorageData));
+            callback(rawStorageData);
         })
         .catch(function(error) {
             window.DebugController.LogError("Error getting document from storage:" + error);
