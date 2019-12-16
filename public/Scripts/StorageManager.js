@@ -39,33 +39,6 @@ window.StorageManager = (function ()
         {            
             firestoreDatabase = firebase.firestore();
         }
-
-//////
-
-//This code snippet was used to transfer stringified data in old collection to object data in new collection
-
-        // let parsedData;
-        // let userDocument = firestoreDatabase.collection("users").doc(firebase.auth().currentUser.uid);
-        // //Attempt to extract app data from the document
-        // userDocument.get().then(function(doc) 
-        // {
-        //     //If the user's document already contains app data in Cloud Firestore, attmept to load it. Otherwise create new template data.
-        //     const rawStorageData = doc.exists ? doc.data()[getStorageKey()] : {}; 
-
-        //     parsedData = JSON.parse(rawStorageData);
-
-        //     userDocument = firestoreDatabase.collection("UserListData").doc(firebase.auth().currentUser.uid);
-
-        //     userDocument.set(parsedData, { merge: true })
-        //     .catch(function(error) {
-        //         window.DebugController.LogError("Error writing document to storage:" + error);
-        //     });
-        // })
-        // .catch(function(error) {
-        //     window.DebugController.LogError("Error getting document from storage:" + error);
-        // });
-
-//////
         
         //Get a reference to a new or exisiting document for the currently authenticated user in the "UserListData" collection
         let userListData = firestoreDatabase.collection("UserListData").doc(firebase.auth().currentUser.uid);

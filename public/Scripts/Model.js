@@ -150,7 +150,6 @@ window.Model = (function()
         
         //Add the new List to the Lists array in the checklist data
         getLists().push(newList);
-        //getLists()[newList.id] = newList;
 
         //Store the updated checklist data
         storeChecklistData();
