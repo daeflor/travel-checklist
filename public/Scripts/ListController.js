@@ -50,6 +50,8 @@ window.ListController = (function()
             //When that quantity's Header Popover is shown, add an event listener to the 'Clear' button to clear that quantity's column
             listenForEvent_QuantityHeaderPopoverShown(key);
         }
+
+        listenForEvent_ClearQuantitiesForAllListsButtonPressed();
     }
 
     /**
@@ -230,6 +232,23 @@ window.ListController = (function()
         //Inform the Model to create a new List data object and then execute the passed callback function
         window.Model.AddNewList(_viewReaction);
     }
+
+    /** Informs the View to listen for an event indicating the 'Clear Quantities for All Lists' button has been pressed */
+    function listenForEvent_ClearQuantitiesForAllListsButtonPressed()
+    {
+        window.View.Bind('ClearQuantitiesForAllListsButtonPressed', reactToEvent_ClearQuantitiesForAllListsButtonPressed);
+    }
+
+    function reactToEvent_ClearQuantitiesForAllListsButtonPressed()
+    {
+        //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
+        const _viewReaction = renderListItemQuantityAndBalance;
+
+        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback function for each modified List Item
+        window.Model.ClearQuantitiesForAllLists(_viewReaction);
+
+        //TODO right now the balance of each List doesn't get recalculated so their colors don't update until the screen is refreshed.
+    }
 //#endregion
 
 //List Screen Header & Footer Listeners
@@ -277,7 +296,7 @@ window.ListController = (function()
     function reactToEvent_ClearButtonPressed(quantityType)
     {
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
-        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
+        const _viewReaction = renderListItemQuantityAndBalance;//.bind(null, quantityType);
 
         //Inform the Model to clear the specified quantity values for the all List Items in the active List, and execute the passed callback function for each modified List Item
         window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
@@ -456,7 +475,7 @@ window.ListController = (function()
     function reactToEvent_DecrementQuantityButtonPressed(listItemId, quantityType)
     {
         //Once the Model has decremented the List Item's quantity value in the checklist data, pass any necessary data to the View to do the same in the UI
-        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
+        const _viewReaction = renderListItemQuantityAndBalance;//.bind(null, quantityType);
 
         //Inform the Model to decrement the specified quantity value for the given List Item, and then execute the passed callback function
         window.Model.ModifyQuantity(listItemId, _viewReaction, 'Decrement', quantityType);
@@ -475,7 +494,7 @@ window.ListController = (function()
     function reactToEvent_IncrementQuantityButtonPressed(listItemId, quantityType)
     {
         //Once the Model has incremented the List Item's quantity value in the checklist data, pass any necessary data to the View to do the same in the UI
-        const _viewReaction = renderListItemQuantityAndBalance.bind(null, quantityType);
+        const _viewReaction = renderListItemQuantityAndBalance;//.bind(null, quantityType);
 
         //Inform the Model to increment the specified quantity value for the given List Item, and then execute the passed callback function
         window.Model.ModifyQuantity(listItemId, _viewReaction, 'Increment', quantityType);

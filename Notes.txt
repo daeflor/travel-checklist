@@ -14,6 +14,7 @@ TO-DOs:
     - - - Total             : 110
 
 Upcoming To-Do List:
+- Backup or cloud storage functionality
 - Might need a better name for 'ChecklistObjects' (the combination of Lists & List Items). Maybe 'ChecklistItem' or 'ChecklistRow'?
 - Maybe ViewListener should be separated from the rest of the View, instead of ViewRenderer (since ViewListener is what would need to be replaced during test scenarios)
     - Or have a 3rd file/class that manages/tracks View state
@@ -25,19 +26,19 @@ Upcoming To-Do List:
 - Start using replaceState or pushState in more cases within AppNavigationController
 - Merge debug section into 'New' row 
     - This might not work with the new landing/loading screen/page
-- Backup or cloud storage functionality
 - Look into (unit) testing possibilities 
 - Remove loading of any firebase scripts that aren't actually needed
 - Address miscellaneous todos
 - Replace var with const and let
-    - Replace with some lets with consts
+    - Replace some lets with consts
 - Every time an unreported error is hit, add error handling for it
-- Consider filing bugs in a dedicated location, to avoid bogging up the code with comments that may potentially not even need to be addressed in some cases (i.e. not all issues necessarily need to get fixed in the foreseeable future).
 - Quantity popovers could be to the right of the toggles. The inc/decrement buttons within the popover could be aligned vertically instead of horizontally, and they could use up/down arrow/triangle icons instead of +/-.
     - Could also consider using collapsibles or some other method for this, instead of Bootstrap Popovers
 - Look over https://www.toptal.com/javascript/10-most-common-javascript-mistakes
 
 Features:
+- Have some way to make a backup of - or template based on - the current set of lists.
+- Have the ability to make a new "travel plan" which is higher order in the hierarchy than the List of Lists (would be useful when you have a trip within a trip, so you can track both without losing any info).
 - ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
 - A bar at the bottom of the list screen that tells you if there are any orange/incomplete items remaining (so that you don't need to scroll)
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
@@ -57,6 +58,7 @@ Features:
 - Could have a dark mode toggle
 
 Usability & Appearance (UX & UI):
+- It would be good to show the/a loading bar until the list data is loaded from Firestore. Right now it briefly looks like there is no list data, which would be worse with a slower connection.
 - It would be nice to have some sort of animation feedback when trying to scroll up when already at the top of a list
 - Make the Progressive Web App prettier with an icon and other things
 - May want to change back the Add New Item Row to being left-aligned with a light background again
@@ -90,6 +92,8 @@ Code Cleanup:
 - Could use _ and $ to organize functions/methods
 
 Testing, Debug Tools, & Performance:
+- Take a look at LightHouse and run through an audit. https://developers.google.com/web/tools/lighthouse/
+- Consider filing bugs in a dedicated location, to avoid bogging up the code with comments that may potentially not even need to be addressed in some cases (i.e. not all issues necessarily need to get fixed in the foreseeable future).
 - Add error handling at the beginning of functions to ensure any required parameters are provided.
 - Find some way to force the PWA to update to the latest version 
     - USB Debugging is the best current solution for this
