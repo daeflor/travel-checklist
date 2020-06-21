@@ -17,7 +17,8 @@ window.ViewRenderer = (function()
 
     const headerElements = {
         ListHeader : {id:'divListHeader', element:null},
-        ListTitle : {id:'divListTitle', element:null}
+        ListTitle : {id:'divListTitle', element:null},
+        ClearQuantitiesForAllListsButton : {id:'buttonClearQuantitiesForAllLists', element:null}, //TODO This currently shouldn't be in the Header elements since the button isn't in the Header
     };
 
     function init()
@@ -138,6 +139,9 @@ window.ViewRenderer = (function()
                 //Show the List Screen when an individual List is displayed
                 screens.ListScreen.element.hidden = false;
 
+                //Hide the ClearQuantitiesForAllLists Button when an individual List is displayed
+                headerElements.ClearQuantitiesForAllListsButton.element.hidden = true;
+
                 //Disallow browser refresh when scrolling to the top of the List Screen
                 document.body.classList.add("disallowBrowserRefresh");
             }
@@ -150,6 +154,9 @@ window.ViewRenderer = (function()
 
                 //Hide the List Screen
                 screens.ListScreen.element.hidden = true;
+
+                //Show the ClearQuantitiesForAllLists Button
+                headerElements.ClearQuantitiesForAllListsButton.element.hidden = false;
 
                 //Allow browser refresh when scrolling to the top of the Home Screen
                 document.body.classList.remove("disallowBrowserRefresh");

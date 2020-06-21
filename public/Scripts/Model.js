@@ -296,7 +296,7 @@ window.Model = (function()
                 const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities);
 
                 //Execute the callback, passing as arguments the List Item's ID, updated quantity value, and balance
-                callback(listItem.id, listItem.quantities[quantityType], _listItemBalance);
+                callback(quantityType, listItem.id, listItem.quantities[quantityType], _listItemBalance);
             }
 
             const _attemptModification = function(listItem)
@@ -348,6 +348,35 @@ window.Model = (function()
         {
             //TODO could be more consistent with capitaliation
             window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement', 'Increment', and 'Clear'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
+        }
+    }
+
+    /**
+     * Clears the quantity values for every List Item in each List, optionally excluding the "needed" quantity type
+     * @param {function} callback The function to execute whenever an update is made to a List Item's quantity value
+     * @param {boolean} [includeNeededQuantity] An optional flag indicating whether or not the "needed" quantity type should also be cleared. Defaults to False.
+     */
+    function clearQuantitiesForAllLists(callback, includeNeededQuantity=false)
+    {
+        //const clearNeededQuantity = includeNeededQuantity || true;
+
+        //For each List...
+        for (let i = 0; i < checklistData.lists.length; i++) 
+        {
+            //For each Quantity Type...
+            for (const key in QuantityTypes)
+            {
+                //If the Quantity Type is "needed" and the clear request excludes this type, skip it.
+                if (key == "needed" && includeNeededQuantity == false)
+                {
+                    continue;
+                }
+
+                //callback = callback.bind(null, key);
+
+                //Clear the specified quantity values for all the List Items in the given List, and execute the passed callback function for each modified List Item
+                modifyQuantity(checklistData.lists[i].id, callback, 'Clear', key)
+            }
         }
     }
 
@@ -443,6 +472,7 @@ window.Model = (function()
         Remove: remove,
         ModifyPosition: modifyPosition,
         ModifyQuantity: modifyQuantity,
+        ClearQuantitiesForAllLists: clearQuantitiesForAllLists,
         // GetListItemBalance: getListItemBalance,
         GetListBalance: getListBalance
     };
