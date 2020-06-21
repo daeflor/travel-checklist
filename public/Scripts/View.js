@@ -207,7 +207,7 @@ window.View = (function()
             //Set the behavior for when a Clear button in the Header is pressed
             addListenerToChecklistElement({id:'buttonClear'}, 'click', callback);
         }
-        else if (event === 'ClearQuantitiesForAllListsButtonPressed') 
+        else if (event === 'ClearQuantitiesForAllListsButtonPressed')
         {
             //Set the behavior for when the button is pressed to clear the quantities for all Lists
             addListenerToChecklistElement({id:'buttonClearQuantitiesForAllLists'}, 'click', callback);

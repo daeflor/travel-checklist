@@ -361,7 +361,7 @@ window.Model = (function()
         //const clearNeededQuantity = includeNeededQuantity || true;
 
         //For each List...
-        for (let i = 0; i < checklistData.lists.length; i++) 
+        for (let i = 0; i < checklistData.lists.length; i++)
         {
             //For each Quantity Type...
             for (const key in QuantityTypes)
