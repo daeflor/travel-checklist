@@ -14,7 +14,6 @@ TO-DOs:
     - - - Total             : 110
 
 Upcoming To-Do List:
-- Backup or cloud storage functionality
 - Might need a better name for 'ChecklistObjects' (the combination of Lists & List Items). Maybe 'ChecklistItem' or 'ChecklistRow'?
 - Maybe ViewListener should be separated from the rest of the View, instead of ViewRenderer (since ViewListener is what would need to be replaced during test scenarios)
     - Or have a 3rd file/class that manages/tracks View state

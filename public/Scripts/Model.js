@@ -286,11 +286,13 @@ window.Model = (function()
         //If a valid modification and quantity type is provided...
         if (QuantityTypes[quantityType] != null && (modification === 'Decrement' || modification === 'Increment' || modification === 'Clear'))
         {
+            let _checklistDataModified = false;
+
             //Whenever an individual List Item's quantity value gets updated, store the checklist data and execute the callback function
             const _onSuccessfulModification = function(listItem) 
             {
-                //Store the updated checklist data
-                storeChecklistData();
+                //Indicate that the checklist data has been modified
+                _checklistDataModified = true;
 
                 //Calculate the updated List Item's new balance
                 const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities);
@@ -343,10 +345,16 @@ window.Model = (function()
                 //Modify the List Item's quantity value as specified
                 _attemptModification(_data.object);
             }
+
+            if (_checklistDataModified == true) //If the checklist data has been successfully modified...
+            {
+                //Store the updated checklist data
+                storeChecklistData();
+            }                
         }
         else
         {
-            //TODO could be more consistent with capitaliation
+            //TODO could be more consistent with capitalization
             window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement', 'Increment', and 'Clear'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }
     }
