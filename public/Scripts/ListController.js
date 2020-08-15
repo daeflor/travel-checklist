@@ -4,7 +4,7 @@ window.ListController = (function()
     //Assign a variable to track the ID of the active List
     let activeListId = null;
 
-//Helper Function To Render Updates To List Item Quantity Values
+//Helper Functions To Render Updates To List and List Item Toggles and Quantity Values
 //#region ============================================================
 
     /**
@@ -22,6 +22,18 @@ window.ListController = (function()
         //Update the List Item's name toggle color based on its updated balance
         window.ViewRenderer.Render('UpdateNameToggleColor', {id:listItemId, balance:balance});
     }
+
+    /**
+     * Informs the View to update a List's name toggle color in the UI based on changes to the underlying data
+     * @param {string} listId The unique identfier for the List which needs to be update
+     * @param {*} balance The updated balance of the List
+     */
+    function renderListBalance(listId, balance)
+    {
+        //Update the List's name toggle color based on its updated balance
+        window.ViewRenderer.Render('UpdateNameToggleColor', {id:listId, balance:balance});
+    }
+    
 //#endregion
 
 //Functions To Setup Collections Of Listeners
@@ -244,12 +256,14 @@ window.ListController = (function()
     function reactToEvent_ClearQuantitiesForAllListsButtonPressed()
     {
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
-        const _viewReaction = renderListItemQuantityAndBalance;
+        const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
 
-        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback function for each modified List Item
-        window.Model.ClearQuantitiesForAllLists(_viewReaction);
+        //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
+        const _viewReaction_ListUpdated = renderListBalance;
 
-        //TODO right now the balance of each List doesn't get recalculated so their colors don't update until the screen is refreshed.
+        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
+        //window.Model.ClearQuantitiesForAllLists(_viewReaction);
+        window.Model.ClearQuantityValuesInAllLists(['luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
     }
 //#endregion
 
@@ -300,8 +314,9 @@ window.ListController = (function()
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
         const _viewReaction = renderListItemQuantityAndBalance;//.bind(null, quantityType);
 
-        //Inform the Model to clear the specified quantity values for the all List Items in the active List, and execute the passed callback function for each modified List Item
-        window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType); 
+        //Inform the Model to clear the specified quantity values for all the List Items in the active List, and execute the passed callback function for each modified List Item
+        //window.Model.ModifyQuantity(activeListId, _viewReaction, 'Clear', quantityType);
+        window.Model.ClearQuantityValuesInList(activeListId, [quantityType], _viewReaction);
     }
 //#endregion
 
