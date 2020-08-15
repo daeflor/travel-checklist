@@ -275,98 +275,13 @@ window.Model = (function()
     }
 
     /**
-     * Performs a modification on a List or List Items value(s) for the provided quantity type
-     * @param {*} id The ID of the List or List Item being modified
-     * @param {function} callback The function to execute whenever an update is made to a List Item's quantity value
-     * @param {string} modification Specifies whether the quantity value(s) should be incremented, decremented, or cleared
-     * @param {string} quantityType Specifies the quantity type which should be updated ('needed', 'luggage', 'wearing', or 'backpack')
-     */
-    function modifyQuantity(id, callback, modification, quantityType)
-    {
-        //If a valid modification and quantity type is provided...
-        if (QuantityTypes[quantityType] != null && (modification === 'Decrement' || modification === 'Increment' || modification === 'Clear'))
-        {
-            let _checklistDataModified = false;
-
-            //Whenever an individual List Item's quantity value gets updated, store the checklist data and execute the callback function
-            const _onSuccessfulModification = function(listItem) 
-            {
-                //Indicate that the checklist data has been modified
-                _checklistDataModified = true;
-
-                //Calculate the updated List Item's new balance
-                const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities);
-
-                //Execute the callback, passing as arguments the List Item's ID, updated quantity value, and balance
-                callback(quantityType, listItem.id, listItem.quantities[quantityType], _listItemBalance);
-            }
-
-            const _attemptModification = function(listItem)
-            {
-                //If the request is to decrement the quantity value, and the current value for the given quantity type is greater than zero...
-                if (modification === 'Decrement' && listItem.quantities[quantityType] > 0)
-                {
-                    //Decrement the quantity value for the given quantity type by one
-                    listItem.quantities[quantityType]--;
-
-                    //Store the updated checklist data and execute the provided callback function
-                    _onSuccessfulModification(listItem);
-                }
-                //Else, if the request is to increment the quantity value
-                else if (modification === 'Increment')
-                {
-                    //Increment the quantity value for the given quantity type by one
-                    listItem.quantities[quantityType]++; 
-
-                    //Store the updated checklist data and execute the provided callback function
-                    _onSuccessfulModification(listItem);
-                }
-                //Else, if the request is to clear the quantity value, and the current value for the given quantity type is not equal to zero...
-                else if (modification === 'Clear' && listItem.quantities[quantityType] != 0)
-                {
-                    //Set the quantity value for the given quantity type to zero
-                    listItem.quantities[quantityType] = 0;
-
-                    //Store the updated checklist data and execute the provided callback function
-                    _onSuccessfulModification(listItem);
-                }
-            }
-
-            //Retrieve data about the checklist object based on its ID
-            let _data = getChecklistObjectDataFromId(id);
-
-            if (_data.object.listItems != null) //If the checklist object contains List Items (i.e. it is a List)...
-            {
-                //For each List Item in the List, clear the quantity value (i.e. set it to zero)
-                _data.object.listItems.forEach(_attemptModification); 
-            }
-            else //Else, if the checklist object does not contain List Items (i.e. it is itself a List Item)...
-            {
-                //Modify the List Item's quantity value as specified
-                _attemptModification(_data.object);
-            }
-
-            if (_checklistDataModified == true) //If the checklist data has been successfully modified...
-            {
-                //Store the updated checklist data
-                storeChecklistData();
-            }
-        }
-        else
-        {
-            //TODO could be more consistent with capitalization
-            window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement', 'Increment', and 'Clear'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
-        }
-    }
-
-    /**
      * Performs a modification on a List Item's value for the provided quantity type
      * @param {*} id The ID of the List Item being modified
      * @param {function} callback The function to execute when an update is made to a List Item's quantity value
      * @param {string} modification Specifies whether the quantity value(s) should be incremented or decremented
      * @param {string} quantityType Specifies the quantity type which should be updated ('needed', 'luggage', 'wearing', or 'backpack')
      */
-    function modifyQuantityNEW(id, callback, modification, quantityType)
+    function modifyQuantity(id, callback, modification, quantityType)
     {
         //If a valid modification and quantity type is provided...
         if (QuantityTypes[quantityType] != null && (modification === 'Decrement' || modification === 'Increment'))
@@ -408,7 +323,7 @@ window.Model = (function()
         }
         else
         {
-            window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement', 'Increment', and 'Clear'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
+            window.DebugController.LogError("Request received to modify a List Item's quantity value, but an invalid modification or quantity type was provided. Valid modifications are 'Decrement' and 'Increment'. Valid quantity types are 'needed', 'luggage', 'wearing', and 'backpack'.");
         }
     }
 
@@ -542,100 +457,6 @@ window.Model = (function()
         }
     }
 
-    /**
-     * Clears every List Item's quantity value that matches the given quantity type(s), either across all Lists or for one specific List.
-     * @param {function} callback The function to execute whenever an update is made to a List Item's quantity value
-     * @param {array} quantityTypes An array of the quantity types that should be cleared 
-     * @param {string} [listId] An optional List ID to indicate that only that specific List should have its values cleared. Otherwise, all Lists will be cleared by default. 
-     */
-    function clearQuantityValuesNEW_NVM(callback, quantityTypes, listId)
-    {        
-        //if(listId != null) // If a List ID was provided (i.e. only a specific List should have its values cleared)...
-        //{
-            //Declare a variable to track the current quantity type that needs to be cleared
-            let _quantityTypeToClear = null;
-
-            const _clearListItemQuantityValue = function(listItem)
-            {
-                //If the current value for the given quantity type is not equal to zero...
-                if (listItem.quantities[_quantityTypeToClear] != 0)
-                {
-                    //Set the quantity value for the given quantity type to zero
-                    listItem.quantities[_quantityTypeToClear] = 0;
-
-                    //Store the updated checklist data and execute the provided callback function
-                    //_onSuccessfulModification(listItem);
-
-                    //Calculate the updated List Item's new balance
-                    const _listItemBalance = window.ChecklistBalanceUtilities.CalculateListItemBalance(listItem.quantities);
-
-                    //Execute the callback, passing as arguments the List Item's ID, updated quantity value, and balance
-                    callback(quantityType, listItem.id, listItem.quantities[_quantityTypeToClear], _listItemBalance);
-                }
-            }
-
-            const _clearListQuantityValues = function(list)
-            {
-                //For each quantity type specified...
-                for (let i = 0; i < quantityTypes.length; i++) 
-                {
-                    //Set the quantity type that needs to be cleared to the current quantity type
-                    _quantityTypeToClear = quantityTypes[i];
-
-                    //For each List Item in the List, clear the quantity value (i.e. set it to zero)
-                    _list.listItems.forEach(_clearListItemQuantityValue); 
-                    //TODO could probably just do a for loop and pass as param the quantity to clear
-                }
-            }
-
-            if(listId != null) // If a List ID was provided (i.e. only a specific List should have its values cleared)...
-            {
-                //Retrieve the List's data object based on the given ID
-                const _list = getChecklistObjectDataFromId(listId).object;
-
-                _clearListQuantityValues(_list);
-            }
-            else
-            {
-                //For each List...
-                for (let i = 0; i < checklistData.lists.length; i++)
-                {  
-                    //Clear the specified quantity values for that list (i.e. set them to zero)
-                    _clearListQuantityValues(checklistData.lists[i]);
-                }
-            }
-        //}
-    }
-
-    /**
-     * Clears the quantity values for every List Item in each List, optionally excluding the "needed" quantity type
-     * @param {function} callback The function to execute whenever an update is made to a List Item's quantity value
-     * @param {boolean} [includeNeededQuantity] An optional flag indicating whether or not the "needed" quantity type should also be cleared. Defaults to False.
-     */
-    function clearQuantitiesForAllLists(callback, includeNeededQuantity=false)
-    {
-        //const clearNeededQuantity = includeNeededQuantity || true;
-
-        //For each List...
-        for (let i = 0; i < checklistData.lists.length; i++)
-        {
-            //For each Quantity Type...
-            for (const key in QuantityTypes)
-            {
-                //If the Quantity Type is "needed" and the clear request excludes this type, skip it.
-                if (key == "needed" && includeNeededQuantity == false)
-                {
-                    continue;
-                }
-
-                //callback = callback.bind(null, key);
-
-                //Clear the specified quantity values for all the List Items in the given List, and execute the passed callback function for each modified List Item
-                modifyQuantity(checklistData.lists[i].id, callback, 'Clear', key);
-            }
-        }
-    }
-
     //TODO Instead of always passing a callback, would it make sense to not, and instead have a 'respondToController' function (with a better name obviously)
         //This function would take as a parmeter any argument(s) that needs to be sent back to the Controller
         //It would store the checklist data (perhaps there could be a param option for whether or not to do this - to account for the list balance edge case...)
@@ -729,7 +550,6 @@ window.Model = (function()
         Remove: remove,
         ModifyPosition: modifyPosition,
         ModifyQuantity: modifyQuantity,
-        //ClearQuantitiesForAllLists: clearQuantitiesForAllLists,
         ClearQuantityValuesInAllLists: clearQuantityValuesInAllLists,
         ClearQuantityValuesInList: clearQuantityValuesInList,
         // GetListItemBalance: getListItemBalance,
