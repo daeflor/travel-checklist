@@ -40,7 +40,6 @@ Upcoming To-Do List:
 Features:
 - Have some way to make a backup of - or template based on - the current set of lists.
 - Have the ability to make a new "travel plan" which is higher order in the hierarchy than the List of Lists (would be useful when you have a trip within a trip, so you can track both without losing any info).
-- ! Some way to clear everything across Lists, and to clear everything across Lists except for the 'Needed' columns
 - A bar at the bottom of the list screen that tells you if there are any orange/incomplete items remaining (so that you don't need to scroll)
 - Shopping List: Start with simple checklist (don't need differentiation between 'needed' and 'in cart')
 - Could have a travel preparation category/section (i.e. a Pre-Travel 'To-Do' list) as part of the Travel Checklist, which would require different columns and interactions
