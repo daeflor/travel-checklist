@@ -99,7 +99,7 @@ window.AppNavigationController = (function()
             //Inform the View to display the Home Screen
             window.ViewRenderer.ToggleScreenVisibility('HomeScreen', true);
 
-            //When the Sign-Out button is pressed, sign the user out and show the Authentication Screen
+            //Set up a listener so that, when the Sign-Out button is pressed, the user gets signed out and the Authentication Screen is shown
             listenForEvent_SignOutButtonPressed();
 
             //Initialize the List Controller so that it sets up ongoing event listeners for UI elements within the Checklist and loads the Checklist data from storage

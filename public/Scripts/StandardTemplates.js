@@ -15,7 +15,7 @@ function CreateNewElement(elementName, attributes, child)
 
         if (attributes != null)
         {
-            for (var i = 0; i < attributes.length; i++)
+            for (let i = 0; i < attributes.length; i++)
             {
                 element.setAttribute(attributes[i][0], attributes[i][1]);
             }
@@ -63,7 +63,7 @@ function CreatePopoverToggle(data)
 {    
     /* Setup Popover Elements */
     var divPopover = document.createElement('div');
-    for (var i = 0; i < data.children.length; i++)
+    for (let i = 0; i < data.children.length; i++)
     {
         divPopover.appendChild(data.children[i]);
     } 
@@ -118,7 +118,7 @@ function CreateToggleForCollapsibleView(collapsibleId, toggleClass, toggleDispla
 function CreateCollapsibleView(data)
 {    
     var divCard = CreateNewElement('div', [ ['class', data.rowClass] ]); 
-    for (var i = 0; i < data.collapsedChildren.length; i++)
+    for (let i = 0; i < data.collapsedChildren.length; i++)
     {
         divCard.appendChild(data.collapsedChildren[i]);
     } 

@@ -336,6 +336,10 @@ button {
 
 /** Experimental & In Progress **/
 
+.debugIcon {
+    color: #333333;
+}
+
 .divListToggleWrapper {
     margin-right: 0px;
     margin-left: 0px;
@@ -448,7 +452,7 @@ button {
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
-    padding-bottom: 3px;
+    padding-bottom: 0px;/*3px;*/
 
     border-left-width: 0px;
     border-right-width: 0px;
@@ -460,10 +464,6 @@ button {
     color: green;
 
     /* align-self: center; */
-}
-
-#buttonTest {
-    color: #333333;
 }
 
 .disallowBrowserRefresh {
