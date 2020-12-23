@@ -63,7 +63,11 @@ window.ListController = (function()
             listenForEvent_QuantityHeaderPopoverShown(key);
         }
 
+        //When the button to clear all quantities across all lists is pressed, update the Model and View accordingly
         listenForEvent_ClearQuantitiesForAllListsButtonPressed();
+
+        //When the button to clear all quantities except 'needed' across all lists is pressed, update the Model and View accordingly
+        listenForEvent_ClearQuantitiesForExceptNeededAllListsButtonPressed();
     }
 
     /**
@@ -254,6 +258,26 @@ window.ListController = (function()
     }
 
     function reactToEvent_ClearQuantitiesForAllListsButtonPressed()
+    {
+        //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
+        const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
+
+        //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
+        const _viewReaction_ListUpdated = renderListBalance;
+
+        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
+        //window.Model.ClearQuantitiesForAllLists(_viewReaction);
+        window.Model.ClearQuantityValuesInAllLists(['needed', 'luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
+    }
+
+    /** Informs the View to listen for an event indicating the 'Clear Quantities for All Lists' button has been pressed */
+    function listenForEvent_ClearQuantitiesForExceptNeededAllListsButtonPressed()
+    {
+        window.View.Bind('ClearQuantitiesExceptNeededForAllListsButtonPressed', reactToEvent_ClearQuantitiesExceptNeededForAllListsButtonPressed);
+    }
+
+    //TODO This is very verbose
+    function reactToEvent_ClearQuantitiesExceptNeededForAllListsButtonPressed()
     {
         //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
         const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;

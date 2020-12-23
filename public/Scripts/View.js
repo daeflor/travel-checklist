@@ -212,6 +212,11 @@ window.View = (function()
             //Set the behavior for when the button is pressed to clear the quantities for all Lists
             addListenerToChecklistElement({id:'buttonClearQuantitiesForAllLists'}, 'click', callback);
         }
+        else if (event === 'ClearQuantitiesExceptNeededForAllListsButtonPressed')
+        {
+            //Set the behavior for when the button is pressed to clear the quantities for all Lists
+            addListenerToChecklistElement({id:'buttonClearQuantitiesExceptNeededForAllLists'}, 'click', callback);
+        }
         else if (event === 'ClickDetectedOutsidePopover')
         {
             //If a click is detected anywhere in the body but outside the popover, execute the callback method

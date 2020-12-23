@@ -318,7 +318,7 @@ window.Model = (function()
                 _listItem.quantities[quantityType]++; 
 
                 //Store the updated checklist data and execute the provided callback function
-                _onSuccessfulModification(listItem);
+                _onSuccessfulModification(_listItem);
             }
         }
         else
