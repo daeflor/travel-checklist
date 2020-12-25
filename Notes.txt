@@ -38,6 +38,7 @@ Upcoming To-Do List:
 - Look over https://www.toptal.com/javascript/10-most-common-javascript-mistakes
 
 Features:
+- Add an undo button/action for the new 'clear lists' buttons
 - Have some way to make a backup of - or template based on - the current set of lists.
 - Have the ability to make a new "travel plan" which is higher order in the hierarchy than the List of Lists (would be useful when you have a trip within a trip, so you can track both without losing any info).
 - A bar at the bottom of the list screen that tells you if there are any orange/incomplete items remaining (so that you don't need to scroll)
