@@ -259,15 +259,17 @@ window.ListController = (function()
 
     function reactToEvent_ClearQuantitiesForAllListsButtonPressed()
     {
-        //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
-        const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
+        if (confirm("Clear All Quantities?") === true) {
+            //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
+            const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
 
-        //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
-        const _viewReaction_ListUpdated = renderListBalance;
+            //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
+            const _viewReaction_ListUpdated = renderListBalance;
 
-        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
-        //window.Model.ClearQuantitiesForAllLists(_viewReaction);
-        window.Model.ClearQuantityValuesInAllLists(['needed', 'luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
+            //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
+            //window.Model.ClearQuantitiesForAllLists(_viewReaction);
+            window.Model.ClearQuantityValuesInAllLists(['needed', 'luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
+        }
     }
 
     /** Informs the View to listen for an event indicating the 'Clear Quantities for All Lists' button has been pressed */
@@ -279,15 +281,17 @@ window.ListController = (function()
     //TODO This is very verbose
     function reactToEvent_ClearQuantitiesExceptNeededForAllListsButtonPressed()
     {
-        //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
-        const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
+        if (confirm("Clear Quantities?") === true) {
+            //Once the Model has modified the quantity value for a List Item, pass any necessary data to the View to update its UI
+            const _viewReaction_ListItemUpdated = renderListItemQuantityAndBalance;
 
-        //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
-        const _viewReaction_ListUpdated = renderListBalance;
+            //Once the Model has successfully finished clearing List data, pass any necessary data to the View to update its UI
+            const _viewReaction_ListUpdated = renderListBalance;
 
-        //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
-        //window.Model.ClearQuantitiesForAllLists(_viewReaction);
-        window.Model.ClearQuantityValuesInAllLists(['luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
+            //Inform the Model to clear the quantity values for all the List Items in every List, and execute the passed callback functions for each modified List Item and List, respectively
+            //window.Model.ClearQuantitiesForAllLists(_viewReaction);
+            window.Model.ClearQuantityValuesInAllLists(['luggage', 'wearing', 'backpack'], _viewReaction_ListItemUpdated, _viewReaction_ListUpdated);
+        }
     }
 //#endregion
 
