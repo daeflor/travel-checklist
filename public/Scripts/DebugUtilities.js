@@ -6,7 +6,7 @@ window.DebugController = (function()
     //TODO Maybe the DebugController should be made to be more generic (like Utilities.js) rather than specific to the Checklist app. 
     
     var debugModeEnabled = true;
-    const VERSION = '0.0.15';
+    const VERSION = '0.0.16';
 
     function init()
     {
