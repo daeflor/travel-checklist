@@ -1,37 +1,13 @@
-## Welcome to GitHub Pages
+## Travel Checklist
 
-You can use the [editor on GitHub](https://github.com/daeflor/travel-checklist/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This custom checklist is a web app intended for mobile use that I created to avoid forgetting things when traveling, both when heading to a destination and when returning home. You can access the app here: https://daeflor-checklist.web.app/, though I would only recommend using it on mobile in its current state. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+To use the list you have to sign in with a Google account, and the list information you input gets stored in Firebase (Firestore). You can then create and re-order custom categories of list items, as needed. Within each category, you can create custom list items in a similar fashion. Within each category view there are different columns representing the quantity of items needed or packed. I had debated making these columns modular so they could be customized per person, but since I ended up just focusing the app for my personal use, I used hard-coded columns representing, in order from left to right, the quantity of items needed in total (e.g. 5 t-shirts), the quantity already packed in a suitcase, the quantity being worn or carried, and the quantity packed in a backpack or other. (In case you're wondering, yes, I don't like to forget things or leave them behind, and I may have taken this too far. But, for better or worse, I've actually gotten a lot of good use out of this app over the years). 
 
-### Markdown
+<img width="413" alt="List Item - Edit Quantity" src="https://user-images.githubusercontent.com/2702971/197485553-add11e30-25d5-4095-926b-b002a1895527.png">
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+For every quantity type of each list item, you can tap on the number to reveal buttons to increase or decrease the quantity. If the value of the left-most column doesn't match the sum of the other three, the list item will be colored orange, as a reminder that you've forgotten something. If any list item is in this state, the category itself will also be colored orange in the overall list of categories. If all the quantity values correctly match, then the list item will be colored green; if all list items are green, then the category will show up green as well. This way you can get a quick overview of all your categories to see if you've remembered to pack everyting, or which ones still need your attention. 
 
-```markdown
-Syntax highlighted code block
+<img width="408" alt="List Item - View Options" src="https://user-images.githubusercontent.com/2702971/197486505-532bb7b1-bf46-4e82-baf1-3e5d11b485da.png">
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/daeflor/travel-checklist/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+If you tap on a list item or category, there are options to rename the item, delete it, or move it up or down in the list. There is also a separate option to qucikly clear all the quantity values throughout all lists. 
