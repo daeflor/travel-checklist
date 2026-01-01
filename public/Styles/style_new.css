@@ -208,7 +208,7 @@ button {
     border-top-width: 0px;
     border-bottom-width: 2px;
     
-    border-style: inset;
+    border-style: solid;
 
     background-color: aliceblue;
 }
